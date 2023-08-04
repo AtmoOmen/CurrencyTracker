@@ -4,9 +4,9 @@
     <Authors></Authors>
     <Company></Company>
     <Version>0.0.0.1</Version>
-    <Description>A sample plugin.</Description>
+    <Description>A plugin to track all your currencies.</Description>
     <Copyright></Copyright>
-    <PackageProjectUrl>https://github.com/goatcorp/SamplePlugin</PackageProjectUrl>
+    <PackageProjectUrl></PackageProjectUrl>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -20,15 +20,8 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="..\Data\goat.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <Visible>false</Visible>
-    </Content>
-  </ItemGroup>
-
   <PropertyGroup>
-    <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    <DalamudLibPath>E:\Program Files (x86)\Dalamud.Updater.exe_v1.0.4.4\addon\Hooks\dev\</DalamudLibPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   

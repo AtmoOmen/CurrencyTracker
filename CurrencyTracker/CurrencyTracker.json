@@ -1,0 +1,13 @@
+{
+  "Author": "AtmoOmen",
+  "Name": "Currency Tracker",
+  "Punchline": "追踪你的各项货币的交易记录",
+  "Description": "追踪你的各项货币的交易记录",
+  "InternalName": "CurrencyTracker",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "Money",
+    "Currency",
+    "Tracker"
+  ]
+}
