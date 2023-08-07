@@ -1,4 +1,3 @@
-using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Game.Gui;
 using Dalamud.Logging;
@@ -7,9 +6,7 @@ using System.IO;
 using Dalamud.Interface.Windowing;
 using CurrencyTracker.Windows;
 using CurrencyTracker.Manager;
-using Dalamud.Game.ClientState;
 using System.Linq;
-using static FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 using System;
 using System.Collections.Generic;
 

@@ -1,14 +1,8 @@
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Logging;
-using Microsoft.VisualBasic;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace CurrencyTracker.Manager
 {

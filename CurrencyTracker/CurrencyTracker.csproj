@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors></Authors>
     <Company></Company>
-    <Version>0.0.0.1</Version>
+    <Version>1.0.0.0</Version>
     <Description>A plugin to track all your currencies.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl></PackageProjectUrl>
@@ -60,5 +60,10 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+    <ItemGroup>
+        <Content Include="..\Assets\icon.png" Link="images\icon.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
 
 </Project>

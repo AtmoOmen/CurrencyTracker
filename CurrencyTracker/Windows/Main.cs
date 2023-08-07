@@ -1,24 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Dalamud.Interface.Colors;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using System.Numerics;
-using CurrencyTracker;
 using CurrencyTracker.Manager;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.ConfigModule;
-using Dalamud.Logging;
-using System.Collections;
-using System.Transactions;
-using Dalamud.Interface;
-using System.Linq.Expressions;
 using Dalamud.Interface.Components;
 using System.IO;
-using System.Xml.Linq;
-using Dalamud.Game.Gui;
 
 namespace CurrencyTracker.Windows;
 
@@ -140,6 +129,7 @@ public class Main : Window, IDisposable
         ImGui.SameLine();
         ImGui.Text("            ");
         ImGui.SameLine();
+        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 200);
         if (ImGui.Button("导出当前记录为CSV文件"))
         {
             ImGui.OpenPopup(str_id: "ExportFileRename");
@@ -164,7 +154,7 @@ public class Main : Window, IDisposable
                 }
             }
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker("为避免错误，请勿输入过长的文件名");
+            ImGuiComponents.HelpMarker("注1: 为避免错误，请勿输入过长的文件名\n注2: 导出的数据将会应用当前所启用的一切筛选条件(不包含分页)");
             ImGui.EndCombo();
         }
 

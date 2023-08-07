@@ -1,13 +1,19 @@
 {
-  "Author": "AtmoOmen",
-  "Name": "Currency Tracker",
-  "Punchline": "追踪你的各项货币的交易记录",
-  "Description": "追踪你的各项货币的交易记录",
-  "InternalName": "CurrencyTracker",
-  "ApplicableVersion": "any",
-  "Tags": [
-    "Money",
-    "Currency",
-    "Tracker"
-  ]
+    "Author": "AtmoOmen",
+    "Name": "Currency Tracker",
+    "AssemblyVersion": "1.0.0.0",
+    "Punchline": "追踪你的各项货币的交易记录",
+    "Description": "追踪你的各项货币的交易记录",
+    "InternalName": "CurrencyTracker",
+    "ApplicableVersion": "any",
+    "RepoUrl": "https://github.com/AtmoOmen/CurrencyTracker",
+    "Tags": [
+        "Money",
+        "Currency",
+        "Tracker",
+        "金钱",
+        "追踪器",
+        "货币"
+    ],
+    "DalamudApiLevel": 8
 }

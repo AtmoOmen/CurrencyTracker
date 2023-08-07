@@ -1,15 +1,8 @@
-using Dalamud.IoC;
 using Dalamud.Logging;
-using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
-using System.Xml.Linq;
 
 namespace CurrencyTracker.Manager
 {
