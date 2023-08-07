@@ -1,47 +1,41 @@
-# SamplePlugin
+# Currency Tracker
 
-Simple example plugin for Dalamud.
+Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票、神典石等）收入与支出情况，并提供自定义查询、导出数据文件的插件。
 
-This is not designed to be the simplest possible example, but it is also not designed to cover everything you might want to do. For more detailed questions, come ask in [the Discord](https://discord.gg/3NMcUV5).
+![Currency Tracker](https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png)
 
-## Main Points
+支持多语言，但目前界面 UI 仅做了简体中文支持。
 
-* Simple functional plugin
-  * Slash command
-  * Main UI
-  * Settings UI
-  * Image loading
-  * Plugin json
-* Simple, slightly-improved plugin configuration handling
-* Project organization
-  * Copies all necessary plugin files to the output directory
-    * Does not copy dependencies that are provided by dalamud
-    * Output directory can be zipped directly and have exactly what is required
-  * Hides data files from visual studio to reduce clutter
-    * Also allows having data files in different paths than VS would usually allow if done in the IDE directly
+插件灵感来源于 Youri 的 FFXIVMoneyTracker（[链接](https://github.com/yschuurmans/FFXIVMoneyTracker)），对多语言的初步支持和重要的插件逻辑来源于 Lharz 的 CurrencyAlert（[链接](https://github.com/Lharz/xiv-currency-alert)），同时感谢 KamiLib（[链接](https://github.com/MidoriKami/KamiLib)）。
 
+## 更新日志
 
-The intention is less that any of this is used directly in other projects, and more to show how similar things can be done.
+| 日期          | 版本号      | 更新日志                   |
+|---------------|-------------|----------------------------|
+| 2023年8月7日  | 1.0.0.0     | 正式版发布                 |
 
-## To Use
-### Building
+## 在线安装
+```
+https://github.com/AtmoOmen/DalamudPlugins
+```
 
-1. Open up `SamplePlugin.sln` in your C# editor of choice (likely [Visual Studio 2022](https://visualstudio.microsoft.com) or [JetBrains Rider](https://www.jetbrains.com/rider/)).
-2. Build the solution. By default, this will build a `Debug` build, but you can switch to `Release` in your IDE.
-3. The resulting plugin can be found at `SamplePlugin/bin/x64/Debug/SamplePlugin.dll` (or `Release` if appropriate.)
+# Currency Tracker
 
-### Activating in-game
+Currency Tracker is a plugin designed to help you track the income and expenses of various in-game currencies (such as gold, military tickets, divine stones, etc.). It also provides features for custom queries and exporting data files.
 
-1. Launch the game and use `/xlsettings` in chat or `xlsettings` in the Dalamud Console to open up the Dalamud settings.
-    * In here, go to `Experimental`, and add the full path to the `SamplePlugin.dll` to the list of Dev Plugin Locations.
-2. Next, use `/xlplugins` (chat) or `xlplugins` (console) to open up the Plugin Installer.
-    * In here, go to `Dev Tools > Installed Dev Plugins`, and the `SamplePlugin` should be visible. Enable it.
-3. You should now be able to use `/pmycommand` (chat) or `pmycommand` (console)!
+![Currency Tracker](https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png)
 
-Note that you only need to add it to the Dev Plugin Locations once (Step 1); it is preserved afterwards. You can disable, enable, or load your plugin on startup through the Plugin Installer.
+The plugin supports multiple languages, though currently, the UI interface is only available in Simplified Chinese.
 
-### Reconfiguring for your own uses
+The inspiration for this plugin came from Youri's FFXIVMoneyTracker ([GitHub Link](https://github.com/yschuurmans/FFXIVMoneyTracker)). The initial support for multiple languages and key plugin logic draws from Lharz's CurrencyAlert ([GitHub Link](https://github.com/Lharz/xiv-currency-alert)). Special thanks to KamiLib ([GitHub Link](https://github.com/MidoriKami/KamiLib)).
 
-Basically, just replace all references to `SamplePlugin` in all of the files and filenames with your desired name. You'll figure it out 😁
+## ChangeLog
 
-Dalamud will load the JSON file (by default, `SamplePlugin/SamplePlugin.json`) next to your DLL and use it for metadata, including the description for your plugin in the Plugin Installer. Make sure to update this with information relevant to _your_ plugin!
+| Date          | Version     | Update Description           |
+|---------------|-------------|------------------------------|
+| 2023年8月7日  | 1.0.0.0     | Official version release     |
+
+## Online Installtion
+```
+https://github.com/AtmoOmen/DalamudPlugins
+```
