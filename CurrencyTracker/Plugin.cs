@@ -108,6 +108,7 @@ namespace CurrencyTracker
             
             MainWindow.Dispose();
             Service.Tracker.Dispose();
+            Service.ClientState.Login -= isLogin;
         }
 
         private void DrawUI()
