@@ -6,7 +6,7 @@ Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票
 
 支持多语言，但目前界面 UI 仅做了简体中文支持。
 
-插件灵感来源于 Youri 的 FFXIVMoneyTracker（[链接](https://github.com/yschuurmans/FFXIVMoneyTracker)），对多语言的初步支持和重要的插件逻辑来源于 Lharz 的 CurrencyAlert（[链接](https://github.com/Lharz/xiv-currency-alert)），同时感谢 KamiLib（[链接](https://github.com/MidoriKami/KamiLib)）。
+插件灵感来源于 Youri 的 [FFXIVMoneyTracker](https://github.com/yschuurmans/FFXIVMoneyTracker)，对多语言的初步支持和重要的插件逻辑来源于 Lharz 的 [CurrencyAlert](https://github.com/Lharz/xiv-currency-alert)，同时感谢 [KamiLib](https://github.com/MidoriKami/KamiLib)。
 
 ## 更新日志
 
