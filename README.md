@@ -12,6 +12,7 @@ Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年8月7日  | 1.0.0.1     | 加上了登陆检测              |
 | 2023年8月7日  | 1.0.0.0     | 正式版发布                 |
 
 ## 在线安装
@@ -33,6 +34,7 @@ The inspiration for this plugin came from Youri's FFXIVMoneyTracker ([GitHub Lin
 
 | Date          | Version     | Update Description           |
 |---------------|-------------|------------------------------|
+| 2023年8月7日  | 1.0.0.1     | Add login detection           |
 | 2023年8月7日  | 1.0.0.0     | Official version release     |
 
 ## Online Installtion

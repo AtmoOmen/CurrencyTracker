@@ -45,10 +45,14 @@ namespace CurrencyTracker
                 Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
             }
 
-            CurrentCharacter = GetCurrentCharacter();
-
             Service.Tracker = new Tracker();
             Service.Transactions = new Transactions();
+            Service.ClientState.Login += isLogin;
+        }
+
+        private void isLogin(object? sender, EventArgs e)
+        {
+            CurrentCharacter = GetCurrentCharacter();
         }
 
         public CharacterInfo GetCurrentCharacter()
@@ -64,7 +68,7 @@ namespace CurrencyTracker
 
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
-                throw new InvalidOperationException("Unable to get current character.");
+                throw new InvalidOperationException("无法获取当前角色");
             }
 
             if (Configuration.CurrentActiveCharacter == null)
