@@ -13,7 +13,8 @@ namespace CurrencyTracker
         public ClientState? ClientState { get; init; }
         public int Version { get; set; } = 0;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
-
+        public bool ReverseSort { get; set; } = false;
+        public bool TrackedInDuty { get; set; } = false;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

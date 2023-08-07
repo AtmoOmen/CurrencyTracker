@@ -1,5 +1,7 @@
 using Dalamud.Game.Command;
 using Dalamud.IoC;
+using Dalamud.Game.Gui;
+using Dalamud.Logging;
 using Dalamud.Plugin;
 using System.IO;
 using Dalamud.Interface.Windowing;
@@ -17,15 +19,18 @@ namespace CurrencyTracker
     {
         // 一些声明
         public string Name => "Currency Trakcer";
-        private DalamudPluginInterface PluginInterface { get; init; }
+        public DalamudPluginInterface PluginInterface { get; init; }
+        public ChatGui ChatGui { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         private Main MainWindow { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
+        public static Plugin GetPlugin = null!;  // 插件的静态实例
 
         // 插件初始化时执行的代码部分
         public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
         {
+            GetPlugin = this;
             Service.Initialize(pluginInterface);
 
             this.PluginInterface = pluginInterface;
@@ -38,7 +43,15 @@ namespace CurrencyTracker
             this.PluginInterface.UiBuilder.Draw += DrawUI;
             this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
+            if (Configuration.CurrentActiveCharacter == null)
+            {
+                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
+            }
+
+            CurrentCharacter = GetCurrentCharacter();
+
             Service.Tracker = new Tracker();
+            Service.Transactions = new Transactions();
         }
 
         public CharacterInfo GetCurrentCharacter()
@@ -67,8 +80,8 @@ namespace CurrencyTracker
             {
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
-                existingCharacter.PlayerDataFolder = dataFolderName;
                 CurrentCharacter = existingCharacter;
+                PluginLog.Debug("配置文件激活角色与当前角色一致");
             }
             else
             {
@@ -76,10 +89,10 @@ namespace CurrencyTracker
                 {
                     Name = playerName,
                     Server = serverName,
-                    PlayerDataFolder = dataFolderName
             };
                 Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
                 Directory.CreateDirectory(dataFolderName);
+                PluginLog.Debug("创建文件夹成功");
             }
 
             Configuration.Save();
