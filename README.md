@@ -21,7 +21,7 @@ https://github.com/AtmoOmen/DalamudPlugins
 
 # Currency Tracker
 
-Currency Tracker is a plugin designed to help you track the income and expenses of various in-game currencies (such as gold, military tickets, divine stones, etc.). It also provides features for custom queries and exporting data files.
+Currency Tracker is a plugin designed to help you track the income and expenses of various in-game currencies (such as Gil, Seal, Tomestone, etc.). It also provides features for custom queries and exporting data files.
 
 ![Currency Tracker](https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png)
 
