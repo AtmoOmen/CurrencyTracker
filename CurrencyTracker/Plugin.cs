@@ -17,7 +17,6 @@ namespace CurrencyTracker
         // 一些声明
         public string Name => "Currency Trakcer";
         public DalamudPluginInterface PluginInterface { get; init; }
-        public ChatGui ChatGui { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         private Main MainWindow { get; init; }
