@@ -15,6 +15,7 @@ namespace CurrencyTracker
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
         public bool ReverseSort { get; set; } = false;
         public bool TrackedInDuty { get; set; } = false;
+        public string SelectedLanguage { get; set; } = string.Empty;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

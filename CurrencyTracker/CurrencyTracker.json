@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.0.0.1",
+    "AssemblyVersion": "1.0.1.0",
     "Punchline": "追踪你的各项货币的收支记录",
     "Description": "追踪你的各项货币的收支记录",
     "InternalName": "CurrencyTracker",
@@ -16,7 +16,8 @@
         "货币"
     ],
     "ImageUrls": [
-        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png"
+        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",
+        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8
 }

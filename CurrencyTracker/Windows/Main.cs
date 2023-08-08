@@ -8,6 +8,7 @@ using System.Numerics;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Components;
 using System.IO;
+using CurrencyTracker.Manger;
 
 namespace CurrencyTracker.Windows;
 
@@ -35,8 +36,12 @@ public class Main : Window, IDisposable
 
     // 默认选中的选项
     int selectedOptionIndex = -1;
+    // 选择的语言
+    string playerLang = string.Empty;
+
     private Transactions? transactions = null!;
     private CurrencyInfo? currencyInfo = null!;
+    private readonly LanguageManager lang;
     private readonly List<string> options = new List<string>();
     private string? selectedCurrencyName;
     private List<TransactionsConvetor> currentTypeTransactions = new List<TransactionsConvetor>();
@@ -44,7 +49,7 @@ public class Main : Window, IDisposable
     public Dictionary<string, string> CurrencyName = new Dictionary<string, string> { };
 
 
-    public Main(Plugin plugin) : base("Currency Tracker 设置")
+    public Main(Plugin plugin) : base("Currency Tracker")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
         Flags |= ImGuiWindowFlags.NoScrollWithMouse;
@@ -62,6 +67,14 @@ public class Main : Window, IDisposable
                 options.Add(currencyName);
             }
         }
+
+        playerLang = plugin.Configuration.SelectedLanguage;
+        if (string.IsNullOrEmpty(playerLang))
+        {
+            playerLang = Service.ClientState.ClientLanguage.ToString();
+        }
+        lang = new LanguageManager();
+        lang.LoadLanguage(playerLang);
     }
 
     public void Dispose()
@@ -73,18 +86,18 @@ public class Main : Window, IDisposable
         if (!Service.ClientState.IsLoggedIn) return;
         transactions ??= new Transactions();
 
-        ImGui.TextColored(ImGuiColors.DalamudYellow, "记录筛选排序选项:");
-        if (ImGui.Checkbox("倒序排序    ", ref isReversed))
+        ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("ConfigLabel"));
+        if (ImGui.Checkbox(lang.GetText("ReverseSort"), ref isReversed))
         {
             Plugin.GetPlugin.Configuration.ReverseSort = isReversed;
             Plugin.GetPlugin.Configuration.Save();
         }
 
         ImGui.SameLine();
-        ImGui.Text("按时间聚类:");
+        ImGui.Text(lang.GetText("ClusterByTime"));
         ImGui.SameLine();
         ImGui.SetNextItemWidth(115);
-        if (ImGui.InputInt("小时", ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
+        if (ImGui.InputInt(lang.GetText("ClusterInterval"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             if (clusterHour <= 0)
             {
@@ -92,56 +105,84 @@ public class Main : Window, IDisposable
             }
         }
         ImGui.SameLine();
-        ImGuiComponents.HelpMarker($"当前设置: 以 {clusterHour}小时 为间隔显示数据");
+        ImGuiComponents.HelpMarker(lang.GetText("ClusterByTimeHelp1") + $"{clusterHour}" + lang.GetText("ClusterByTimeHelp2"));
         ImGui.SameLine();
         ImGui.Text("    ");
         ImGui.SameLine();
-        ImGui.Checkbox("收支筛选", ref isFilterEnabled);
+        ImGui.Checkbox(lang.GetText("FilterEnabled"), ref isFilterEnabled);
         if (isFilterEnabled)
         {
             ImGui.SameLine();
-            ImGui.Text("仅显示收支");
+            ImGui.Text(lang.GetText("FilterLabel"));
 
             ImGui.SameLine();
-            ImGui.RadioButton("大于##FilterMode", ref filterMode, 0);
+            ImGui.RadioButton(lang.GetText("Greater") + "##FilterMode", ref filterMode, 0);
             ImGui.SameLine();
-            ImGui.RadioButton("小于##FilterMode", ref filterMode, 1);
+            ImGui.RadioButton(lang.GetText("Less") + "##FilterMode", ref filterMode, 1);
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(130);
-            ImGui.InputInt("的记录##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue);
+            ImGui.InputInt(lang.GetText("FilterValueLabel") + "##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue);
         }
 
-        if (ImGui.Checkbox("记录副本内数据", ref isTrackedinDuty))
+        if (ImGui.Checkbox(lang.GetText("TrackInDuty"), ref isTrackedinDuty))
         {
             Plugin.GetPlugin.Configuration.TrackedInDuty = isTrackedinDuty;
             Plugin.GetPlugin.Configuration.Save();
         }
-        ImGuiComponents.HelpMarker("部分副本、特殊场景探索中会给予货币奖励\n插件默认当玩家在副本、特殊场景探索中时暂停记录，等待玩家退出它们时再计算期间货币的总增减\n" +
-            "你可以通过开启本项目关闭此功能\n\n注: 这可能会使插件记录大量小额数据，使得记录量大幅增加");
+        ImGuiComponents.HelpMarker(lang.GetText("TrackInDutyHelp"));
         ImGui.SameLine();
         ImGui.Text("    ");
         ImGui.SameLine();
-        ImGui.Text("每页显示记录数:");
+        ImGui.Text(lang.GetText("TransactionsPerPage"));
         ImGui.SameLine();
         ImGui.SetNextItemWidth(120);
         ImGui.InputInt("", ref transactionsPerPage);
         ImGui.SameLine();
         ImGui.Text("            ");
+
+
+        // 语言选项 Language Options
+        ImGui.SameLine();
+        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 305);
+        if (ImGui.Button(lang.GetText("Languages")))
+        {
+            ImGui.OpenPopup(str_id: "LanguagesList");
+        }
+        if (ImGui.BeginPopup("LanguagesList"))
+        {
+            if (ImGui.Button("English"))
+            {
+                lang.LoadLanguage("English");
+                playerLang = "English";
+                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
+                Plugin.GetPlugin.Configuration.Save();
+            }
+            if (ImGui.Button("Simplified Chinese/简体中文"))
+            {
+                lang.LoadLanguage("ChineseSimplified");
+                playerLang = "ChineseSimplified";
+                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
+                Plugin.GetPlugin.Configuration.Save();
+            }
+            ImGui.EndCombo();
+        }
+
+
         ImGui.SameLine();
         ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 200);
-        if (ImGui.Button("导出当前记录为CSV文件"))
+        if (ImGui.Button(lang.GetText("ExportCsv")))
         {
             ImGui.OpenPopup(str_id: "ExportFileRename");
         }
 
         if (ImGui.BeginPopup("ExportFileRename"))
         {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, "请输入文件名: (按Enter键确认)");
-            ImGui.Text("文件名: ");
+            ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("FileRenameLabel"));
+            ImGui.Text(lang.GetText("FileRenameLabel1"));
             ImGui.SameLine();
             ImGui.SetNextItemWidth(200);
-            if (ImGui.InputText($"_{selectedCurrencyName}_当前时间.csv", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputText($"_{selectedCurrencyName}_" + lang.GetText("FileRenameLabel2") + ".csv", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if(selectedCurrencyName != null)
                 {
@@ -149,20 +190,19 @@ public class Main : Window, IDisposable
                 }
                 else
                 {
-                    Service.Chat.Print("导出CSV文件错误: 当前未选中任何货币类型");
+                    Service.Chat.Print(lang.GetText("ExportCsvMessage"));
                     return;
                 }
             }
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker("注1: 为避免错误，请勿输入过长的文件名\n注2: 导出的数据将会应用当前所启用的一切筛选条件(不包含分页)");
+            ImGuiComponents.HelpMarker(lang.GetText("FileRenameHelp"));
             ImGui.EndCombo();
         }
 
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
-
-        ImGui.SetNextItemWidth(180);
+        ImGui.SetNextItemWidth(240);
         if (ImGui.ListBox("", ref selectedOptionIndex, options.ToArray(), options.Count, 15))
         {
             selectedCurrencyName = options[selectedOptionIndex];
@@ -199,25 +239,25 @@ public class Main : Window, IDisposable
 
                 // 尝试用一种奇异的方式使这个翻页组件居中
                 ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
-                if (ImGui.Button("上一页") && currentPage > 0)
+                if (ImGui.Button(lang.GetText("PreviousPage")) && currentPage > 0)
                 {
                     currentPage--;
                 }
                 ImGui.SameLine();
-                ImGui.Text($"第 {currentPage + 1} 页 / 共 {pageCount} 页");
+                ImGui.Text(lang.GetText("Di")+ $"{currentPage + 1}" + lang.GetText("Page") + " / " + lang.GetText("Gong") + $"{pageCount}" + lang.GetText("Page"));
                 ImGui.SameLine();
-                if (ImGui.Button("下一页") && currentPage < pageCount - 1)
+                if (ImGui.Button(lang.GetText("NextPage")) && currentPage < pageCount - 1)
                 {
                     currentPage++;
                 }
                 ImGui.Separator();
 
-                ImGui.Columns(3, "MoneyLogColumns");
-                ImGui.Text("时间");
+                ImGui.Columns(3, "LogColumns");
+                ImGui.Text(lang.GetText("Column"));
                 ImGui.NextColumn();
-                ImGui.Text("货币数");
+                ImGui.Text(lang.GetText("Column1"));
                 ImGui.NextColumn();
-                ImGui.Text("收支");
+                ImGui.Text(lang.GetText("Column2"));
                 ImGui.NextColumn();
                 ImGui.Separator();
 
@@ -261,7 +301,7 @@ public class Main : Window, IDisposable
     {
         if (transactions == null || transactions.Count == 0)
         {
-            Service.Chat.Print("导出CSV文件错误: 当前货币下无收支记录");
+            Service.Chat.Print(lang.GetText("ExportCsvMessage1"));
             return;
         }
 
@@ -275,32 +315,13 @@ public class Main : Window, IDisposable
 
         using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8)) // 指定 UTF-8 编码
         {
-            writer.WriteLine("时间,货币数,收支");
+            writer.WriteLine(lang.GetText("ExportCsvMessage2"));
             foreach (var transaction in transactions)
             {
                 string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change}";
                 writer.WriteLine(line);
             }
-            writer.WriteLine();
-            writer.WriteLine($"当前货币:,{selectedCurrencyName},");
-            if (Plugin.GetPlugin.Configuration.ReverseSort) writer.WriteLine("规则:倒序排列,,");
-            if (clusterHour > 0) writer.WriteLine($"规则:时间聚类,时间间隔:{clusterHour}小时,");
-            if (isFilterEnabled)
-            {
-                switch (filterMode)
-                {
-                    case 0:
-                        writer.WriteLine($"规则:收支筛选,显示大于{filterValue}的记录,");
-                        break;
-                    case 1:
-                        writer.WriteLine($"规则:收支筛选,显示小于{filterValue}的记录,");
-                        break;
-                    default:
-                        writer.WriteLine($"规则:收支筛选,筛选模式非法请上报,");
-                        break;
-                }
-            }
         }
-        Service.Chat.Print($"已导出CSV文件至: {filePath}");
+        Service.Chat.Print(lang.GetText("ExportCsvMessage3") + $"{filePath}");
     }
 }

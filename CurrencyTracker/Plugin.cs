@@ -14,7 +14,6 @@ namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        // 一些声明
         public string Name => "Currency Trakcer";
         public DalamudPluginInterface PluginInterface { get; init; }
         public Configuration Configuration { get; init; }
@@ -23,9 +22,11 @@ namespace CurrencyTracker
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin GetPlugin = null!;  // 插件的静态实例
 
+
         // 插件初始化时执行的代码部分
         public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
         {
+            
             GetPlugin = this;
             Service.Initialize(pluginInterface);
 
