@@ -37,8 +37,12 @@ namespace CurrencyTracker.Manager
                     });
                 }
 
-                clusteredTransactions[clusterTime].Amount += transaction.Amount;
                 clusteredTransactions[clusterTime].Change += transaction.Change;
+
+                if (clusteredTransactions[clusterTime].TimeStamp <= transaction.TimeStamp)
+                {
+                    clusteredTransactions[clusterTime].Amount = transaction.Amount;
+                }
             }
 
             return clusteredTransactions.Values.ToList();

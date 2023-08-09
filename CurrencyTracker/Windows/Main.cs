@@ -72,6 +72,11 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(playerLang))
         {
             playerLang = Service.ClientState.ClientLanguage.ToString();
+            // Not Supported Languages => English
+            if(playerLang != "ChineseSimplified" && playerLang != "English")
+            {
+                playerLang = "English";
+            }
         }
         lang = new LanguageManager();
         lang.LoadLanguage(playerLang);
@@ -85,6 +90,9 @@ public class Main : Window, IDisposable
     {
         if (!Service.ClientState.IsLoggedIn) return;
         transactions ??= new Transactions();
+
+        ImGui.SetNextWindowSizeConstraints(new Vector2(ImGui.GetWindowWidth(), 500), new Vector2(ImGui.GetWindowWidth(), 500));
+
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("ConfigLabel"));
         if (ImGui.Checkbox(lang.GetText("ReverseSort"), ref isReversed))
@@ -139,38 +147,9 @@ public class Main : Window, IDisposable
         ImGui.SetNextItemWidth(120);
         ImGui.InputInt("", ref transactionsPerPage);
         ImGui.SameLine();
-        ImGui.Text("            ");
-
-
-        // 语言选项 Language Options
-        ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 305);
-        if (ImGui.Button(lang.GetText("Languages")))
-        {
-            ImGui.OpenPopup(str_id: "LanguagesList");
-        }
-        if (ImGui.BeginPopup("LanguagesList"))
-        {
-            if (ImGui.Button("English"))
-            {
-                lang.LoadLanguage("English");
-                playerLang = "English";
-                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
-                Plugin.GetPlugin.Configuration.Save();
-            }
-            if (ImGui.Button("Simplified Chinese/简体中文"))
-            {
-                lang.LoadLanguage("ChineseSimplified");
-                playerLang = "ChineseSimplified";
-                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
-                Plugin.GetPlugin.Configuration.Save();
-            }
-            ImGui.EndCombo();
-        }
-
+        ImGui.Text("    ");
 
         ImGui.SameLine();
-        ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 200);
         if (ImGui.Button(lang.GetText("ExportCsv")))
         {
             ImGui.OpenPopup(str_id: "ExportFileRename");
@@ -184,7 +163,7 @@ public class Main : Window, IDisposable
             ImGui.SetNextItemWidth(200);
             if (ImGui.InputText($"_{selectedCurrencyName}_" + lang.GetText("FileRenameLabel2") + ".csv", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
-                if(selectedCurrencyName != null)
+                if (selectedCurrencyName != null)
                 {
                     ExportToCsv(currentTypeTransactions, fileName);
                 }
@@ -199,17 +178,44 @@ public class Main : Window, IDisposable
             ImGui.EndCombo();
         }
 
+
+        // 语言选项 Language Options
+        ImGui.SameLine();
+        if (ImGui.Button("Languages"))
+        {
+            ImGui.OpenPopup(str_id: "LanguagesList");
+        }
+        if (ImGui.BeginPopup("LanguagesList"))
+        {
+            if (ImGui.Button("English"))
+            {
+                lang.LoadLanguage("English");
+                playerLang = "English";
+                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
+                Plugin.GetPlugin.Configuration.Save();
+            }
+            if (ImGui.Button("简体中文/Simplified Chinese"))
+            {
+                lang.LoadLanguage("ChineseSimplified");
+                playerLang = "ChineseSimplified";
+                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
+                Plugin.GetPlugin.Configuration.Save();
+            }
+            ImGui.EndCombo();
+        }
+        
+
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
         ImGui.SetNextItemWidth(240);
-        if (ImGui.ListBox("", ref selectedOptionIndex, options.ToArray(), options.Count, 15))
+        if (ImGui.ListBox("", ref selectedOptionIndex, options.ToArray(), options.Count, 19))
         {
             selectedCurrencyName = options[selectedOptionIndex];
         }
 
         // 获取列表框高度再加一些奇异搞笑的处理以让它看起来真的和列表框一样高
-        float ListBoxHeight = ImGui.GetFrameHeight() * 15 - 15;
+        float ListBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
         Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ListBoxHeight);
         ImGui.SameLine();
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
