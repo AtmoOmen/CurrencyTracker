@@ -47,7 +47,7 @@ namespace CurrencyTracker.Manager
         private void UpdateCurrenciesTimer()
         {
             currencyInfo ??= new CurrencyInfo();
-            Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(2500), 0, cancellationTokenSource.Token);
+            Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(500), 0, cancellationTokenSource.Token);
 
             if (!Service.ClientState.IsLoggedIn) return;
 
@@ -55,6 +55,7 @@ namespace CurrencyTracker.Manager
             {
                 if (IsBoundByDuty()) return;
             }
+
 
             foreach (var currency in CurrencyType)
             {
@@ -68,6 +69,17 @@ namespace CurrencyTracker.Manager
                 }
 
             }
+            foreach(var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
+            {
+                if (Plugin.GetPlugin.Configuration.CustomCurrecies.TryGetValue(currency, out uint currencyID))
+                {
+                    if (currency != "未知货币" && currency != null)
+                    {
+                        CheckCurrency(currency, currencyID);
+                    }
+                }
+            }
+
         }
 
         private void CheckCurrency(string currencyName, uint currencyID)
@@ -76,21 +88,40 @@ namespace CurrencyTracker.Manager
             transactions ??= new Transactions();
             TransactionsConvetor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
+            uint locationKey = Service.ClientState.TerritoryType;
+            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : "未知区域";
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;
+                // 检查金额变化
                 if (currencyChange == 0)
                 {
                     return;
                 }
                 else
                 {
-                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange);
+                    // 检查是否启用副本内最小记录值
+                    if (Plugin.GetPlugin.Configuration.MinTrackValue != 0)
+                    {
+                        // 检查是否在副本里
+                        if (IsBoundByDuty())
+                        {
+                            // 检查变化量是否大于等于设定的最小记录值
+                            if (Math.Abs(currencyChange) >= Plugin.GetPlugin.Configuration.MinTrackValue)
+                            {
+                                transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                            }
+                            else return;
+                        }
+                        else transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                    }
+                    else transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
                 }
             }
+            // 如果 latestTransaction 为空，则代表不存在该货币种类的数据文件，创建新的数据文件
             else
             {
-                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount);
+                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName);
             }
         }
 

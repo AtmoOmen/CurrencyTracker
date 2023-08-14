@@ -1,3 +1,5 @@
+using CurrencyTracker.Manger;
+using CurrencyTracker.Windows;
 using Dalamud.Logging;
 using System;
 using System.Collections.Generic;
@@ -8,21 +10,25 @@ namespace CurrencyTracker.Manager
 {
     public class Transactions
     {
-        public Configuration? Configuration { get; set; }
         private TransactionsConvetor? transactionsConvetor;
-        // 临时存放单一交易记录
-        private List<TransactionsConvetor> temporarySingleTransactionList = new List<TransactionsConvetor>();
-        // 存放单种货币的所有交易记录
-        public List<TransactionsConvetor> transactionsList = new List<TransactionsConvetor>();
-        // 存放单种货币的最新一条交易记录
-        public List<TransactionsConvetor> singleTransactionList = new List<TransactionsConvetor>();
-        // 存放玩家数据文件夹路径
+        private readonly List<TransactionsConvetor> temporarySingleTransactionList = new List<TransactionsConvetor>();
+        private LanguageManager? lang;
         public string PlayerDataFolder = string.Empty;
 
-        // 按时间聚类
+        public void RemoveTransactions(string CurrencyName, List<TransactionsConvetor> transactionsToRemove)
+        {
+            transactionsConvetor ??= new TransactionsConvetor();
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var allTransactions = TransactionsConvetor.FromFile(filePath, TransactionsConvetor.FromFileLine);
+            allTransactions.RemoveAll(transaction => transactionsToRemove.Contains(transaction));
+            transactionsConvetor.WriteTransactionsToFile(filePath, allTransactions);
+        }
+
         public List<TransactionsConvetor> ClusterTransactionsByTime(List<TransactionsConvetor> transactions, TimeSpan interval)
         {
-            Dictionary<DateTime, TransactionsConvetor> clusteredTransactions = new Dictionary<DateTime, TransactionsConvetor>();
+            lang = new LanguageManager();
+            lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+            var clusteredTransactions = new Dictionary<DateTime, TransactionsConvetor>();
 
             foreach (var transaction in transactions)
             {
@@ -33,7 +39,8 @@ namespace CurrencyTracker.Manager
                     {
                         TimeStamp = clusterTime,
                         Amount = 0,
-                        Change = 0
+                        Change = 0,
+                        LocationName = lang.GetText("UnknownLocation")
                     });
                 }
 
@@ -48,23 +55,18 @@ namespace CurrencyTracker.Manager
             return clusteredTransactions.Values.ToList();
         }
 
-
-        // 从文件加载全部的交易记录
         public List<TransactionsConvetor> LoadAllTransactions(string CurrencyName)
         {
             List<TransactionsConvetor> allTransactions = new List<TransactionsConvetor>();
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-
+            string playerDataFolder = Path.Combine(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
             PlayerDataFolder = playerDataFolder;
-
-            string filePath = Path.Join(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             try
             {
-                // 提前检查文件是否存在，如果不存在直接返回空列表
                 if (!File.Exists(filePath))
                 {
                     return allTransactions;
@@ -81,51 +83,41 @@ namespace CurrencyTracker.Manager
             {
                 PluginLog.Debug("从数据文件中获取全部交易记录时出现错误: " + ex.Message);
             }
+
             if (Plugin.GetPlugin.Configuration.ReverseSort)
             {
                 allTransactions.Reverse();
-                return allTransactions;
             }
+
             return allTransactions;
-            
         }
 
-        // 从文件加载最新一条交易记录
         public TransactionsConvetor LoadLatestSingleTransaction(string CurrencyName)
         {
+            lang = new LanguageManager();
+            lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
             transactionsConvetor ??= new TransactionsConvetor();
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-
+            string playerDataFolder = Path.Combine(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
             PlayerDataFolder = playerDataFolder;
-
-            string filePath = Path.Join(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             List<TransactionsConvetor> allTransactions = TransactionsConvetor.FromFile(filePath, TransactionsConvetor.FromFileLine);
 
-            TransactionsConvetor latestTransaction = allTransactions.LastOrDefault();
+            TransactionsConvetor latestTransaction = allTransactions.LastOrDefault() ?? new TransactionsConvetor
+            {
+                TimeStamp = DateTime.Now,
+                Amount = 0,
+                Change = 0,
+                LocationName = lang.GetText("UnknownLocation")
+            };
 
-            if (latestTransaction != null)
-            {
-                return latestTransaction;
-            }
-            else
-            {
-                return new TransactionsConvetor
-                {
-                    TimeStamp = DateTime.Now,
-                    Amount = 0,
-                    Change = 0
-                };
-            }
+            return latestTransaction;
         }
 
-
-
-        // 追加交易记录
-        public void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change)
+        public void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName)
         {
             transactionsConvetor ??= new TransactionsConvetor();
             var singleTransaction = new TransactionsConvetor
@@ -133,34 +125,28 @@ namespace CurrencyTracker.Manager
                 TimeStamp = Timestamp,
                 CurrencyName = CurrencyName,
                 Amount = Amount,
-                Change = Change
+                Change = Change,
+                LocationName = LocationName
             };
             temporarySingleTransactionList.Add(singleTransaction);
-
-            string filePath = Path.Join(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             singleTransaction.AppendTransactionToFile(filePath, temporarySingleTransactionList);
-
             temporarySingleTransactionList.Clear();
         }
 
-        // 添加交易记录
-        public void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change)
+        public void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName)
         {
-
             var Transaction = new TransactionsConvetor
             {
                 TimeStamp = Timestamp,
                 CurrencyName = CurrencyName,
                 Amount = Amount,
-                Change = Change
+                Change = Change,
+                LocationName = LocationName
             };
             temporarySingleTransactionList.Add(Transaction);
-
-            string filePath = Path.Join(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             Transaction.WriteTransactionsToFile(filePath, temporarySingleTransactionList);
-
             temporarySingleTransactionList.Clear();
         }
     }

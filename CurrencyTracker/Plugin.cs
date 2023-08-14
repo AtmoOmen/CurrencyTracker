@@ -6,6 +6,7 @@ using System.IO;
 using Dalamud.Interface.Windowing;
 using CurrencyTracker.Windows;
 using CurrencyTracker.Manager;
+using Lumina.Excel.GeneratedSheets;
 using System.Linq;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,13 @@ namespace CurrencyTracker
         public WindowSystem WindowSystem = new("CurrencyTracker");
         private Main MainWindow { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
-        public static Plugin GetPlugin = null!;  // 插件的静态实例
+        public static Plugin GetPlugin = null!;
+
+        // 测试用地名字典
+        internal Dictionary<uint, string> TerritoryNames = new();
+        internal Dictionary<uint, string> ItemNames = new();
+
+
 
 
         // 插件初始化时执行的代码部分
@@ -47,6 +54,20 @@ namespace CurrencyTracker
 
             Service.Tracker = new Tracker();
             Service.Transactions = new Transactions();
+
+            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
+                .Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
+                .ToDictionary(
+                    x => x.RowId,
+                    x => $"{x.PlaceName?.Value?.Name}");
+
+            ItemNames = Service.DataManager.GetExcelSheet<Item>()
+                .Where(x => x.Name?.ToString().Length > 0)
+                .ToDictionary(
+                    x => x.RowId,
+                    x => $"{x.Name}");
+
+
             Service.ClientState.Login += isLogin;
         }
 

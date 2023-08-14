@@ -13,6 +13,7 @@ public class TransactionsConvetor
     public DateTime TimeStamp { get; set; } // 时间戳
     public long Change { get; set; } // 变化量
     public long Amount { get; set; } // 总金额
+    public string LocationName { get; set; } = string.Empty;
 
     // 将字典改变为字符串，主界面显示数据用
     public override string ToString()
@@ -23,8 +24,11 @@ public class TransactionsConvetor
         sb.Append(Amount.ToString("#,##0"));
         sb.Append("\t ");
         sb.Append(Change.ToString("+ #,##0;- #,##0;0"));
+        sb.Append("\t ");
+        sb.Append(LocationName);
         return sb.ToString();
     }
+
 
     // 将字典改变为字符串，存储至数据文件
     public string ToFileLine()
@@ -35,20 +39,37 @@ public class TransactionsConvetor
         sb.Append(Amount);
         sb.Append(";");
         sb.Append(Change);
+        sb.Append(";");
+        sb.Append(LocationName);
         return sb.ToString();
     }
+
 
     // 解析文件中的一行数据
     public static TransactionsConvetor FromFileLine(string line)
     {
         string[] parts = line.Split(";");
-        return new TransactionsConvetor
+
+        TransactionsConvetor transaction = new TransactionsConvetor
         {
             TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal),
             Amount = Convert.ToInt64(parts[1]),
             Change = Convert.ToInt64(parts[2])
         };
+
+        if (parts.Length > 3) // Check if LocationName exists in the line
+        {
+            transaction.LocationName = parts[3];
+        }
+        else
+        {
+            transaction.LocationName = "未知区域"; // Set LocationName to "未知区域" for old records
+        }
+
+        return transaction;
     }
+
+
 
     // 解析整个数据文件
     public static List<TransactionsConvetor> FromFile(string filePath, Func<string, TransactionsConvetor> parseLine)

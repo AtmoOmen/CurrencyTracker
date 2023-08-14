@@ -6,6 +6,7 @@ using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using CurrencyTracker.Manager;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace CurrencyTracker;
 
