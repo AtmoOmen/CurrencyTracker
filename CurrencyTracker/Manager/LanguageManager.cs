@@ -12,7 +12,7 @@ namespace CurrencyTracker.Manger
     public class LanguageManager
     {
         private Dictionary<string, Dictionary<string, string>> languageResources;
-        private string currentLanguage;
+        private string? currentLanguage;
 
         public LanguageManager()
         {
