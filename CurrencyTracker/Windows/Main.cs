@@ -636,7 +636,7 @@ public class Main : Window, IDisposable
         string finalFileName = $"{FileName}_{selectedCurrencyName}_{NowTime}.csv";
         string filePath = Path.Join(playerDataFolder ?? "", finalFileName);
 
-        using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8)) // 指定 UTF-8 编码
+        using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
 #pragma warning disable CS8602 // 解引用可能出现空引用。
             writer.WriteLine(lang.GetText("ExportCsvMessage2"));
