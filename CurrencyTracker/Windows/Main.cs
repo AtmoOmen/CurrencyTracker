@@ -1,16 +1,17 @@
 using System;
-using System.Collections.Generic;
-using Dalamud.Interface.Colors;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
-using Dalamud.Interface.Windowing;
-using ImGuiNET;
 using System.Numerics;
-using CurrencyTracker.Manager;
-using Dalamud.Interface.Components;
 using System.IO;
-using CurrencyTracker.Manger;
+using System.Collections.Generic;
+using ImGuiNET;
 using Dalamud.Logging;
-
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Windowing;
+using Dalamud.Interface.Components;
+using CurrencyTracker.Manager;
+using CurrencyTracker.Manger;
 namespace CurrencyTracker.Windows;
 
 public class Main : Window, IDisposable
@@ -162,6 +163,8 @@ public class Main : Window, IDisposable
         CustomCurrencyToTrack();
         ImGui.SameLine();
         ExportToCSV();
+        ImGui.SameLine();
+        OpenDataFolder();
         ImGui.SameLine();
         LanguageSwitch();
 
@@ -329,20 +332,22 @@ public class Main : Window, IDisposable
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyToTrack()
     {
-        if (ImGui.Button("自定义货币追踪"))
+#pragma warning disable CS8602 // 解引用可能出现空引用。
+        if (ImGui.Button(lang.GetText("CustomCurrencyLabel")))
         {
-            ImGui.OpenPopup("AddModifiedCurrency");
+            ImGui.OpenPopup("CustomCurrency");
         }
-        if (ImGui.BeginPopup("AddModifiedCurrency"))
+#pragma warning restore CS8602 // 解引用可能出现空引用。
+        if (ImGui.BeginPopup("CustomCurrency"))
         {
 
-            ImGui.TextColored(ImGuiColors.DalamudYellow, "自定义货币追踪");
-            ImGuiComponents.HelpMarker("注:\n1.插件预设的19种货币不可更改\n2.你可以选择追踪物品，但请注意，在插件看来，即便增减为1也是增减，\n这可能导致大量收支为1的记录出现\n3.请尽量避免因为好奇而添加已经废弃的物品/货币，插件可能因此出现意料之外的错误\n3.删除货币并不会删除已有的数据文件，如有需要请自行删除");
-            ImGui.Text("当前已选择:");
-            if (ImGui.BeginCombo("", Plugin.GetPlugin.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : "请选择..."))
+            ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("CustomCurrencyLabel1"));
+            ImGuiComponents.HelpMarker(lang.GetText("CustomCurrencyHelp"));
+            ImGui.Text(lang.GetText("CustomCurrencyLabel2"));
+            if (ImGui.BeginCombo("", Plugin.GetPlugin.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : lang.GetText("CustomCurrencyLabel3")))
             {
                 ImGui.SetNextItemWidth(200f);
-                ImGui.InputTextWithHint("##selectflts", "搜索框", ref searchFilter, 50);
+                ImGui.InputTextWithHint("##selectflts", lang.GetText("CustomCurrencyLabel4"), ref searchFilter, 50);
                 ImGui.Separator();
 
                 foreach (var x in Plugin.GetPlugin.ItemNames)
@@ -371,19 +376,19 @@ public class Main : Window, IDisposable
 
                     if (ImGui.IsWindowAppearing() && customCurrency == x.Key)
                     {
-                        ImGui.SetScrollHereY(); // 在打开下拉框时将滚动条滚动到顶部
+                        ImGui.SetScrollHereY();
 
                     }
                 }
                 ImGui.EndCombo();
             }
 
-            if (ImGui.Button($"添加 {selected}"))
+            if (ImGui.Button(lang.GetText("Add") + $"{selected}"))
             {
 #pragma warning disable CS8604 // 引用类型参数可能为 null。
                 if (options.Contains(selected))
                 {
-                    Service.Chat.Print("添加失败，货币已存在");
+                    Service.Chat.Print(lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
@@ -395,12 +400,12 @@ public class Main : Window, IDisposable
 
             }
             ImGui.SameLine();
-            if (ImGui.Button($"删除 {selected}"))
+            if (ImGui.Button(lang.GetText("Delete") + $"{selected}"))
             {
 #pragma warning disable CS8604 // 引用类型参数可能为 null。
                 if (!options.Contains(selected))
                 {
-                    Service.Chat.Print("删除失败，货币不存在");
+                    Service.Chat.Print(lang.GetText("CustomCurrencyHelp2"));
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
@@ -444,6 +449,57 @@ public class Main : Window, IDisposable
             ImGuiComponents.HelpMarker(lang.GetText("FileRenameHelp"));
             ImGui.EndCombo();
         }
+    }
+
+    // 打开数据文件夹 Open Folder Containing Data Files
+    private void OpenDataFolder()
+    {
+#pragma warning disable CS8602 // 解引用可能出现空引用。
+        if (ImGui.Button(lang.GetText("OpenDataFolder")))
+        {
+            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+            string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" \"{playerDataFolder}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = playerDataFolder
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = playerDataFolder
+                    });
+                }
+                else
+                {
+                    PluginLog.Error("不受支持的操作系统 / Unsupported Operating System");
+                }
+            }
+            catch (Exception ex)
+            {
+                PluginLog.Error("错误 / Error :" + ex.Message);
+            }
+        }
+#pragma warning restore CS8602 // 解引用可能出现空引用。
     }
 
     // 界面语言切换功能 UI Language Switch

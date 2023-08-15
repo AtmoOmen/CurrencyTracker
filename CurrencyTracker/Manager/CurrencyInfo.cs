@@ -34,12 +34,6 @@ public class CurrencyInfo : IDisposable
         { "LimitedTomestone", GetLimitedTomestoneId() }
     };
 
-    // 存储用户自定义货币ID的字典（string为用户自定义的名称）
-    public Dictionary<string, uint> modiefiedCurrecies = new Dictionary<string, uint>
-    {
-
-    };
-
     // 传入货币ID后，获取货币于当前语言环境的名称
     public string CurrencyLocalName(uint currencyID)
     {

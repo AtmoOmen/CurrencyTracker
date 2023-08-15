@@ -66,6 +66,17 @@ namespace CurrencyTracker.Manger
                         { "Column2", "收支" },
                         { "Column3", "地点" },
                         { "UnknownLocation", "未知区域" },
+                        { "CustomCurrencyLabel", "自定义货币追踪" },
+                        { "CustomCurrencyHelp", "注:\n1.插件预设的19种货币不可更改\n2.你可以选择追踪物品，但请注意，在插件看来，即便增减为1也是增减，\n这可能导致大量收支为1的记录出现\n3.请尽量避免因为好奇而添加已经废弃的物品/货币，插件可能因此出现意料之外的错误\n3.删除货币并不会删除已有的数据文件，如有需要请自行删除" },
+                        { "CustomCurrencyLabel1", "自定义货币追踪" },
+                        { "CustomCurrencyLabel2", "当前已选择:" },
+                        { "CustomCurrencyLabel3", "请选择..." },
+                        { "CustomCurrencyLabel4", "搜索框" },
+                        { "CustomCurrencyHelp1", "添加失败: 货币已存在" },
+                        { "CustomCurrencyHelp2", "删除失败: 货币不存在" },
+                        { "Add", "添加" },
+                        { "Delete", "删除" },
+                        { "OpenDataFolder", "打开数据文件夹" }
                     }
                 },
 
@@ -117,6 +128,17 @@ namespace CurrencyTracker.Manger
                         { "Column2", "Change" },
                         { "Column3", "Location" },
                         { "UnknownLocation", "Unknown" },
+                        { "CustomCurrencyLabel", "Custom Tracker" },
+                        { "CustomCurrencyHelp", "Note:\n1. The 19 currencies preset in the plugin cannot be changed\n2. You can choose to track items, but please be aware that in the plugin's view, even if the change is 1, it is still a change,\n which may result in a large number of records with changes of 1 appearing\n3. Please try to avoid adding items/currencies that have been deprecated out of curiosity, the plugin may make unexpected errors as a result\n3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary." },
+                        { "CustomCurrencyLabel1", "Custom Currency Tracker" },
+                        { "CustomCurrencyLabel2", "Currently Selected:" },
+                        { "CustomCurrencyLabel3", "Select a currency..." },
+                        { "CustomCurrencyLabel4", "Search Filter" },
+                        { "CustomCurrencyHelp1", "Fail to Add: The Currency You Selected Has Alreadey Existed" },
+                        { "CustomCurrencyHelp2", "Fail to Delete: The Currency You Selected Doesn't Existed" },
+                        { "Add", "Add " },
+                        { "Delete", "Delete " },
+                        { "OpenDataFolder", "Open Data Folder" }
                     }
                 }
             };

@@ -23,10 +23,11 @@ namespace CurrencyTracker
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin GetPlugin = null!;
 
-        // 测试用地名字典
+        // 地名/物品名字典 Ditionaries Containing Location Names and Item Names
         internal Dictionary<uint, string> TerritoryNames = new();
         internal Dictionary<uint, string> ItemNames = new();
 
+        private string playerLang = string.Empty;
 
 
 
@@ -89,7 +90,7 @@ namespace CurrencyTracker
 
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
-                throw new InvalidOperationException("无法获取当前角色");
+                throw new InvalidOperationException("无法加载当前角色信息 Can't Load Current Character Info");
             }
 
             if (Configuration.CurrentActiveCharacter == null)
@@ -103,7 +104,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                PluginLog.Debug("配置文件激活角色与当前角色一致");
+                PluginLog.Debug("配置文件激活角色与当前角色一致 Configuration file activation character matches current character");
             }
             else
             {
@@ -111,10 +112,22 @@ namespace CurrencyTracker
                 {
                     Name = playerName,
                     Server = serverName,
-            };
+                };
                 Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
                 Directory.CreateDirectory(dataFolderName);
-                PluginLog.Debug("创建文件夹成功");
+
+                playerLang = Configuration.SelectedLanguage;
+                if (string.IsNullOrEmpty(playerLang))
+                {
+                    playerLang = Service.ClientState.ClientLanguage.ToString();
+                    // 不受支持的语言 => 英语 Not Supported Languages => English
+                    if (playerLang != "ChineseSimplified" && playerLang != "English")
+                    {
+                        playerLang = "English";
+                    }
+                    Configuration.SelectedLanguage = playerLang;
+                }
+                PluginLog.Debug("创建文件夹成功 Successfully Create Directory");
             }
 
             Configuration.Save();

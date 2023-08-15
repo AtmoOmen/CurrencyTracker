@@ -1,3 +1,4 @@
+using CurrencyTracker.Manger;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Logging;
 using System;
@@ -29,6 +30,7 @@ namespace CurrencyTracker.Manager
         private readonly Stopwatch timer = new Stopwatch();
         private CurrencyInfo? currencyInfo = new CurrencyInfo();
         private Transactions? transactions = new Transactions();
+        private LanguageManager lang;
 
         public static bool IsBoundByDuty()
         {
@@ -86,10 +88,12 @@ namespace CurrencyTracker.Manager
         {
             currencyInfo ??= new CurrencyInfo();
             transactions ??= new Transactions();
+            lang = new LanguageManager();
+            lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
             TransactionsConvetor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : "未知区域";
+            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : lang.GetText("UnknownLocation");
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;

@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.IO;
 using Dalamud.Logging;
+using CurrencyTracker.Manger;
 
 namespace CurrencyTracker.Manager;
 
@@ -14,6 +15,7 @@ public class TransactionsConvetor
     public long Change { get; set; } // 变化量
     public long Amount { get; set; } // 总金额
     public string LocationName { get; set; } = string.Empty;
+
 
     // 将字典改变为字符串，主界面显示数据用
     public override string ToString()
@@ -48,6 +50,10 @@ public class TransactionsConvetor
     // 解析文件中的一行数据
     public static TransactionsConvetor FromFileLine(string line)
     {
+        LanguageManager lang;
+        lang = new LanguageManager();
+        lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+
         string[] parts = line.Split(";");
 
         TransactionsConvetor transaction = new TransactionsConvetor
@@ -57,13 +63,13 @@ public class TransactionsConvetor
             Change = Convert.ToInt64(parts[2])
         };
 
-        if (parts.Length > 3) // Check if LocationName exists in the line
+        if (parts.Length > 3)
         {
             transaction.LocationName = parts[3];
         }
         else
         {
-            transaction.LocationName = "未知区域"; // Set LocationName to "未知区域" for old records
+            transaction.LocationName = lang.GetText("UnknonLocation");
         }
 
         return transaction;
@@ -93,7 +99,7 @@ public class TransactionsConvetor
         }
         catch (Exception ex)
         {
-            PluginLog.Debug("解析整个数据文件时出现错误: " + ex.Message);
+            PluginLog.Debug("解析整个数据文件时出现错误 / Error parsing entire data file.: " + ex.Message);
         }
 
         return transactions;
@@ -118,7 +124,7 @@ public class TransactionsConvetor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug("将单个交易记录追加入数据文件时失败: " + ex.Message);
+            PluginLog.Debug("将单个交易记录追加入数据文件时失败 / Failure to add individual transaction to the data file retroactively: " + ex.Message);
         }
     }
 
@@ -145,7 +151,7 @@ public class TransactionsConvetor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug("将整个交易记录覆写进数据文件失败: " + ex.Message);
+            PluginLog.Debug("将整个交易记录覆写进数据文件失败 / Failed to overwrite the entire transactions to the data file: " + ex.Message);
         }
     }
 
