@@ -1,17 +1,17 @@
-using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Numerics;
-using System.IO;
-using System.Collections.Generic;
-using ImGuiNET;
-using Dalamud.Logging;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Windowing;
-using Dalamud.Interface.Components;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manger;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
+using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
+using ImGuiNET;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text;
 namespace CurrencyTracker.Windows;
 
 public class Main : Window, IDisposable
@@ -51,6 +51,13 @@ public class Main : Window, IDisposable
     private string? selectedCurrencyName;
     // 搜索框值 Search Filter
     private static string searchFilter = string.Empty;
+    // 可见范围内的起始索引
+    private int visibleStartIndex;
+    // 可见范围内的结束索引
+    private int visibleEndIndex;
+    // 合并的临界值
+    private int mergeThreshold = 0;
+
 
     private Transactions? transactions = null!;
     private TransactionsConvetor? transactionsConvetor = null!;
@@ -78,14 +85,14 @@ public class Main : Window, IDisposable
     private void Initialize(Plugin plugin)
     {
         transactions ??= new Transactions();
-        
+
         isReversed = plugin.Configuration.ReverseSort;
         isTrackedinDuty = plugin.Configuration.TrackedInDuty;
         minTrackValue = plugin.Configuration.MinTrackValue;
-        
+
         LoadOptions(plugin);
         LoadLanguage(plugin);
-        
+
     }
 
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
@@ -142,9 +149,9 @@ public class Main : Window, IDisposable
             FeaturesUnderTest();
         }
 
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("ConfigLabel"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
 
         ReverseSort();
         ImGui.SameLine();
@@ -161,6 +168,10 @@ public class Main : Window, IDisposable
         MinTrackChangeInDuty();
         ImGui.SameLine();
         CustomCurrencyToTrack();
+        ImGui.SameLine();
+        MergeTransactions();
+        ImGui.SameLine();
+        ClearExceptions();
         ImGui.SameLine();
         ExportToCSV();
         ImGui.SameLine();
@@ -179,30 +190,26 @@ public class Main : Window, IDisposable
     // 测试用功能区 Some features shown still under testing
     private void FeaturesUnderTest()
     {
-        if (ImGui.Button("移除所有异常记录"))
-        {
-            ClearExceptionRecords();
-        }
     }
 
     // 倒序排序 Reverse Sort
     private void ReverseSort()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         if (ImGui.Checkbox(lang.GetText("ReverseSort"), ref isReversed))
         {
             Plugin.GetPlugin.Configuration.ReverseSort = isReversed;
             Plugin.GetPlugin.Configuration.Save();
         }
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
     }
 
     // 时间聚类 Time Clustering
     private void TimeClustering()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         ImGui.Text(lang.GetText("ClusterByTime"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         ImGui.SameLine();
         ImGui.SetNextItemWidth(115);
         if (ImGui.InputInt(lang.GetText("ClusterInterval"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
@@ -219,9 +226,9 @@ public class Main : Window, IDisposable
     // 按收支数筛选 Sort By Change
     private void SortByChange()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         ImGui.Checkbox(lang.GetText("ChangeFilterEnabled"), ref isChangeFilterEnabled);
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         if (isChangeFilterEnabled)
         {
             ImGui.SameLine();
@@ -241,9 +248,9 @@ public class Main : Window, IDisposable
     // 按收支数筛选 Sort By Time
     private void SortByTime()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         ImGui.Checkbox(lang.GetText("FilterByTime") + "##TimeFilter", ref isTimeFilterEnabled);
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         if (isTimeFilterEnabled)
         {
             int startYear = filterEndDate.Year;
@@ -302,22 +309,22 @@ public class Main : Window, IDisposable
     // 是否在副本内记录数据 Track in Duty Switch
     private void TrackInDuty()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         if (ImGui.Checkbox(lang.GetText("TrackInDuty"), ref isTrackedinDuty))
         {
             Plugin.GetPlugin.Configuration.TrackedInDuty = isTrackedinDuty;
             Plugin.GetPlugin.Configuration.Save();
         }
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         ImGuiComponents.HelpMarker(lang.GetText("TrackInDutyHelp"));
     }
 
     // 副本内最小记录值 Minimum Change Permitted to Create a New Transaction When in Duty
     private void MinTrackChangeInDuty()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         ImGui.Text(lang.GetText("MinimumRecordValue"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         ImGui.SameLine();
         ImGui.SetNextItemWidth(135);
         if (ImGui.InputInt("##MinTrackValue", ref minTrackValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
@@ -332,12 +339,12 @@ public class Main : Window, IDisposable
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyToTrack()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         if (ImGui.Button(lang.GetText("CustomCurrencyLabel")))
         {
             ImGui.OpenPopup("CustomCurrency");
         }
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         if (ImGui.BeginPopup("CustomCurrency"))
         {
 
@@ -392,7 +399,7 @@ public class Main : Window, IDisposable
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
-                              // 配置保存一份
+                // 配置保存一份
                 Plugin.GetPlugin.Configuration.CustomCurrecies.Add(selected, customCurrency);
                 Plugin.GetPlugin.Configuration.CustomCurrencyType.Add(selected);
                 Plugin.GetPlugin.Configuration.Save();
@@ -418,15 +425,96 @@ public class Main : Window, IDisposable
         }
     }
 
+    // 按临界值合并记录 Merge Transactions By Threshold
+    private void MergeTransactions()
+    {
+        transactions ??= new Transactions();
+
+#pragma warning disable CS8602
+        if (ImGui.Button(lang.GetText("MergeTransactionsLabel")))
+        {
+            ImGui.OpenPopup("MergeTransactions");
+        }
+#pragma warning restore CS8602
+
+        if (ImGui.BeginPopup("MergeTransactions"))
+        {
+            ImGui.Text(lang.GetText("MergeTransactionsLabel1"));
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(150f);
+            ImGui.InputInt("##MergeThreshold", ref mergeThreshold, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
+            if (mergeThreshold < 0)
+            {
+                mergeThreshold = 0;
+            }
+
+            ImGui.SameLine();
+            if (ImGui.Button(lang.GetText("Confirm")))
+            {
+                if (!string.IsNullOrEmpty(selectedCurrencyName))
+                {
+                    if (mergeThreshold == 0)
+                    {
+                        Service.Chat.PrintError(lang.GetText("MergeTransactionsHelp"));
+                        return;
+                    }
+                    else
+                    {
+                        var mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, mergeThreshold);
+                        if (mergeCount > 0)
+                            Service.Chat.Print(lang.GetText("MergeTransactionsHelp1") + $"{mergeCount}" + lang.GetText("MergeTransactionsHelp2"));
+                        else
+                        {
+                            Service.Chat.PrintError(lang.GetText("TransactionsHelp"));
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Service.Chat.PrintError(lang.GetText("TransactionsHelp1"));
+                    return;
+                }
+            }
+
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(lang.GetText("MergeTransactionsHelp3")
+                + lang.GetText("MergeTransactionsHelp4")
+                + lang.GetText("TransactionsHelp2"));
+            ImGui.EndPopup();
+        }
+
+    }
+
+    // 清除异常记录 Clear Exceptional Transactions
+    private void ClearExceptions()
+    {
+#pragma warning disable CS8602
+        if (ImGui.Button(lang.GetText("ClearExTransactionsLabel")))
+        {
+            ImGui.OpenPopup("ClearExceptionNote");
+        }
+#pragma warning restore CS8602
+        if (ImGui.BeginPopup("ClearExceptionNote"))
+        {
+            if (ImGui.Button(lang.GetText("Confirm"))) ClearExceptionRecords();
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(lang.GetText("ClearExTransactionsHelp")
+                + lang.GetText("ClearExTransactionsHelp1")
+                + lang.GetText("TransactionsHelp2"));
+            ImGui.EndPopup();
+        }
+    }
+
     // 导出数据为.CSV文件 Export Transactions To a .csv File
     private void ExportToCSV()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         if (ImGui.Button(lang.GetText("ExportCsv")))
         {
             ImGui.OpenPopup(str_id: "ExportFileRename");
         }
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
         if (ImGui.BeginPopup("ExportFileRename"))
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("FileRenameLabel"));
@@ -454,7 +542,7 @@ public class Main : Window, IDisposable
     // 打开数据文件夹 Open Folder Containing Data Files
     private void OpenDataFolder()
     {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
         if (ImGui.Button(lang.GetText("OpenDataFolder")))
         {
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
@@ -499,7 +587,7 @@ public class Main : Window, IDisposable
                 PluginLog.Error("错误 / Error :" + ex.Message);
             }
         }
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
     }
 
     // 界面语言切换功能 UI Language Switch
@@ -513,18 +601,18 @@ public class Main : Window, IDisposable
         {
             if (ImGui.Button("English"))
             {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
                 lang.LoadLanguage("English");
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
                 playerLang = "English";
                 Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
                 Plugin.GetPlugin.Configuration.Save();
             }
             if (ImGui.Button("简体中文/Simplified Chinese"))
             {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
                 lang.LoadLanguage("ChineseSimplified");
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
                 playerLang = "ChineseSimplified";
                 Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
                 Plugin.GetPlugin.Configuration.Save();
@@ -546,17 +634,21 @@ public class Main : Window, IDisposable
     // 显示收支记录的表格子窗体 Childframe Used to Show Transactions in Form
     private void TransactionsChildframe()
     {
+        if (string.IsNullOrEmpty(selectedCurrencyName))
+            return;
+
         float ListBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
         Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ListBoxHeight);
 
         ImGui.SameLine();
+
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
         {
-            if (!string.IsNullOrEmpty(selectedCurrencyName))
+            if (currentPage == 0)
             {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
                 currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
 
                 if (clusterHour > 0)
                 {
@@ -565,77 +657,81 @@ public class Main : Window, IDisposable
                 }
 
                 if (isChangeFilterEnabled)
-                {
                     currentTypeTransactions = ApplyChangeFilter(currentTypeTransactions);
-                }
 
                 if (isTimeFilterEnabled)
-                {
                     currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
-                }
+            }
 
-                int pageCount = (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage);
-                currentPage = Math.Max(0, Math.Min(currentPage, pageCount - 1));
+            int pageCount = (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage);
+            if (pageCount > 0)
+            {
+                currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
+            }
+            else
+            {
+                return;
+            }
 
-                int startIndex = currentPage * transactionsPerPage;
-                int endIndex = Math.Min(startIndex + transactionsPerPage, currentTypeTransactions.Count);
+            int startIndex = currentPage * transactionsPerPage;
+            int endIndex = Math.Min(startIndex + transactionsPerPage, currentTypeTransactions.Count);
 
-                List<TransactionsConvetor> displayedTransactions = currentTypeTransactions.GetRange(startIndex, endIndex - startIndex);
+            List<TransactionsConvetor> displayedTransactions = currentTypeTransactions.GetRange(startIndex, endIndex - startIndex);
 
-                // 单页记录数
-#pragma warning disable CS8602 // 解引用可能出现空引用。
-                ImGui.Text(lang.GetText("TransactionsPerPage"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(120);
-                if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
-                {
-                    if (transactionsPerPage < 0) transactionsPerPage = 0;
-                }
+#pragma warning disable CS8602
+            ImGui.Text(lang.GetText("TransactionsPerPage"));
+#pragma warning restore CS8602
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(120);
+            if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
+                transactionsPerPage = Math.Max(transactionsPerPage, 0);
 
-                // 翻页组件
-                ImGui.SameLine();
-                ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
-                if (ImGui.Button(lang.GetText("PreviousPage")) && currentPage > 0)
-                {
-                    currentPage--;
-                }
-                ImGui.SameLine();
-                ImGui.Text(lang.GetText("Di") + $"{currentPage + 1}" + lang.GetText("Page") + " / " + lang.GetText("Gong") + $"{pageCount}" + lang.GetText("Page"));
-                ImGui.SameLine();
-                if (ImGui.Button(lang.GetText("NextPage")) && currentPage < pageCount - 1)
-                {
-                    currentPage++;
-                }
-                ImGui.Separator();
+            ImGui.SameLine();
+            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
+            if (ImGui.Button(lang.GetText("PreviousPage")) && currentPage > 0)
+                currentPage--;
 
-                ImGui.Columns(4, "LogColumns");
-                ImGui.Text(lang.GetText("Column"));
+            ImGui.SameLine();
+            ImGui.Text($"{lang.GetText("Di")}{currentPage + 1}{lang.GetText("Page")} / {lang.GetText("Gong")}{pageCount}{lang.GetText("Page")}");
+
+            ImGui.SameLine();
+            if (ImGui.Button(lang.GetText("NextPage")) && currentPage < pageCount - 1)
+                currentPage++;
+
+            visibleStartIndex = currentPage * transactionsPerPage;
+            visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
+
+            ImGui.Separator();
+
+            ImGui.Columns(4, "LogColumns");
+            ImGui.Text(lang.GetText("Column"));
+            ImGui.NextColumn();
+            ImGui.Text(lang.GetText("Column1"));
+            ImGui.NextColumn();
+            ImGui.Text(lang.GetText("Column2"));
+            ImGui.NextColumn();
+            ImGui.Text(lang.GetText("Column3"));
+            ImGui.NextColumn();
+            ImGui.Separator();
+
+            for (int i = visibleStartIndex; i < visibleEndIndex; i++)
+            {
+                var transaction = currentTypeTransactions[i];
+                ImGui.Text(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                 ImGui.NextColumn();
-                ImGui.Text(lang.GetText("Column1"));
+                ImGui.Text(transaction.Amount.ToString("#,##0"));
                 ImGui.NextColumn();
-                ImGui.Text(lang.GetText("Column2"));
+                ImGui.Text(transaction.Change.ToString("+ #,##0;- #,##0;0"));
                 ImGui.NextColumn();
-                ImGui.Text(lang.GetText("Column3"));
+                ImGui.Text(transaction.LocationName);
                 ImGui.NextColumn();
-                ImGui.Separator();
-
-                foreach (var transaction in displayedTransactions)
-                {
-                    ImGui.Text(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
-                    ImGui.NextColumn();
-                    ImGui.Text(transaction.Amount.ToString("#,##0"));
-                    ImGui.NextColumn();
-                    ImGui.Text(transaction.Change.ToString("+ #,##0;- #,##0;0"));
-                    ImGui.NextColumn();
-                    ImGui.Text(transaction.LocationName);
-                    ImGui.NextColumn();
-                }
             }
 
             ImGui.EndChildFrame();
         }
     }
+
+
 
 
 
@@ -678,9 +774,9 @@ public class Main : Window, IDisposable
     {
         if (transactions == null || transactions.Count == 0)
         {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
             Service.Chat.Print(lang.GetText("ExportCsvMessage1"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
             return;
         }
 
@@ -694,9 +790,9 @@ public class Main : Window, IDisposable
 
         using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
-#pragma warning disable CS8602 // 解引用可能出现空引用。
+#pragma warning disable CS8602
             writer.WriteLine(lang.GetText("ExportCsvMessage2"));
-#pragma warning restore CS8602 // 解引用可能出现空引用。
+#pragma warning restore CS8602
             foreach (var transaction in transactions)
             {
                 string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName}";
@@ -706,13 +802,15 @@ public class Main : Window, IDisposable
         Service.Chat.Print(lang.GetText("ExportCsvMessage3") + $"{filePath}");
     }
 
-    // 异常记录清除(测试用) Clear Exception Records(Still under Testing)
+    // 异常记录清除 Clear Exception Transactions
     private void ClearExceptionRecords()
-    { 
+    {
         transactionsConvetor = new TransactionsConvetor();
         if (string.IsNullOrEmpty(selectedCurrencyName))
         {
-            Service.Chat.Print("请选择一种货币类型。");
+#pragma warning disable CS8602
+            Service.Chat.PrintError(lang.GetText("TransactionsHelp1"));
+#pragma warning restore CS8602
             return;
         }
 
@@ -721,7 +819,6 @@ public class Main : Window, IDisposable
         string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
         string filePath = Path.Join(playerDataFolder ?? "", $"{selectedCurrencyName}.txt");
-        PluginLog.Debug($"当前读取文件路径: {filePath}");
 
         List<TransactionsConvetor> allTransactions = TransactionsConvetor.FromFile(filePath, TransactionsConvetor.FromFileLine);
         List<TransactionsConvetor> recordsToRemove = new List<TransactionsConvetor>();
@@ -732,7 +829,7 @@ public class Main : Window, IDisposable
 
             if (i == 0 && transaction.Change == transaction.Amount)
             {
-                continue; // 不清除第一条满足条件的记录
+                continue;
             }
 
             if (transaction.Change == 0 || transaction.Change == transaction.Amount)
@@ -748,13 +845,19 @@ public class Main : Window, IDisposable
                 allTransactions.Remove(record);
             }
 
-            // 将清除后的交易记录重新写入文件
             transactionsConvetor.WriteTransactionsToFile(filePath, allTransactions);
-            Service.Chat.Print($"已成功清除 {recordsToRemove.Count} 条异常记录。");
+#pragma warning disable CS8602
+            Service.Chat.Print(lang.GetText("ClearExTransactionsHelp2") + $"{recordsToRemove.Count}" + lang.GetText("ClearExTransactionsHelp3"));
+#pragma warning restore CS8602
         }
         else
         {
-            Service.Chat.Print("未找到符合条件的异常记录。");
+#pragma warning disable CS8602
+            Service.Chat.PrintError(lang.GetText("TransactionsHelp"));
+#pragma warning restore CS8602
         }
     }
+
+    
+
 }

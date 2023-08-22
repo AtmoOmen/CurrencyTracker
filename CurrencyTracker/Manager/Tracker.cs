@@ -39,7 +39,9 @@ namespace CurrencyTracker.Manager
                    Service.Condition[ConditionFlag.BoundByDuty95];
         }
 
+#pragma warning disable CS8618
         public Tracker()
+#pragma warning restore CS8618
         {
             UpdateCurrenciesTimer();
 

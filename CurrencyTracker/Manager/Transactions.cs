@@ -149,5 +149,49 @@ namespace CurrencyTracker.Manager
             Transaction.WriteTransactionsToFile(filePath, temporarySingleTransactionList);
             temporarySingleTransactionList.Clear();
         }
+
+        public int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold)
+        {
+            transactionsConvetor ??= new TransactionsConvetor();
+
+            var allTransactions = LoadAllTransactions(CurrencyName);
+
+            if (allTransactions.Count <= 1)
+            {
+                return 0;
+            }
+
+            var mergedTransactions = new List<TransactionsConvetor>();
+            int currentIndex = 0;
+            int mergedCount = 0;
+
+            while (currentIndex < allTransactions.Count)
+            {
+                var currentTransaction = allTransactions[currentIndex];
+                var nextIndex = currentIndex + 1;
+
+                while (nextIndex < allTransactions.Count &&
+                       currentTransaction.LocationName == allTransactions[nextIndex].LocationName &&
+                       Math.Abs(allTransactions[nextIndex].Change) < threshold)
+                {
+                    currentTransaction.Amount += allTransactions[nextIndex].Change;
+                    currentTransaction.Change += allTransactions[nextIndex].Change;
+                    currentTransaction.TimeStamp = allTransactions[nextIndex].TimeStamp;
+
+                    nextIndex++;
+                    mergedCount++;
+                }
+
+                mergedTransactions.Insert(0, currentTransaction);
+                currentIndex = nextIndex;
+            }
+
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            transactionsConvetor.WriteTransactionsToFile(filePath, mergedTransactions);
+
+            return mergedCount;
+        }
+
+
     }
 }

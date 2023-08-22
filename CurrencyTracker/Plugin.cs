@@ -56,17 +56,21 @@ namespace CurrencyTracker
             Service.Tracker = new Tracker();
             Service.Transactions = new Transactions();
 
+#pragma warning disable CS8604
             TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
                 .Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.PlaceName?.Value?.Name}");
+#pragma warning restore CS8604
 
+#pragma warning disable CS8604
             ItemNames = Service.DataManager.GetExcelSheet<Item>()
                 .Where(x => x.Name?.ToString().Length > 0)
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.Name}");
+#pragma warning restore CS8604
 
 
             Service.ClientState.Login += isLogin;
@@ -88,10 +92,12 @@ namespace CurrencyTracker
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
             var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
+#pragma warning disable CS8604
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
                 throw new InvalidOperationException("无法加载当前角色信息 Can't Load Current Character Info");
             }
+#pragma warning restore CS8604
 
             if (Configuration.CurrentActiveCharacter == null)
             {
