@@ -20,5 +20,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "(English / 简体中文)\n- Modified the way transactions are displayed, which now effectively reduces the performance consumption caused by large amounts of data\n  修改了记录的显示方式，现在可以有效降低数据量过大时造成的性能消耗\n- 从代码层面增加了完整的多语言支持\n  Implemented comprehensive multilingual support at the code level.\n- Added a function to merge transactions of the same location by threshold value\n  新增了按临界值合并相同地点记录的功能\n- Added a function to clear exceptional transactions\n  新增了移除异常记录的功能"
+    "Changelog": "(English / 简体中文)\n- Modified the way transactions are displayed, which now effectively reduces the performance consumption caused by large amounts of data\n  修改了记录的显示方式，现在可以有效降低数据量过大时造成的性能消耗\n- Added a function to merge transactions of the same location by threshold value\n  新增了按临界值合并相同地点记录的功能\n- Added a function to clear exceptional transactions\n  新增了移除异常记录的功能"
 }
