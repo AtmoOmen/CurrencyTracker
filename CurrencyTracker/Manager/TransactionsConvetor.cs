@@ -16,42 +16,19 @@ public class TransactionsConvetor
     public long Amount { get; set; } // 总金额
     public string LocationName { get; set; } = string.Empty;
 
-
-    // 将字典改变为字符串，主界面显示数据用
-    public override string ToString()
-    {
-        var sb = new StringBuilder();
-        sb.Append(TimeStamp);
-        sb.Append("\t ");
-        sb.Append(Amount.ToString("#,##0"));
-        sb.Append("\t ");
-        sb.Append(Change.ToString("+ #,##0;- #,##0;0"));
-        sb.Append("\t ");
-        sb.Append(LocationName);
-        return sb.ToString();
-    }
+    private static readonly LanguageManager lang = new LanguageManager();
 
 
     // 将字典改变为字符串，存储至数据文件
     public string ToFileLine()
     {
-        var sb = new StringBuilder();
-        sb.Append(TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture));
-        sb.Append(";");
-        sb.Append(Amount);
-        sb.Append(";");
-        sb.Append(Change);
-        sb.Append(";");
-        sb.Append(LocationName);
-        return sb.ToString();
+        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName}";
     }
 
 
     // 解析文件中的一行数据
     public static TransactionsConvetor FromFileLine(string line)
     {
-        LanguageManager lang;
-        lang = new LanguageManager();
         lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
 
         string[] parts = line.Split(";");

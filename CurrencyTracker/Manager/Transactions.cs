@@ -72,11 +72,11 @@ namespace CurrencyTracker.Manager
                     return allTransactions;
                 }
 
-                string[] lines = File.ReadAllLines(filePath);
-                foreach (string line in lines)
+                allTransactions = TransactionsConvetor.FromFile(filePath, TransactionsConvetor.FromFileLine);
+
+                if (Plugin.GetPlugin.Configuration.ReverseSort)
                 {
-                    TransactionsConvetor transaction = TransactionsConvetor.FromFileLine(line);
-                    allTransactions.Add(transaction);
+                    allTransactions.Reverse();
                 }
             }
             catch (Exception ex)
@@ -84,13 +84,9 @@ namespace CurrencyTracker.Manager
                 PluginLog.Debug("从数据文件中获取全部交易记录时出现错误: " + ex.Message);
             }
 
-            if (Plugin.GetPlugin.Configuration.ReverseSort)
-            {
-                allTransactions.Reverse();
-            }
-
             return allTransactions;
         }
+
 
         public TransactionsConvetor LoadLatestSingleTransaction(string CurrencyName)
         {
@@ -191,7 +187,5 @@ namespace CurrencyTracker.Manager
 
             return mergedCount;
         }
-
-
     }
 }

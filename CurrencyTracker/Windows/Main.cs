@@ -51,12 +51,11 @@ public class Main : Window, IDisposable
     private string? selectedCurrencyName;
     // 搜索框值 Search Filter
     private static string searchFilter = string.Empty;
-    // 可见范围内的起始索引
-    private int visibleStartIndex;
-    // 可见范围内的结束索引
-    private int visibleEndIndex;
-    // 合并的临界值
+    // 合并的临界值 Merge Threshold
     private int mergeThreshold = 0;
+    // 先前选择的货币名称 Previous Selected Currency Name
+    string previouslySelectedCurrencyName = string.Empty;
+
 
 
     private Transactions? transactions = null!;
@@ -637,8 +636,16 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(selectedCurrencyName))
             return;
 
-        float ListBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
-        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ListBoxHeight);
+        if (selectedCurrencyName != previouslySelectedCurrencyName)
+        {
+#pragma warning disable CS8602
+            currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+#pragma warning restore CS8602
+            previouslySelectedCurrencyName = selectedCurrencyName;
+        }
+
+        float listBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
+        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, listBoxHeight);
 
         ImGui.SameLine();
 
@@ -646,14 +653,12 @@ public class Main : Window, IDisposable
         {
             if (currentPage == 0)
             {
-#pragma warning disable CS8602
-                currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
-#pragma warning restore CS8602
-
                 if (clusterHour > 0)
                 {
                     TimeSpan interval = TimeSpan.FromHours(clusterHour);
+#pragma warning disable CS8602
                     currentTypeTransactions = transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
+#pragma warning restore CS8602
                 }
 
                 if (isChangeFilterEnabled)
@@ -663,18 +668,15 @@ public class Main : Window, IDisposable
                     currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
             }
 
-            int pageCount = (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage);
-            if (pageCount > 0)
-            {
-                currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
-            }
-            else
-            {
-                return;
-            }
+            int totalTransactionCount = currentTypeTransactions.Count;
+            int pageCount = (int)Math.Ceiling((double)totalTransactionCount / transactionsPerPage);
 
+            if (pageCount == 0)
+                return;
+
+            currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
             int startIndex = currentPage * transactionsPerPage;
-            int endIndex = Math.Min(startIndex + transactionsPerPage, currentTypeTransactions.Count);
+            int endIndex = Math.Min(startIndex + transactionsPerPage, totalTransactionCount);
 
             List<TransactionsConvetor> displayedTransactions = currentTypeTransactions.GetRange(startIndex, endIndex - startIndex);
 
@@ -698,8 +700,8 @@ public class Main : Window, IDisposable
             if (ImGui.Button(lang.GetText("NextPage")) && currentPage < pageCount - 1)
                 currentPage++;
 
-            visibleStartIndex = currentPage * transactionsPerPage;
-            visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
+            int visibleStartIndex = currentPage * transactionsPerPage;
+            int visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, totalTransactionCount);
 
             ImGui.Separator();
 
@@ -716,7 +718,7 @@ public class Main : Window, IDisposable
 
             for (int i = visibleStartIndex; i < visibleEndIndex; i++)
             {
-                var transaction = currentTypeTransactions[i];
+                var transaction = displayedTransactions[i - startIndex];
                 ImGui.Text(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                 ImGui.NextColumn();
                 ImGui.Text(transaction.Amount.ToString("#,##0"));
@@ -730,6 +732,7 @@ public class Main : Window, IDisposable
             ImGui.EndChildFrame();
         }
     }
+
 
 
 
