@@ -12,51 +12,69 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+
 namespace CurrencyTracker.Windows;
 
 public class Main : Window, IDisposable
 {
     // 时间聚类 Time Clustering
     private int clusterHour = 0;
+
     // 倒序排序开关 Reverse Sorting Switch
     private bool isReversed = false;
+
     // 副本内记录开关 Duty Tracking Switch
     private bool isTrackedinDuty = false;
+
     // 收支筛选开关 Income/Expense Filtering Switch
     private bool isChangeFilterEnabled = false;
+
     // 时间筛选开关 Time Filtering Switch
     private bool isTimeFilterEnabled = false;
+
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.MinValue;
+
     private DateTime filterEndDate = DateTime.Now;
+
     // 筛选模式：0为大于，1为小于 Filtering Mode: 0 for Above, 1 for Below
     private int filterMode = 0;
+
     // 用户指定的筛选值 User-Specified Filtering Value
     private int filterValue = 0;
+
     // 每页显示的交易记录数 Number of Transaction Records Displayed Per Page
     private int transactionsPerPage = 20;
+
     // 当前页码 Current Page Number
     private int currentPage = 0;
+
     // 自定义追踪物品ID Custom Tracked Currency ID
     private uint customCurrency = uint.MaxValue;
+
     // CSV文件名 CSV File Name
     private string fileName = string.Empty;
+
     // 最小记录值 Minimum Tracking Value
     private int minTrackValue = 0;
+
     // 默认选中的选项 Default Selected Option
     private int selectedOptionIndex = -1;
+
     // 选择的语言 Selected Language
     private string playerLang = string.Empty;
+
     // 当前选中的货币名称 Currently Selected Currency Name
     private string? selectedCurrencyName;
+
     // 搜索框值 Search Filter
     private static string searchFilter = string.Empty;
+
     // 合并的临界值 Merge Threshold
     private int mergeThreshold = 0;
+
     // 先前选择的货币名称 Previous Selected Currency Name
-    string previouslySelectedCurrencyName = string.Empty;
-
-
+    private string previouslySelectedCurrencyName = string.Empty;
 
     private Transactions? transactions = null!;
     private TransactionsConvetor? transactionsConvetor = null!;
@@ -65,8 +83,6 @@ public class Main : Window, IDisposable
     private List<string> permanentCurrencyName = new List<string>();
     private List<string> options = new List<string>();
     private List<TransactionsConvetor> currentTypeTransactions = new List<TransactionsConvetor>();
-
-
 
     public Main(Plugin plugin) : base("Currency Tracker")
     {
@@ -91,7 +107,6 @@ public class Main : Window, IDisposable
 
         LoadOptions(plugin);
         LoadLanguage(plugin);
-
     }
 
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
@@ -135,13 +150,10 @@ public class Main : Window, IDisposable
         lang.LoadLanguage(playerLang);
     }
 
-
-
     public override void Draw()
     {
         if (!Service.ClientState.IsLoggedIn) return;
         transactions ??= new Transactions();
-
 
         if (Plugin.GetPlugin.PluginInterface.IsDev)
         {
@@ -346,7 +358,6 @@ public class Main : Window, IDisposable
 #pragma warning restore CS8602
         if (ImGui.BeginPopup("CustomCurrency"))
         {
-
             ImGui.TextColored(ImGuiColors.DalamudYellow, lang.GetText("CustomCurrencyLabel1"));
             ImGuiComponents.HelpMarker(lang.GetText("CustomCurrencyHelp"));
             ImGui.Text(lang.GetText("CustomCurrencyLabel2"));
@@ -383,7 +394,6 @@ public class Main : Window, IDisposable
                     if (ImGui.IsWindowAppearing() && customCurrency == x.Key)
                     {
                         ImGui.SetScrollHereY();
-
                     }
                 }
                 ImGui.EndCombo();
@@ -403,7 +413,6 @@ public class Main : Window, IDisposable
                 Plugin.GetPlugin.Configuration.CustomCurrencyType.Add(selected);
                 Plugin.GetPlugin.Configuration.Save();
                 options.Add(selected);
-
             }
             ImGui.SameLine();
             if (ImGui.Button(lang.GetText("Delete") + $"{selected}"))
@@ -482,7 +491,6 @@ public class Main : Window, IDisposable
                 + lang.GetText("TransactionsHelp2"));
             ImGui.EndPopup();
         }
-
     }
 
     // 清除异常记录 Clear Exceptional Transactions
@@ -733,11 +741,6 @@ public class Main : Window, IDisposable
         }
     }
 
-
-
-
-
-
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
     private List<TransactionsConvetor> ApplyChangeFilter(List<TransactionsConvetor> transactions)
     {
@@ -860,7 +863,4 @@ public class Main : Window, IDisposable
 #pragma warning restore CS8602
         }
     }
-
-    
-
 }

@@ -1,10 +1,9 @@
+using CurrencyTracker.Manger;
+using Dalamud.Logging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.IO;
-using Dalamud.Logging;
-using CurrencyTracker.Manger;
 
 namespace CurrencyTracker.Manager;
 
@@ -18,13 +17,11 @@ public class TransactionsConvetor
 
     private static readonly LanguageManager lang = new LanguageManager();
 
-
     // 将字典改变为字符串，存储至数据文件
     public string ToFileLine()
     {
         return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName}";
     }
-
 
     // 解析文件中的一行数据
     public static TransactionsConvetor FromFileLine(string line)
@@ -46,13 +43,11 @@ public class TransactionsConvetor
         }
         else
         {
-            transaction.LocationName = lang.GetText("UnknonLocation");
+            transaction.LocationName = lang.GetText("UnknownLocation");
         }
 
         return transaction;
     }
-
-
 
     // 解析整个数据文件
     public static List<TransactionsConvetor> FromFile(string filePath, Func<string, TransactionsConvetor> parseLine)
@@ -81,7 +76,6 @@ public class TransactionsConvetor
 
         return transactions;
     }
-
 
     // 同步将单个交易记录追加入数据文件(正常情况)
     public void AppendTransactionToFile(string filePath, List<TransactionsConvetor> singleTransaction)
@@ -131,6 +125,4 @@ public class TransactionsConvetor
             PluginLog.Debug("将整个交易记录覆写进数据文件失败 / Failed to overwrite the entire transactions to the data file: " + ex.Message);
         }
     }
-
-
 }

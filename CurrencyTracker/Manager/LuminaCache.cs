@@ -1,9 +1,9 @@
+using CurrencyTracker;
+using Dalamud;
+using Lumina.Excel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Dalamud;
-using Lumina.Excel;
-using CurrencyTracker;
 
 namespace KamiLib.Caching;
 
@@ -20,7 +20,7 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
     }
 
     private readonly Dictionary<uint, T> cache = new();
-    private readonly Dictionary<Tuple<uint, uint>, T> subRowCache = new ();
+    private readonly Dictionary<Tuple<uint, uint>, T> subRowCache = new();
 
     public ExcelSheet<T> OfLanguage(ClientLanguage language)
     {
@@ -36,7 +36,7 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
         else
         {
             if (searchAction(id) is not { } result) return null;
-            
+
             return cache[id] = result;
         }
     }
@@ -44,7 +44,7 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
     public T? GetRow(uint row, uint subRow)
     {
         var targetRow = new Tuple<uint, uint>(row, subRow);
-        
+
         if (subRowCache.TryGetValue(targetRow, out var value))
         {
             return value;
@@ -52,11 +52,12 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
         else
         {
             if (Service.DataManager.GetExcelSheet<T>()!.GetRow(row, subRow) is not { } result) return null;
-            
+
             return subRowCache[targetRow] = result;
         }
     }
-    
+
     public IEnumerator<T> GetEnumerator() => Service.DataManager.GetExcelSheet<T>()!.GetEnumerator();
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

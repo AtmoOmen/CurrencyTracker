@@ -1,5 +1,4 @@
 using CurrencyTracker.Manger;
-using CurrencyTracker.Windows;
 using Dalamud.Logging;
 using System;
 using System.Collections.Generic;
@@ -86,7 +85,6 @@ namespace CurrencyTracker.Manager
 
             return allTransactions;
         }
-
 
         public TransactionsConvetor LoadLatestSingleTransaction(string CurrencyName)
         {

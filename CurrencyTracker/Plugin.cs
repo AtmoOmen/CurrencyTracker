@@ -1,15 +1,14 @@
+using CurrencyTracker.Manager;
+using CurrencyTracker.Windows;
+using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
-using Dalamud.Game.Gui;
 using Dalamud.Logging;
 using Dalamud.Plugin;
-using System.IO;
-using Dalamud.Interface.Windowing;
-using CurrencyTracker.Windows;
-using CurrencyTracker.Manager;
 using Lumina.Excel.GeneratedSheets;
-using System.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace CurrencyTracker
 {
@@ -25,16 +24,14 @@ namespace CurrencyTracker
 
         // 地名/物品名字典 Ditionaries Containing Location Names and Item Names
         internal Dictionary<uint, string> TerritoryNames = new();
+
         internal Dictionary<uint, string> ItemNames = new();
 
         private string playerLang = string.Empty;
 
-
-
         // 插件初始化时执行的代码部分
         public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
         {
-            
             GetPlugin = this;
             Service.Initialize(pluginInterface);
 
@@ -71,7 +68,6 @@ namespace CurrencyTracker
                     x => x.RowId,
                     x => $"{x.Name}");
 #pragma warning restore CS8604
-
 
             Service.ClientState.Login += isLogin;
         }
@@ -145,7 +141,7 @@ namespace CurrencyTracker
         public void Dispose()
         {
             this.WindowSystem.RemoveAllWindows();
-            
+
             MainWindow.Dispose();
             Service.Tracker.Dispose();
             Service.ClientState.Login -= isLogin;
@@ -162,7 +158,6 @@ namespace CurrencyTracker
             if (currentCharacter == null)
                 return;
 
-            
             MainWindow.IsOpen = true;
         }
     }

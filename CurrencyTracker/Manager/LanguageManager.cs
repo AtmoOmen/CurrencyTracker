@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace CurrencyTracker.Manger
@@ -198,4 +197,3 @@ namespace CurrencyTracker.Manger
         }
     }
 }
-

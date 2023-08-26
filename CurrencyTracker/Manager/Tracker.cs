@@ -26,6 +26,7 @@ namespace CurrencyTracker.Manager
             // 神典石
             "NonLimitedTomestone", "LimitedTomestone", "Poetic"
         };
+
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly Stopwatch timer = new Stopwatch();
         private CurrencyInfo? currencyInfo = new CurrencyInfo();
@@ -40,6 +41,7 @@ namespace CurrencyTracker.Manager
         }
 
 #pragma warning disable CS8618
+
         public Tracker()
 #pragma warning restore CS8618
         {
@@ -60,7 +62,6 @@ namespace CurrencyTracker.Manager
                 if (IsBoundByDuty()) return;
             }
 
-
             foreach (var currency in CurrencyType)
             {
                 if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
@@ -71,9 +72,8 @@ namespace CurrencyTracker.Manager
                         CheckCurrency(currencyName, currencyID);
                     }
                 }
-
             }
-            foreach(var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
+            foreach (var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
             {
                 if (Plugin.GetPlugin.Configuration.CustomCurrecies.TryGetValue(currency, out uint currencyID))
                 {
@@ -83,7 +83,6 @@ namespace CurrencyTracker.Manager
                     }
                 }
             }
-
         }
 
         private void CheckCurrency(string currencyName, uint currencyID)
