@@ -73,8 +73,9 @@ public class Main : Window, IDisposable
     // 合并的临界值 Merge Threshold
     private int mergeThreshold = 0;
 
-    // 先前选择的货币名称 Previous Selected Currency Name
-    private string previouslySelectedCurrencyName = string.Empty;
+    // 当前页索引 Current Page Index
+    private int visibleStartIndex = 0;
+    private int visibleEndIndex = 0;
 
     private Transactions? transactions = null!;
     private TransactionsConvetor? transactionsConvetor = null!;
@@ -644,49 +645,38 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(selectedCurrencyName))
             return;
 
-        if (selectedCurrencyName != previouslySelectedCurrencyName)
-        {
-#pragma warning disable CS8602
-            currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
-#pragma warning restore CS8602
-            previouslySelectedCurrencyName = selectedCurrencyName;
-        }
-
-        float listBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
-        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, listBoxHeight);
+        float ListBoxHeight = ImGui.GetFrameHeight() * 19 - 25;
+        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ListBoxHeight);
 
         ImGui.SameLine();
 
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
         {
-            if (currentPage == 0)
-            {
-                if (clusterHour > 0)
-                {
-                    TimeSpan interval = TimeSpan.FromHours(clusterHour);
 #pragma warning disable CS8602
-                    currentTypeTransactions = transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
+            currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
 #pragma warning restore CS8602
-                }
 
-                if (isChangeFilterEnabled)
-                    currentTypeTransactions = ApplyChangeFilter(currentTypeTransactions);
-
-                if (isTimeFilterEnabled)
-                    currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
+            if (clusterHour > 0)
+            {
+                TimeSpan interval = TimeSpan.FromHours(clusterHour);
+                currentTypeTransactions = transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
             }
 
-            int totalTransactionCount = currentTypeTransactions.Count;
-            int pageCount = (int)Math.Ceiling((double)totalTransactionCount / transactionsPerPage);
+            if (isChangeFilterEnabled)
+                currentTypeTransactions = ApplyChangeFilter(currentTypeTransactions);
 
-            if (pageCount == 0)
+            if (isTimeFilterEnabled)
+                currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
+
+            int pageCount = (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage);
+            if (pageCount > 0)
+            {
+                currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
+            }
+            else
+            {
                 return;
-
-            currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
-            int startIndex = currentPage * transactionsPerPage;
-            int endIndex = Math.Min(startIndex + transactionsPerPage, totalTransactionCount);
-
-            List<TransactionsConvetor> displayedTransactions = currentTypeTransactions.GetRange(startIndex, endIndex - startIndex);
+            }
 
 #pragma warning disable CS8602
             ImGui.Text(lang.GetText("TransactionsPerPage"));
@@ -708,8 +698,8 @@ public class Main : Window, IDisposable
             if (ImGui.Button(lang.GetText("NextPage")) && currentPage < pageCount - 1)
                 currentPage++;
 
-            int visibleStartIndex = currentPage * transactionsPerPage;
-            int visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, totalTransactionCount);
+            visibleStartIndex = currentPage * transactionsPerPage;
+            visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
 
             ImGui.Separator();
 
@@ -726,7 +716,7 @@ public class Main : Window, IDisposable
 
             for (int i = visibleStartIndex; i < visibleEndIndex; i++)
             {
-                var transaction = displayedTransactions[i - startIndex];
+                var transaction = currentTypeTransactions[i];
                 ImGui.Text(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                 ImGui.NextColumn();
                 ImGui.Text(transaction.Amount.ToString("#,##0"));
@@ -740,6 +730,7 @@ public class Main : Window, IDisposable
             ImGui.EndChildFrame();
         }
     }
+
 
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
     private List<TransactionsConvetor> ApplyChangeFilter(List<TransactionsConvetor> transactions)

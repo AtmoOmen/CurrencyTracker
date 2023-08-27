@@ -1,5 +1,6 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Windows;
+using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.IoC;
 using Dalamud.Logging;
@@ -16,11 +17,14 @@ namespace CurrencyTracker
     {
         public string Name => "Currency Trakcer";
         public DalamudPluginInterface PluginInterface { get; init; }
+        private CommandManager CommandManager { get; init; }
+
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         private Main MainWindow { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin GetPlugin = null!;
+        private const string CommandName = "/ct";
 
         // 地名/物品名字典 Ditionaries Containing Location Names and Item Names
         internal Dictionary<uint, string> TerritoryNames = new();
@@ -30,7 +34,8 @@ namespace CurrencyTracker
         private string playerLang = string.Empty;
 
         // 插件初始化时执行的代码部分
-        public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface)
+        public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
+            [RequiredVersion("1.0")] CommandManager commandManager)
         {
             GetPlugin = this;
             Service.Initialize(pluginInterface);
@@ -38,12 +43,18 @@ namespace CurrencyTracker
             this.PluginInterface = pluginInterface;
             this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             this.Configuration.Initialize(this.PluginInterface);
+            this.CommandManager = commandManager;
 
             MainWindow = new Main(this);
             WindowSystem.AddWindow(MainWindow);
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;
             this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+
+            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            {
+                HelpMessage = "Open the main window of the plugin"
+            });
 
             if (Configuration.CurrentActiveCharacter == null)
             {
@@ -145,6 +156,11 @@ namespace CurrencyTracker
             MainWindow.Dispose();
             Service.Tracker.Dispose();
             Service.ClientState.Login -= isLogin;
+        }
+
+        private void OnCommand(string command, string args)
+        {
+            MainWindow.IsOpen = true;
         }
 
         private void DrawUI()

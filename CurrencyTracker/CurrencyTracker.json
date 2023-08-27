@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.1.1.1",
+    "AssemblyVersion": "1.1.1.2",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",
@@ -20,5 +20,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "- Further optimises the performance of the plugin, especially with very large amounts of data"
+    "Changelog": "- Add a command to open the main window of the plugin\n- Modified the way the data is displayed in the main interface of the plugin, so that filters can now be applied properly."
 }
