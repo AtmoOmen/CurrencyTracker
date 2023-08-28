@@ -1,6 +1,5 @@
 using CurrencyTracker.Manger;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Logging;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -11,27 +10,20 @@ namespace CurrencyTracker.Manager
     {
         public static readonly string[] CurrencyType = new string[]
         {
-            // 金币和金碟币
             "Gil","MGP",
-            // 军票
             "StormSeal","SerpentSeal","FlameSeal",
-            // PVP
             "WolfMark","TrophyCrystal",
-            // 怪物狩猎
             "AlliedSeal","CenturioSeal","SackOfNut",
-            // 双色和天穹振兴票
             "BicolorGemstone","SkybuildersScript",
-            // 生产采集
             "WhiteCrafterScript","WhiteGatherersScript","PurpleCrafterScript","PurpleGatherersScript",
-            // 神典石
             "NonLimitedTomestone", "LimitedTomestone", "Poetic"
         };
 
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly Stopwatch timer = new Stopwatch();
-        private CurrencyInfo? currencyInfo = new CurrencyInfo();
-        private Transactions? transactions = new Transactions();
-        private LanguageManager lang;
+        private CurrencyInfo currencyInfo = new CurrencyInfo();
+        private Transactions transactions = new Transactions();
+        private static readonly LanguageManager Lang = new LanguageManager();
 
         public static bool IsBoundByDuty()
         {
@@ -40,10 +32,7 @@ namespace CurrencyTracker.Manager
                    Service.Condition[ConditionFlag.BoundByDuty95];
         }
 
-#pragma warning disable CS8618
-
         public Tracker()
-#pragma warning restore CS8618
         {
             UpdateCurrenciesTimer();
 
@@ -67,7 +56,7 @@ namespace CurrencyTracker.Manager
                 if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
-                    if (currencyName != "未知货币" && currencyName != null)
+                    if (currencyName != "Unknown" && currencyName != null)
                     {
                         CheckCurrency(currencyName, currencyID);
                     }
@@ -75,9 +64,9 @@ namespace CurrencyTracker.Manager
             }
             foreach (var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
             {
-                if (Plugin.GetPlugin.Configuration.CustomCurrecies.TryGetValue(currency, out uint currencyID))
+                if (Plugin.GetPlugin.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
                 {
-                    if (currency != "未知货币" && currency != null)
+                    if (currency != "Unknown" && currency != null)
                     {
                         CheckCurrency(currency, currencyID);
                     }
@@ -89,12 +78,11 @@ namespace CurrencyTracker.Manager
         {
             currencyInfo ??= new CurrencyInfo();
             transactions ??= new Transactions();
-            lang = new LanguageManager();
-            lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
-            TransactionsConvetor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
+            Lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+            TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : lang.GetText("UnknownLocation");
+            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;
@@ -105,7 +93,7 @@ namespace CurrencyTracker.Manager
                 }
                 else
                 {
-                    // 检查是否启用副本内最小记录值
+                    // 检查是否启用副本内最小记录值 Check if enable tracking in duty
                     if (Plugin.GetPlugin.Configuration.MinTrackValue != 0)
                     {
                         // 检查是否在副本里
@@ -137,11 +125,6 @@ namespace CurrencyTracker.Manager
             if (timer.Elapsed.Minutes >= 5 || !timer.IsRunning)
             {
                 timer.Restart();
-            }
-            else
-            {
-                var lockoutRemaining = TimeSpan.FromMinutes(5) - timer.Elapsed;
-                PluginLog.Debug($"区域变更信息抑制,距离下次触发警告还剩余 '{lockoutRemaining}' 分钟");
             }
         }
 

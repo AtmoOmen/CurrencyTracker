@@ -12,7 +12,8 @@ The inspiration for this plugin came from Youri's FFXIVMoneyTracker ([GitHub Lin
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
-| 2023/08/23 | 1.1.1.2 | - Add a new command "/ct" to open the main interface of the plugin.<br/>- Modified the way the data is displayed in the main interface of the plugin, so that filters can now be applied properly.<br/> |
+| 2023/08/28 | 1.1.1.3 | - Fix bugs that might cause game crashes.<br/>- Add a new command to open the main interface of the plugin with specific currency shown. |
+| 2023/08/27 | 1.1.1.2 | - Add a new command "/ct" to open the main interface of the plugin.<br/>- Modified the way the data is displayed in the main interface of the plugin, so that filters can now be applied properly.<br/> |
 | 2023/08/23 | 1.1.1.1 | - Further optimises the performance of the plugin, especially with very large amounts of data |
 | 2023/08/22 | 1.1.1.0 | - Modified the way transactions are displayed, which now effectively reduces the performance consumption caused by large amounts of data<br/><br/>- Added a function to merge transactions of the same location by threshold value<br/><br/>- Added a function to clear exceptional transactions |
 | 2023/08/15 | 1.1.0.0 | - Added a new field Location to transaction records, allowing you to track the location where the transaction occurred (Note: Data accuracy may vary / Existing data will be marked as unknown).<br/><br/>- Implemented comprehensive multilingual support at the code level.<br/><br/>- Added a time filtering feature, enabling you to display transactions within a specified time range.<br/><br/>- Introduced a minimum recording threshold for in-duty records, reducing the occurrence of numerous small-value data entries when in-duty data tracking is enabled.<br/><br/>- Added a custom currency tracking feature, allowing you to use the Currency Tracker to monitor changes in any in-game item or currency.<br/><br/>- Included an option to open the data folder, allowing easy access to the folder where the transaction data for the current character is stored across different operating systems. |
@@ -34,6 +35,7 @@ Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年8月28日 | 1.1.1.3 | - 修复了一些可能导致游戏崩溃的 BUG<br>- 新增了一个用于打开指定货币界面的指令 |
 | 2023年8月27日 | 1.1.1.2 | - 增加一个新命令"/ct"，用于开启插件主界面<br/>- 修改了插件主界面数据显示方式，现在可以正常地应用筛选器 |
 | 2023年8月23日 | 1.1.1.1 | 进一步优化了插件的性能表现 —— 尤其是在超大量数据下 |
 | 2023年8月22日 | 1.1.1.0 | - 修改了记录的显示方式，现在可以有效降低数据量过大时造成的性能消耗<br/><br/>- 新增了按临界值合并相同地点记录的功能<br/><br/>- 新增了移除异常记录的功能 |

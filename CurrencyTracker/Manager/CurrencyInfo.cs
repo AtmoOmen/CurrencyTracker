@@ -43,7 +43,7 @@ public class CurrencyInfo : IDisposable
             string CurrencyName = currencyItem.Name.ToDalamudString().TextValue;
             return CurrencyName;
         }
-        return "未知货币";
+        else return "Unknown";
     }
 
     // 传入货币ID后，获取货币当前的数量

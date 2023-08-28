@@ -7,4 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>", Scope = "member", Target = "~F:KamiLib.Caching.LuminaCache`1._instance")]
 [assembly: SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>", Scope = "member", Target = "~F:CurrencyTracker.Windows.Main.searchFilter")]
-[assembly: SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>", Scope = "member", Target = "~F:CurrencyTracker.Manager.TransactionsConvetor.lang")]
+[assembly: SuppressMessage("Style", "IDE1006:命名样式", Justification = "<挂起>", Scope = "member", Target = "~F:CurrencyTracker.Manager.TransactionsConvertor.lang")]

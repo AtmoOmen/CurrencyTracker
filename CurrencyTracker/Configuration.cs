@@ -14,8 +14,8 @@ namespace CurrencyTracker
         public int Version { get; set; } = 0;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
 
-        // 存储用户自定义货币ID的字典（string为用户自定义的名称）
-        public Dictionary<string, uint> CustomCurrecies { get; set; } = new();
+        // 存储用户自定义货币ID的字典 Dic saving custom currencies' names
+        public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
 
         public List<string> CustomCurrencyType { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;

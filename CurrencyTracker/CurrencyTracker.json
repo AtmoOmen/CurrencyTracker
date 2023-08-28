@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.1.1.2",
+    "AssemblyVersion": "1.1.1.3",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",
@@ -10,15 +10,12 @@
     "Tags": [
         "Money",
         "Currency",
-        "Tracker",
-        "金钱",
-        "追踪器",
-        "货币"
+        "Tracker"
     ],
     "ImageUrls": [
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "- Add a command to open the main window of the plugin\n- Modified the way the data is displayed in the main interface of the plugin, so that filters can now be applied properly."
+    "Changelog": "- Fix bugs that might cause game crashes.\n- Add a new command to open the main interface of the plugin with specific currency shown."
 }

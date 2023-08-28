@@ -7,30 +7,30 @@ using System.IO;
 
 namespace CurrencyTracker.Manager;
 
-public class TransactionsConvetor
+public class TransactionsConvertor
 {
-    public string CurrencyName { get; set; } = null!; // 货币类型
-    public DateTime TimeStamp { get; set; } // 时间戳
-    public long Change { get; set; } // 变化量
-    public long Amount { get; set; } // 总金额
+    public string CurrencyName { get; set; } = null!; // 货币类型 Currency Type
+    public DateTime TimeStamp { get; set; } // 时间戳 TimeStamp
+    public long Change { get; set; } // 变化量 Change
+    public long Amount { get; set; } // 总金额 Currency Amount
     public string LocationName { get; set; } = string.Empty;
 
     private static readonly LanguageManager lang = new LanguageManager();
 
-    // 将字典改变为字符串，存储至数据文件
+    // 将字典改变为字符串，存储至数据文件 Change the dic into strings and save the strings to the data file
     public string ToFileLine()
     {
         return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName}";
     }
 
-    // 解析文件中的一行数据
-    public static TransactionsConvetor FromFileLine(string line)
+    // 解析文件中的一行数据 Parse a line of transactions in the data file
+    public static TransactionsConvertor FromFileLine(string line)
     {
         lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
 
         string[] parts = line.Split(";");
 
-        TransactionsConvetor transaction = new TransactionsConvetor
+        TransactionsConvertor transaction = new TransactionsConvertor
         {
             TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal),
             Amount = Convert.ToInt64(parts[1]),
@@ -49,14 +49,13 @@ public class TransactionsConvetor
         return transaction;
     }
 
-    // 解析整个数据文件
-    public static List<TransactionsConvetor> FromFile(string filePath, Func<string, TransactionsConvetor> parseLine)
+    // 解析整个数据文件 Parse a specific data file
+    public static List<TransactionsConvertor> FromFile(string filePath, Func<string, TransactionsConvertor> parseLine)
     {
-        List<TransactionsConvetor> transactions = new List<TransactionsConvetor>();
+        List<TransactionsConvertor> transactions = new List<TransactionsConvertor>();
 
         try
         {
-            // 提前检查文件是否存在，如果不存在直接返回空列表
             if (!File.Exists(filePath))
             {
                 return transactions;
@@ -65,27 +64,26 @@ public class TransactionsConvetor
             string[] lines = File.ReadAllLines(filePath);
             foreach (string line in lines)
             {
-                TransactionsConvetor transaction = parseLine(line);
+                TransactionsConvertor transaction = parseLine(line);
                 transactions.Add(transaction);
             }
         }
         catch (Exception ex)
         {
-            PluginLog.Debug("解析整个数据文件时出现错误 / Error parsing entire data file.: " + ex.Message);
+            PluginLog.Debug($"Error parsing entire data file.: {ex.Message}");
         }
 
         return transactions;
     }
 
-    // 同步将单个交易记录追加入数据文件(正常情况)
-    public void AppendTransactionToFile(string filePath, List<TransactionsConvetor> singleTransaction)
+    // 同步将单个交易记录追加入数据文件(正常情况) Append a transaction into the data file (Normal Circumstances)
+    public void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
     {
         try
         {
             using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             using (var writer = new StreamWriter(fileStream))
             {
-                // 虽然用foreach，但保持singletransaction里时刻只有最新一条待处理的记录
                 foreach (var transaction in singleTransaction)
                 {
                     writer.WriteLine(transaction.ToFileLine());
@@ -95,22 +93,20 @@ public class TransactionsConvetor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug("将单个交易记录追加入数据文件时失败 / Failure to add individual transaction to the data file retroactively: " + ex.Message);
+            PluginLog.Debug($"Failure to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
-    // 同步将整个交易记录覆写进数据文件(异常数据处理)
-    public void WriteTransactionsToFile(string filePath, List<TransactionsConvetor> transactions)
+    // 同步将整个交易记录覆写进数据文件(异常数据处理) Overwrite the data file (Exceptions)
+    public void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
         try
         {
-            // 提前检查文件是否存在，如果不存在则创建一个空的文件
             if (!File.Exists(filePath))
             {
                 File.WriteAllText(filePath, string.Empty);
             }
 
-            // 然后进行正常的写入操作
             using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
             using (var writer = new StreamWriter(fileStream))
             {
@@ -122,7 +118,7 @@ public class TransactionsConvetor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug("将整个交易记录覆写进数据文件失败 / Failed to overwrite the entire transactions to the data file: " + ex.Message);
+            PluginLog.Debug($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
 }

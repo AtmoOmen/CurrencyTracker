@@ -17,7 +17,7 @@ namespace CurrencyTracker
     {
         public string Name => "Currency Trakcer";
         public DalamudPluginInterface PluginInterface { get; init; }
-        private CommandManager CommandManager { get; init; }
+        public CommandManager CommandManager { get; init; }
 
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
@@ -53,7 +53,7 @@ namespace CurrencyTracker
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
-                HelpMessage = "Open the main window of the plugin"
+                HelpMessage = "Open the main window of the plugin\n/ct CurrencyName -> Open the main window with specific currency shown."
             });
 
             if (Configuration.CurrentActiveCharacter == null)
@@ -102,7 +102,7 @@ namespace CurrencyTracker
 #pragma warning disable CS8604
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
-                throw new InvalidOperationException("无法加载当前角色信息 Can't Load Current Character Info");
+                throw new InvalidOperationException("Can't Load Current Character Info");
             }
 #pragma warning restore CS8604
 
@@ -117,7 +117,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                PluginLog.Debug("配置文件激活角色与当前角色一致 Configuration file activation character matches current character");
+                PluginLog.Debug("Configuration file activation character matches current character");
             }
             else
             {
@@ -140,7 +140,7 @@ namespace CurrencyTracker
                     }
                     Configuration.SelectedLanguage = playerLang;
                 }
-                PluginLog.Debug("创建文件夹成功 Successfully Create Directory");
+                PluginLog.Debug("Successfully Create Directory");
             }
 
             Configuration.Save();
@@ -148,7 +148,6 @@ namespace CurrencyTracker
             return CurrentCharacter;
         }
 
-        // 插件禁用/卸载时执行的代码部分
         public void Dispose()
         {
             this.WindowSystem.RemoveAllWindows();
@@ -156,11 +155,20 @@ namespace CurrencyTracker
             MainWindow.Dispose();
             Service.Tracker.Dispose();
             Service.ClientState.Login -= isLogin;
+            this.CommandManager.RemoveHandler(CommandName);
         }
 
         private void OnCommand(string command, string args)
         {
-            MainWindow.IsOpen = true;
+            if (!string.IsNullOrEmpty(args))
+            {
+                if (MainWindow.options.Contains(args))
+                {
+                    MainWindow.selectedCurrencyName = args;
+                    MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(args);
+                }
+            }
+            else MainWindow.IsOpen = !MainWindow.IsOpen;
         }
 
         private void DrawUI()
