@@ -12,6 +12,7 @@ The inspiration for this plugin came from Youri's FFXIVMoneyTracker ([GitHub Lin
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/08/29 | 1.1.1.4 | - Modified the conditional logic of certain code segments.<br>- Fixed a bug in Merge Transactions function that generated incorrect records in certain scenarios.<br>- Added fuzzy query functionality to the command. |
 | 2023/08/28 | 1.1.1.3 | - Fix bugs that might cause game crashes.<br/>- Add a new command to open the main interface of the plugin with specific currency shown. |
 | 2023/08/27 | 1.1.1.2 | - Add a new command "/ct" to open the main interface of the plugin.<br/>- Modified the way the data is displayed in the main interface of the plugin, so that filters can now be applied properly.<br/> |
 | 2023/08/23 | 1.1.1.1 | - Further optimises the performance of the plugin, especially with very large amounts of data |
@@ -35,6 +36,7 @@ Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年8月29日 | 1.1.1.4 | - 更改了部分代码片段的判断逻辑<br>- 修复了"合并记录"功能在某些情况下生成的错误收支记录<br>- 为插件命令新增了模糊查询功能 |
 | 2023年8月28日 | 1.1.1.3 | - 修复了一些可能导致游戏崩溃的 BUG<br>- 新增了一个用于打开指定货币界面的指令 |
 | 2023年8月27日 | 1.1.1.2 | - 增加一个新命令"/ct"，用于开启插件主界面<br/>- 修改了插件主界面数据显示方式，现在可以正常地应用筛选器 |
 | 2023年8月23日 | 1.1.1.1 | 进一步优化了插件的性能表现 —— 尤其是在超大量数据下 |

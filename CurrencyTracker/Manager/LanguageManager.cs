@@ -91,7 +91,8 @@ namespace CurrencyTracker.Manger
                         { "ClearExTransactionsHelp1", "当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录\n\n"},
                         { "ClearExTransactionsHelp2", "清除了 " },
                         { "ClearExTransactionsHelp3", " 条异常记录。" },
-                        { "Confirm", "确认" }
+                        { "Confirm", "确认" },
+                        { "UnknownCurrency", "未知的货币类型"}
                     }
                 },
 
@@ -169,7 +170,8 @@ namespace CurrencyTracker.Manger
                         { "ClearExTransactionsHelp1", "Current judgment criteria: Transactions with Change equal to the Amount /with Change equal to 0\n\n"},
                         { "ClearExTransactionsHelp2", "Clear " },
                         { "ClearExTransactionsHelp3", " exceptional transactions." },
-                        { "Confirm", "Confirm" }
+                        { "Confirm", "Confirm" },
+                        { "UnknownCurrency", "Unknown Currency"}
                     }
                 }
             };

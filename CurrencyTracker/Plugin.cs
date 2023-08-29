@@ -160,15 +160,58 @@ namespace CurrencyTracker
 
         private void OnCommand(string command, string args)
         {
-            if (!string.IsNullOrEmpty(args))
+            var currencyName = string.Empty;
+            if (string.IsNullOrEmpty(args))
             {
-                if (MainWindow.options.Contains(args))
-                {
-                    MainWindow.selectedCurrencyName = args;
-                    MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(args);
-                }
+                MainWindow.IsOpen = !MainWindow.IsOpen;
             }
-            else MainWindow.IsOpen = !MainWindow.IsOpen;
+            else
+            {
+                var matchingcurrency = FindMatchingCurrencies(MainWindow.options, args);
+                if (matchingcurrency.Count != 1)
+                {
+                    Service.Chat.PrintError("Mutiple Currencies found:");
+                    foreach (var currency in matchingcurrency)
+                    {
+                        Service.Chat.PrintError(currency);
+                    }
+                    return;
+                }
+                else
+                {
+                    if (matchingcurrency != null)
+                    {
+                        currencyName = matchingcurrency.FirstOrDefault();
+                    }
+                    else PluginLog.Error("Error when using command to find matching currencies.");
+                }
+                if (!MainWindow.IsOpen)
+                {
+                    MainWindow.selectedCurrencyName = currencyName;
+#pragma warning disable CS8604
+                    MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
+                    MainWindow.IsOpen = !MainWindow.IsOpen;
+                }
+                else
+                {
+                    if (currencyName == MainWindow.selectedCurrencyName) MainWindow.IsOpen = !MainWindow.IsOpen;
+                    else
+                    {
+                        MainWindow.selectedCurrencyName = currencyName;
+                        MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
+                    }
+                }
+#pragma warning restore CS8604
+            }
+        }
+
+        private static List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
+        {
+            List<string> matchingCurrencies = currencyList
+                .Where(currency => currency.Contains(partialName))
+                .ToList();
+
+            return matchingCurrencies;
         }
 
         private void DrawUI()

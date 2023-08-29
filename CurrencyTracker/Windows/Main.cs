@@ -81,7 +81,7 @@ public class Main : Window, IDisposable
     private Transactions transactions = new Transactions();
     private TransactionsConvertor? transactionsConvertor = null!;
     private CurrencyInfo? currencyInfo = null!;
-    private static readonly LanguageManager Lang = new LanguageManager();
+    internal static readonly LanguageManager Lang = new LanguageManager();
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
     private List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();

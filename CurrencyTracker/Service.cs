@@ -1,4 +1,5 @@
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manger;
 using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
@@ -7,6 +8,7 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Lumina.Data;
 
 namespace CurrencyTracker;
 
@@ -17,6 +19,7 @@ public class Service
         Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(pluginInterface);
         Transactions = new Transactions();
+        Lang = new LanguageManager();
         pluginInterface.Create<Service>();
     }
 
@@ -29,4 +32,6 @@ public class Service
     public static Tracker Tracker { get; set; } = null!;
     public static Configuration Configuration { get; set; } = null!;
     public static Transactions Transactions { get; set; } = null!;
+    public static  LanguageManager Lang { get; private set; } = null!;
+
 }
