@@ -26,7 +26,7 @@ public class TransactionsConvertor
     // 解析文件中的一行数据 Parse a line of transactions in the data file
     public static TransactionsConvertor FromFileLine(string line)
     {
-        lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+        lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
 
         string[] parts = line.Split(";");
 

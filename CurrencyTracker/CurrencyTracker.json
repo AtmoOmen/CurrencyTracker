@@ -13,8 +13,8 @@
         "Tracker"
     ],
     "ImageUrls": [
-        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",
-        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
+        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png",
+        "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png"
     ],
     "DalamudApiLevel": 8,
     "Changelog": "- Modified the conditional logic of certain code segments.\n- Fixed a bug in Merge Transactions function that generated incorrect records in certain scenarios.\n- Added fuzzy query functionality to the command."

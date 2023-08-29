@@ -15,29 +15,24 @@ namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Currency Trakcer";
+        public string Name => "Currency Tracker";
         public DalamudPluginInterface PluginInterface { get; init; }
         public CommandManager CommandManager { get; init; }
-
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
-        private Main MainWindow { get; init; }
+        internal Main MainWindow { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
-        public static Plugin GetPlugin = null!;
+        public static Plugin Instance = null!;
         private const string CommandName = "/ct";
 
-        // 地名/物品名字典 Ditionaries Containing Location Names and Item Names
         internal Dictionary<uint, string> TerritoryNames = new();
-
         internal Dictionary<uint, string> ItemNames = new();
-
         private string playerLang = string.Empty;
 
-        // 插件初始化时执行的代码部分
         public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-            [RequiredVersion("1.0")] CommandManager commandManager)
+                      [RequiredVersion("1.0")] CommandManager commandManager)
         {
-            GetPlugin = this;
+            Instance = this;
             Service.Initialize(pluginInterface);
 
             this.PluginInterface = pluginInterface;
@@ -47,7 +42,6 @@ namespace CurrencyTracker
 
             MainWindow = new Main(this);
             WindowSystem.AddWindow(MainWindow);
-
             this.PluginInterface.UiBuilder.Draw += DrawUI;
             this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
@@ -64,26 +58,13 @@ namespace CurrencyTracker
             Service.Tracker = new Tracker();
             Service.Transactions = new Transactions();
 
-#pragma warning disable CS8604
-            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
-                .Where(x => x.PlaceName?.Value?.Name?.ToString().Length > 0)
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.PlaceName?.Value?.Name}");
-#pragma warning restore CS8604
+            UpdateTerritoryNames();
+            UpdateItemNames();
 
-#pragma warning disable CS8604
-            ItemNames = Service.DataManager.GetExcelSheet<Item>()
-                .Where(x => x.Name?.ToString().Length > 0)
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.Name}");
-#pragma warning restore CS8604
-
-            Service.ClientState.Login += isLogin;
+            Service.ClientState.Login += HandleLogin;
         }
 
-        private void isLogin(object? sender, EventArgs e)
+        private void HandleLogin(object? sender, EventArgs e)
         {
             CurrentCharacter = GetCurrentCharacter();
         }
@@ -104,7 +85,6 @@ namespace CurrencyTracker
             {
                 throw new InvalidOperationException("Can't Load Current Character Info");
             }
-#pragma warning restore CS8604
 
             if (Configuration.CurrentActiveCharacter == null)
             {
@@ -133,7 +113,6 @@ namespace CurrencyTracker
                 if (string.IsNullOrEmpty(playerLang))
                 {
                     playerLang = Service.ClientState.ClientLanguage.ToString();
-                    // 不受支持的语言 => 英语 Not Supported Languages => English
                     if (playerLang != "ChineseSimplified" && playerLang != "English")
                     {
                         playerLang = "English";
@@ -154,7 +133,7 @@ namespace CurrencyTracker
 
             MainWindow.Dispose();
             Service.Tracker.Dispose();
-            Service.ClientState.Login -= isLogin;
+            Service.ClientState.Login -= HandleLogin;
             this.CommandManager.RemoveHandler(CommandName);
         }
 
@@ -167,51 +146,52 @@ namespace CurrencyTracker
             }
             else
             {
-                var matchingcurrency = FindMatchingCurrencies(MainWindow.options, args);
-                if (matchingcurrency.Count != 1)
+                var matchingCurrencies = FindMatchingCurrencies(MainWindow.options, args);
+                if (matchingCurrencies.Count > 1)
                 {
-                    Service.Chat.PrintError("Mutiple Currencies found:");
-                    foreach (var currency in matchingcurrency)
+                    Service.Chat.PrintError("Mutiple Currencies Found:");
+                    foreach (var currency in matchingCurrencies)
                     {
                         Service.Chat.PrintError(currency);
                     }
                     return;
                 }
+                else if (matchingCurrencies.Count == 0)
+                {
+                    Service.Chat.PrintError("No Currency Found");
+                    return;
+                }
                 else
                 {
-                    if (matchingcurrency != null)
-                    {
-                        currencyName = matchingcurrency.FirstOrDefault();
-                    }
-                    else PluginLog.Error("Error when using command to find matching currencies.");
+                    currencyName = matchingCurrencies.FirstOrDefault();
                 }
+
                 if (!MainWindow.IsOpen)
                 {
                     MainWindow.selectedCurrencyName = currencyName;
-#pragma warning disable CS8604
                     MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
-                    MainWindow.IsOpen = !MainWindow.IsOpen;
+                    MainWindow.IsOpen = true;
                 }
                 else
                 {
-                    if (currencyName == MainWindow.selectedCurrencyName) MainWindow.IsOpen = !MainWindow.IsOpen;
+                    if (currencyName == MainWindow.selectedCurrencyName)
+                    {
+                        MainWindow.IsOpen = !MainWindow.IsOpen;
+                    }
                     else
                     {
                         MainWindow.selectedCurrencyName = currencyName;
                         MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
                     }
                 }
-#pragma warning restore CS8604
             }
         }
 
-        private static List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
+        private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
         {
-            List<string> matchingCurrencies = currencyList
+            return currencyList
                 .Where(currency => currency.Contains(partialName))
                 .ToList();
-
-            return matchingCurrencies;
         }
 
         private void DrawUI()
@@ -223,9 +203,29 @@ namespace CurrencyTracker
         {
             var currentCharacter = GetCurrentCharacter();
             if (currentCharacter == null)
+            {
                 return;
+            }
 
-            MainWindow.IsOpen = true;
+            MainWindow.IsOpen = !MainWindow.IsOpen;
+        }
+
+        private void UpdateTerritoryNames()
+        {
+            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
+                .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
+                .ToDictionary(
+                    x => x.RowId,
+                    x => $"{x.PlaceName?.Value?.Name}");
+        }
+
+        private void UpdateItemNames()
+        {
+            ItemNames = Service.DataManager.GetExcelSheet<Item>()
+                .Where(x => !string.IsNullOrEmpty(x.Name?.ToString()))
+                .ToDictionary(
+                    x => x.RowId,
+                    x => $"{x.Name}");
         }
     }
 }

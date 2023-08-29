@@ -16,7 +16,7 @@ namespace CurrencyTracker.Manager
 
         public List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
-            Lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+            Lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
             var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
 
             foreach (var transaction in transactions)
@@ -50,7 +50,7 @@ namespace CurrencyTracker.Manager
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            var playerDataFolder = Path.Combine(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            var playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
             PlayerDataFolder = playerDataFolder;
             var filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
@@ -63,7 +63,7 @@ namespace CurrencyTracker.Manager
 
                 allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
 
-                if (Plugin.GetPlugin.Configuration.ReverseSort)
+                if (Plugin.Instance.Configuration.ReverseSort)
                 {
                     allTransactions.Reverse();
                 }
@@ -78,12 +78,12 @@ namespace CurrencyTracker.Manager
 
         public TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
         {
-            Lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+            Lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
             transactionsConvertor ??= new TransactionsConvertor();
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Combine(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
             PlayerDataFolder = playerDataFolder;
             string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 

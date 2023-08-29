@@ -46,7 +46,7 @@ namespace CurrencyTracker.Manager
 
             if (!Service.ClientState.IsLoggedIn) return;
 
-            if (!Plugin.GetPlugin.Configuration.TrackedInDuty)
+            if (!Plugin.Instance.Configuration.TrackedInDuty)
             {
                 if (IsBoundByDuty()) return;
             }
@@ -62,9 +62,9 @@ namespace CurrencyTracker.Manager
                     }
                 }
             }
-            foreach (var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
+            foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
             {
-                if (Plugin.GetPlugin.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
+                if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     if (currency != "Unknown" && currency != null)
                     {
@@ -78,11 +78,11 @@ namespace CurrencyTracker.Manager
         {
             currencyInfo ??= new CurrencyInfo();
             transactions ??= new Transactions();
-            Lang.LoadLanguage(Plugin.GetPlugin.Configuration.SelectedLanguage);
+            Lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
             TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-            string currentLocationName = Plugin.GetPlugin.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+            string currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;
@@ -94,13 +94,13 @@ namespace CurrencyTracker.Manager
                 else
                 {
                     // 检查是否启用副本内最小记录值 Check if enable tracking in duty
-                    if (Plugin.GetPlugin.Configuration.MinTrackValue != 0)
+                    if (Plugin.Instance.Configuration.MinTrackValue != 0)
                     {
                         // 检查是否在副本里
                         if (IsBoundByDuty())
                         {
                             // 检查变化量是否大于等于设定的最小记录值
-                            if (Math.Abs(currencyChange) >= Plugin.GetPlugin.Configuration.MinTrackValue)
+                            if (Math.Abs(currencyChange) >= Plugin.Instance.Configuration.MinTrackValue)
                             {
                                 transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
                             }

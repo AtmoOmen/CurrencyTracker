@@ -195,7 +195,7 @@ namespace CurrencyTracker.Manger
                     return languageDict[key];
                 }
             }
-            return key; // 返回原始文本（如果未找到对应翻译）
+            return key;
         }
     }
 }

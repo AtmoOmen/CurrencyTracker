@@ -84,7 +84,7 @@ public class Main : Window, IDisposable
     internal static readonly LanguageManager Lang = new LanguageManager();
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
-    private List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();
+    internal List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();
 
     public Main(Plugin plugin) : base("Currency Tracker")
     {
@@ -124,9 +124,9 @@ public class Main : Window, IDisposable
                 options.Add(currencyName);
             }
         }
-        foreach (var currency in Plugin.GetPlugin.Configuration.CustomCurrencyType)
+        foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
         {
-            if (Plugin.GetPlugin.Configuration.CustomCurrencies.TryGetValue(currency, out _))
+            if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out _))
             {
                 options.Add(currency);
             }
@@ -156,7 +156,7 @@ public class Main : Window, IDisposable
         if (!Service.ClientState.IsLoggedIn) return;
         transactions ??= new Transactions();
 
-        if (Plugin.GetPlugin.PluginInterface.IsDev)
+        if (Plugin.Instance.PluginInterface.IsDev)
         {
             FeaturesUnderTest();
         }
@@ -188,6 +188,7 @@ public class Main : Window, IDisposable
         OpenDataFolder();
         ImGui.SameLine();
         LanguageSwitch();
+        ImGui.SameLine();
 
         ImGui.Spacing();
         ImGui.Separator();
@@ -207,8 +208,8 @@ public class Main : Window, IDisposable
     {
         if (ImGui.Checkbox(Lang.GetText("ReverseSort"), ref isReversed))
         {
-            Plugin.GetPlugin.Configuration.ReverseSort = isReversed;
-            Plugin.GetPlugin.Configuration.Save();
+            Plugin.Instance.Configuration.ReverseSort = isReversed;
+            Plugin.Instance.Configuration.Save();
         }
     }
 
@@ -316,8 +317,8 @@ public class Main : Window, IDisposable
     {
         if (ImGui.Checkbox(Lang.GetText("TrackInDuty"), ref isTrackedinDuty))
         {
-            Plugin.GetPlugin.Configuration.TrackedInDuty = isTrackedinDuty;
-            Plugin.GetPlugin.Configuration.Save();
+            Plugin.Instance.Configuration.TrackedInDuty = isTrackedinDuty;
+            Plugin.Instance.Configuration.Save();
         }
 
         ImGuiComponents.HelpMarker(Lang.GetText("TrackInDutyHelp"));
@@ -333,8 +334,8 @@ public class Main : Window, IDisposable
         if (ImGui.InputInt("##MinTrackValue", ref minTrackValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             if (minTrackValue < 0) minTrackValue = 0;
-            Plugin.GetPlugin.Configuration.MinTrackValue = minTrackValue;
-            Plugin.GetPlugin.Configuration.Save();
+            Plugin.Instance.Configuration.MinTrackValue = minTrackValue;
+            Plugin.Instance.Configuration.Save();
         }
         ImGuiComponents.HelpMarker($"{Lang.GetText("MinimumRecordValueHelp")}{minTrackValue}{Lang.GetText("MinimumRecordValueHelp1")}");
     }
@@ -352,13 +353,13 @@ public class Main : Window, IDisposable
             ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("CustomCurrencyLabel1"));
             ImGuiComponents.HelpMarker(Lang.GetText("CustomCurrencyHelp"));
             ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
-            if (ImGui.BeginCombo("", Plugin.GetPlugin.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Lang.GetText("CustomCurrencyLabel3")))
+            if (ImGui.BeginCombo("", Plugin.Instance.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Lang.GetText("CustomCurrencyLabel3")))
             {
                 ImGui.SetNextItemWidth(200f);
                 ImGui.InputTextWithHint("##selectflts", Lang.GetText("CustomCurrencyLabel4"), ref searchFilter, 50);
                 ImGui.Separator();
 
-                foreach (var x in Plugin.GetPlugin.ItemNames)
+                foreach (var x in Plugin.Instance.ItemNames)
                 {
                     var shouldSkip = false;
                     foreach (var y in permanentCurrencyName)
@@ -399,9 +400,9 @@ public class Main : Window, IDisposable
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
                 // 配置保存一份
-                Plugin.GetPlugin.Configuration.CustomCurrencies.Add(selected, customCurrency);
-                Plugin.GetPlugin.Configuration.CustomCurrencyType.Add(selected);
-                Plugin.GetPlugin.Configuration.Save();
+                Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
+                Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
+                Plugin.Instance.Configuration.Save();
                 options.Add(selected);
             }
             ImGui.SameLine();
@@ -414,9 +415,9 @@ public class Main : Window, IDisposable
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
-                Plugin.GetPlugin.Configuration.CustomCurrencies.Remove(selected);
-                Plugin.GetPlugin.Configuration.CustomCurrencyType.Remove(selected);
-                Plugin.GetPlugin.Configuration.Save();
+                Plugin.Instance.Configuration.CustomCurrencies.Remove(selected);
+                Plugin.Instance.Configuration.CustomCurrencyType.Remove(selected);
+                Plugin.Instance.Configuration.Save();
                 options.Remove(selected);
             }
             ImGui.EndPopup();
@@ -535,7 +536,7 @@ public class Main : Window, IDisposable
         {
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            string playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
             try
             {
@@ -591,16 +592,16 @@ public class Main : Window, IDisposable
                 Lang.LoadLanguage("English");
 
                 playerLang = "English";
-                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
-                Plugin.GetPlugin.Configuration.Save();
+                Plugin.Instance.Configuration.SelectedLanguage = playerLang;
+                Plugin.Instance.Configuration.Save();
             }
             if (ImGui.Button("简体中文/Simplified Chinese"))
             {
                 Lang.LoadLanguage("ChineseSimplified");
 
                 playerLang = "ChineseSimplified";
-                Plugin.GetPlugin.Configuration.SelectedLanguage = playerLang;
-                Plugin.GetPlugin.Configuration.Save();
+                Plugin.Instance.Configuration.SelectedLanguage = playerLang;
+                Plugin.Instance.Configuration.Save();
             }
             ImGui.EndPopup();
         }
@@ -751,7 +752,7 @@ public class Main : Window, IDisposable
 
         var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
         var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-        string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+        string playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
         string NowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
         string finalFileName = $"{FileName}_{selectedCurrencyName}_{NowTime}.csv";
@@ -783,7 +784,7 @@ public class Main : Window, IDisposable
 
         var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
         var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-        string playerDataFolder = Path.Join(Plugin.GetPlugin.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+        string playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
         string filePath = Path.Join(playerDataFolder ?? "", $"{selectedCurrencyName}.txt");
 
