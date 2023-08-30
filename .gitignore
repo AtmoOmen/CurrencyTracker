@@ -4,3 +4,4 @@ bin/
 *.user
 CurrencyTracker/CurrencyTracker.csproj
 CurrencyTracker/CurrencyTracker.csproj
+Changelog.txt
