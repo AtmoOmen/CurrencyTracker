@@ -13,6 +13,16 @@ namespace CurrencyTracker.Manger
         private Dictionary<string, Dictionary<string, string>> languageResources;
         private string? currentLanguage;
 
+        public static readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>
+        {
+            { "Japanese", "日本語" },
+            { "English", "English" },
+            { "German", "Deutsch" },
+            { "French", "français" },
+            { "ChineseSimplified", "简体中文" },
+            { "Korean", "한국어" }
+        };
+
         public LanguageManager()
         {
             languageResources = new Dictionary<string, Dictionary<string, string>>
@@ -21,8 +31,10 @@ namespace CurrencyTracker.Manger
                 {
                     "ChineseSimplified", new Dictionary<string, string>
                     {
-                        { "ConfigLabel", "筛选排序选项:"},
-                        { "ConfigLabel1", "记录选项:" },
+                        { "ConfigLabel", "筛选排序选项"},
+                        { "ConfigLabel1", "记录选项" },
+                        { "ConfigLabel2", "其他" },
+                        { "ConfigLabelHelp", "点击以展开/收回" },
                         { "ReverseSort", "倒序排序 " },
                         { "ClusterByTime", "按时间聚类:" },
                         { "ClusterInterval", "小时" },
@@ -51,6 +63,7 @@ namespace CurrencyTracker.Manger
                         { "FileRenameLabel1", "文件名: " },
                         { "FileRenameLabel2", "当前时间" },
                         { "FileRenameHelp", "注1: 为避免错误，请勿输入过长的文件名\n注2: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)" },
+                        { "FileRenameHelp1", "如果留空，文件名则为: " },
                         { "ExportCsvMessage", "导出CSV文件错误: 当前未选中任何货币类型" },
                         { "ExportCsvMessage1", "导出CSV文件错误: 当前货币下无收支记录" },
                         { "ExportCsvMessage2", "时间,货币数,收支,地点" },
@@ -92,7 +105,15 @@ namespace CurrencyTracker.Manger
                         { "ClearExTransactionsHelp2", "清除了 " },
                         { "ClearExTransactionsHelp3", " 条异常记录。" },
                         { "Confirm", "确认" },
-                        { "UnknownCurrency", "未知的货币类型"}
+                        { "UnknownCurrency", "未知的货币类型"},
+                        { "TrackModeLabel", "记录模式" },
+                        { "TrackModeLabel1", "计时器模式" },
+                        { "TrackModeLabel2", "消息模式" },
+                        { "TrackModeLabel3", "间隔 (ms)" },
+                        { "TrackModeHelp", "计时器模式:\n每隔 " },
+                        { "TrackModeHelp1", " 毫秒，检查一次所有货币的变化情况" },
+                        { "TrackModeHelp2", "消息模式:\n每当接收到新消息时，检查一次所有货币的变化情况\n(此模式下可能会得到更加精准的记录)" },
+                        { "TrackModeHelp3", "过低的触发间隔会带来更高的性能损耗 (不明显)"}
                     }
                 },
 
@@ -100,20 +121,22 @@ namespace CurrencyTracker.Manger
                 {
                     "English", new Dictionary<string, string>
                     {
-                        { "ConfigLabel", "Filiter Options:"},
-                        { "ConfigLabel1", "Record Options:" },
-                        { "ReverseSort", "Reverse Sort  " },
+                        { "ConfigLabel", "Filiter Options"},
+                        { "ConfigLabel1", "Record Options" },
+                        { "ConfigLabel2", "Others" },
+                        { "ConfigLabelHelp", "Click to expand/collaspe" },
+                        { "ReverseSort", "Inverse Sort  " },
                         { "ClusterByTime", "Cluster By Time:" },
                         { "ClusterInterval", "Hours" },
                         { "ClusterByTimeHelp1", "Current Setting: Display transactions in " },
                         { "ClusterByTimeHelp2", "h interval" },
                         { "ChangeFilterEnabled", "Filter By Change    " },
-                        { "ChangeFilterLabel", "Only Display Transactions" },
+                        { "ChangeFilterLabel", "Only Display Records" },
                         { "Greater", "Above" },
                         { "Less", "Below" },
                         { "ChangeFilterValueLabel", " in Change" },
                         { "FilterByTime", "Filter By Time" },
-                        { "TimeFilterLabel", "Only Display Transactions Between" },
+                        { "TimeFilterLabel", "Only Display Records Between" },
                         { "TimeFilterLabel1", " And " },
                         { "TimeFilterLabel2", "" },
                         { "Year", "Y" },
@@ -121,15 +144,16 @@ namespace CurrencyTracker.Manger
                         { "Day", "D" },
                         { "TrackInDuty", "Track in Duty" },
                         { "TrackInDutyHelp", "By Default, the plugin will pause recording when players are in Duty or Field Entry\nand waits until players exit those before calculating the total Changes in currency during that period.\nYou can disable this behavior by enabling this option.\n\nNote: This may result in recording a large number of transactions with small changes, significantly increasing the amount of transactions" },
-                        { "MinimumRecordValue", "Min Record Value In Duty:" },
+                        { "MinimumRecordValue", "Min Record Value:" },
                         { "MinimumRecordValueHelp", "Current setting: Only record when the absolute value of change is ≥ " },
-                        { "MinimumRecordValueHelp1", "\nNote: Set to 0 to disable this feature / Only effective in duty / May lead to inaccurate location recording" },
-                        { "TransactionsPerPage", "Transactions Per Page:" },
+                        { "MinimumRecordValueHelp1", "\n\nNote: Set to 0 to disable this feature / Only effective in duty / May lead to inaccurate location recording" },
+                        { "TransactionsPerPage", "Records Per Page:" },
                         { "ExportCsv", "Export .CSV" },
                         { "FileRenameLabel", "Enter a File Name: (Press Enter to Confirm)" },
                         { "FileRenameLabel1", "Filename: " },
                         { "FileRenameLabel2", "CurrentTime" },
                         { "FileRenameHelp", "Note 1: To avoid errors, please do not enter a file name that is \"too long\"\nNote 2: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging)." },
+                        { "FileRenameHelp1", "If left blank, the file name will be: " },
                         { "ExportCsvMessage", "ERROR: No currency type currently selected." },
                         { "ExportCsvMessage1", "ERROR: No transactions under current selected currency." },
                         { "ExportCsvMessage2", "Time,Amount,Change,Location" },
@@ -155,23 +179,31 @@ namespace CurrencyTracker.Manger
                         { "Add", "Add " },
                         { "Delete", "Delete " },
                         { "OpenDataFolder", "Open Data Folder" },
-                        { "MergeTransactionsLabel", "Merge Transactions" },
+                        { "MergeTransactionsLabel", "Merge Records" },
                         { "MergeTransactionsLabel1", "Threshold" },
                         { "MergeTransactionsHelp", "Please enter a threshold" },
                         { "MergeTransactionsHelp1", "Merged " },
-                        { "MergeTransactionsHelp2", " transactions." },
+                        { "MergeTransactionsHelp2", " records." },
                         { "MergeTransactionsHelp3", "Merge transactions with the same location name, adjacent locations, and change below the threshold in the currently selected currency\n" },
                         { "MergeTransactionsHelp4", "After the merger, the transactions' Time and Amount are taken from the latest value in the merged transactions, and the Change are the values obtained by adding them together\n\n" },
                         { "TransactionsHelp", "No matching transactions found." },
                         { "TransactionsHelp1", "No currency being selected now." },
                         { "TransactionsHelp2", "Note: The operation cannot be rolled back. If necessary, please make a backup" },
-                        { "ClearExTransactionsLabel", "Clear Ex Transactions"},
+                        { "ClearExTransactionsLabel", "Clear Ex Records"},
                         { "ClearExTransactionsHelp", "Attempt to clear all exception transactions under the currently selected currency\n"},
                         { "ClearExTransactionsHelp1", "Current judgment criteria: Transactions with Change equal to the Amount /with Change equal to 0\n\n"},
                         { "ClearExTransactionsHelp2", "Clear " },
                         { "ClearExTransactionsHelp3", " exceptional transactions." },
                         { "Confirm", "Confirm" },
-                        { "UnknownCurrency", "Unknown Currency"}
+                        { "UnknownCurrency", "Unknown Currency"},
+                        { "TrackModeLabel", "Track Mode" },
+                        { "TrackModeLabel1", "Timer Mode" },
+                        { "TrackModeLabel2", "Chat Mode" },
+                        { "TrackModeLabel3", "Interval (ms)" },
+                        { "TrackModeHelp", "Timer Mode:\nCheck all currency changes every " },
+                        { "TrackModeHelp1", " milliseconds" },
+                        { "TrackModeHelp2", "Chat Mode:\nCheck all currency changes whenever a new chat message is received\n(May record more accurate transactions data)" },
+                        { "TrackModeHelp3", "Too low trigger interval may result in higher performance overhead (not significant)"}
                     }
                 }
             };
@@ -183,6 +215,20 @@ namespace CurrencyTracker.Manger
             {
                 currentLanguage = languageName;
             }
+        }
+
+        public List<string> AvailableLanguage()
+        {
+            var availablelangs = new List<string>();
+            foreach (var language in LanguageNames.Keys)
+            {
+                if (languageResources.ContainsKey(language))
+                {
+                    var languagename = LanguageNames[language];
+                    availablelangs.Add(languagename);
+                }
+            }
+            return availablelangs;
         }
 
         public string GetText(string key)

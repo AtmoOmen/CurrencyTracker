@@ -1,13 +1,17 @@
 using CurrencyTracker.Manger;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.Text;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Logging;
 
 namespace CurrencyTracker.Manager
 {
     public class Tracker : IDisposable
     {
+        private int timerInterval = 0;
         public static readonly string[] CurrencyType = new string[]
         {
             "Gil","MGP",
@@ -34,15 +38,64 @@ namespace CurrencyTracker.Manager
 
         public Tracker()
         {
-            UpdateCurrenciesTimer();
+            if (Plugin.Instance.Configuration.TrackMode == 0)
+            {
+                UpdateCurrenciesTimer();
+                Service.ClientState.TerritoryChanged += OnZoneChange;
+                Service.Chat.ChatMessage -= OnChatMessage;
+            }
 
-            Service.ClientState.TerritoryChanged += OnZoneChange;
+            if (Plugin.Instance.Configuration.TrackMode == 1)
+            {
+                Service.Chat.ChatMessage += OnChatMessage;
+                Service.ClientState.TerritoryChanged -= OnZoneChange;
+
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+            }
+        }
+
+        private void UpdateCurrenciesByChat()
+        {
+            currencyInfo ??= new CurrencyInfo();
+
+            if (!Service.ClientState.IsLoggedIn) return;
+
+            if (!Plugin.Instance.Configuration.TrackedInDuty)
+            {
+                if (IsBoundByDuty()) return;
+            }
+
+            foreach (var currency in CurrencyType)
+            {
+                if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                {
+                    string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+                    if (currencyName != "Unknown" && currencyName != null)
+                    {
+                        CheckCurrency(currencyName, currencyID);
+                    }
+                }
+            }
+            foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
+            {
+                if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
+                {
+                    if (currency != "Unknown" && currency != null)
+                    {
+                        CheckCurrency(currency, currencyID);
+                    }
+                }
+            }
         }
 
         private void UpdateCurrenciesTimer()
         {
             currencyInfo ??= new CurrencyInfo();
-            Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(500), 0, cancellationTokenSource.Token);
+            timerInterval = Plugin.Instance.Configuration.TimerInterval;
+
+                timerInterval = Plugin.Instance.Configuration.TimerInterval;
+                Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(timerInterval), 0, cancellationTokenSource.Token);
 
             if (!Service.ClientState.IsLoggedIn) return;
 
@@ -128,12 +181,23 @@ namespace CurrencyTracker.Manager
             }
         }
 
+        private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
+        {
+            UpdateCurrenciesByChat();
+        }
+
         public void Dispose()
         {
             Service.ClientState.TerritoryChanged -= OnZoneChange;
+            Service.Chat.ChatMessage -= OnChatMessage;
 
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
+
+            if (Plugin.Instance.Configuration.TrackMode == 0)
+            {
+                cancellationTokenSource.Cancel();
+                cancellationTokenSource.Dispose();
+                return;
+            }
         }
     }
 }

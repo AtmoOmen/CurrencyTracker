@@ -10,7 +10,6 @@ namespace CurrencyTracker
     [Serializable]
     public class Configuration : IPluginConfiguration
     {
-        public ClientState? ClientState { get; init; }
         public int Version { get; set; } = 0;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
 
@@ -22,6 +21,9 @@ namespace CurrencyTracker
         public bool TrackedInDuty { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
         public int MinTrackValue { get; set; } = 0;
+        public int TrackMode { get; set; } = 0;
+
+        public int TimerInterval { get; set; } = 500;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

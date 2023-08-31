@@ -1,4 +1,5 @@
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manger;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
@@ -20,35 +21,35 @@ namespace CurrencyTracker
         public CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
-        internal Main MainWindow { get; init; }
+        private Main MainWindow { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
         private const string CommandName = "/ct";
 
         internal Dictionary<uint, string> TerritoryNames = new();
         internal Dictionary<uint, string> ItemNames = new();
+        private static readonly LanguageManager Lang = new LanguageManager();
         private string playerLang = string.Empty;
 
-        public Plugin([RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
-                      [RequiredVersion("1.0")] CommandManager commandManager)
+        public Plugin(DalamudPluginInterface pluginInterface,CommandManager commandManager)
         {
             Instance = this;
-            Service.Initialize(pluginInterface);
+            PluginInterface = pluginInterface;
+            CommandManager = commandManager;
+            Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
 
-            this.PluginInterface = pluginInterface;
-            this.Configuration = this.PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            this.Configuration.Initialize(this.PluginInterface);
-            this.CommandManager = commandManager;
+            Service.Initialize(pluginInterface);
+            Configuration.Initialize(PluginInterface);
+
+            CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            {
+                HelpMessage = "Open the main window of the plugin\n/ct <currencyname> → Open the main window with specific currency shown."
+            });
 
             MainWindow = new Main(this);
             WindowSystem.AddWindow(MainWindow);
-            this.PluginInterface.UiBuilder.Draw += DrawUI;
-            this.PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-
-            this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = "Open the main window of the plugin\n/ct CurrencyName -> Open the main window with specific currency shown."
-            });
+            PluginInterface.UiBuilder.Draw += DrawUI;
+            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
             if (Configuration.CurrentActiveCharacter == null)
             {
@@ -129,12 +130,12 @@ namespace CurrencyTracker
 
         public void Dispose()
         {
-            this.WindowSystem.RemoveAllWindows();
+            WindowSystem.RemoveAllWindows();
 
             MainWindow.Dispose();
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
-            this.CommandManager.RemoveHandler(CommandName);
+            CommandManager.RemoveHandler(CommandName);
         }
 
         private void OnCommand(string command, string args)
@@ -196,7 +197,7 @@ namespace CurrencyTracker
 
         private void DrawUI()
         {
-            this.WindowSystem.Draw();
+            WindowSystem.Draw();
         }
 
         public void DrawConfigUI()
