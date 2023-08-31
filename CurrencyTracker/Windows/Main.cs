@@ -748,7 +748,21 @@ public class Main : Window, IDisposable
     // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
     private void AvailabelCurrenciesListBox()
     {
-        float ChildFrameHeight = ImGui.GetWindowHeight() - 240;
+        int trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
+        float ChildFrameHeight = ImGui.GetWindowHeight() - 245;
+
+        if (showRecordOptions)
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
+        }
+        else
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
+            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
+        }
+
         Vector2 childScale = new Vector2(240, ChildFrameHeight);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
@@ -767,7 +781,21 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(selectedCurrencyName))
             return;
 
-        float ChildFrameHeight = ImGui.GetWindowHeight() - 240;
+        int trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
+        float ChildFrameHeight = ImGui.GetWindowHeight() - 245;
+
+        if (showRecordOptions)
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
+        }
+        else
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
+            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
+        }
+
         Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ChildFrameHeight);
 
         ImGui.SameLine();
