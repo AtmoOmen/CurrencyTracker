@@ -1,6 +1,5 @@
 using CurrencyTracker.Manager;
 using Dalamud.Configuration;
-using Dalamud.Game.ClientState;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;

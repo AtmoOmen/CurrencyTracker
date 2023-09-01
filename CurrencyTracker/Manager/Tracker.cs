@@ -1,17 +1,17 @@
-using CurrencyTracker.Manger;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
+using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Logging;
 using System;
 using System.Diagnostics;
 using System.Threading;
-using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Logging;
 
 namespace CurrencyTracker.Manager
 {
     public class Tracker : IDisposable
     {
         private int timerInterval = 0;
+
         public static readonly string[] CurrencyType = new string[]
         {
             "Gil","MGP",
@@ -23,7 +23,7 @@ namespace CurrencyTracker.Manager
             "NonLimitedTomestone", "LimitedTomestone", "Poetic"
         };
 
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly Stopwatch timer = new Stopwatch();
         private CurrencyInfo currencyInfo = new CurrencyInfo();
         private Transactions transactions = new Transactions();
@@ -40,19 +40,45 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.Configuration.TrackMode == 0)
             {
-                UpdateCurrenciesTimer();
-                Service.ClientState.TerritoryChanged += OnZoneChange;
-                Service.Chat.ChatMessage -= OnChatMessage;
+                InitializeTimerTracking();
             }
-
-            if (Plugin.Instance.Configuration.TrackMode == 1)
+            else if (Plugin.Instance.Configuration.TrackMode == 1)
             {
-                Service.Chat.ChatMessage += OnChatMessage;
-                Service.ClientState.TerritoryChanged -= OnZoneChange;
-
-                cancellationTokenSource.Cancel();
-                cancellationTokenSource.Dispose();
+                InitializeChatTracking();
             }
+        }
+
+        public void ChangeTracker()
+        {
+            if (Plugin.Instance.Configuration.TrackMode == 0)
+            {
+                InitializeTimerTracking();
+            }
+            else if (Plugin.Instance.Configuration.TrackMode == 1)
+            {
+                InitializeChatTracking();
+            }
+        }
+
+        private void InitializeTimerTracking()
+        {
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
+
+            UpdateCurrenciesTimer();
+            Service.ClientState.TerritoryChanged += OnZoneChange;
+            Service.Chat.ChatMessage -= OnChatMessage;
+        }
+
+        private void InitializeChatTracking()
+        {
+            Service.Chat.ChatMessage += OnChatMessage;
+            Service.ClientState.TerritoryChanged -= OnZoneChange;
+
+            cancellationTokenSource.Cancel();
+            cancellationTokenSource.Dispose();
+            cancellationTokenSource = new CancellationTokenSource();
         }
 
         private void UpdateCurrenciesByChat()
@@ -94,8 +120,7 @@ namespace CurrencyTracker.Manager
             currencyInfo ??= new CurrencyInfo();
             timerInterval = Plugin.Instance.Configuration.TimerInterval;
 
-                timerInterval = Plugin.Instance.Configuration.TimerInterval;
-                Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(timerInterval), 0, cancellationTokenSource.Token);
+            Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(timerInterval), 0, cancellationTokenSource.Token);
 
             if (!Service.ClientState.IsLoggedIn) return;
 
@@ -139,20 +164,16 @@ namespace CurrencyTracker.Manager
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;
-                // 检查金额变化
                 if (currencyChange == 0)
                 {
                     return;
                 }
                 else
                 {
-                    // 检查是否启用副本内最小记录值 Check if enable tracking in duty
                     if (Plugin.Instance.Configuration.MinTrackValue != 0)
                     {
-                        // 检查是否在副本里
                         if (IsBoundByDuty())
                         {
-                            // 检查变化量是否大于等于设定的最小记录值
                             if (Math.Abs(currencyChange) >= Plugin.Instance.Configuration.MinTrackValue)
                             {
                                 transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
@@ -164,7 +185,6 @@ namespace CurrencyTracker.Manager
                     else transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
                 }
             }
-            // 如果 latestTransaction 为空，则代表不存在该货币种类的数据文件，创建新的数据文件
             else
             {
                 transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName);
@@ -183,7 +203,12 @@ namespace CurrencyTracker.Manager
 
         private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
-            UpdateCurrenciesByChat();
+            var chatmessage = message.TextValue;
+            var typeValue = (ushort)type;
+            if (typeValue == 57 || typeValue == 0 || typeValue == 2110 || typeValue == 2105 || typeValue == 62 || typeValue == 3006)
+            {
+                UpdateCurrenciesByChat();
+            }
         }
 
         public void Dispose()
@@ -191,12 +216,10 @@ namespace CurrencyTracker.Manager
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
 
-
             if (Plugin.Instance.Configuration.TrackMode == 0)
             {
                 cancellationTokenSource.Cancel();
                 cancellationTokenSource.Dispose();
-                return;
             }
         }
     }

@@ -1,5 +1,4 @@
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manger;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
@@ -24,6 +23,7 @@ public class Main : Window, IDisposable
 
     // 记录模式: 0为计时器模式, 1为聊天记录模式 Record Mode: 0 for Timer Mode, 1 for Chat Mode
     private int recordMode = 0;
+
     // 是否显示筛选排序选项 If Show Sort Options
     private bool showSortOptions = true;
 
@@ -161,7 +161,6 @@ public class Main : Window, IDisposable
             }
         }
     }
-
 
     // 处理插件语言表达 Handel the plugin UI's language
     private void LoadLanguage(Plugin plugin)
@@ -666,8 +665,6 @@ public class Main : Window, IDisposable
     {
         var AvailableLangs = Lang.AvailableLanguage();
 
-        
-
         var lang = string.Empty;
 
         if (ImGui.Button("Languages"))
@@ -704,7 +701,7 @@ public class Main : Window, IDisposable
     // 记录模式切换 Record Mode Change
     private void RecordMode()
     {
-        if(ImGui.Button($"{Lang.GetText("TrackModeLabel")}"))
+        if (ImGui.Button($"{Lang.GetText("TrackModeLabel")}"))
         {
             ImGui.OpenPopup("RecordMode");
         }
@@ -714,7 +711,7 @@ public class Main : Window, IDisposable
             {
                 Plugin.Instance.Configuration.TrackMode = recordMode;
                 Plugin.Instance.Configuration.Save();
-                Service.Tracker = new Tracker();
+                Service.Tracker.ChangeTracker();
             }
             if (recordMode == 0)
             {
@@ -737,7 +734,7 @@ public class Main : Window, IDisposable
             {
                 Plugin.Instance.Configuration.TrackMode = recordMode;
                 Plugin.Instance.Configuration.Save();
-                Service.Tracker = new Tracker();
+                Service.Tracker.ChangeTracker();
             }
             ImGui.SameLine();
             ImGuiComponents.HelpMarker($"{Lang.GetText("TrackModeHelp2")}");

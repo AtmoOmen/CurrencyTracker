@@ -1,5 +1,4 @@
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manger;
 using Dalamud.Data;
 using Dalamud.Game;
 using Dalamud.Game.ClientState;
@@ -8,7 +7,6 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Gui;
 using Dalamud.IoC;
 using Dalamud.Plugin;
-using Lumina.Data;
 
 namespace CurrencyTracker;
 
@@ -32,6 +30,5 @@ public class Service
     public static Tracker Tracker { get; set; } = null!;
     public static Configuration Configuration { get; set; } = null!;
     public static Transactions Transactions { get; set; } = null!;
-    public static  LanguageManager Lang { get; private set; } = null!;
-
+    public static LanguageManager Lang { get; private set; } = null!;
 }

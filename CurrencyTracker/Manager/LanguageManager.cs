@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace CurrencyTracker.Manger
+namespace CurrencyTracker.Manager
 {
     // Language Names in Game:
     // Japanese
@@ -108,11 +108,11 @@ namespace CurrencyTracker.Manger
                         { "UnknownCurrency", "未知的货币类型"},
                         { "TrackModeLabel", "记录模式" },
                         { "TrackModeLabel1", "计时器模式" },
-                        { "TrackModeLabel2", "消息模式" },
+                        { "TrackModeLabel2", "消息模式 [实验]" },
                         { "TrackModeLabel3", "间隔 (ms)" },
                         { "TrackModeHelp", "计时器模式:\n每隔 " },
                         { "TrackModeHelp1", " 毫秒，检查一次所有货币的变化情况" },
-                        { "TrackModeHelp2", "消息模式:\n每当接收到新消息时，检查一次所有货币的变化情况\n(此模式下可能会得到更加精准的记录)" },
+                        { "TrackModeHelp2", "消息模式:\n每当接收到新消息时，检查一次所有货币的变化情况\n(此模式下可能会得到更加精准的记录)\n\n注：如果发现任何不记录的情况，请附上场景向我提交ISSUE！" },
                         { "TrackModeHelp3", "过低的触发间隔会带来更高的性能损耗 (不明显)"}
                     }
                 },
@@ -198,11 +198,11 @@ namespace CurrencyTracker.Manger
                         { "UnknownCurrency", "Unknown Currency"},
                         { "TrackModeLabel", "Track Mode" },
                         { "TrackModeLabel1", "Timer Mode" },
-                        { "TrackModeLabel2", "Chat Mode" },
+                        { "TrackModeLabel2", "Chat Mode [EXPERIMENTAL]" },
                         { "TrackModeLabel3", "Interval (ms)" },
                         { "TrackModeHelp", "Timer Mode:\nCheck all currency changes every " },
                         { "TrackModeHelp1", " milliseconds" },
-                        { "TrackModeHelp2", "Chat Mode:\nCheck all currency changes whenever a new chat message is received\n(May record more accurate transactions data)" },
+                        { "TrackModeHelp2", "Chat Mode:\nCheck all currency changes whenever a new chat message is received\n(May record more accurate transactions data)\n\nNote: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!" },
                         { "TrackModeHelp3", "Too low trigger interval may result in higher performance overhead (not significant)"}
                     }
                 }

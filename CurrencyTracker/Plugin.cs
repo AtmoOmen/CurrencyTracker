@@ -1,9 +1,7 @@
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manger;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
-using Dalamud.IoC;
 using Dalamud.Logging;
 using Dalamud.Plugin;
 using Lumina.Excel.GeneratedSheets;
@@ -31,7 +29,7 @@ namespace CurrencyTracker
         private static readonly LanguageManager Lang = new LanguageManager();
         private string playerLang = string.Empty;
 
-        public Plugin(DalamudPluginInterface pluginInterface,CommandManager commandManager)
+        public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
         {
             Instance = this;
             PluginInterface = pluginInterface;
