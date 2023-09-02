@@ -21,6 +21,7 @@ namespace CurrencyTracker
         public string SelectedLanguage { get; set; } = string.Empty;
         public int MinTrackValue { get; set; } = 0;
         public int TrackMode { get; set; } = 0;
+        public int RecordsPerPage { get; set; } = 20;
 
         public int TimerInterval { get; set; } = 500;
 

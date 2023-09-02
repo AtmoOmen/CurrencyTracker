@@ -132,7 +132,7 @@ namespace CurrencyTracker.Manager
             temporarySingleTransactionList.Clear();
         }
 
-        public int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold)
+        public int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
         {
             transactionsConvertor ??= new TransactionsConvertor();
 
@@ -153,23 +153,32 @@ namespace CurrencyTracker.Manager
                 var nextIndex = currentIndex + 1;
 
                 while (nextIndex < allTransactions.Count &&
-       currentTransaction.LocationName == allTransactions[nextIndex].LocationName &&
-       Math.Abs(allTransactions[nextIndex].Change) < threshold)
+                    currentTransaction.LocationName == allTransactions[nextIndex].LocationName &&
+                    Math.Abs(allTransactions[nextIndex].Change) < threshold)
                 {
                     var nextTransaction = allTransactions[nextIndex];
 
-                    if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
+                    if (!isOneWayMerge || (isOneWayMerge &&
+                        (currentTransaction.Change >= 0 && nextTransaction.Change >= 0) ||
+                        (currentTransaction.Change < 0 && nextTransaction.Change < 0)))
                     {
-                        currentTransaction.Amount = nextTransaction.Amount;  // 更新为最早符合条件的交易记录的时间戳
-                    }
-                    currentTransaction.Change += nextTransaction.Change;
-                    if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
-                    {
-                        currentTransaction.TimeStamp = allTransactions[nextIndex].TimeStamp;  // 更新为最早符合条件的交易记录的时间戳
-                    }
+                        if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
+                        {
+                            currentTransaction.Amount = nextTransaction.Amount;
+                        }
+                        currentTransaction.Change += nextTransaction.Change;
+                        if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
+                        {
+                            currentTransaction.TimeStamp = allTransactions[nextIndex].TimeStamp;
+                        }
 
-                    nextIndex++;
-                    mergedCount++;
+                        nextIndex++;
+                        mergedCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 mergedTransactions.Insert(0, currentTransaction);
@@ -181,5 +190,11 @@ namespace CurrencyTracker.Manager
 
             return mergedCount;
         }
+
+
+
+
+
+
     }
 }

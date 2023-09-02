@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.1.2.1",
+    "AssemblyVersion": "1.1.2.2",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",
@@ -17,5 +17,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "- Changed the logic in the Track Mode section of the code, which should now significantly improve the performance of Chat Mode."
+    "Changelog": "- Add One-Way Merge function to Merge Records feature, and original merging logic will be Two-Way Merge function.\n- Add two buttons that allow to jump to the first page and last page of transactions in chart\n- Now Records Per Page data will be saved to configuration."
 }

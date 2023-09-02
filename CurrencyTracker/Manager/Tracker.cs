@@ -205,7 +205,11 @@ namespace CurrencyTracker.Manager
         {
             var chatmessage = message.TextValue;
             var typeValue = (ushort)type;
-            if (typeValue == 57 || typeValue == 0 || typeValue == 2110 || typeValue == 2105 || typeValue == 62 || typeValue == 3006)
+            if (Plugin.Instance.PluginInterface.IsDev)
+            {
+                PluginLog.Debug($"[{typeValue}]{chatmessage}");
+            }
+            if (typeValue == 57 || typeValue == 0 || typeValue == 2110 || typeValue == 2105 || typeValue == 62 || typeValue == 3006 || typeValue == 3001)
             {
                 UpdateCurrenciesByChat();
             }

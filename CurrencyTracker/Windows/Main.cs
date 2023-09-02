@@ -124,6 +124,7 @@ public class Main : Window, IDisposable
         minTrackValue = plugin.Configuration.MinTrackValue;
         recordMode = plugin.Configuration.TrackMode;
         timerInterval = plugin.Configuration.TimerInterval;
+        transactionsPerPage = plugin.Configuration.RecordsPerPage;
 
         LoadOptions();
         LoadLanguage(plugin);
@@ -514,6 +515,8 @@ public class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("MergeTransactions"))
         {
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("MergeTransactionsLabel4"));
             ImGui.Text(Lang.GetText("MergeTransactionsLabel1"));
             ImGui.SameLine();
             ImGui.SetNextItemWidth(150f);
@@ -522,9 +525,10 @@ public class Main : Window, IDisposable
             {
                 mergeThreshold = 0;
             }
-
             ImGui.SameLine();
-            if (ImGui.Button(Lang.GetText("Confirm")))
+            ImGuiComponents.HelpMarker($"{Lang.GetText("MergeTransactionsHelp3")}{Lang.GetText("TransactionsHelp2")}");
+
+            if (ImGui.Button(Lang.GetText("MergeTransactionsLabel2")))
             {
                 if (!string.IsNullOrEmpty(selectedCurrencyName))
                 {
@@ -535,7 +539,7 @@ public class Main : Window, IDisposable
                     }
                     else
                     {
-                        var mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, mergeThreshold);
+                        var mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, mergeThreshold, false);
                         if (mergeCount > 0)
                             Service.Chat.Print($"{Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Lang.GetText("MergeTransactionsHelp2")}");
                         else
@@ -551,14 +555,39 @@ public class Main : Window, IDisposable
                     return;
                 }
             }
-
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker($"{Lang.GetText("MergeTransactionsHelp3")}{Lang.GetText("MergeTransactionsHelp4")}{Lang.GetText("TransactionsHelp2")}");
+            if (ImGui.Button(Lang.GetText("MergeTransactionsLabel3")))
+            {
+                if (!string.IsNullOrEmpty(selectedCurrencyName))
+                {
+                    if (mergeThreshold == 0)
+                    {
+                        Service.Chat.PrintError(Lang.GetText("MergeTransactionsHelp"));
+                        return;
+                    }
+                    else
+                    {
+                        var mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, mergeThreshold, true);
+                        if (mergeCount > 0)
+                            Service.Chat.Print($"{Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Lang.GetText("MergeTransactionsHelp2")}");
+                        else
+                        {
+                            Service.Chat.PrintError(Lang.GetText("TransactionsHelp"));
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                    return;
+                }
+            }
             ImGui.EndPopup();
         }
     }
 
-    // 清除异常记录 Clear Exceptional Transactions
+    // (界面)清除异常记录 (UI)Clear Exceptional Transactions
     private void ClearExceptions()
     {
         if (ImGui.Button(Lang.GetText("ClearExTransactionsLabel")))
@@ -575,7 +604,7 @@ public class Main : Window, IDisposable
         }
     }
 
-    // 导出数据为.CSV文件 Export Transactions To a .csv File
+    // (界面)导出数据为.CSV文件 (UI)Export Transactions To a .csv File
     private void ExportToCSV()
     {
         if (ImGui.Button(Lang.GetText("ExportCsv")))
@@ -760,10 +789,12 @@ public class Main : Window, IDisposable
             if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
         }
 
-        Vector2 childScale = new Vector2(240, ChildFrameHeight);
+        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
+
+        Vector2 childScale = new Vector2(243, ChildFrameHeight);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
-            ImGui.SetNextItemWidth(250);
+            ImGui.SetNextItemWidth(235);
             if (ImGui.ListBox("", ref selectedOptionIndex, options.ToArray(), options.Count, options.Count))
             {
                 selectedCurrencyName = options[selectedOptionIndex];
@@ -792,6 +823,8 @@ public class Main : Window, IDisposable
             if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
             if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
         }
+
+        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
 
         Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ChildFrameHeight);
 
@@ -828,8 +861,16 @@ public class Main : Window, IDisposable
             ImGui.SameLine();
             ImGui.SetNextItemWidth(120);
             if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
+            {
                 transactionsPerPage = Math.Max(transactionsPerPage, 0);
+                Plugin.Instance.Configuration.RecordsPerPage = transactionsPerPage;
+                Plugin.Instance.Configuration.Save();
+            }
 
+            ImGui.SameLine();
+            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 55);
+            if (ImGui.Button(Lang.GetText("FirstPage")))
+                currentPage = 0;
             ImGui.SameLine();
             ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
             if (ImGui.Button(Lang.GetText("PreviousPage")) && currentPage > 0)
@@ -842,12 +883,16 @@ public class Main : Window, IDisposable
             if (ImGui.Button(Lang.GetText("NextPage")) && currentPage < pageCount - 1)
                 currentPage++;
 
+            ImGui.SameLine();
+            if (ImGui.Button(Lang.GetText("LastPage")) && currentPage >= 0)
+                currentPage = pageCount;
+
             visibleStartIndex = currentPage * transactionsPerPage;
             visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
 
             ImGui.Separator();
 
-            ImGui.Columns(4, "LogColumns");
+            ImGui.Columns(4, "Transactions");
             ImGui.Text(Lang.GetText("Column"));
             ImGui.NextColumn();
             ImGui.Text(Lang.GetText("Column1"));

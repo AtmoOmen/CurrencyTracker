@@ -18,6 +18,7 @@ Now supports English and Simplified Chinese.
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/09/02 | 1.1.2.2 | - Add One-Way Merge function to Merge Records feature, and original merging logic will be Two-Way Merge function.<br>- Add two buttons that allow to jump to the first page and last page of transactions in chart<br>- Now Records Per Page data will be saved to configuration. |
 | 2023/09/01 | 1.1.2.1 | Changed the logic in the Track Mode section of the code, which should now significantly improve the performance of Chat Mode. |
 | 2023/08/31 | 1.1.2.0 | - Modified the UI layout and interactive logic of the main interface.<br/>  - Added an "Others" category for options, relocating the previous functions "Export .CSV," "Open Data Folder," and "Languages" to this category.<br/>  - Enhanced the interactive logic for option categories, allowing users to expand/collapse all options within a category by clicking the category label.<br/>  - Revised the height calculation logic for list boxes and sub-windows displaying tables, enabling them to automatically adjust height while maintaining alignment as the window height changes.<br/><br/>- Added a feature called "Track Mode," located under the "Record Options" category.<br/>  - "Timer Mode" (existing) - Users can now customize the time interval for triggering the timer.<br/>  - "Chat Mode" (new) - Automatically checks the changes in all currencies whenever new in-game messages are received, potentially leading to more accurate records under this mode.<br/><br/>- Fixed a bug where the same custom currency was repeatedly added to the list box after re-enabling the plugin under certain circumstances.<br/><br/>- (English only) Modified certain inaccuracies in the English localization text. |
 | 2023/08/29 | 1.1.1.4 | - Modified the conditional logic of certain code segments.<br>- Fixed a bug in Merge Transactions function that generated incorrect records in certain scenarios.<br>- Added fuzzy query functionality to the command. |
@@ -48,6 +49,7 @@ Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年9月2日 | 1.1.2.2 | - 为合并记录功能新增了单项合并功能，原有的合并逻辑会变为双向合并功能<br>- 在表格页面新增了两个按钮，用于跳转至记录的首页和尾页<br>- 现在 单页记录数 数据会被持久化存储至配置文件中 |
 | 2023年9月1日 | 1.1.2.1 | - 修改了“记录模式”部分的代码逻辑，现在应该能看到“消息模式”下插件明显的性能提升 |
 | 2023年8月31日 | 1.1.2.0 | \- 修改了主界面的 UI 布局和交互逻辑  - 新增了选项类别"其他"，原有的“导出文件”、“打开数据文件夹”和“语言切换”功能移动至该类别下<br>  - 新增了对选项类别的交互逻辑，现在该逻辑允许用户通过单击该选项类别的标签以展开/折叠该类别下的所有选项<br>  - 修改了列表框和显示表格的子窗体的高度计算逻辑，现在它们能在保持高度对齐的情况随着窗口大小自动调节高度<br> - 新增了功能“记录模式”，位于“记录选项”选项类别下<br>  - “计时器模式”(原) - 现在允许用户自定义计时器触发的时间间隔<br>  - “消息模式”(新) - 每当游戏内接收到新消息时，自动检查当前所有货币的变化情况，该模式下的记录可能会更加准确<br> - 修复了“在某些情况下，重新启用插件后，列表框内被重复添加相同的自定义货币”的BUG<br> - (仅限英语)修改了英语本地化文本中的一些不太准确的表达 |
 | 2023年8月29日 | 1.1.1.4 | - 更改了部分代码片段的判断逻辑<br>- 修复了"合并记录"功能在某些情况下生成的错误收支记录<br>- 为插件命令新增了模糊查询功能 |
