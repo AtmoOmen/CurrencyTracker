@@ -54,9 +54,14 @@ namespace CurrencyTracker.Manager
                         { "Day", "日" },
                         { "TrackInDuty", "记录副本内数据" },
                         { "TrackInDutyHelp", "部分副本、特殊场景探索中会给予货币奖励\n插件默认当玩家在副本、特殊场景探索中时暂停记录，等待玩家退出它们时再计算期间货币的总增减，无法记录副本内货币变化的地点\n你可以通过开启本项目关闭此功能\n\n注: 这可能会使插件记录大量小额数据，使得记录量大幅增加，但可以正常记录副本内货币变化的地点" },
-                        { "MinimumRecordValue", "副本内最小记录值:" },
-                        { "MinimumRecordValueHelp", "当前设置: 当货币收支的绝对值≥ " },
-                        { "MinimumRecordValueHelp1", " 时，才记录一次数据\n注: 设置为 0 以关闭本项/仅在副本内生效/可能造成不准确的地点记录" },
+                        { "MinimumRecordValue", "最小记录值" },
+                        { "MinimumRecordValueLabel", "副本内最小记录值: " },
+                        { "MinimumRecordValueLabel1", "副本外最小记录值: " },
+                        { "MinimumRecordValueLabel2", "应用更改"},
+                        { "MinimumRecordValueHelp", "当前设置:\n" +
+                        "副本内: 当货币收支的绝对值≥ " },
+                        { "MinimumRecordValueHelp1",",\n副本外: 当货币收支的绝对值≥ " },
+                        { "MinimumRecordValueHelp2", " 时，\n才进行一次数据记录\n注: 可能造成不准确的地点记录" },
                         { "TransactionsPerPage", "单页记录数:" },
                         { "ExportCsv", "导出为CSV" },
                         { "FileRenameLabel", "请输入文件名: (按Enter键确认)" },
@@ -119,7 +124,7 @@ namespace CurrencyTracker.Manager
                         { "TrackModeLabel3", "间隔 (ms)" },
                         { "TrackModeHelp", "计时器模式:\n每隔 " },
                         { "TrackModeHelp1", " 毫秒，检查一次所有货币的变化情况" },
-                        { "TrackModeHelp2", "消息模式:\n每当接收到新消息时，检查一次所有货币的变化情况\n(此模式下可能会得到更加精准的记录)\n\n注：如果发现任何不记录的情况，请附上场景向我提交ISSUE！" },
+                        { "TrackModeHelp2", "消息模式:\n每当接收到特定的新消息时，检查一次所有货币的变化情况\n(此模式下可能会得到更加精准的记录)\n\n注：如果发现任何不记录的情况，请附上场景向我提交 ISSUE！" },
                         { "TrackModeHelp3", "过低的触发间隔会带来更高的性能损耗 (不明显)"}
                     }
                 },
@@ -151,9 +156,14 @@ namespace CurrencyTracker.Manager
                         { "Day", "D" },
                         { "TrackInDuty", "Track in Duty" },
                         { "TrackInDutyHelp", "By Default, the plugin will pause recording when players are in Duty or Field Entry\nand waits until players exit those before calculating the total Changes in currency during that period.\nYou can disable this behavior by enabling this option.\n\nNote: This may result in recording a large number of transactions with small changes, significantly increasing the amount of transactions" },
-                        { "MinimumRecordValue", "Min Record Value:" },
-                        { "MinimumRecordValueHelp", "Current setting: Only record when the absolute value of change is ≥ " },
-                        { "MinimumRecordValueHelp1", "\n\nNote: Set to 0 to disable this feature / Only effective in duty / May lead to inaccurate location recording" },
+                        { "MinimumRecordValue", "Min Record Value" },
+                        { "MinimumRecordValueLabel", "In Duty: " },
+                        { "MinimumRecordValueLabel1", "Out of Duty: " },
+                        { "MinimumRecordValueLabel2", "Apply"},
+                        { "MinimumRecordValueHelp", "Current Settings\n" +
+                        "In Duty: Only record when the absolute change is ≥ " },
+                        { "MinimumRecordValueHelp1",",\nOut of Duty: Only record when the absolute change is ≥ " },
+                        { "MinimumRecordValueHelp2", "\nNote: May cause inaccurate location recording" },
                         { "TransactionsPerPage", "Records Per Page:" },
                         { "ExportCsv", "Export .CSV" },
                         { "FileRenameLabel", "Enter a File Name: (Press Enter to Confirm)" },
@@ -216,7 +226,7 @@ namespace CurrencyTracker.Manager
                         { "TrackModeLabel3", "Interval (ms)" },
                         { "TrackModeHelp", "Timer Mode:\nCheck all currency changes every " },
                         { "TrackModeHelp1", " milliseconds" },
-                        { "TrackModeHelp2", "Chat Mode:\nCheck all currency changes whenever a new chat message is received\n(May record more accurate transactions data)\n\nNote: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!" },
+                        { "TrackModeHelp2", "Chat Mode:\nCheck all currency changes whenever a new chat message from specific types is received\n(May record more accurate transactions data)\n\nNote: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!" },
                         { "TrackModeHelp3", "Too low trigger interval may result in higher performance overhead (not significant)"}
                     }
                 }

@@ -71,9 +71,6 @@ public class Main : Window, IDisposable
     // CSV文件名 CSV File Name
     private string fileName = string.Empty;
 
-    // 最小记录值 Minimum Tracking Value
-    private int minTrackValue;
-
     // 默认选中的选项 Default Selected Option
     internal int selectedOptionIndex = -1;
 
@@ -93,6 +90,10 @@ public class Main : Window, IDisposable
     private int visibleStartIndex;
 
     private int visibleEndIndex;
+
+    // 最小值 Min Value to Make a new record
+    private int inDutyMinTrackValue;
+    private int outDutyMinTrackValue;
 
     private Transactions transactions = new Transactions();
     private TransactionsConvertor? transactionsConvertor = null!;
@@ -121,13 +122,13 @@ public class Main : Window, IDisposable
 
         isReversed = plugin.Configuration.ReverseSort;
         isTrackedinDuty = plugin.Configuration.TrackedInDuty;
-        minTrackValue = plugin.Configuration.MinTrackValue;
         recordMode = plugin.Configuration.TrackMode;
         timerInterval = plugin.Configuration.TimerInterval;
         transactionsPerPage = plugin.Configuration.RecordsPerPage;
 
         LoadOptions();
         LoadLanguage(plugin);
+        LoadCustomMinTrackValue();
     }
 
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
@@ -179,6 +180,24 @@ public class Main : Window, IDisposable
         }
 
         Lang.LoadLanguage(playerLang);
+    }
+
+    // 初始化自定义货币最小记录值
+    private void LoadCustomMinTrackValue()
+    {
+        HashSet<string> addedCurrencies = new HashSet<string>();
+        foreach (var currency in options)
+        {
+                if (Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(currency) && Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(currency))
+                    continue;
+                if (!addedCurrencies.Contains(currency))
+                {
+                    Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(currency, 0);
+                    Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(currency, 0);
+                    Plugin.Instance.Configuration.Save();
+                    addedCurrencies.Add(currency);
+                }
+        }
     }
 
     public override void Draw()
@@ -406,17 +425,53 @@ public class Main : Window, IDisposable
     private void MinRecordValueInDuty()
     {
         if (!isTrackedinDuty) return;
-        ImGui.Text(Lang.GetText("MinimumRecordValue"));
-
-        ImGui.SameLine();
-        ImGui.SetNextItemWidth(135);
-        if (ImGui.InputInt("##MinTrackValue", ref minTrackValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
+        if (ImGui.Button(Lang.GetText("MinimumRecordValue")))
         {
-            if (minTrackValue < 0) minTrackValue = 0;
-            Plugin.Instance.Configuration.MinTrackValue = minTrackValue;
-            Plugin.Instance.Configuration.Save();
+            if (selectedCurrencyName != null)
+            {
+                ImGui.OpenPopup("MinTrackValue");
+                inDutyMinTrackValue = Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName];
+                outDutyMinTrackValue = Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName];
+            }
+            else
+            {
+                Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                return;
+            }
         }
-        ImGuiComponents.HelpMarker($"{Lang.GetText("MinimumRecordValueHelp")}{minTrackValue}{Lang.GetText("MinimumRecordValueHelp1")}");
+
+        if (ImGui.BeginPopup("MinTrackValue"))
+        {
+            if (selectedCurrencyName != null)
+            {
+                ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
+                ImGui.SameLine();
+                ImGui.TextColored(ImGuiColors.DalamudYellow, selectedCurrencyName);     
+                ImGui.Separator();
+                ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
+                ImGui.SetNextItemWidth(175);
+                ImGui.InputInt("", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
+                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
+                ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}");
+                ImGui.SetNextItemWidth(175);
+                ImGui.InputInt("", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
+                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
+                if (ImGui.Button(Lang.GetText("MinimumRecordValueLabel2")))
+                {
+                    Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName] = inDutyMinTrackValue;
+                    Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName] = outDutyMinTrackValue;
+                    Plugin.Instance.Configuration.Save();
+                }
+                ImGuiComponents.HelpMarker($"{Lang.GetText("MinimumRecordValueHelp")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp2")}");
+            }
+            else
+            {
+                return;
+            }
+            ImGui.EndPopup();
+
+        }
+        
     }
 
     // 自定义货币追踪 Custom Currencies To Track
@@ -481,6 +536,11 @@ public class Main : Window, IDisposable
                 // 配置保存一份
                 Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
                 Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
+                if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
+                {
+                    Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(selected, 0);
+                    Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(selected, 0);
+                }
                 Plugin.Instance.Configuration.Save();
                 options.Add(selected);
             }

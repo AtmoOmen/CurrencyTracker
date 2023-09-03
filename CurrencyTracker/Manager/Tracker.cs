@@ -3,6 +3,7 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 
@@ -28,6 +29,7 @@ namespace CurrencyTracker.Manager
         private CurrencyInfo currencyInfo = new CurrencyInfo();
         private Transactions transactions = new Transactions();
         private static readonly LanguageManager Lang = new LanguageManager();
+        private Dictionary<string, Dictionary<string, int>> minTrackValue = new ();
 
         public static bool IsBoundByDuty()
         {
@@ -46,6 +48,7 @@ namespace CurrencyTracker.Manager
             {
                 InitializeChatTracking();
             }
+            LoadMinTrackValue();
         }
 
         public void ChangeTracker()
@@ -57,6 +60,14 @@ namespace CurrencyTracker.Manager
             else if (Plugin.Instance.Configuration.TrackMode == 1)
             {
                 InitializeChatTracking();
+            }
+        }
+
+        private void LoadMinTrackValue()
+        {
+            if (Plugin.Instance.Configuration.MinTrackValueDic != null && Plugin.Instance.Configuration.MinTrackValueDic.ContainsKey("InDuty") && Plugin.Instance.Configuration.MinTrackValueDic.ContainsKey("OutOfDuty"))
+            {
+                minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
             }
         }
 
@@ -161,6 +172,8 @@ namespace CurrencyTracker.Manager
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
             string currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+            minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
+
             if (latestTransaction != null)
             {
                 long currencyChange = currencyAmount - latestTransaction.Amount;
@@ -170,19 +183,32 @@ namespace CurrencyTracker.Manager
                 }
                 else
                 {
-                    if (Plugin.Instance.Configuration.MinTrackValue != 0)
+                    if (IsBoundByDuty())
                     {
-                        if (IsBoundByDuty())
+                        var inDutyMinTrackValue = minTrackValue["InDuty"];
+                        if (inDutyMinTrackValue.ContainsKey(currencyName))
                         {
-                            if (Math.Abs(currencyChange) >= Plugin.Instance.Configuration.MinTrackValue)
+                            var currencyThreshold = inDutyMinTrackValue[currencyName];
+                            if (Math.Abs(currencyChange) >= currencyThreshold)
                             {
                                 transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
                             }
                             else return;
                         }
-                        else transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
                     }
-                    else transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                    else
+                    {
+                        var outOfDutyMinTrackValue = minTrackValue["OutOfDuty"];
+                        if (outOfDutyMinTrackValue.ContainsKey(currencyName))
+                        {
+                            var currencyThreshold = outOfDutyMinTrackValue[currencyName];
+                            if (Math.Abs(currencyChange) >= currencyThreshold)
+                            {
+                                transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                            }
+                            else return;
+                        }
+                    }
                 }
             }
             else
