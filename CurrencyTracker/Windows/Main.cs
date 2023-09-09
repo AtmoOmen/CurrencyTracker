@@ -37,7 +37,7 @@ public class Main : Window, IDisposable
     private int clusterHour;
 
     // 倒序排序开关 Reverse Sorting Switch
-    private bool isReversed;
+    internal bool isReversed;
 
     // 副本内记录开关 Duty Tracking Switch
     private bool isTrackedinDuty;
@@ -75,7 +75,7 @@ public class Main : Window, IDisposable
     internal int selectedOptionIndex = -1;
 
     // 选择的语言 Selected Language
-    private string playerLang = string.Empty;
+    internal string playerLang = string.Empty;
 
     // 当前选中的货币名称 Currently Selected Currency Name
     internal string? selectedCurrencyName;
@@ -93,15 +93,17 @@ public class Main : Window, IDisposable
 
     // 最小值 Min Value to Make a new record
     private int inDutyMinTrackValue;
+
     private int outDutyMinTrackValue;
 
     private Transactions transactions = new Transactions();
     private TransactionsConvertor? transactionsConvertor = null!;
     private CurrencyInfo? currencyInfo = null!;
-    internal static readonly LanguageManager Lang = new LanguageManager();
+    private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
     internal List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();
+    internal long[]? LinePlotData;
 
     public Main(Plugin plugin) : base("Currency Tracker")
     {
@@ -114,6 +116,8 @@ public class Main : Window, IDisposable
     public void Dispose()
     {
     }
+
+#pragma warning disable CS8602
 
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
@@ -172,14 +176,9 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(playerLang))
         {
             playerLang = Service.ClientState.ClientLanguage.ToString();
-            // 不受支持的语言 => 英语 Not Supported Languages => English
-            if (playerLang != "ChineseSimplified" && playerLang != "English")
-            {
-                playerLang = "English";
-            }
         }
 
-        Lang.LoadLanguage(playerLang);
+        Lang = new LanguageManager(playerLang);
     }
 
     // 初始化自定义货币最小记录值
@@ -188,15 +187,15 @@ public class Main : Window, IDisposable
         HashSet<string> addedCurrencies = new HashSet<string>();
         foreach (var currency in options)
         {
-                if (Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(currency) && Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(currency))
-                    continue;
-                if (!addedCurrencies.Contains(currency))
-                {
-                    Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(currency, 0);
-                    Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(currency, 0);
-                    Plugin.Instance.Configuration.Save();
-                    addedCurrencies.Add(currency);
-                }
+            if (Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(currency) && Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(currency))
+                continue;
+            if (!addedCurrencies.Contains(currency))
+            {
+                Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(currency, 0);
+                Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(currency, 0);
+                Plugin.Instance.Configuration.Save();
+                addedCurrencies.Add(currency);
+            }
         }
     }
 
@@ -255,7 +254,7 @@ public class Main : Window, IDisposable
             ImGui.SameLine();
             RecordMode();
             ImGui.SameLine();
-            CustomCurrencyToTrack();
+            CustomCurrencyTracker();
             ImGui.SameLine();
             MergeTransactions();
             ImGui.SameLine();
@@ -290,7 +289,7 @@ public class Main : Window, IDisposable
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
-        AvailabelCurrenciesListBox();
+        CurrenciesList();
 
         TransactionsChildframe();
     }
@@ -446,7 +445,7 @@ public class Main : Window, IDisposable
             {
                 ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
                 ImGui.SameLine();
-                ImGui.TextColored(ImGuiColors.DalamudYellow, selectedCurrencyName);     
+                ImGui.TextColored(ImGuiColors.DalamudYellow, selectedCurrencyName);
                 ImGui.Separator();
                 ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
                 ImGui.SetNextItemWidth(175);
@@ -469,13 +468,11 @@ public class Main : Window, IDisposable
                 return;
             }
             ImGui.EndPopup();
-
         }
-        
     }
 
     // 自定义货币追踪 Custom Currencies To Track
-    private void CustomCurrencyToTrack()
+    private void CustomCurrencyTracker()
     {
         if (ImGui.Button(Lang.GetText("CustomCurrencyLabel")))
         {
@@ -527,9 +524,15 @@ public class Main : Window, IDisposable
             if (ImGui.Button($"{Lang.GetText("Add")}{selected}"))
             {
 #pragma warning disable CS8604 // 引用类型参数可能为 null。
+
+                if (string.IsNullOrEmpty(selected))
+                {
+                    Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                }
+
                 if (options.Contains(selected))
                 {
-                    Service.Chat.Print(Lang.GetText("CustomCurrencyHelp1"));
+                    Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
@@ -550,7 +553,7 @@ public class Main : Window, IDisposable
 #pragma warning disable CS8604 // 引用类型参数可能为 null。
                 if (!options.Contains(selected))
                 {
-                    Service.Chat.Print(Lang.GetText("CustomCurrencyHelp2"));
+                    Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp2"));
                     return;
                 }
 #pragma warning restore CS8604 // 引用类型参数可能为 null。
@@ -575,7 +578,6 @@ public class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("MergeTransactions"))
         {
-
             ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("MergeTransactionsLabel4"));
             ImGui.Text(Lang.GetText("MergeTransactionsLabel1"));
             ImGui.SameLine();
@@ -594,8 +596,14 @@ public class Main : Window, IDisposable
                 {
                     if (mergeThreshold == 0)
                     {
-                        Service.Chat.PrintError(Lang.GetText("MergeTransactionsHelp"));
-                        return;
+                        var mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, int.MaxValue, false);
+                        if (mergeCount > 0)
+                            Service.Chat.Print($"{Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Lang.GetText("MergeTransactionsHelp2")}");
+                        else
+                        {
+                            Service.Chat.PrintError(Lang.GetText("TransactionsHelp"));
+                            return;
+                        }
                     }
                     else
                     {
@@ -686,7 +694,7 @@ public class Main : Window, IDisposable
                 }
                 else
                 {
-                    Service.Chat.Print(Lang.GetText("ExportCsvMessage"));
+                    Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
                     return;
                 }
             }
@@ -776,9 +784,11 @@ public class Main : Window, IDisposable
                 }
                 if (ImGui.Button(langname))
                 {
-                    Lang.LoadLanguage(language);
+                    Lang = new LanguageManager(language);
+                    Graph.Lang = new LanguageManager(language);
 
                     playerLang = language;
+
                     Plugin.Instance.Configuration.SelectedLanguage = playerLang;
                     Plugin.Instance.Configuration.Save();
                 }
@@ -831,8 +841,24 @@ public class Main : Window, IDisposable
         }
     }
 
+    // 打开图表窗口 Open Graphs Window
+    private void GraphWindow()
+    {
+        if (ImGui.Button(Lang.GetText("Graphs")))
+        {
+            if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
+            {
+                LinePlotData = new long[currentTypeTransactions.Count];
+                LinePlotData = currentTypeTransactions.Select(x => x.Amount).ToArray();
+
+                Plugin.Instance.Graph.IsOpen = !Plugin.Instance.Graph.IsOpen;
+            }
+            else return;
+        }
+    }
+
     // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
-    private void AvailabelCurrenciesListBox()
+    private void CurrenciesList()
     {
         int trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
         float ChildFrameHeight = ImGui.GetWindowHeight() - 245;
@@ -913,6 +939,7 @@ public class Main : Window, IDisposable
             }
             else
             {
+                if (Plugin.Instance.Graph.IsOpen) Plugin.Instance.Graph.IsOpen = false;
                 return;
             }
 
@@ -926,6 +953,8 @@ public class Main : Window, IDisposable
                 Plugin.Instance.Configuration.RecordsPerPage = transactionsPerPage;
                 Plugin.Instance.Configuration.Save();
             }
+            ImGui.SameLine();
+            GraphWindow();
 
             ImGui.SameLine();
             ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 55);
@@ -933,17 +962,16 @@ public class Main : Window, IDisposable
                 currentPage = 0;
             ImGui.SameLine();
             ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
-            if (ImGui.Button(Lang.GetText("PreviousPage")) && currentPage > 0)
-                currentPage--;
+            if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0) currentPage--;
 
             ImGui.SameLine();
             ImGui.Text($"{Lang.GetText("Di")}{currentPage + 1}{Lang.GetText("Page")} / {Lang.GetText("Gong")}{pageCount}{Lang.GetText("Page")}");
 
             ImGui.SameLine();
-            if (ImGui.Button(Lang.GetText("NextPage")) && currentPage < pageCount - 1)
-                currentPage++;
+            if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1) currentPage++;
 
             ImGui.SameLine();
+
             if (ImGui.Button(Lang.GetText("LastPage")) && currentPage >= 0)
                 currentPage = pageCount;
 
@@ -1019,7 +1047,7 @@ public class Main : Window, IDisposable
     {
         if (transactions == null || transactions.Count == 0)
         {
-            Service.Chat.Print(Lang.GetText("ExportCsvMessage1"));
+            Service.Chat.PrintError(Lang.GetText("ExportCsvMessage1"));
 
             return;
         }

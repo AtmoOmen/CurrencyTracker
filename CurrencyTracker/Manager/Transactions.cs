@@ -10,12 +10,12 @@ namespace CurrencyTracker.Manager
     {
         private TransactionsConvertor? transactionsConvertor;
         private readonly List<TransactionsConvertor> temporarySingleTransactionList = new List<TransactionsConvertor>();
-        private static readonly LanguageManager Lang = new LanguageManager();
+        private static LanguageManager? Lang;
         public string PlayerDataFolder = string.Empty;
 
         public List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
-            Lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
+            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
             var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
 
             foreach (var transaction in transactions)
@@ -77,7 +77,7 @@ namespace CurrencyTracker.Manager
 
         public TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
         {
-            Lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
+            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
             transactionsConvertor ??= new TransactionsConvertor();
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
@@ -190,11 +190,5 @@ namespace CurrencyTracker.Manager
 
             return mergedCount;
         }
-
-
-
-
-
-
     }
 }

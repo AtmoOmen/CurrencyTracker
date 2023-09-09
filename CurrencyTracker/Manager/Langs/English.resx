@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChangeFilterEnabled" xml:space="preserve">
+    <value>Filter By Change</value>
+  </data>
+  <data name="ChangeFilterLabel" xml:space="preserve">
+    <value>Only Display Records</value>
+  </data>
+  <data name="ChangeFilterValueLabel" xml:space="preserve">
+    <value> in Change</value>
+  </data>
+  <data name="ClusterByTime" xml:space="preserve">
+    <value>Cluster By Time:</value>
+  </data>
+  <data name="ClusterByTimeHelp1" xml:space="preserve">
+    <value>Current Setting: Display transactions in</value>
+  </data>
+  <data name="ClusterByTimeHelp2" xml:space="preserve">
+    <value>h interval</value>
+  </data>
+  <data name="ClusterInterval" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="ConfigLabel" xml:space="preserve">
+    <value>Filiter Options</value>
+  </data>
+  <data name="ConfigLabel1" xml:space="preserve">
+    <value>Record Options</value>
+  </data>
+  <data name="ConfigLabel2" xml:space="preserve">
+    <value>Others</value>
+  </data>
+  <data name="ConfigLabelHelp" xml:space="preserve">
+    <value>Click to expand/collapse</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>Note:
+1. The 19 currencies preset in the plugin cannot be changed
+2. You can choose to track items, but please be aware that in the plugin's view, even if the change is 1, it is still a change,
+ which may result in a large number of records with changes of 1 appearing
+3. Please try to avoid adding items/currencies that have been deprecated out of curiosity, the plugin may make unexpected errors as a result
+3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary.</value>
+  </data>
+  <data name="CustomCurrencyLabel" xml:space="preserve">
+    <value>Custom Tracker</value>
+  </data>
+  <data name="CustomCurrencyLabel1" xml:space="preserve">
+    <value>Custom Currency Tracker</value>
+  </data>
+  <data name="CustomCurrencyLabel2" xml:space="preserve">
+    <value>Currently Selected:</value>
+  </data>
+  <data name="CustomCurrencyLabel3" xml:space="preserve">
+    <value>Select a currency...</value>
+  </data>
+  <data name="CustomCurrencyLabel4" xml:space="preserve">
+    <value>Search Filter</value>
+  </data>
+  <data name="CustomCurrencyHelp1" xml:space="preserve">
+    <value>Fail to Add: The Currency You Selected Has Already Existed</value>
+  </data>
+  <data name="CustomCurrencyHelp2" xml:space="preserve">
+    <value>Fail to Delete: The Currency You Selected Doesn't Exist</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>D</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete </value>
+  </data>
+  <data name="Di" xml:space="preserve">
+    <value />
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>Export .CSV</value>
+  </data>
+  <data name="ExportCsvMessage1" xml:space="preserve">
+    <value>No transactions under the currently selected currency.</value>
+  </data>
+  <data name="ExportCsvMessage2" xml:space="preserve">
+    <value>Time,Amount,Change,Location</value>
+  </data>
+  <data name="ExportCsvMessage3" xml:space="preserve">
+    <value>A .csv file has been exported to: </value>
+  </data>
+  <data name="FileRenameHelp" xml:space="preserve">
+    <value>Note 1: To avoid errors, please do not enter a file name that is "too long"
+Note 2: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging).</value>
+  </data>
+  <data name="FileRenameHelp1" xml:space="preserve">
+    <value>If left blank, the file name will be:</value>
+  </data>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>Enter a File Name: (Press Enter to Confirm)</value>
+  </data>
+  <data name="FileRenameLabel1" xml:space="preserve">
+    <value>Filename:</value>
+  </data>
+  <data name="FileRenameLabel2" xml:space="preserve">
+    <value>CurrentTime</value>
+  </data>
+  <data name="FilterByTime" xml:space="preserve">
+    <value>Filter By Time</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="Gong" xml:space="preserve">
+    <value />
+  </data>
+  <data name="Greater" xml:space="preserve">
+    <value>Above</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="Less" xml:space="preserve">
+    <value>Below</value>
+  </data>
+  <data name="MergeTransactionsHelp" xml:space="preserve">
+    <value>Please enter a threshold</value>
+  </data>
+  <data name="MergeTransactionsHelp1" xml:space="preserve">
+    <value>Merged</value>
+  </data>
+  <data name="MergeTransactionsHelp2" xml:space="preserve">
+    <value> records.</value>
+  </data>
+  <data name="MergeTransactionsHelp3" xml:space="preserve">
+    <value>Merge transactions under the currently selected currency with the same location, adjacent to each other, and with a Change &lt; threshold.
+After merging, the Time and Amount of the merged record will be taken from the latest record among the merged ones, while the Change will be summed up.
+If the threshold is 0, the plugin will merge ALL transactions under the currently selected currency with the same location, adjacent to each other.
+
+One-Way Merge: Transactions with Changes in positive and negative are separately calculated when merging adjacent ones.
+Two-Way Merge: Transactions with Changes in positive and negative are calculated together when merging adjacent ones.
+
+</value>
+  </data>
+  <data name="MergeTransactionsLabel" xml:space="preserve">
+    <value>Merge Records</value>
+  </data>
+  <data name="MergeTransactionsLabel1" xml:space="preserve">
+    <value>Threshold</value>
+  </data>
+  <data name="MergeTransactionsLabel2" xml:space="preserve">
+    <value>Two-Way Merge [ORIG.]</value>
+  </data>
+  <data name="MergeTransactionsLabel3" xml:space="preserve">
+    <value>One-Way Merge [EXPT.]</value>
+  </data>
+  <data name="MergeTransactionsLabel4" xml:space="preserve">
+    <value>Manual Merge</value>
+  </data>
+  <data name="MinimumRecordValue" xml:space="preserve">
+    <value>Min Record Value</value>
+  </data>
+  <data name="MinimumRecordValueHelp" xml:space="preserve">
+    <value>Current Settings:
+In Duty: Only record when the absolute change is ≥</value>
+  </data>
+  <data name="MinimumRecordValueHelp1" xml:space="preserve">
+    <value>,
+Out of Duty: Only record when the absolute change is ≥</value>
+  </data>
+  <data name="MinimumRecordValueHelp2" xml:space="preserve">
+    <value>
+
+Note: May cause inaccurate location recording</value>
+  </data>
+  <data name="MinimumRecordValueLabel" xml:space="preserve">
+    <value>In Duty:</value>
+  </data>
+  <data name="MinimumRecordValueLabel1" xml:space="preserve">
+    <value>Out of Duty:</value>
+  </data>
+  <data name="MinimumRecordValueLabel2" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>Next</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>Open Data Folder</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="ReverseSort" xml:space="preserve">
+    <value>Inverse Sort</value>
+  </data>
+  <data name="TimeFilterLabel" xml:space="preserve">
+    <value>Only Display Records Between</value>
+  </data>
+  <data name="TimeFilterLabel1" xml:space="preserve">
+    <value>And</value>
+  </data>
+  <data name="TimeFilterLabel2" xml:space="preserve">
+    <value />
+  </data>
+  <data name="TrackInDuty" xml:space="preserve">
+    <value>Track in Duty</value>
+  </data>
+  <data name="TrackInDutyHelp" xml:space="preserve">
+    <value>By Default, the plugin will pause recording when players are in Duty or Field Entry
+and waits until players exit those before calculating the total Changes in currency during that period.
+You can disable this behavior by enabling this option.
+
+Note: This may result in recording a large number of transactions with small changes, significantly increasing the amount of transactions</value>
+  </data>
+  <data name="TrackModeHelp" xml:space="preserve">
+    <value>Timer Mode:
+Check all currency changes every </value>
+  </data>
+  <data name="TrackModeHelp1" xml:space="preserve">
+    <value> milliseconds</value>
+  </data>
+  <data name="TrackModeHelp2" xml:space="preserve">
+    <value>Chat Mode:
+Check all currency changes whenever a new chat message from specific types is received
+(May record more accurate transactions data)
+
+Note: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!</value>
+  </data>
+  <data name="TrackModeHelp3" xml:space="preserve">
+    <value>Too low trigger interval may result in higher performance overhead (not significant)</value>
+  </data>
+  <data name="TrackModeLabel" xml:space="preserve">
+    <value>Track Mode</value>
+  </data>
+  <data name="TrackModeLabel1" xml:space="preserve">
+    <value>Timer Mode</value>
+  </data>
+  <data name="TrackModeLabel2" xml:space="preserve">
+    <value>Chat Mode [EXPT.]</value>
+  </data>
+  <data name="TrackModeLabel3" xml:space="preserve">
+    <value>Interval (ms)</value>
+  </data>
+  <data name="TransactionsHelp" xml:space="preserve">
+    <value>No matching transactions found.</value>
+  </data>
+  <data name="TransactionsHelp1" xml:space="preserve">
+    <value>No currency being selected now.</value>
+  </data>
+  <data name="TransactionsHelp2" xml:space="preserve">
+    <value>Note: The operation cannot be rolled back. If necessary, please make a backup</value>
+  </data>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>Unknown Currency</value>
+  </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>Unknown</value>
+  </data>
+  <data name="Column" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="Column1" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Column2" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Column3" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>Records Per Page:</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add </value>
+  </data>
+  <data name="ClearExTransactionsHelp" xml:space="preserve">
+    <value>Attempt to clear all exception transactions under the currently selected currency
+</value>
+  </data>
+  <data name="ClearExTransactionsHelp1" xml:space="preserve">
+    <value>Current judgment criteria:
+Transactions with Change equal to the Amount /with Change equal to 0
+
+</value>
+  </data>
+  <data name="ClearExTransactionsLabel" xml:space="preserve">
+    <value>Clear Ex Records</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>M</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>Y</value>
+  </data>
+  <data name="GraphHelpMessages" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="GraphHelpMessages1" xml:space="preserve">
+    <value>-Suggest enabling filters on the main window to reduce the number of transactions shown here.
+-You can adjust a plot by clicking on the horizontal or vertical axis.
+-This window is still in the testing stage. If you encounter any bugs or have ideas for new features, please submit a ISSUE.</value>
+  </data>
+  <data name="GraphLabel" xml:space="preserve">
+    <value>Records Amount:</value>
+  </data>
+  <data name="AmountGraph" xml:space="preserve">
+    <value>Amount Graph </value>
+  </data>
+  <data name="AmountGraph1" xml:space="preserve">
+    <value> [Time - Amount]</value>
+  </data>
+  <data name="AmountGraph2" xml:space="preserve">
+    <value>Overall Rate: </value>
+  </data>
+  <data name="AmountGraph3" xml:space="preserve">
+    <value>Latest Rate: </value>
+  </data>
+  <data name="AmountGraph4" xml:space="preserve">
+    <value>* This plot mainly reflects changes in the Amount of the currency over Time.</value>
+  </data>
+  <data name="DividedName" xml:space="preserve">
+    <value>(Unit: Thousand)</value>
+  </data>
+  <data name="DividedName1" xml:space="preserve">
+    <value>(Unit: Million)</value>
+  </data>
+  <data name="DividedName2" xml:space="preserve">
+    <value>(Unit: Billion)</value>
+  </data>
+  <data name="ChangeRateToolTip" xml:space="preserve">
+    <value>(Increasing)</value>
+  </data>
+  <data name="ChangeRateToolTip1" xml:space="preserve">
+    <value>(Decreasing)</value>
+  </data>
+  <data name="ChangeGraph" xml:space="preserve">
+    <value>Change Graph</value>
+  </data>
+  <data name="ChangeGraph1" xml:space="preserve">
+    <value> [Time - Change]</value>
+  </data>
+  <data name="ChangeGraph2" xml:space="preserve">
+    <value>* This plot mainly reflects changes in the Change of the currency over Time.</value>
+  </data>
+  <data name="LocationGraph" xml:space="preserve">
+    <value>Location Graph</value>
+  </data>
+  <data name="LocationGraph1" xml:space="preserve">
+    <value>  [Location - Frequency]</value>
+  </data>
+  <data name="LocationGraph2" xml:space="preserve">
+    <value>* This plot mainly reflects the frequency of occurrence of each location in the currency transactions.</value>
+  </data>
+  <data name="LocationAmountGraph" xml:space="preserve">
+    <value>Location Change Graph</value>
+  </data>
+  <data name="LocationAmountGraph1" xml:space="preserve">
+    <value>  [Location - Change]</value>
+  </data>
+  <data name="LocationAmountGraph2" xml:space="preserve">
+    <value>* This plot mainly reflects the the total amount of Change of each location in the currency transactions.</value>
+  </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>Graphs</value>
+  </data>
+</root>

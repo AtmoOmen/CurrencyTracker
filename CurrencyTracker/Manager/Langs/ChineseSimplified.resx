@@ -1,0 +1,488 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ConfigLabel" xml:space="preserve">
+    <value>筛选排序选项</value>
+  </data>
+  <data name="ConfigLabel1" xml:space="preserve">
+    <value>记录选项</value>
+  </data>
+  <data name="ConfigLabel2" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="ConfigLabelHelp" xml:space="preserve">
+    <value>点击以展开/收回</value>
+  </data>
+  <data name="ReverseSort" xml:space="preserve">
+    <value>倒序排序</value>
+  </data>
+  <data name="ClusterByTime" xml:space="preserve">
+    <value>按时间聚类:</value>
+  </data>
+  <data name="ClusterInterval" xml:space="preserve">
+    <value>小时</value>
+  </data>
+  <data name="ClusterByTimeHelp1" xml:space="preserve">
+    <value>当前设置: 以</value>
+  </data>
+  <data name="ClusterByTimeHelp2" xml:space="preserve">
+    <value>小时 为间隔显示数据</value>
+  </data>
+  <data name="ChangeFilterEnabled" xml:space="preserve">
+    <value>收支筛选</value>
+  </data>
+  <data name="ChangeFilterLabel" xml:space="preserve">
+    <value>仅显示收支</value>
+  </data>
+  <data name="Greater" xml:space="preserve">
+    <value>大于</value>
+  </data>
+  <data name="Less" xml:space="preserve">
+    <value>小于</value>
+  </data>
+  <data name="ChangeFilterValueLabel" xml:space="preserve">
+    <value>的记录</value>
+  </data>
+  <data name="FilterByTime" xml:space="preserve">
+    <value>时间筛选</value>
+  </data>
+  <data name="TimeFilterLabel" xml:space="preserve">
+    <value>仅显示</value>
+  </data>
+  <data name="TimeFilterLabel1" xml:space="preserve">
+    <value> 至 </value>
+  </data>
+  <data name="TimeFilterLabel2" xml:space="preserve">
+    <value>期间的记录</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>日</value>
+  </data>
+  <data name="TrackInDuty" xml:space="preserve">
+    <value>记录副本内数据</value>
+  </data>
+  <data name="TrackInDutyHelp" xml:space="preserve">
+    <value>部分副本、特殊场景探索中会给予货币奖励
+插件默认当玩家在副本、特殊场景探索中时暂停记录，等待玩家退出它们时再计算期间货币的总增减，无法记录副本内货币变化的地点
+你可以通过开启本项目关闭此功能
+
+注: 这可能会使插件记录大量小额数据，使得记录量大幅增加，但可以正常记录副本内货币变化的地点</value>
+  </data>
+  <data name="MinimumRecordValue" xml:space="preserve">
+    <value>最小记录值</value>
+  </data>
+  <data name="MinimumRecordValueLabel" xml:space="preserve">
+    <value>副本内最小记录值: </value>
+  </data>
+  <data name="MinimumRecordValueLabel1" xml:space="preserve">
+    <value>副本外最小记录值: </value>
+  </data>
+  <data name="MinimumRecordValueLabel2" xml:space="preserve">
+    <value>应用更改</value>
+  </data>
+  <data name="MinimumRecordValueHelp" xml:space="preserve">
+    <value>当前设置:
+副本内: 当货币收支的绝对值≥ </value>
+  </data>
+  <data name="MinimumRecordValueHelp1" xml:space="preserve">
+    <value>,
+副本外: 当货币收支的绝对值≥ </value>
+  </data>
+  <data name="MinimumRecordValueHelp2" xml:space="preserve">
+    <value> 时，
+才进行一次数据记录
+注: 可能造成不准确的地点记录</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>单页记录数:</value>
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>导出为CSV</value>
+  </data>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>请输入文件名: (按Enter键确认)</value>
+  </data>
+  <data name="FileRenameLabel1" xml:space="preserve">
+    <value>文件名: </value>
+  </data>
+  <data name="FileRenameLabel2" xml:space="preserve">
+    <value>当前时间</value>
+  </data>
+  <data name="FileRenameHelp" xml:space="preserve">
+    <value>注1: 为避免错误，请勿输入过长的文件名
+注2: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
+  </data>
+  <data name="FileRenameHelp1" xml:space="preserve">
+    <value>如果留空，文件名则为: </value>
+  </data>
+  <data name="ExportCsvMessage1" xml:space="preserve">
+    <value>当前货币下无收支记录</value>
+  </data>
+  <data name="ExportCsvMessage2" xml:space="preserve">
+    <value>时间,货币数,收支,地点</value>
+  </data>
+  <data name="ExportCsvMessage3" xml:space="preserve">
+    <value>已导出CSV文件至: </value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value> 页</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>首页</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>尾页</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>下一页</value>
+  </data>
+  <data name="Di" xml:space="preserve">
+    <value>第 </value>
+  </data>
+  <data name="Gong" xml:space="preserve">
+    <value>共 </value>
+  </data>
+  <data name="Column" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Column1" xml:space="preserve">
+    <value>货币数</value>
+  </data>
+  <data name="Column2" xml:space="preserve">
+    <value>收支</value>
+  </data>
+  <data name="Column3" xml:space="preserve">
+    <value>地点</value>
+  </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>未知区域</value>
+  </data>
+  <data name="CustomCurrencyLabel" xml:space="preserve">
+    <value>自定义货币追踪</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>注:
+1.插件预设的19种货币不可更改
+2.你可以选择追踪物品，但请注意，在插件看来，即便增减为1也是增减，
+这可能导致大量收支为1的记录出现
+3.请尽量避免因为好奇而添加已经废弃的物品/货币，插件可能因此出现意料之外的错误
+3.删除货币并不会删除已有的数据文件，如有需要请自行删除</value>
+  </data>
+  <data name="CustomCurrencyLabel1" xml:space="preserve">
+    <value>自定义货币追踪</value>
+  </data>
+  <data name="CustomCurrencyLabel2" xml:space="preserve">
+    <value>当前已选择:</value>
+  </data>
+  <data name="CustomCurrencyLabel3" xml:space="preserve">
+    <value>请选择...</value>
+  </data>
+  <data name="CustomCurrencyLabel4" xml:space="preserve">
+    <value>搜索框</value>
+  </data>
+  <data name="CustomCurrencyHelp1" xml:space="preserve">
+    <value>添加失败: 货币已存在</value>
+  </data>
+  <data name="CustomCurrencyHelp2" xml:space="preserve">
+    <value>删除失败: 货币不存在</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加 </value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除 </value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>打开数据文件夹</value>
+  </data>
+  <data name="MergeTransactionsLabel" xml:space="preserve">
+    <value>合并记录</value>
+  </data>
+  <data name="MergeTransactionsLabel1" xml:space="preserve">
+    <value>临界值</value>
+  </data>
+  <data name="MergeTransactionsLabel2" xml:space="preserve">
+    <value>双向合并 (原)</value>
+  </data>
+  <data name="MergeTransactionsLabel3" xml:space="preserve">
+    <value>单项合并 (实验)</value>
+  </data>
+  <data name="MergeTransactionsLabel4" xml:space="preserve">
+    <value>手动合并</value>
+  </data>
+  <data name="MergeTransactionsHelp" xml:space="preserve">
+    <value>请输入临界值</value>
+  </data>
+  <data name="MergeTransactionsHelp1" xml:space="preserve">
+    <value>合并了 </value>
+  </data>
+  <data name="MergeTransactionsHelp2" xml:space="preserve">
+    <value> 条记录。</value>
+  </data>
+  <data name="MergeTransactionsHelp3" xml:space="preserve">
+    <value>合并当前选中货币下，地点相同、彼此相邻且收支 小于 临界值的记录。
+合并后记录的数量、时间将会取最新一条记录的数据，收支则会取被合并的各记录之和。
+如果临界值为 0，则会合并一切地点相同、彼此相邻的记录。
+
+单向合并: 正负数改变量的记录分开计算相邻与合并
+双向合并：正负数改变量的记录一起计算相邻与合并
+</value>
+  </data>
+  <data name="TransactionsHelp" xml:space="preserve">
+    <value>未找到符合条件的记录。</value>
+  </data>
+  <data name="TransactionsHelp1" xml:space="preserve">
+    <value>当前未选择任何货币类型。</value>
+  </data>
+  <data name="TransactionsHelp2" xml:space="preserve">
+    <value>注: 操作无法回退，如有需要，请做好数据备份</value>
+  </data>
+  <data name="ClearExTransactionsLabel" xml:space="preserve">
+    <value>清除异常记录</value>
+  </data>
+  <data name="ClearExTransactionsHelp" xml:space="preserve">
+    <value>尝试清除当前选中货币下的所有异常记录
+</value>
+  </data>
+  <data name="ClearExTransactionsHelp1" xml:space="preserve">
+    <value>当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录
+</value>
+  </data>
+  <data name="ClearExTransactionsHelp2" xml:space="preserve">
+    <value>清除了 </value>
+  </data>
+  <data name="ClearExTransactionsHelp3" xml:space="preserve">
+    <value> 条异常记录。</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>未知的货币类型</value>
+  </data>
+  <data name="TrackModeLabel" xml:space="preserve">
+    <value>记录模式</value>
+  </data>
+  <data name="TrackModeLabel1" xml:space="preserve">
+    <value>计时器模式</value>
+  </data>
+  <data name="TrackModeLabel2" xml:space="preserve">
+    <value>消息模式 [实验]</value>
+  </data>
+  <data name="TrackModeLabel3" xml:space="preserve">
+    <value>间隔 (ms)</value>
+  </data>
+  <data name="TrackModeHelp" xml:space="preserve">
+    <value>计时器模式:
+每隔 </value>
+  </data>
+  <data name="TrackModeHelp1" xml:space="preserve">
+    <value> 毫秒，检查一次所有货币的变化情况</value>
+  </data>
+  <data name="TrackModeHelp2" xml:space="preserve">
+    <value>消息模式:
+每当接收到特定的新消息时，检查一次所有货币的变化情况
+(此模式下可能会得到更加精准的记录)
+
+注：如果发现任何不记录的情况，请附上场景向我提交 ISSUE！</value>
+  </data>
+  <data name="TrackModeHelp3" xml:space="preserve">
+    <value>过低的触发间隔会带来更高的性能损耗 (不明显)</value>
+  </data>
+  <data name="AmountGraph" xml:space="preserve">
+    <value>数量图表 </value>
+  </data>
+  <data name="AmountGraph1" xml:space="preserve">
+    <value> [时间 - 数量]</value>
+  </data>
+  <data name="AmountGraph2" xml:space="preserve">
+    <value>总体变化率: </value>
+  </data>
+  <data name="AmountGraph3" xml:space="preserve">
+    <value>最新变化率: </value>
+  </data>
+  <data name="AmountGraph4" xml:space="preserve">
+    <value>* 本图表主要反映时间变化下货币数量发生的变化</value>
+  </data>
+  <data name="ChangeGraph" xml:space="preserve">
+    <value>收支图表 </value>
+  </data>
+  <data name="ChangeGraph1" xml:space="preserve">
+    <value> [时间 - 收支]</value>
+  </data>
+  <data name="ChangeGraph2" xml:space="preserve">
+    <value>* 本图表主要反映时间变化下货币收支量的变化</value>
+  </data>
+  <data name="ChangeRateToolTip" xml:space="preserve">
+    <value>(上升中)</value>
+  </data>
+  <data name="ChangeRateToolTip1" xml:space="preserve">
+    <value>(下降中)</value>
+  </data>
+  <data name="DividedName" xml:space="preserve">
+    <value>(单位: 千)</value>
+  </data>
+  <data name="DividedName1" xml:space="preserve">
+    <value>(单位: 百万)</value>
+  </data>
+  <data name="DividedName2" xml:space="preserve">
+    <value>(单位: 十亿)</value>
+  </data>
+  <data name="GraphHelpMessages" xml:space="preserve">
+    <value>说明帮助</value>
+  </data>
+  <data name="GraphHelpMessages1" xml:space="preserve">
+    <value>- 建议在主界面启用各类筛选器，减少记录数量
+- 可以通过点击图表的横轴或纵轴使图表界面自适应显示
+- 本界面仍处于测试阶段，如果遇到任何 BUG 或有对新功能的想法，请提交 ISSUE</value>
+  </data>
+  <data name="GraphLabel" xml:space="preserve">
+    <value>记录数量:</value>
+  </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>图表</value>
+  </data>
+  <data name="LocationAmountGraph" xml:space="preserve">
+    <value>地点收支图表 </value>
+  </data>
+  <data name="LocationAmountGraph1" xml:space="preserve">
+    <value>  [地点 - 收支]</value>
+  </data>
+  <data name="LocationAmountGraph2" xml:space="preserve">
+    <value>* 本图表主要反映该货币记录中各地点下所产生收支的总额</value>
+  </data>
+  <data name="LocationGraph" xml:space="preserve">
+    <value>地点图表</value>
+  </data>
+  <data name="LocationGraph1" xml:space="preserve">
+    <value>  [地点 - 地点频次]</value>
+  </data>
+  <data name="LocationGraph2" xml:space="preserve">
+    <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
+  </data>
+</root>

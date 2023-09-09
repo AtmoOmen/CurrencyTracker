@@ -1,11 +1,8 @@
-[TOC]
-
-
-
 ## ChangeLog
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/09/09 | 1.2.0.0 | - Added a "Graphs" window, where you can browse visualized data in the form of preset models. The initial version includes four types of visual data models: "Amount Graph", "Change Graph", "Location Graph" and "Location Change Graph".<br/>- Made significant changes to the implementation of the multilingual functionality.<br/>- Modified the plugin logic for the "Merge Records" feature when the threshold value is 0. Now, 0 is treated as a flag to ignore the threshold value and perform the merge check directly. |
 | 2023/09/03 | 1.1.2.3 | - Expand Minimum Record Value In Duty feature to Minimum Record Value which allows to set the currency tracking behavior of In Duty and Out Of Duty seperately |
 | 2023/09/02 | 1.1.2.2 | - Add One-Way Merge function to Merge Records feature, and original merging logic will be Two-Way Merge function.<br>- Add two buttons that allow to jump to the first page and last page of transactions in chart<br>- Now Records Per Page data will be saved to configuration. |
 | 2023/09/01 | 1.1.2.1 | Changed the logic in the Track Mode section of the code, which should now significantly improve the performance of Chat Mode. |
@@ -24,6 +21,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年9月9日 | 1.2.0.0 | - 新增了"图表"窗口，你可以在其中以预设模型的形式查阅可视化数据。初版预设了四类可视化数据模型，分别为"数量图表"、"收支图表"、"地点图表"、"地点收支图表"。<br>- 对多语言功能的实现形式做出了较大的修改<br>- 修改了"合并记录"功能中临界值为 0 时的插件逻辑，现在 0 会被视为忽略临界值直接进行合并检查的标志。 |
 | 2023年9月3日 | 1.1.2.3 | - 将 副本内最小记录值 功能扩展为 最小记录值 功能，该功能允许分别为每种货币设置单独的、副本内外的 最小记录值 逻辑 |
 | 2023年9月2日 | 1.1.2.2 | - 为合并记录功能新增了单项合并功能，原有的合并逻辑会变为双向合并功能<br>- 在表格页面新增了两个按钮，用于跳转至记录的首页和尾页<br>- 现在 单页记录数 数据会被持久化存储至配置文件中 |
 | 2023年9月1日 | 1.1.2.1 | - 修改了“记录模式”部分的代码逻辑，现在应该能看到“消息模式”下插件明显的性能提升 |

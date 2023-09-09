@@ -19,14 +19,14 @@ namespace CurrencyTracker
         public CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
-        private Main MainWindow { get; init; }
+        internal Main MainWindow { get; init; }
+        internal Graph Graph { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
         private const string CommandName = "/ct";
 
         internal Dictionary<uint, string> TerritoryNames = new();
         internal Dictionary<uint, string> ItemNames = new();
-        private static readonly LanguageManager Lang = new LanguageManager();
         private string playerLang = string.Empty;
 
         public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
@@ -46,6 +46,10 @@ namespace CurrencyTracker
 
             MainWindow = new Main(this);
             WindowSystem.AddWindow(MainWindow);
+
+            Graph = new Graph(this);
+            WindowSystem.AddWindow(Graph);
+
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
@@ -131,8 +135,11 @@ namespace CurrencyTracker
             WindowSystem.RemoveAllWindows();
 
             MainWindow.Dispose();
+            Graph.Dispose();
+
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
+
             CommandManager.RemoveHandler(CommandName);
         }
 

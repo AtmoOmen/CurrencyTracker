@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Transactions;
 
 namespace CurrencyTracker.Manager;
 
@@ -15,7 +14,7 @@ public class TransactionsConvertor
     public long Amount { get; set; } // 总金额 Currency Amount
     public string LocationName { get; set; } = string.Empty;
 
-    private static readonly LanguageManager lang = new LanguageManager();
+    private static LanguageManager? Lang;
 
     // 将字典改变为字符串，存储至数据文件 Change the dic into strings and save the strings to the data file
     public string ToFileLine()
@@ -26,7 +25,7 @@ public class TransactionsConvertor
     // 解析文件中的一行数据 Parse a line of transactions in the data file
     public static TransactionsConvertor FromFileLine(string line)
     {
-        lang.LoadLanguage(Plugin.Instance.Configuration.SelectedLanguage);
+        Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
 
         string[] parts = line.Split(";");
 
@@ -43,7 +42,7 @@ public class TransactionsConvertor
         }
         else
         {
-            transaction.LocationName = lang.GetText("UnknownLocation");
+            transaction.LocationName = Lang.GetText("UnknownLocation");
         }
 
         return transaction;
