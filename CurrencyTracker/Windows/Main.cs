@@ -523,22 +523,20 @@ public class Main : Window, IDisposable
 
             if (ImGui.Button($"{Lang.GetText("Add")}{selected}"))
             {
-#pragma warning disable CS8604 // 引用类型参数可能为 null。
-
                 if (string.IsNullOrEmpty(selected))
                 {
                     Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                    return;
                 }
-
                 if (options.Contains(selected))
                 {
                     Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
-#pragma warning restore CS8604 // 引用类型参数可能为 null。
-                // 配置保存一份
+
                 Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
                 Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
+
                 if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
                 {
                     Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(selected, 0);
@@ -548,20 +546,26 @@ public class Main : Window, IDisposable
                 options.Add(selected);
             }
             ImGui.SameLine();
+
             if (ImGui.Button($"{Lang.GetText("Delete")}{selected}"))
             {
-#pragma warning disable CS8604 // 引用类型参数可能为 null。
+                if (string.IsNullOrEmpty(selected))
+                {
+                    Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                    return;
+                }
                 if (!options.Contains(selected))
                 {
                     Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp2"));
                     return;
                 }
-#pragma warning restore CS8604 // 引用类型参数可能为 null。
                 Plugin.Instance.Configuration.CustomCurrencies.Remove(selected);
                 Plugin.Instance.Configuration.CustomCurrencyType.Remove(selected);
                 Plugin.Instance.Configuration.Save();
                 options.Remove(selected);
             }
+
+
             ImGui.EndPopup();
         }
     }

@@ -19,7 +19,7 @@ namespace CurrencyTracker
         public CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
-        internal Main MainWindow { get; init; }
+        internal Main Main { get; init; }
         internal Graph Graph { get; init; }
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
@@ -44,8 +44,8 @@ namespace CurrencyTracker
                 HelpMessage = "Open the main window of the plugin\n/ct <currencyname> → Open the main window with specific currency shown."
             });
 
-            MainWindow = new Main(this);
-            WindowSystem.AddWindow(MainWindow);
+            Main = new Main(this);
+            WindowSystem.AddWindow(Main);
 
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
@@ -134,7 +134,7 @@ namespace CurrencyTracker
         {
             WindowSystem.RemoveAllWindows();
 
-            MainWindow.Dispose();
+            Main.Dispose();
             Graph.Dispose();
 
             Service.Tracker.Dispose();
@@ -148,11 +148,11 @@ namespace CurrencyTracker
             var currencyName = string.Empty;
             if (string.IsNullOrEmpty(args))
             {
-                MainWindow.IsOpen = !MainWindow.IsOpen;
+                Main.IsOpen = !Main.IsOpen;
             }
             else
             {
-                var matchingCurrencies = FindMatchingCurrencies(MainWindow.options, args);
+                var matchingCurrencies = FindMatchingCurrencies(Main.options, args);
                 if (matchingCurrencies.Count > 1)
                 {
                     Service.Chat.PrintError("Mutiple Currencies Found:");
@@ -172,22 +172,22 @@ namespace CurrencyTracker
                     currencyName = matchingCurrencies.FirstOrDefault();
                 }
 
-                if (!MainWindow.IsOpen)
+                if (!Main.IsOpen)
                 {
-                    MainWindow.selectedCurrencyName = currencyName;
-                    MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
-                    MainWindow.IsOpen = true;
+                    Main.selectedCurrencyName = currencyName;
+                    Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
+                    Main.IsOpen = true;
                 }
                 else
                 {
-                    if (currencyName == MainWindow.selectedCurrencyName)
+                    if (currencyName == Main.selectedCurrencyName)
                     {
-                        MainWindow.IsOpen = !MainWindow.IsOpen;
+                        Main.IsOpen = !Main.IsOpen;
                     }
                     else
                     {
-                        MainWindow.selectedCurrencyName = currencyName;
-                        MainWindow.selectedOptionIndex = MainWindow.options.IndexOf(currencyName);
+                        Main.selectedCurrencyName = currencyName;
+                        Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
                     }
                 }
             }
@@ -213,7 +213,7 @@ namespace CurrencyTracker
                 return;
             }
 
-            MainWindow.IsOpen = !MainWindow.IsOpen;
+            Main.IsOpen = !Main.IsOpen;
         }
 
         private void UpdateTerritoryNames()

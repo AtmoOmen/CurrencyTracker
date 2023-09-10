@@ -16,7 +16,7 @@ namespace CurrencyTracker.Windows;
 public class Graph : Window, IDisposable
 {
     internal static LanguageManager? Lang;
-    private readonly Main main = Plugin.Instance.MainWindow;
+    private readonly Main main = Plugin.Instance.Main;
     private List<TransactionsConvertor>? currentTypeTransactions = new List<TransactionsConvertor>();
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
@@ -51,6 +51,11 @@ public class Graph : Window, IDisposable
 
     public override unsafe void Draw()
     {
+        if (!Plugin.Instance.Main.IsOpen) 
+        {
+            Plugin.Instance.Graph.IsOpen = false;
+        }
+
         ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, main.selectedCurrencyName);
