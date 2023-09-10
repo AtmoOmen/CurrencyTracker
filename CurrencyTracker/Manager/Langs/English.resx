@@ -152,10 +152,8 @@
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>Note:
-1. The 19 currencies preset in the plugin cannot be changed
-2. You can choose to track items, but please be aware that in the plugin's view, even if the change is 1, it is still a change,
- which may result in a large number of records with changes of 1 appearing
-3. Please try to avoid adding items/currencies that have been deprecated out of curiosity, the plugin may make unexpected errors as a result
+1. The 19 preset currencies cannot be deleted, you can hide them by selecting one of them and right-clicking.
+2. Not recommend to track not-currency items, there should be another plugin to do that.
 3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary.</value>
   </data>
   <data name="CustomCurrencyLabel" xml:space="preserve">
@@ -282,7 +280,7 @@ Out of Duty: Only record when the absolute change is ≥</value>
   <data name="MinimumRecordValueHelp2" xml:space="preserve">
     <value>
 
-Note: May cause inaccurate location recording</value>
+Note: May cause inaccurate location recording / When duty completed, a new record will be made regardless of whether current Change reaches the threshold.</value>
   </data>
   <data name="MinimumRecordValueLabel" xml:space="preserve">
     <value>In Duty:</value>
@@ -478,5 +476,23 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="Graphs" xml:space="preserve">
     <value>Graphs</value>
+  </data>
+  <data name="Hide" xml:space="preserve">
+    <value>Hide</value>
+  </data>
+  <data name="OrderChangeHelp" xml:space="preserve">
+    <value>All hidden currencies have been restored!</value>
+  </data>
+  <data name="OrderChangeHelp1" xml:space="preserve">
+    <value>Restored</value>
+  </data>
+  <data name="OrderChangeHelp2" xml:space="preserve">
+    <value>currencies.</value>
+  </data>
+  <data name="OrderChangeLabel" xml:space="preserve">
+    <value>Current Order:</value>
+  </data>
+  <data name="OrderChangeLabel1" xml:space="preserve">
+    <value>Restore Hidden Items</value>
   </data>
 </root>

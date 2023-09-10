@@ -28,6 +28,8 @@ namespace CurrencyTracker
         };
 
         public List<string> CustomCurrencyType { get; set; } = new List<string>();
+        public List<string> OrdedOptions { get; set; } = new List<string>();
+        public List<string> HiddenOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
         public bool TrackedInDuty { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;

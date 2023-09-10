@@ -352,10 +352,8 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 注:
-        ///1.插件预设的19种货币不可更改
-        ///2.你可以选择追踪物品，但请注意，在插件看来，即便增减为1也是增减，
-        ///这可能导致大量收支为1的记录出现
-        ///3.请尽量避免因为好奇而添加已经废弃的物品/货币，插件可能因此出现意料之外的错误
+        ///1.插件预设的19种货币不可删除，可在列表框内选中后右键隐藏
+        ///2.不建议对非货币物品进行追踪, 建议使用其他插件来追踪非货币物品
         ///3.删除货币并不会删除已有的数据文件，如有需要请自行删除 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp {
@@ -401,7 +399,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 当前已选择: 的本地化字符串。
+        ///   查找类似 当前选择: 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyLabel2 {
             get {
@@ -638,6 +636,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 隐藏 的本地化字符串。
+        /// </summary>
+        internal static string Hide {
+            get {
+                return ResourceManager.GetString("Hide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 尾页 的本地化字符串。
         /// </summary>
         internal static string LastPage {
@@ -828,7 +835,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似  时，
         ///才进行一次数据记录
-        ///注: 可能造成不准确的地点记录 的本地化字符串。
+        ///注: 可能造成不准确的地点记录 / 副本完成时，无论当前改变量是否到达临界值，都会进行一次记录 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp2 {
             get {
@@ -887,6 +894,51 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string OpenDataFolder {
             get {
                 return ResourceManager.GetString("OpenDataFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所有隐藏货币均已还原 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 已还原 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp1 {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 种货币 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp2 {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前位置: 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeLabel {
+            get {
+                return ResourceManager.GetString("OrderChangeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 还原隐藏项目 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeLabel1 {
+            get {
+                return ResourceManager.GetString("OrderChangeLabel1", resourceCulture);
             }
         }
         

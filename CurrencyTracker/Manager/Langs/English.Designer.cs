@@ -327,11 +327,9 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Note:
-        ///1. The 19 currencies preset in the plugin cannot be changed
-        ///2. You can choose to track items, but please be aware that in the plugin&apos;s view, even if the change is 1, it is still a change,
-        /// which may result in a large number of records with changes of 1 appearing
-        ///3. Please try to avoid adding items/currencies that have been deprecated out of curiosity, the plugin may make unexpected errors as a result
-        ///3. Deleting currencies does not delete the existing data files, please delete them yourself if ne [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        ///1. The 19 preset currencies cannot be deleted, you can hide them by selecting one of them and right-clicking.
+        ///2. Not recommend to track not-currency items, there should be another plugin to do that.
+        ///3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary. 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp {
             get {
@@ -613,6 +611,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Hide 的本地化字符串。
+        /// </summary>
+        internal static string Hide {
+            get {
+                return ResourceManager.GetString("Hide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Last 的本地化字符串。
         /// </summary>
         internal static string LastPage {
@@ -801,7 +808,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 
         ///
-        ///Note: May cause inaccurate location recording 的本地化字符串。
+        ///Note: May cause inaccurate location recording / When duty completed, a new record will be made regardless of whether current Change reaches the threshold. 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp2 {
             get {
@@ -860,6 +867,51 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string OpenDataFolder {
             get {
                 return ResourceManager.GetString("OpenDataFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 All hidden currencies have been restored! 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restored 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp1 {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 currencies. 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeHelp2 {
+            get {
+                return ResourceManager.GetString("OrderChangeHelp2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Current Order: 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeLabel {
+            get {
+                return ResourceManager.GetString("OrderChangeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restore Hidden Items 的本地化字符串。
+        /// </summary>
+        internal static string OrderChangeLabel1 {
+            get {
+                return ResourceManager.GetString("OrderChangeLabel1", resourceCulture);
             }
         }
         

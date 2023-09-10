@@ -6,6 +6,7 @@ using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
-
 namespace CurrencyTracker.Windows;
 
 public class Main : Window, IDisposable
@@ -102,6 +102,8 @@ public class Main : Window, IDisposable
     private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
+    internal List<string>? ordedOptions = new List<string>();
+    internal List<string>? hiddenOptions = new List<string>();
     internal List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();
     internal long[]? LinePlotData;
 
@@ -118,6 +120,7 @@ public class Main : Window, IDisposable
     }
 
 #pragma warning disable CS8602
+#pragma warning disable CS8604
 
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
@@ -129,6 +132,9 @@ public class Main : Window, IDisposable
         recordMode = plugin.Configuration.TrackMode;
         timerInterval = plugin.Configuration.TimerInterval;
         transactionsPerPage = plugin.Configuration.RecordsPerPage;
+        ordedOptions = plugin.Configuration.OrdedOptions;
+        hiddenOptions = plugin.Configuration.HiddenOptions;
+
 
         LoadOptions();
         LoadLanguage(plugin);
@@ -146,7 +152,7 @@ public class Main : Window, IDisposable
             if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
-                if (!addedOptions.Contains(currencyName))
+                if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
                 {
                     permanentCurrencyName.Add(currencyName);
                     options.Add(currencyName);
@@ -165,6 +171,17 @@ public class Main : Window, IDisposable
                     addedOptions.Add(currency);
                 }
             }
+        }
+
+        if (ordedOptions == null)
+        {
+            ordedOptions = options;
+            Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
+            Plugin.Instance.Configuration.Save();
+        }
+        else
+        {
+            ReloadOrderedOptions();
         }
     }
 
@@ -278,6 +295,8 @@ public class Main : Window, IDisposable
             ExportToCSV();
             ImGui.SameLine();
             OpenDataFolder();
+            ImGui.SameLine();
+            OpenGitHubPage();
             ImGui.SameLine();
             LanguageSwitch();
             if (Plugin.Instance.PluginInterface.IsDev)
@@ -506,7 +525,7 @@ public class Main : Window, IDisposable
                         continue;
                     }
 
-                    if (searchFilter != string.Empty && !x.Value.Contains(searchFilter)) continue;
+                    if (searchFilter != string.Empty && !x.Value.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)) continue;
 
                     if (ImGui.Selectable(x.Value))
                     {
@@ -544,7 +563,9 @@ public class Main : Window, IDisposable
                 }
                 Plugin.Instance.Configuration.Save();
                 options.Add(selected);
+                ReloadOrderedOptions();
             }
+
             ImGui.SameLine();
 
             if (ImGui.Button($"{Lang.GetText("Delete")}{selected}"))
@@ -563,6 +584,7 @@ public class Main : Window, IDisposable
                 Plugin.Instance.Configuration.CustomCurrencyType.Remove(selected);
                 Plugin.Instance.Configuration.Save();
                 options.Remove(selected);
+                ReloadOrderedOptions();
             }
 
 
@@ -761,6 +783,40 @@ public class Main : Window, IDisposable
         }
     }
 
+    // 打开插件 GitHub 页面 Open Plugin GitHub Page
+    private void OpenGitHubPage()
+    {
+        if (ImGui.Button("GitHub"))
+        {
+            string url = "https://github.com/AtmoOmen/CurrencyTracker";
+            ProcessStartInfo psi = new ProcessStartInfo();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                psi.FileName = url;
+                psi.UseShellExecute = true;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                psi.FileName = "xdg-open";
+                psi.ArgumentList.Add(url);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                psi.FileName = "open";
+                psi.ArgumentList.Add(url);
+            }
+            else
+            {
+                PluginLog.Error("Unsupported OS");
+                return;
+            }
+
+            Process.Start(psi);
+        }
+    }
+
+
     // 界面语言切换功能 Language Switch
     private void LanguageSwitch()
     {
@@ -885,10 +941,85 @@ public class Main : Window, IDisposable
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
             ImGui.SetNextItemWidth(235);
-            if (ImGui.ListBox("", ref selectedOptionIndex, options.ToArray(), options.Count, options.Count))
+            for (int i = 0; i < ordedOptions.Count; i++)
             {
-                selectedCurrencyName = options[selectedOptionIndex];
+                string option = ordedOptions[i];
+                bool isSelected = i == selectedOptionIndex;
+                if (ImGui.Selectable(option, isSelected))
+                {
+                    selectedOptionIndex = i;
+                    selectedCurrencyName = option;
+                }
+
+                if (selectedOptionIndex != -1 && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+                {
+                    if (hiddenOptions.Contains(selectedCurrencyName)) return;
+                    ImGui.OpenPopup("ListboxSettings");
+                }
             }
+
+            if (ImGui.BeginPopup("ListboxSettings"))
+            {
+                if (hiddenOptions.Contains(selectedCurrencyName)) ImGui.CloseCurrentPopup();
+                ImGui.Text($"{Lang.GetText("CustomCurrencyLabel2")} {selectedCurrencyName}");
+                ImGui.Text($"{Lang.GetText("OrderChangeLabel")} {selectedOptionIndex + 1}");
+                if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up) && selectedOptionIndex > 0)
+                {
+                    SwapOptions(selectedOptionIndex, selectedOptionIndex - 1);
+                    selectedOptionIndex--;
+                }
+
+                ImGui.SameLine();
+
+                if (ImGui.ArrowButton("DownArrow", ImGuiDir.Down) && selectedOptionIndex < ordedOptions.Count - 1)
+                {
+                    SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
+                    selectedOptionIndex++;
+                }
+
+                if (permanentCurrencyName.Contains(selectedCurrencyName))
+                {
+                    ImGui.SameLine();
+                    if (ImGui.Button(Lang.GetText("Hide")))
+                    {
+                        options.Remove(selectedCurrencyName);
+                        hiddenOptions.Add(selectedCurrencyName);
+                        Plugin.Instance.Configuration.HiddenOptions.Add(selectedCurrencyName);
+                        Plugin.Instance.Configuration.Save();
+                        ReloadOrderedOptions();
+                        ImGui.CloseCurrentPopup();
+                        selectedCurrencyName = string.Empty;
+                        selectedOptionIndex = -1;
+                    }
+                }
+                ImGui.EndPopup();
+            }
+
+            if (ImGui.Button(Lang.GetText("OrderChangeLabel1")))
+            {
+                if (hiddenOptions.Count == 0) 
+                {
+                    Service.Chat.PrintError(Lang.GetText("OrderChangeHelp"));
+                    return;
+                }
+                HashSet<string> addedOptions = new HashSet<string>();
+                
+                foreach (var option in hiddenOptions)
+                {
+                    if (!addedOptions.Contains(option))
+                    {
+                        options.Add(option);
+                        permanentCurrencyName.Add(option);
+                        addedOptions.Add(option);
+                    }
+                }
+                hiddenOptions.Clear();
+                Plugin.Instance.Configuration.HiddenOptions.Clear();
+                Plugin.Instance.Configuration.Save();
+                Service.Chat.Print($"{Lang.GetText("OrderChangeHelp1")} {addedOptions.Count} {Lang.GetText("OrderChangeHelp2")}");
+                ReloadOrderedOptions();
+            }
+
             ImGui.EndChildFrame();
         }
     }
@@ -1010,6 +1141,35 @@ public class Main : Window, IDisposable
 
             ImGui.EndChildFrame();
         }
+    }
+
+
+    // 用于处理选项顺序 Used to handle options' positions.
+    private void ReloadOrderedOptions()
+    {
+        bool areEqual = ordedOptions.All(options.Contains) && options.All(ordedOptions.Contains);
+        if (!areEqual)
+        {
+            List<string> additionalElements = options.Except(ordedOptions).ToList();
+            ordedOptions.AddRange(additionalElements);
+
+            List<string> missingElements = ordedOptions.Except(options).ToList();
+            ordedOptions.RemoveAll(item => missingElements.Contains(item));
+
+            Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
+            Plugin.Instance.Configuration.Save();
+        }
+    }
+
+    // 用于处理选项位置变化 Used to handle option's position change.
+    private void SwapOptions(int index1, int index2)
+    {
+        string temp = ordedOptions[index1];
+        ordedOptions[index1] = ordedOptions[index2];
+        ordedOptions[index2] = temp;
+
+        Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
+        Plugin.Instance.Configuration.Save();
     }
 
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change

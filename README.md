@@ -20,7 +20,7 @@ Now supports English and Simplified Chinese.
 
 Currency Tracker 是一个用于记录你游戏内各项货币（金币、军票、神典石等）收入与支出情况，并提供自定义查询、导出数据文件与自定义货币追踪的插件。
 
-![Currency Tracker1](https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img3.png)
+![Currency Tracker3](https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img3.png)
 
 目前支持简体中文和英语。
 
