@@ -484,13 +484,13 @@
     <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
   </data>
   <data name="Hide" xml:space="preserve">
-    <value>隐藏</value>
+    <value>隐藏 (双击右键)</value>
   </data>
   <data name="OrderChangeLabel" xml:space="preserve">
     <value>当前位置:</value>
   </data>
   <data name="OrderChangeLabel1" xml:space="preserve">
-    <value>还原隐藏项目</value>
+    <value>还原 (双击右键)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
     <value>所有隐藏货币均已还原</value>

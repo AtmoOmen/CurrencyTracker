@@ -115,7 +115,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Filter By Change 的本地化字符串。
+        ///   查找类似 Change Filter 的本地化字符串。
         /// </summary>
         internal static string ChangeFilterEnabled {
             get {
@@ -124,7 +124,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Only Display Records 的本地化字符串。
+        ///   查找类似 Display Records 的本地化字符串。
         /// </summary>
         internal static string ChangeFilterLabel {
             get {
@@ -209,7 +209,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Clear Ex Records 的本地化字符串。
+        ///   查找类似 Clear Ex 的本地化字符串。
         /// </summary>
         internal static string ClearExTransactionsLabel {
             get {
@@ -537,7 +537,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Filter By Time 的本地化字符串。
+        ///   查找类似 Timer Filter 的本地化字符串。
         /// </summary>
         internal static string FilterByTime {
             get {
@@ -611,7 +611,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Hide 的本地化字符串。
+        ///   查找类似 Hide (Double Right-Click) 的本地化字符串。
         /// </summary>
         internal static string Hide {
             get {
@@ -732,7 +732,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Merge Records 的本地化字符串。
+        ///   查找类似 Merge 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsLabel {
             get {
@@ -777,7 +777,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Min Record Value 的本地化字符串。
+        ///   查找类似 Min Value 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValue {
             get {
@@ -907,7 +907,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Restore Hidden Items 的本地化字符串。
+        ///   查找类似 Restore (Double Right-Click) 的本地化字符串。
         /// </summary>
         internal static string OrderChangeLabel1 {
             get {
@@ -943,7 +943,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Only Display Records Between 的本地化字符串。
+        ///   查找类似 Display Records Between 的本地化字符串。
         /// </summary>
         internal static string TimeFilterLabel {
             get {

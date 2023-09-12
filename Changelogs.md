@@ -2,7 +2,8 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
-| 2023/09/10 | 1.2.1.0 | - Some code logic changed:<br/>  - When main window closed, "Graphs" window will be closed too to prevent potential Null Reference issues.<br/>  - Search filter in "Custom Tracker" is now changed to case intensive.<br/>- Now you can adjust the order of items in currencies listbox by right-clicking.<br/>- Now you can choose to hide preset currencies by right-clicking. |
+| 2023/09/12 | 1.2.1.1 | - UI Adjustments:<br/>  - Adjusted the display of the currency order adjustment button and the hide/restore currency button.<br/>  - Rearranged the position of the "Records Per Page" input component, which is now displayed by clicking the current page number.<br/>  - Reordered the display sequence of some buttons in the "Record Options" section.<br/>- Fixed an issue in the "Merge Records" interface where selecting "One-Way Merge" after entering 0 as the threshold value but still displayed the error message "Please enter a threshold value."<br/>- (English Only) Adjusted some text. |
+| 2023/09/10 | 1.2.1.0 | - Some code logic changed:<br/>  - When main window closed, "Graphs" window will be closed too to prevent potential Null Reference issues.<br/>  - Search filter in "Custom Tracker" is now changed to case insensitive.<br/>- Now you can adjust the order of items in currencies listbox by right-clicking.<br/>- Now you can choose to hide preset currencies by right-clicking. |
 | 2023/09/09 | 1.2.0.0 | - Added a "Graphs" window, where you can browse visualized data in the form of preset models. The initial version includes four types of visual data models: "Amount Graph", "Change Graph", "Location Graph" and "Location Change Graph".<br/>- Made significant changes to the implementation of the multilingual functionality.<br/>- Modified the plugin logic for the "Merge Records" feature when the threshold value is 0. Now, 0 is treated as a flag to ignore the threshold value and perform the merge check directly. |
 | 2023/09/03 | 1.1.2.3 | - Expand Minimum Record Value In Duty feature to Minimum Record Value which allows to set the currency tracking behavior of In Duty and Out Of Duty seperately |
 | 2023/09/02 | 1.1.2.2 | - Add One-Way Merge function to Merge Records feature, and original merging logic will be Two-Way Merge function.<br>- Add two buttons that allow to jump to the first page and last page of transactions in chart<br>- Now Records Per Page data will be saved to configuration. |
@@ -22,6 +23,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年9月12日 | 1.2.1.1 | - 界面 UI 调整:<br>  - 调整了货币顺序调整按钮、隐藏/恢复货币按钮的的显示方式<br>  - 调整了“单页记录数”输入组件的位置，现在通过点击当前页数进行显示<br>  - 调整了“记录选项”下部分按钮的显示顺序<br>- 修复了“合并记录”界面中输入 0 作为临界值后选择“单向合并”仍然显示“请输入临界值”的错误<br>- (仅限英语)调整了部分文本 |
 | 2023年9月10日 | 1.2.1.0 | - 部分代码逻辑改动:<br>  - 当主窗口关闭时，"图表"窗口也会随之关闭，防止潜在的空引用问题<br>  - "自定义货币追踪"界面的搜索框修改为字母大小写不敏感<br>- 现在可以通过右键调整货币列表框中的选项的位置顺序<br>- 现在可以通过右键选择隐藏预置货币 |
 | 2023年9月9日 | 1.2.0.0 | - 新增了"图表"窗口，你可以在其中以预设模型的形式查阅可视化数据。初版预设了四类可视化数据模型，分别为"数量图表"、"收支图表"、"地点图表"、"地点收支图表"。<br>- 对多语言功能的实现形式做出了较大的修改<br>- 修改了"合并记录"功能中临界值为 0 时的插件逻辑，现在 0 会被视为忽略临界值直接进行合并检查的标志。 |
 | 2023年9月3日 | 1.1.2.3 | - 将 副本内最小记录值 功能扩展为 最小记录值 功能，该功能允许分别为每种货币设置单独的、副本内外的 最小记录值 逻辑 |

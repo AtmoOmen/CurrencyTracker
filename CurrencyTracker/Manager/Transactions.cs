@@ -3,6 +3,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CurrencyTracker.Manager;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
+using Dalamud.Interface.Windowing;
+using Dalamud.Utility;
+using ImGuiNET;
+using System.Collections;
+using System.Diagnostics;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace CurrencyTracker.Manager
 {
@@ -189,6 +201,78 @@ namespace CurrencyTracker.Manager
             transactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
+        }
+
+        public int ClearExceptionRecords(string selectedCurrencyName)
+        {
+            transactionsConvertor = new TransactionsConvertor();
+
+            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+            string playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+            string filePath = Path.Join(playerDataFolder ?? "", $"{selectedCurrencyName}.txt");
+
+            List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+            List<TransactionsConvertor> recordsToRemove = new List<TransactionsConvertor>();
+
+            for (int i = 0; i < allTransactions.Count; i++)
+            {
+                var transaction = allTransactions[i];
+
+                if (i == 0 && transaction.Change == transaction.Amount)
+                {
+                    continue;
+                }
+
+                if (transaction.Change == 0 || transaction.Change == transaction.Amount)
+                {
+                    recordsToRemove.Add(transaction);
+                }
+            }
+
+            if (recordsToRemove.Count > 0)
+            {
+                foreach (var record in recordsToRemove)
+                {
+                    allTransactions.Remove(record);
+                }
+
+                transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+
+                return recordsToRemove.Count;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        public string ExportToCsv(List<TransactionsConvertor> transactions, string FileName, string selectedCurrencyName, string Headers)
+        {
+            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+            string NowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
+            string finalFileName = string.Empty;
+            if (string.IsNullOrWhiteSpace(FileName)) finalFileName = $"{selectedCurrencyName}_{NowTime}.csv";
+            else finalFileName = $"{FileName}_{selectedCurrencyName}_{NowTime}.csv";
+
+            string filePath = Path.Combine(playerDataFolder ?? "", finalFileName);
+
+            using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
+            {
+                writer.WriteLine(Headers);
+
+                foreach (var transaction in transactions)
+                {
+                    string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName}";
+                    writer.WriteLine(line);
+                }
+            }
+            return filePath;
+            
         }
     }
 }

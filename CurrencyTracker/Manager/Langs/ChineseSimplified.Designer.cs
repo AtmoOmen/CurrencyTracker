@@ -636,7 +636,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 隐藏 的本地化字符串。
+        ///   查找类似 隐藏 (双击右键) 的本地化字符串。
         /// </summary>
         internal static string Hide {
             get {
@@ -934,7 +934,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 还原隐藏项目 的本地化字符串。
+        ///   查找类似 还原 (双击右键) 的本地化字符串。
         /// </summary>
         internal static string OrderChangeLabel1 {
             get {

@@ -118,10 +118,10 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ChangeFilterEnabled" xml:space="preserve">
-    <value>Filter By Change</value>
+    <value>Change Filter</value>
   </data>
   <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>Only Display Records</value>
+    <value>Display Records</value>
   </data>
   <data name="ChangeFilterValueLabel" xml:space="preserve">
     <value> in Change</value>
@@ -215,7 +215,7 @@ Note 2: The exported transactions will be subject to all the sorting and filteri
     <value>CurrentTime</value>
   </data>
   <data name="FilterByTime" xml:space="preserve">
-    <value>Filter By Time</value>
+    <value>Timer Filter</value>
   </data>
   <data name="FirstPage" xml:space="preserve">
     <value>First</value>
@@ -252,7 +252,7 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
 </value>
   </data>
   <data name="MergeTransactionsLabel" xml:space="preserve">
-    <value>Merge Records</value>
+    <value>Merge</value>
   </data>
   <data name="MergeTransactionsLabel1" xml:space="preserve">
     <value>Threshold</value>
@@ -267,7 +267,7 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
     <value>Manual Merge</value>
   </data>
   <data name="MinimumRecordValue" xml:space="preserve">
-    <value>Min Record Value</value>
+    <value>Min Value</value>
   </data>
   <data name="MinimumRecordValueHelp" xml:space="preserve">
     <value>Current Settings:
@@ -307,7 +307,7 @@ Note: May cause inaccurate location recording / When duty completed, a new recor
     <value>Inverse Sort</value>
   </data>
   <data name="TimeFilterLabel" xml:space="preserve">
-    <value>Only Display Records Between</value>
+    <value>Display Records Between</value>
   </data>
   <data name="TimeFilterLabel1" xml:space="preserve">
     <value>And</value>
@@ -398,7 +398,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
 </value>
   </data>
   <data name="ClearExTransactionsLabel" xml:space="preserve">
-    <value>Clear Ex Records</value>
+    <value>Clear Ex</value>
   </data>
   <data name="Month" xml:space="preserve">
     <value>M</value>
@@ -478,7 +478,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Graphs</value>
   </data>
   <data name="Hide" xml:space="preserve">
-    <value>Hide</value>
+    <value>Hide (Double Right-Click)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
     <value>All hidden currencies have been restored!</value>
@@ -493,6 +493,6 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Current Order:</value>
   </data>
   <data name="OrderChangeLabel1" xml:space="preserve">
-    <value>Restore Hidden Items</value>
+    <value>Restore (Double Right-Click)</value>
   </data>
 </root>
