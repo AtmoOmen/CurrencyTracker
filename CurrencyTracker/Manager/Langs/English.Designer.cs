@@ -209,6 +209,24 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Removed  的本地化字符串。
+        /// </summary>
+        internal static string ClearExTransactionsHelp2 {
+            get {
+                return ResourceManager.GetString("ClearExTransactionsHelp2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似  exception transactions. 的本地化字符串。
+        /// </summary>
+        internal static string ClearExTransactionsHelp3 {
+            get {
+                return ResourceManager.GetString("ClearExTransactionsHelp3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Clear Ex 的本地化字符串。
         /// </summary>
         internal static string ClearExTransactionsLabel {
@@ -327,8 +345,8 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Note:
-        ///1. The 19 preset currencies cannot be deleted, you can hide them by selecting one of them and right-clicking.
-        ///2. Not recommend to track not-currency items, there should be another plugin to do that.
+        ///1. The 19 preset currencies cannot be deleted, you can only hide them.
+        ///2. Not recommend to track not-currency items, there should be another plugin to do that. (If you insist, that&apos;s also ok)
         ///3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary. 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp {
@@ -862,7 +880,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Open Data Folder 的本地化字符串。
+        ///   查找类似 Data Folder 的本地化字符串。
         /// </summary>
         internal static string OpenDataFolder {
             get {

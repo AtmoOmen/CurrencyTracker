@@ -1,5 +1,6 @@
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using ImGuiScene;
 using KamiLib.Caching;
 using Lumina.Excel.GeneratedSheets;
 using System;
@@ -39,8 +40,8 @@ public class CurrencyInfo : IDisposable
     {
         if (LuminaCache<Item>.Instance.GetRow(currencyID) is { } currencyItem)
         {
-            // 获取物品名称
             string CurrencyName = currencyItem.Name.ToDalamudString().TextValue;
+
             return CurrencyName;
         }
         else return "Unknown";

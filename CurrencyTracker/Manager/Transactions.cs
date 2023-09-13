@@ -73,11 +73,6 @@ namespace CurrencyTracker.Manager
                 }
 
                 allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
-
-                if (Plugin.Instance.Configuration.ReverseSort)
-                {
-                    allTransactions.Reverse();
-                }
             }
             catch (Exception ex)
             {

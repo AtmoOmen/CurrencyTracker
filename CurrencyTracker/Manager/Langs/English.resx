@@ -152,8 +152,8 @@
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>Note:
-1. The 19 preset currencies cannot be deleted, you can hide them by selecting one of them and right-clicking.
-2. Not recommend to track not-currency items, there should be another plugin to do that.
+1. The 19 preset currencies cannot be deleted, you can only hide them.
+2. Not recommend to track not-currency items, there should be another plugin to do that. (If you insist, that's also ok)
 3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary.</value>
   </data>
   <data name="CustomCurrencyLabel" xml:space="preserve">
@@ -295,7 +295,7 @@ Note: May cause inaccurate location recording / When duty completed, a new recor
     <value>Next</value>
   </data>
   <data name="OpenDataFolder" xml:space="preserve">
-    <value>Open Data Folder</value>
+    <value>Data Folder</value>
   </data>
   <data name="Page" xml:space="preserve">
     <value />
@@ -494,5 +494,11 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="OrderChangeLabel1" xml:space="preserve">
     <value>Restore (Double Right-Click)</value>
+  </data>
+  <data name="ClearExTransactionsHelp2" xml:space="preserve">
+    <value>Removed </value>
+  </data>
+  <data name="ClearExTransactionsHelp3" xml:space="preserve">
+    <value> exception transactions.</value>
   </data>
 </root>

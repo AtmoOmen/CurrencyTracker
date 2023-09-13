@@ -11,17 +11,18 @@ namespace CurrencyTracker.Windows
     public static class Widgets
     {
 
-        public static bool IconButton(FontAwesomeIcon icon, string tooltip, int width = -1)
+        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", int width = -1)
         {
+            bool result;
             ImGui.PushFont(UiBuilder.IconFont);
 
             if (width > 0)
                 ImGui.SetNextItemWidth(32);
 
-            var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{tooltip}");
+            result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{tooltip}");
             ImGui.PopFont();
 
-            if (tooltip != null)
+            if (tooltip != null && tooltip != "None")
                 TextTooltip(tooltip);
 
             return result;

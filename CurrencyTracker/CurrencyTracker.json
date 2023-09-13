@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.2.1.1",
+    "AssemblyVersion": "1.2.1.2",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",

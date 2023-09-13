@@ -5,7 +5,10 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using ImGuiScene;
+using KamiLib.Caching;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,6 +23,9 @@ namespace CurrencyTracker.Windows;
 
 public class Main : Window, IDisposable
 {
+    // 图表按钮是否右对齐 If Graphs button right-aligned
+    private bool graphsRightAligned = false;
+
     // 计时器触发间隔 Timer Trigger Interval
     private int timerInterval = 500;
 
@@ -153,6 +159,7 @@ public class Main : Window, IDisposable
             if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+                
                 if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
                 {
                     permanentCurrencyName.Add(currencyName);
@@ -880,40 +887,34 @@ public class Main : Window, IDisposable
     // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
     private void CurrenciesList()
     {
-        int trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
-        float ChildFrameHeight = ImGui.GetWindowHeight() - 245;
-
-        if (showRecordOptions)
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
-        }
-        else
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
-            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
-        }
-
-        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
+        var ChildFrameHeight = ChildframeHeightAdjust();
 
         Vector2 childScale = new Vector2(243, ChildFrameHeight);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
             ImGui.SetCursorPosX(42);
-            Widgets.IconButton(FontAwesomeIcon.EyeSlash, Lang.GetText("Hide"));
-            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+            if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName))
             {
-                if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName)) return;
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+                Widgets.IconButton(FontAwesomeIcon.EyeSlash);
+                ImGui.PopStyleVar();
+            }
+            else
+            {
+                Widgets.IconButton(FontAwesomeIcon.EyeSlash, Lang.GetText("Hide"));
+                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+                {
+                    if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName)) return;
 
-                options.Remove(selectedCurrencyName);
-                hiddenOptions.Add(selectedCurrencyName);
-                if (!Plugin.Instance.Configuration.HiddenOptions.Contains(selectedCurrencyName))
-                    Plugin.Instance.Configuration.HiddenOptions.Add(selectedCurrencyName);
-                Plugin.Instance.Configuration.Save();
-                ReloadOrderedOptions();
-                selectedCurrencyName = string.Empty;
-                selectedOptionIndex = -1;
+                    options.Remove(selectedCurrencyName);
+                    hiddenOptions.Add(selectedCurrencyName);
+                    if (!Plugin.Instance.Configuration.HiddenOptions.Contains(selectedCurrencyName))
+                        Plugin.Instance.Configuration.HiddenOptions.Add(selectedCurrencyName);
+                    Plugin.Instance.Configuration.Save();
+                    ReloadOrderedOptions();
+                    selectedCurrencyName = string.Empty;
+                    selectedOptionIndex = -1;
+                }
             }
             ImGui.SameLine();
             if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up) && selectedOptionIndex > 0)
@@ -960,6 +961,7 @@ public class Main : Window, IDisposable
             {
                 string option = ordedOptions[i];
                 bool isSelected = i == selectedOptionIndex;
+                
                 if (ImGui.Selectable(option, isSelected))
                 {
                     selectedOptionIndex = i;
@@ -977,22 +979,7 @@ public class Main : Window, IDisposable
         if (string.IsNullOrEmpty(selectedCurrencyName))
             return;
 
-        int trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
-        float ChildFrameHeight = ImGui.GetWindowHeight() - 245;
-
-        if (showRecordOptions)
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
-        }
-        else
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
-            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
-        }
-
-        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
+        var ChildFrameHeight = ChildframeHeightAdjust();
 
         Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ChildFrameHeight);
 
@@ -1001,6 +988,9 @@ public class Main : Window, IDisposable
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
         {
             currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+
+            if (isReversed)
+                currentTypeTransactions.Reverse();
 
             if (clusterHour > 0)
             {
@@ -1024,10 +1014,11 @@ public class Main : Window, IDisposable
                 if (Plugin.Instance.Graph.IsOpen) Plugin.Instance.Graph.IsOpen = false;
                 return;
             }
-# if DEV
-            float buttonWidth = ImGui.CalcTextSize(Lang.GetText("Graphs")).X;
-            ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 177 - buttonWidth);
-# endif
+            if (graphsRightAligned)
+            {
+                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("Graphs")).X;
+                ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 177 - buttonWidth);
+            }
             if (ImGui.Button(Lang.GetText("Graphs")))
             {
                 if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
@@ -1039,11 +1030,12 @@ public class Main : Window, IDisposable
                 }
                 else return;
             }
+            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right)) graphsRightAligned = !graphsRightAligned;
 
+            // 翻页组件 Paging Component
             ImGui.SameLine();
-            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 55);
-            if (ImGui.Button(Lang.GetText("FirstPage")))
-                currentPage = 0;
+            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 40);
+            if (Widgets.IconButton(FontAwesomeIcon.Backward)) currentPage = 0;
             ImGui.SameLine();
             ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
             if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0) currentPage--;
@@ -1067,13 +1059,10 @@ public class Main : Window, IDisposable
                 }
                 ImGui.EndPopup();
             }
-
             ImGui.SameLine();
             if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1) currentPage++;
-
             ImGui.SameLine();
-
-            if (ImGui.Button(Lang.GetText("LastPage")) && currentPage >= 0)
+            if (Widgets.IconButton(FontAwesomeIcon.Forward) && currentPage >= 0)
                 currentPage = pageCount;
 
             visibleStartIndex = currentPage * transactionsPerPage;
@@ -1095,15 +1084,16 @@ public class Main : Window, IDisposable
             for (int i = visibleStartIndex; i < visibleEndIndex; i++)
             {
                 var transaction = currentTypeTransactions[i];
-                ImGui.Text(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
+                ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                 ImGui.NextColumn();
-                ImGui.Text(transaction.Amount.ToString("#,##0"));
+                ImGui.Selectable(transaction.Amount.ToString("#,##0"));
                 ImGui.NextColumn();
-                ImGui.Text(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
                 ImGui.NextColumn();
-                ImGui.Text(transaction.LocationName);
+                ImGui.Selectable(transaction.LocationName);
                 ImGui.NextColumn();
             }
+
 
             ImGui.EndChildFrame();
         }
@@ -1190,5 +1180,28 @@ public class Main : Window, IDisposable
             Service.Chat.PrintError(Lang.GetText("TransactionsHelp"));
 
         return mergeCount;
+    }
+
+    // 调整列表框和表格高度用 Used to adjust the height of listbox and chart
+    private float ChildframeHeightAdjust()
+    {
+        var trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
+        var ChildFrameHeight = ImGui.GetWindowHeight() - 245;
+
+        if (showRecordOptions)
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
+        }
+        else
+        {
+            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
+            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
+            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
+        }
+
+        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
+
+        return ChildFrameHeight;
     }
 }
