@@ -5,19 +5,14 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
 using Dalamud.Logging;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
-using ImGuiScene;
-using KamiLib.Caching;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace CurrencyTracker.Windows;
 
@@ -104,7 +99,15 @@ public class Main : Window, IDisposable
 
     private int outDutyMinTrackValue;
 
+    // 修改后地点名 Location Name after Editing
+    private string? editedLocationName = string.Empty;
+
+    private bool isEditWindowOpen = false;
+
+    internal List<bool>? selectedStates = new List<bool>();
+    internal List<TransactionsConvertor>? selectedTransactions = new List<TransactionsConvertor>();
     private Transactions transactions = new Transactions();
+    private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
     private CurrencyInfo? currencyInfo = null!;
     private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();
@@ -142,7 +145,6 @@ public class Main : Window, IDisposable
         ordedOptions = plugin.Configuration.OrdedOptions;
         hiddenOptions = plugin.Configuration.HiddenOptions;
 
-
         LoadOptions();
         LoadLanguage(plugin);
         LoadCustomMinTrackValue();
@@ -159,7 +161,7 @@ public class Main : Window, IDisposable
             if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
-                
+
                 if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
                 {
                     permanentCurrencyName.Add(currencyName);
@@ -561,7 +563,7 @@ public class Main : Window, IDisposable
                     return;
                 }
                 if (Plugin.Instance.Configuration.CustomCurrencyType.Contains(selected))
-                Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
+                    Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
                 Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
 
                 if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
@@ -594,7 +596,6 @@ public class Main : Window, IDisposable
                 options.Remove(selected);
                 ReloadOrderedOptions();
             }
-
 
             ImGui.EndPopup();
         }
@@ -655,7 +656,7 @@ public class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("ClearExceptionNote"))
         {
-            if (ImGui.Button(Lang.GetText("Confirm"))) 
+            if (ImGui.Button(Lang.GetText("Confirm")))
             {
                 if (string.IsNullOrEmpty(selectedCurrencyName))
                 {
@@ -807,7 +808,7 @@ public class Main : Window, IDisposable
 
         var lang = string.Empty;
 
-        if (ImGui.Button("Languages"))
+        if (Widgets.IconButton(FontAwesomeIcon.Globe, "Languages"))
         {
             ImGui.OpenPopup(str_id: "LanguagesList");
         }
@@ -961,11 +962,13 @@ public class Main : Window, IDisposable
             {
                 string option = ordedOptions[i];
                 bool isSelected = i == selectedOptionIndex;
-                
+
                 if (ImGui.Selectable(option, isSelected))
                 {
                     selectedOptionIndex = i;
                     selectedCurrencyName = option;
+                    selectedStates.Clear();
+                    selectedTransactions.Clear();
                 }
             }
 
@@ -1016,10 +1019,15 @@ public class Main : Window, IDisposable
             }
             if (graphsRightAligned)
             {
-                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("Graphs")).X;
+                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("    ")).X;
                 ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 177 - buttonWidth);
             }
-            if (ImGui.Button(Lang.GetText("Graphs")))
+            else
+            {
+                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("    ")).X;
+                ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - buttonWidth);
+            }
+            if (Widgets.IconButton(FontAwesomeIcon.ChartBar, Lang.GetText("Graphs")))
             {
                 if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
                 {
@@ -1068,37 +1076,247 @@ public class Main : Window, IDisposable
             visibleStartIndex = currentPage * transactionsPerPage;
             visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
 
-            ImGui.Separator();
-
-            ImGui.Columns(4, "Transactions");
-            ImGui.Text(Lang.GetText("Column"));
-            ImGui.NextColumn();
-            ImGui.Text(Lang.GetText("Column1"));
-            ImGui.NextColumn();
-            ImGui.Text(Lang.GetText("Column2"));
-            ImGui.NextColumn();
-            ImGui.Text(Lang.GetText("Column3"));
-            ImGui.NextColumn();
-            ImGui.Separator();
-
-            for (int i = visibleStartIndex; i < visibleEndIndex; i++)
+            if (ImGui.BeginTable("TransactionsTest", 5, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
             {
-                var transaction = currentTypeTransactions[i];
-                ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
-                ImGui.NextColumn();
-                ImGui.Selectable(transaction.Amount.ToString("#,##0"));
-                ImGui.NextColumn();
-                ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
-                ImGui.NextColumn();
-                ImGui.Selectable(transaction.LocationName);
-                ImGui.NextColumn();
+                ImGui.TableSetupColumn("Time", ImGuiTableColumnFlags.None, 150, 0);
+                ImGui.TableSetupColumn("Amount", ImGuiTableColumnFlags.None, 130, 0);
+                ImGui.TableSetupColumn("Change", ImGuiTableColumnFlags.None, 100, 0);
+                ImGui.TableSetupColumn("Location", ImGuiTableColumnFlags.None, 150, 0);
+                ImGui.TableSetupColumn("Selected", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 30, 0);
+
+                ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
+
+                ImGui.TableNextColumn();
+                ImGui.Text(Lang.GetText("Time"));
+
+                ImGui.TableNextColumn();
+                ImGui.Text(Lang.GetText("Amount"));
+
+                ImGui.TableNextColumn();
+                ImGui.Text(Lang.GetText("Change"));
+
+                ImGui.TableNextColumn();
+                ImGui.Text(Lang.GetText("Location"));
+
+                ImGui.TableNextColumn();
+                if (Widgets.IconButton(FontAwesomeIcon.EllipsisH))
+                {
+                    ImGui.OpenPopup("ColumnSettings");
+                }
+
+                ImGui.TableNextRow();
+
+                for (int i = visibleStartIndex; i < visibleEndIndex; i++)
+                {
+                    var transaction = currentTypeTransactions[i];
+
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right)) 
+                    { 
+                        ImGui.SetClipboardText(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
+                        Service.Chat.Print($"已复制至剪贴板: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
+                    }
+
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable(transaction.Amount.ToString("#,##0"));
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    {
+                        ImGui.SetClipboardText(transaction.Amount.ToString("#,##0"));
+                        Service.Chat.Print($"已复制至剪贴板: {transaction.Amount.ToString("#,##0")}");
+                    }
+
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    {
+                        ImGui.SetClipboardText(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                        Service.Chat.Print($"已复制至剪贴板: {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
+                    }
+
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable(transaction.LocationName);
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    {
+                        ImGui.SetClipboardText(transaction.LocationName);
+                        Service.Chat.Print($"已复制至剪贴板: {transaction.LocationName}");
+                    }
+
+                    ImGui.TableNextColumn();
+                    while (selectedStates.Count <= i)
+                    {
+                        selectedStates.Add(false);
+                    }
+                    bool selected = selectedStates[i];
+                    if (ImGui.Checkbox($"##select_{i}", ref selected))
+                    {
+                        selectedStates[i] = selected;
+
+                        if (selected)
+                        {
+                            bool exists = selectedTransactions.Any(t => Widgets.AreTransactionsEqual(t, transaction));
+
+                            if (!exists)
+                            {
+                                selectedTransactions.Add(transaction);
+                            }
+                        }
+                        else
+                        {
+                            selectedTransactions.RemoveAll(t => Widgets.AreTransactionsEqual(t, transaction));
+                        }
+                    }
+                    ImGui.TableNextRow();
+                }
+
+                if (ImGui.BeginPopup("ColumnSettings"))
+                {
+                    ImGui.Text($"{Lang.GetText("Now")}: {selectedTransactions.Count} {Lang.GetText("Transactions")}");
+                    ImGui.Separator();
+                    if (ImGui.Selectable(Lang.GetText("UncheckAll")))
+                    {
+                        if (selectedTransactions.Count == 0)
+                        {
+                            Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                            return;
+                        }
+                        selectedStates.Clear();
+                        selectedTransactions.Clear();
+                    }
+
+                    if (ImGui.Selectable(Lang.GetText("CopiedToClipboard")))
+                    {
+                        string columnData = string.Empty;
+                        int count = selectedTransactions.Count;
+
+                        for (int t = 0; t < count; t++)
+                        {
+                            var record = selectedTransactions[t];
+                            string change = $"{record.Change:+ #,##0;- #,##0;0}";
+                            columnData += $"{record.TimeStamp} | {record.Amount} | {change} | {record.LocationName}";
+
+                            if (t < count - 1)
+                            {
+                                columnData += "\n";
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(columnData))
+                        {
+                            ImGui.SetClipboardText(columnData);
+                            Service.Chat.Print($"{Lang.GetText("CopyTransactionsHelp")} {selectedTransactions.Count} {Lang.GetText("CopyTransactionsHelp1")}");
+                        }
+                        else
+                        {
+                            Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                            return;
+                        }
+                    }
+
+                    if (ImGui.Selectable(Lang.GetText("Export")))
+                    {
+                        if (selectedTransactions.Count == 0)
+                        {
+                            Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                            return;
+                        }
+                        var filePath = transactions.ExportToCsv(selectedTransactions, "", selectedCurrencyName, Lang.GetText("ExportCsvMessage2"));
+                        Service.Chat.Print($"{Lang.GetText("ExportCsvMessage3")}{filePath}");
+                    }
+
+                    if (ImGui.Selectable(Lang.GetText("Delete")))
+                    {
+                        if (selectedTransactions.Count == 0)
+                        {
+                            Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                            return;
+                        }
+                        foreach (var selectedTransaction in selectedTransactions)
+                        {
+                            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+                            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+                            string filePath = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", $"{selectedCurrencyName}.txt");
+                            var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                            editedTransactions.Remove(selectedTransaction);
+                            var foundTransaction = editedTransactions.FirstOrDefault(t => Widgets.AreTransactionsEqual(t, selectedTransaction));
+
+                            if (foundTransaction != null)
+                            {
+                                editedTransactions.Remove(foundTransaction);
+                            }
+
+                            transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        }
+                        selectedStates.Clear();
+                        selectedTransactions.Clear();
+                    }
+
+                    if (ImGui.Selectable(Lang.GetText("Edit"),isEditWindowOpen , ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        isEditWindowOpen = !isEditWindowOpen;
+                    }
+
+                    if (isEditWindowOpen)
+                    {
+                        ImGui.Separator();
+                        ImGui.Text($"{Lang.GetText("Location")}:");
+                        ImGui.SetNextItemWidth(210);
+                        if (ImGui.InputTextWithHint("", Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+                        {
+                            if (selectedTransactions.Count == 0)
+                            {
+                                Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                                return;
+                            }
+
+                            if (editedLocationName.IsNullOrWhitespace())
+                            {
+                                Service.Chat.PrintError(Lang.GetText("EditHelp1"));
+                                return;
+                            }
+
+                            foreach (var selectedTransaction in selectedTransactions)
+                            {
+                                var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+                                var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+                                string filePath = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", $"{selectedCurrencyName}.txt");
+                                var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+
+                                int index = -1;
+                                for (int i = 0; i < editedTransactions.Count; i++)
+                                {
+                                    if (Widgets.AreTransactionsEqual(editedTransactions[i], selectedTransaction))
+                                    {
+                                        index = i;
+                                        break;
+                                    }
+                                }
+
+                                if (index != -1)
+                                {
+                                    editedTransactions[index].LocationName = editedLocationName;
+                                    transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+
+                                }
+                            }
+
+                            Service.Chat.Print($"{Lang.GetText("EditHelp2")} {selectedTransactions.Count} {Lang.GetText("EditHelp3")} {editedLocationName}");
+                            selectedStates.Clear();
+                            selectedTransactions.Clear();
+                            isEditWindowOpen = false;
+                        }
+
+                    }
+                    ImGui.EndPopup();
+                }
+                ImGui.EndTable();
             }
 
+            
 
             ImGui.EndChildFrame();
         }
     }
-
 
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()

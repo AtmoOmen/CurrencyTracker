@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.2.1.2",
+    "AssemblyVersion": "1.2.2.0",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",
@@ -17,5 +17,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "- Please refer to my GitHub Changelog page."
+    "Changelog": "- UI Adjustments:\n  - Changed the Graphs and Languages buttons to display as icon buttons.\n  - Adjusted the position of the Graphs button.\n  - Changed the way data charts are drawn.\n- Functional Adjustments:\n  - Now allows selection of individual rows in the data charts with corresponding functionality.\n  - Now allows right-clicking on a cell within the data chart to copy its content."
 }

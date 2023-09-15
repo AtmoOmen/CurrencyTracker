@@ -3,17 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CurrencyTracker.Manager;
-using Dalamud.Interface;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Components;
-using Dalamud.Interface.Windowing;
-using Dalamud.Utility;
-using ImGuiNET;
-using System.Collections;
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Text;
 
 namespace CurrencyTracker.Manager
@@ -247,14 +236,16 @@ namespace CurrencyTracker.Manager
         {
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", "Exported");
+
+            Directory.CreateDirectory(playerDataFolder);
 
             string NowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
-            string finalFileName = string.Empty;
+            string finalFileName;
             if (string.IsNullOrWhiteSpace(FileName)) finalFileName = $"{selectedCurrencyName}_{NowTime}.csv";
             else finalFileName = $"{FileName}_{selectedCurrencyName}_{NowTime}.csv";
 
-            string filePath = Path.Combine(playerDataFolder ?? "", finalFileName);
+            string filePath = Path.Combine(playerDataFolder, finalFileName);
 
             using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
             {
@@ -267,7 +258,6 @@ namespace CurrencyTracker.Manager
                 }
             }
             return filePath;
-            
         }
     }
 }

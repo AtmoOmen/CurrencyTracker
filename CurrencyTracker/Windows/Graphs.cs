@@ -51,7 +51,7 @@ public class Graph : Window, IDisposable
 
     public override unsafe void Draw()
     {
-        if (!Plugin.Instance.Main.IsOpen) 
+        if (!Plugin.Instance.Main.IsOpen)
         {
             Plugin.Instance.Graph.IsOpen = false;
         }

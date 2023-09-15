@@ -258,10 +258,10 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
     <value>Threshold</value>
   </data>
   <data name="MergeTransactionsLabel2" xml:space="preserve">
-    <value>Two-Way Merge [ORIG.]</value>
+    <value>Two-Way Merge</value>
   </data>
   <data name="MergeTransactionsLabel3" xml:space="preserve">
-    <value>One-Way Merge [EXPT.]</value>
+    <value>One-Way Merge</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
     <value>Manual Merge</value>
@@ -349,7 +349,7 @@ Note: If you found the plugin didn't record the change under certain circumstanc
     <value>Timer Mode</value>
   </data>
   <data name="TrackModeLabel2" xml:space="preserve">
-    <value>Chat Mode [EXPT.]</value>
+    <value>Chat Mode</value>
   </data>
   <data name="TrackModeLabel3" xml:space="preserve">
     <value>Interval (ms)</value>
@@ -369,16 +369,16 @@ Note: If you found the plugin didn't record the change under certain circumstanc
   <data name="UnknownLocation" xml:space="preserve">
     <value>Unknown</value>
   </data>
-  <data name="Column" xml:space="preserve">
+  <data name="Time" xml:space="preserve">
     <value>Time</value>
   </data>
-  <data name="Column1" xml:space="preserve">
+  <data name="Amount" xml:space="preserve">
     <value>Amount</value>
   </data>
-  <data name="Column2" xml:space="preserve">
+  <data name="Change" xml:space="preserve">
     <value>Change</value>
   </data>
-  <data name="Column3" xml:space="preserve">
+  <data name="Location" xml:space="preserve">
     <value>Location</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
@@ -500,5 +500,47 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="ClearExTransactionsHelp3" xml:space="preserve">
     <value> exception transactions.</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>Manage</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>Transactions</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>Now</value>
+  </data>
+  <data name="UncheckAll" xml:space="preserve">
+    <value>Uncheck All</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>Copied To Clipboard</value>
+  </data>
+  <data name="NoTransactionsSelected" xml:space="preserve">
+    <value>No transactions currently selected.</value>
+  </data>
+  <data name="CopyTransactionsHelp" xml:space="preserve">
+    <value>Copied</value>
+  </data>
+  <data name="CopyTransactionsHelp1" xml:space="preserve">
+    <value>transactions to clipboard.</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit [DEV]</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="EditHelp" xml:space="preserve">
+    <value>Press Enter to Confirm</value>
+  </data>
+  <data name="EditHelp1" xml:space="preserve">
+    <value>Please enter a location name.</value>
+  </data>
+  <data name="EditHelp2" xml:space="preserve">
+    <value>Changed</value>
+  </data>
+  <data name="EditHelp3" xml:space="preserve">
+    <value>transactions' Location to:</value>
   </data>
 </root>

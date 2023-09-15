@@ -1,6 +1,5 @@
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using ImGuiScene;
 using KamiLib.Caching;
 using Lumina.Excel.GeneratedSheets;
 using System;

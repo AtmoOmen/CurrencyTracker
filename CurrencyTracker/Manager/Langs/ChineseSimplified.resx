@@ -267,16 +267,16 @@
   <data name="Gong" xml:space="preserve">
     <value>共 </value>
   </data>
-  <data name="Column" xml:space="preserve">
+  <data name="Time" xml:space="preserve">
     <value>时间</value>
   </data>
-  <data name="Column1" xml:space="preserve">
+  <data name="Amount" xml:space="preserve">
     <value>货币数</value>
   </data>
-  <data name="Column2" xml:space="preserve">
+  <data name="Change" xml:space="preserve">
     <value>收支</value>
   </data>
-  <data name="Column3" xml:space="preserve">
+  <data name="Location" xml:space="preserve">
     <value>地点</value>
   </data>
   <data name="UnknownLocation" xml:space="preserve">
@@ -325,10 +325,10 @@
     <value>临界值</value>
   </data>
   <data name="MergeTransactionsLabel2" xml:space="preserve">
-    <value>双向合并 (原)</value>
+    <value>双向合并</value>
   </data>
   <data name="MergeTransactionsLabel3" xml:space="preserve">
-    <value>单项合并 (实验)</value>
+    <value>单项合并</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
     <value>手动合并</value>
@@ -390,7 +390,7 @@
     <value>计时器模式</value>
   </data>
   <data name="TrackModeLabel2" xml:space="preserve">
-    <value>消息模式 [实验]</value>
+    <value>消息模式</value>
   </data>
   <data name="TrackModeLabel3" xml:space="preserve">
     <value>间隔 (ms)</value>
@@ -500,5 +500,47 @@
   </data>
   <data name="OrderChangeHelp2" xml:space="preserve">
     <value>种货币</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>管理</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>当前</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>条记录</value>
+  </data>
+  <data name="UncheckAll" xml:space="preserve">
+    <value>取消选中</value>
+  </data>
+  <data name="CopyTransactionsHelp" xml:space="preserve">
+    <value>已复制</value>
+  </data>
+  <data name="CopyTransactionsHelp1" xml:space="preserve">
+    <value>条记录至剪贴板</value>
+  </data>
+  <data name="NoTransactionsSelected" xml:space="preserve">
+    <value>当前未选中任何记录</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑 [测试]</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>导出</value>
+  </data>
+  <data name="EditHelp" xml:space="preserve">
+    <value>按 Enter 键确认</value>
+  </data>
+  <data name="EditHelp1" xml:space="preserve">
+    <value>请输入修改后的地点名称</value>
+  </data>
+  <data name="EditHelp2" xml:space="preserve">
+    <value>已修改</value>
+  </data>
+  <data name="EditHelp3" xml:space="preserve">
+    <value>条记录的地名为:</value>
   </data>
 </root>
