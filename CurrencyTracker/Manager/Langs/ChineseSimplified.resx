@@ -505,7 +505,7 @@
     <value>管理</value>
   </data>
   <data name="CopiedToClipboard" xml:space="preserve">
-    <value>复制</value>
+    <value>已复制到剪贴板</value>
   </data>
   <data name="Now" xml:space="preserve">
     <value>当前</value>

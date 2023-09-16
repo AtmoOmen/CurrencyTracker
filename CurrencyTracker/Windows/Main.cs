@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Transactions;
 
 namespace CurrencyTracker.Windows;
 
@@ -104,6 +105,7 @@ public class Main : Window, IDisposable
 
     private bool isEditWindowOpen = false;
 
+    private Dictionary<string, List<TransactionsConvertor>> cache = new Dictionary<string, List<TransactionsConvertor>>();
     internal List<bool>? selectedStates = new List<bool>();
     internal List<TransactionsConvertor>? selectedTransactions = new List<TransactionsConvertor>();
     private Transactions transactions = new Transactions();
@@ -449,7 +451,7 @@ public class Main : Window, IDisposable
         ImGuiComponents.HelpMarker(Lang.GetText("TrackInDutyHelp"));
     }
 
-    // 副本内最小记录值 Minimum Change Permitted to Create a New Transaction When in Duty
+    // 最小记录值 Minimum Change Permitted to Create a New Transaction
     private void MinRecordValueInDuty()
     {
         if (!isTrackedinDuty) return;
@@ -478,11 +480,11 @@ public class Main : Window, IDisposable
                 ImGui.Separator();
                 ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
                 ImGui.SetNextItemWidth(175);
-                ImGui.InputInt("", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
+                ImGui.InputInt("##MinInDuty", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
                 if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
                 ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}");
                 ImGui.SetNextItemWidth(175);
-                ImGui.InputInt("", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
+                ImGui.InputInt("##MinOutDuty", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
                 if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
                 if (ImGui.Button(Lang.GetText("MinimumRecordValueLabel2")))
                 {
@@ -981,10 +983,13 @@ public class Main : Window, IDisposable
     {
         if (string.IsNullOrEmpty(selectedCurrencyName))
             return;
+        if (Service.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BetweenAreas])
+            return;
+        if (Service.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BetweenAreas51])
+            return;
 
-        var ChildFrameHeight = ChildframeHeightAdjust();
-
-        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, ChildFrameHeight);
+        var childFrameHeight = ChildframeHeightAdjust();
+        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, childFrameHeight);
 
         ImGui.SameLine();
 
@@ -1008,68 +1013,77 @@ public class Main : Window, IDisposable
                 currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
 
             int pageCount = (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage);
-            if (pageCount > 0)
-            {
-                currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
-            }
-            else
+            currentPage = Math.Clamp(currentPage, 0, pageCount - 1);
+
+            if (pageCount == 0)
             {
                 if (Plugin.Instance.Graph.IsOpen) Plugin.Instance.Graph.IsOpen = false;
                 return;
             }
-            if (graphsRightAligned)
-            {
-                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("    ")).X;
-                ImGui.SetCursorPosX(ImGui.GetWindowWidth() - 177 - buttonWidth);
-            }
-            else
-            {
-                float buttonWidth = ImGui.CalcTextSize(Lang.GetText("    ")).X;
-                ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - buttonWidth);
-            }
+
+            float buttonWidth = ImGui.CalcTextSize(Lang.GetText("    ")).X;
+            float buttonPosX = graphsRightAligned
+                ? ImGui.GetWindowWidth() - 177 - buttonWidth
+                : (ImGui.GetWindowWidth() - 360) / 2 - 57 - buttonWidth;
+
+            ImGui.SetCursorPosX(buttonPosX);
+
             if (Widgets.IconButton(FontAwesomeIcon.ChartBar, Lang.GetText("Graphs")))
             {
                 if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
                 {
-                    LinePlotData = new long[currentTypeTransactions.Count];
                     LinePlotData = currentTypeTransactions.Select(x => x.Amount).ToArray();
-
                     Plugin.Instance.Graph.IsOpen = !Plugin.Instance.Graph.IsOpen;
                 }
                 else return;
             }
-            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right)) graphsRightAligned = !graphsRightAligned;
 
-            // 翻页组件 Paging Component
+            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                graphsRightAligned = !graphsRightAligned;
+
             ImGui.SameLine();
-            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 40);
-            if (Widgets.IconButton(FontAwesomeIcon.Backward)) currentPage = 0;
+            float pageButtonPosX = (ImGui.GetWindowWidth() - 360) / 2 - 40;
+            ImGui.SetCursorPosX(pageButtonPosX);
+
+            if (Widgets.IconButton(FontAwesomeIcon.Backward))
+                currentPage = 0;
+
             ImGui.SameLine();
-            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2);
-            if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0) currentPage--;
+
+            if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0)
+                currentPage--;
 
             ImGui.SameLine();
             ImGui.Text($"{Lang.GetText("Di")}{currentPage + 1}{Lang.GetText("Page")} / {Lang.GetText("Gong")}{pageCount}{Lang.GetText("Page")}");
+
             if (ImGui.IsItemClicked())
             {
                 ImGui.OpenPopup("TransactionsPerPage");
             }
+
             if (ImGui.BeginPopup("TransactionsPerPage"))
             {
                 ImGui.Text(Lang.GetText("TransactionsPerPage"));
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(120);
+
                 if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
                 {
                     transactionsPerPage = Math.Max(transactionsPerPage, 0);
                     Plugin.Instance.Configuration.RecordsPerPage = transactionsPerPage;
                     Plugin.Instance.Configuration.Save();
                 }
+
                 ImGui.EndPopup();
             }
+
             ImGui.SameLine();
-            if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1) currentPage++;
+
+            if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1)
+                currentPage++;
+
             ImGui.SameLine();
+
             if (Widgets.IconButton(FontAwesomeIcon.Forward) && currentPage >= 0)
                 currentPage = pageCount;
 
@@ -1099,6 +1113,7 @@ public class Main : Window, IDisposable
                 ImGui.Text(Lang.GetText("Location"));
 
                 ImGui.TableNextColumn();
+
                 if (Widgets.IconButton(FontAwesomeIcon.EllipsisH))
                 {
                     ImGui.OpenPopup("ColumnSettings");
@@ -1112,42 +1127,49 @@ public class Main : Window, IDisposable
 
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
-                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right)) 
-                    { 
+
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    {
                         ImGui.SetClipboardText(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
-                        Service.Chat.Print($"已复制至剪贴板: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
+                        Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
                     }
 
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.Amount.ToString("#,##0"));
+
                     if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
                     {
                         ImGui.SetClipboardText(transaction.Amount.ToString("#,##0"));
-                        Service.Chat.Print($"已复制至剪贴板: {transaction.Amount.ToString("#,##0")}");
+                        Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.Amount.ToString("#,##0")}");
                     }
 
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+
                     if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
                     {
                         ImGui.SetClipboardText(transaction.Change.ToString("+ #,##0;- #,##0;0"));
-                        Service.Chat.Print($"已复制至剪贴板: {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
+                        Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")} : {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
                     }
 
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.LocationName);
+
                     if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
                     {
                         ImGui.SetClipboardText(transaction.LocationName);
-                        Service.Chat.Print($"已复制至剪贴板: {transaction.LocationName}");
+                        Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.LocationName}");
                     }
 
                     ImGui.TableNextColumn();
+
                     while (selectedStates.Count <= i)
                     {
                         selectedStates.Add(false);
                     }
+
                     bool selected = selectedStates[i];
+
                     if (ImGui.Checkbox($"##select_{i}", ref selected))
                     {
                         selectedStates[i] = selected;
@@ -1166,6 +1188,7 @@ public class Main : Window, IDisposable
                             selectedTransactions.RemoveAll(t => Widgets.AreTransactionsEqual(t, transaction));
                         }
                     }
+
                     ImGui.TableNextRow();
                 }
 
@@ -1173,6 +1196,7 @@ public class Main : Window, IDisposable
                 {
                     ImGui.Text($"{Lang.GetText("Now")}: {selectedTransactions.Count} {Lang.GetText("Transactions")}");
                     ImGui.Separator();
+
                     if (ImGui.Selectable(Lang.GetText("UncheckAll")))
                     {
                         if (selectedTransactions.Count == 0)
@@ -1251,7 +1275,8 @@ public class Main : Window, IDisposable
                         selectedTransactions.Clear();
                     }
 
-                    if (ImGui.Selectable(Lang.GetText("Edit"),isEditWindowOpen , ImGuiSelectableFlags.DontClosePopups))
+
+                    if (ImGui.Selectable(Lang.GetText("Edit"), isEditWindowOpen, ImGuiSelectableFlags.DontClosePopups))
                     {
                         isEditWindowOpen = !isEditWindowOpen;
                     }
@@ -1261,6 +1286,7 @@ public class Main : Window, IDisposable
                         ImGui.Separator();
                         ImGui.Text($"{Lang.GetText("Location")}:");
                         ImGui.SetNextItemWidth(210);
+
                         if (ImGui.InputTextWithHint("", Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
                         {
                             if (selectedTransactions.Count == 0)
@@ -1296,7 +1322,6 @@ public class Main : Window, IDisposable
                                 {
                                     editedTransactions[index].LocationName = editedLocationName;
                                     transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
-
                                 }
                             }
 
@@ -1305,18 +1330,18 @@ public class Main : Window, IDisposable
                             selectedTransactions.Clear();
                             isEditWindowOpen = false;
                         }
-
                     }
+
                     ImGui.EndPopup();
                 }
+
                 ImGui.EndTable();
             }
-
-            
 
             ImGui.EndChildFrame();
         }
     }
+
 
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()

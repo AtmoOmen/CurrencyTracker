@@ -333,7 +333,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 复制 的本地化字符串。
+        ///   查找类似 已复制到剪贴板 的本地化字符串。
         /// </summary>
         internal static string CopiedToClipboard {
             get {
