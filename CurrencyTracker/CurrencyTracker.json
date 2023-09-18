@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.2.2.0",
+    "AssemblyVersion": "1.2.3.0",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Track your Currencies' Changes!",
     "InternalName": "CurrencyTracker",
@@ -17,5 +17,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "- UI Adjustments:\n  - Changed the Graphs and Languages buttons to display as icon buttons.\n  - Adjusted the position of the Graphs button.\n  - Changed the way data charts are drawn.\n- Functional Adjustments:\n  - Now allows selection of individual rows in the data charts with corresponding functionality.\n  - Now allows right-clicking on a cell within the data chart to copy its content."
+    "Changelog": "- Functional Adjustments:\n  - Added a new function Location Filter under Filter Options, and it enables users to enter key words to serach transactions with relevant Location names.\n  - Added some new functions under Transactions Toolbar: Select All, Inverse Select, Unselect.\n  - Added a new interface operation logic to Transactions List, which now enables users to select a number of transactions when holding Ctrl.\n  - Adjusted Time Filter function code logic.\n- UI Adjustments:\n  - Added a sequence number column to Transactions List.\n  - Adjusted the layout of various functions when expanding/collapsing under the Filter Options.\n  - Adjusted the appearance of the functions under Filter Options except for the Inverse Sort function when enabled.\n- Others:\n  - Adjusted Transactions List draw logic.\n  - Adjusted some appropiate expressions in English localization."
 }

@@ -121,13 +121,13 @@
     <value>Change Filter</value>
   </data>
   <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>Display Records</value>
+    <value>Only display transactions</value>
   </data>
   <data name="ChangeFilterValueLabel" xml:space="preserve">
-    <value> in Change</value>
+    <value>in Change</value>
   </data>
   <data name="ClusterByTime" xml:space="preserve">
-    <value>Cluster By Time:</value>
+    <value>Cluster By Time</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
     <value>Current Setting: Display transactions in</value>
@@ -307,10 +307,10 @@ Note: May cause inaccurate location recording / When duty completed, a new recor
     <value>Inverse Sort</value>
   </data>
   <data name="TimeFilterLabel" xml:space="preserve">
-    <value>Display Records Between</value>
+    <value>Only display transactions between</value>
   </data>
   <data name="TimeFilterLabel1" xml:space="preserve">
-    <value>And</value>
+    <value>and</value>
   </data>
   <data name="TimeFilterLabel2" xml:space="preserve">
     <value />
@@ -510,8 +510,8 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="Now" xml:space="preserve">
     <value>Now</value>
   </data>
-  <data name="UncheckAll" xml:space="preserve">
-    <value>Uncheck All</value>
+  <data name="Unselect" xml:space="preserve">
+    <value>Unselect</value>
   </data>
   <data name="CopiedToClipboard" xml:space="preserve">
     <value>Copied To Clipboard</value>
@@ -542,5 +542,29 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="EditHelp3" xml:space="preserve">
     <value>transactions' Location to:</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="ChangeTextColoring" xml:space="preserve">
+    <value>Change Text Coloring</value>
+  </data>
+  <data name="CurrentSettings" xml:space="preserve">
+    <value>Current Settings</value>
+  </data>
+  <data name="LocationFilter" xml:space="preserve">
+    <value>Location Filter</value>
+  </data>
+  <data name="NegativeChange" xml:space="preserve">
+    <value>Negative</value>
+  </data>
+  <data name="PositiveChange" xml:space="preserve">
+    <value>Positive</value>
+  </data>
+  <data name="InverseSelect" xml:space="preserve">
+    <value>Inverse Select</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>Select All</value>
   </data>
 </root>

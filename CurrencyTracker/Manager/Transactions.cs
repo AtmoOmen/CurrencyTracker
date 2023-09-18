@@ -29,7 +29,7 @@ namespace CurrencyTracker.Manager
                         TimeStamp = clusterTime,
                         Amount = 0,
                         Change = 0,
-                        LocationName = Lang.GetText("UnknownLocation")
+                        LocationName = $"{transaction.LocationName}..."
                     });
                 }
 

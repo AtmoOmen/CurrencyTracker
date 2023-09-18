@@ -3,6 +3,7 @@ using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 
 namespace CurrencyTracker
 {
@@ -36,6 +37,9 @@ namespace CurrencyTracker
         public int TrackMode { get; set; } = 0;
         public int RecordsPerPage { get; set; } = 20;
         public int TimerInterval { get; set; } = 500;
+        public bool ChangeTextColoring { get; set; } = false;
+        public Vector4 PositiveChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        public Vector4 NegativeChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

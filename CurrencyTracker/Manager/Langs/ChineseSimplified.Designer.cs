@@ -205,6 +205,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 收支文本染色 的本地化字符串。
+        /// </summary>
+        internal static string ChangeTextColoring {
+            get {
+                return ResourceManager.GetString("ChangeTextColoring", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 尝试清除当前选中货币下的所有异常记录
         /// 的本地化字符串。
         /// </summary>
@@ -252,7 +261,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 按时间聚类: 的本地化字符串。
+        ///   查找类似 按时间聚类 的本地化字符串。
         /// </summary>
         internal static string ClusterByTime {
             get {
@@ -342,6 +351,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 复制 的本地化字符串。
+        /// </summary>
+        internal static string Copy {
+            get {
+                return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 已复制 的本地化字符串。
         /// </summary>
         internal static string CopyTransactionsHelp {
@@ -356,6 +374,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string CopyTransactionsHelp1 {
             get {
                 return ResourceManager.GetString("CopyTransactionsHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前设置 的本地化字符串。
+        /// </summary>
+        internal static string CurrentSettings {
+            get {
+                return ResourceManager.GetString("CurrentSettings", resourceCulture);
             }
         }
         
@@ -708,6 +735,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 反选 的本地化字符串。
+        /// </summary>
+        internal static string InverseSelect {
+            get {
+                return ResourceManager.GetString("InverseSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 尾页 的本地化字符串。
         /// </summary>
         internal static string LastPage {
@@ -758,6 +794,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string LocationAmountGraph2 {
             get {
                 return ResourceManager.GetString("LocationAmountGraph2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 地点筛选 的本地化字符串。
+        /// </summary>
+        internal static string LocationFilter {
+            get {
+                return ResourceManager.GetString("LocationFilter", resourceCulture);
             }
         }
         
@@ -961,6 +1006,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 负收支 的本地化字符串。
+        /// </summary>
+        internal static string NegativeChange {
+            get {
+                return ResourceManager.GetString("NegativeChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 下一页 的本地化字符串。
         /// </summary>
         internal static string NextPage {
@@ -1051,6 +1105,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 正收支 的本地化字符串。
+        /// </summary>
+        internal static string PositiveChange {
+            get {
+                return ResourceManager.GetString("PositiveChange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 上一页 的本地化字符串。
         /// </summary>
         internal static string PreviousPage {
@@ -1065,6 +1128,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string ReverseSort {
             get {
                 return ResourceManager.GetString("ReverseSort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全选 的本地化字符串。
+        /// </summary>
+        internal static string SelectAll {
+            get {
+                return ResourceManager.GetString("SelectAll", resourceCulture);
             }
         }
         
@@ -1249,15 +1321,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 取消选中 的本地化字符串。
-        /// </summary>
-        internal static string UncheckAll {
-            get {
-                return ResourceManager.GetString("UncheckAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 未知的货币类型 的本地化字符串。
         /// </summary>
         internal static string UnknownCurrency {
@@ -1272,6 +1335,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string UnknownLocation {
             get {
                 return ResourceManager.GetString("UnknownLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消选中 的本地化字符串。
+        /// </summary>
+        internal static string Unselect {
+            get {
+                return ResourceManager.GetString("Unselect", resourceCulture);
             }
         }
         

@@ -133,7 +133,7 @@
     <value>倒序排序</value>
   </data>
   <data name="ClusterByTime" xml:space="preserve">
-    <value>按时间聚类:</value>
+    <value>按时间聚类</value>
   </data>
   <data name="ClusterInterval" xml:space="preserve">
     <value>小时</value>
@@ -513,7 +513,7 @@
   <data name="Transactions" xml:space="preserve">
     <value>条记录</value>
   </data>
-  <data name="UncheckAll" xml:space="preserve">
+  <data name="Unselect" xml:space="preserve">
     <value>取消选中</value>
   </data>
   <data name="CopyTransactionsHelp" xml:space="preserve">
@@ -542,5 +542,29 @@
   </data>
   <data name="EditHelp3" xml:space="preserve">
     <value>条记录的地名为:</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>复制</value>
+  </data>
+  <data name="ChangeTextColoring" xml:space="preserve">
+    <value>收支文本染色</value>
+  </data>
+  <data name="CurrentSettings" xml:space="preserve">
+    <value>当前设置</value>
+  </data>
+  <data name="LocationFilter" xml:space="preserve">
+    <value>地点筛选</value>
+  </data>
+  <data name="NegativeChange" xml:space="preserve">
+    <value>负收支</value>
+  </data>
+  <data name="PositiveChange" xml:space="preserve">
+    <value>正收支</value>
+  </data>
+  <data name="InverseSelect" xml:space="preserve">
+    <value>反选</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>全选</value>
   </data>
 </root>
