@@ -1287,6 +1287,8 @@ public class Main : Window, IDisposable
         {
             currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
 
+            if (currentTypeTransactions.Count <= 0) return;
+
             if (isReversed)
                 currentTypeTransactions.Reverse();
 
@@ -1304,8 +1306,6 @@ public class Main : Window, IDisposable
 
             if (isLocationFilterEnabled)
                 currentTypeTransactions = ApplyLocationFilter(currentTypeTransactions, searchLocationName);
-
-            if (currentTypeTransactions.Count <= 0) return;
 
             if (!Widgets.AreTransactionsEqual(lastTransactions, currentTypeTransactions))
             {
@@ -1451,7 +1451,7 @@ public class Main : Window, IDisposable
                     }
 
                     ImGui.TableNextColumn();
-                    if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                    if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.IsMouseDown(ImGuiMouseButton.Right))
                     {
                         ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"), ref selected, ImGuiSelectableFlags.SpanAllColumns);
                         if (ImGui.IsItemHovered())
@@ -1478,7 +1478,7 @@ public class Main : Window, IDisposable
                         ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                     }
 
-                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                     {
                         ImGui.SetClipboardText(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
                         Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
@@ -1487,7 +1487,7 @@ public class Main : Window, IDisposable
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.Amount.ToString("#,##0"));
 
-                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                     {
                         ImGui.SetClipboardText(transaction.Amount.ToString("#,##0"));
                         Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.Amount.ToString("#,##0")}");
@@ -1512,7 +1512,7 @@ public class Main : Window, IDisposable
                         ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
                     }
 
-                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                     {
                         ImGui.SetClipboardText(transaction.Change.ToString("+ #,##0;- #,##0;0"));
                         Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")} : {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
@@ -1521,7 +1521,7 @@ public class Main : Window, IDisposable
                     ImGui.TableNextColumn();
                     ImGui.Selectable(transaction.LocationName);
 
-                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right))
+                    if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                     {
                         ImGui.SetClipboardText(transaction.LocationName);
                         Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.LocationName}");

@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/09/20 | 1.2.3.1 | A small fix to Merge Transactions.                           |
 | 2023/09/18 | 1.2.3.0 | - Functional Adjustments:<br/>  - Added a new function Location Filter under Filter Options, and it enables users to enter key words to serach transactions with relevant Location names.<br/>  - Added some new functions under Transactions Toolbar: Select All, Inverse Select, Unselect.<br/>  - Added a new interface operation logic to Transactions List, which now enables users to select a number of transactions when holding Ctrl.<br/>  - Adjusted Time Filter function code logic.<br/>- UI Adjustments:<br/>  - Added a sequence number column to Transactions List.<br/>  - Adjusted the layout of various functions when expanding/collapsing under the Filter Options.<br/>  - Adjusted the appearance of the functions under Filter Options except for the Inverse Sort function when enabled.<br/>- Others:<br/>  - Adjusted Transactions List draw logic.<br/>  - Adjusted some appropiate expressions in English localization. |
 | 2023/09/15 | 1.2.2.0 | - UI Adjustments:<br/>  - Changed the "Graphs" and "Languages" buttons to display as icon buttons.<br/>  - Adjusted the position of the "Graphs" button.<br/>  - Changed the way data charts are drawn.<br/>- Functional Adjustments:<br/>  - Now allows selection of individual rows in the data charts with corresponding functionality.<br/>  - Now allows right-clicking on a cell within the data chart to copy its content. |
 | 2023/09/13 | 1.2.1.2 | - UI Adjustments:<br>  - Now the "First" and "Last" Button are changed into Icon Buttons.<br>  - You can make "Graphs" button left or right-aligned by right-clicking.<br>  - Adjust the data chart's appearence |
@@ -26,6 +27,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年9月20日 | 1.2.3.1 | 对合并记录功能进行了一次小修复 |
 | 2023年9月18日 | 1.2.3.0 | - 功能调整：<br>  - 新增“筛选排序选项”下功能：“地点筛选”，其允许通过输入关键词显示含有相关地名的收支记录<br>  - 新增记录工具栏下功能：“全选”、“反选”、“取消选中”<br>  - 新增收支记录界面操作逻辑，可以通过按住 Ctrl 键快速选中大量记录<br>  - 调整了“按时间筛选”功能的实现逻辑<br>- 界面调整：<br>  - 为收支记录列表在最左侧新增了序号列<br>  - 调整了“筛选排序选项”下各功能展开/收起时的排布情况<br>  - 调整了“筛选排序选项”下除“倒序排序”功能启用时的外观表现<br>- 其他：<br>  - 调整了收支记录列表的绘制逻辑<br>  - 调整了英语本地化文本中表述不恰当的词汇语句 |
 | 2023年9月15日 | 1.2.2.0 | - 界面调整:<br>  - 将"图表"、"Languages"按钮修改为以图标按钮的形式进行显示<br>  - 调整了"图表"按钮的位置<br>  - 修改了数据图表的绘制方式<br>- 功能调整:<br>  - 现在允许对数据图表中的单行数据进行选取，并提供了相应的功能<br>  - 现在允许通过右键单一数据图表内的单元格对该单元格的内容进行复制 |
 | 2023年9月13日 | 1.2.1.2 | - 界面 UI 调整:<br>  - 将“首页”、“尾页”按钮修改为图标按钮显示<br>  - 现在可以通过右键“图表”按钮自由选择其在子窗体内为左对齐或右对齐<br>  - 微调了表格的外观 |

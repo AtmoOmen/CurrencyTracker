@@ -177,7 +177,7 @@ namespace CurrencyTracker.Manager
                     }
                 }
 
-                mergedTransactions.Insert(0, currentTransaction);
+                mergedTransactions.Add(currentTransaction);
                 currentIndex = nextIndex;
             }
 
