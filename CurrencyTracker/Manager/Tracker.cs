@@ -2,6 +2,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
+using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,6 +37,14 @@ namespace CurrencyTracker.Manager
         private Transactions transactions = new Transactions();
         private static LanguageManager? Lang;
         private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
+
+        public delegate void CurrencyChangedHandler(object sender, EventArgs e);
+        public event CurrencyChangedHandler? OnCurrencyChanged;
+
+        protected virtual void OnMyEvent(EventArgs e)
+        {
+            OnCurrencyChanged?.Invoke(this, e);
+        }
 
         // 测试用 For dev
         private static readonly ushort[] IgnoreChatTypes = new ushort[]
@@ -242,10 +251,12 @@ namespace CurrencyTracker.Manager
                         }
                     }
                 }
+                OnMyEvent(EventArgs.Empty);
             }
             else
             {
                 transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName);
+                OnMyEvent(EventArgs.Empty);
             }
         }
 
@@ -263,7 +274,7 @@ namespace CurrencyTracker.Manager
         {
             var chatmessage = message.TextValue;
             var typeValue = (ushort)type;
-
+#if DEV
             if (Plugin.Instance.PluginInterface.IsDev)
             {
                 if (!IgnoreChatTypes.Contains(typeValue))
@@ -271,6 +282,7 @@ namespace CurrencyTracker.Manager
                     PluginLog.Debug($"[{typeValue}]{chatmessage}");
                 }
             }
+#endif
 
             if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
         }

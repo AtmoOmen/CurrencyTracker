@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.2.3.1",
+    "AssemblyVersion": "1.2.3.2",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Aimed to help you track changes of various in-game currencies transactions (Gil, Seal, Tomestone, etc.).\nAlso provides features for queries, graphs, exporting data, and custom currencies tracker.",
     "InternalName": "CurrencyTracker",
@@ -17,5 +17,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
     "DalamudApiLevel": 8,
-    "Changelog": "A small fix to Merge Transactions"
+    "Changelog": "- Functional Adjustments:\n  - Adjusted the transactions data reading logic，which should bring obivious performance improvement.\n  - Adjusted the presentation logic of Custom Tracker, which now apply paging method to display items.\n  - Added a new functions under Transactions Toolbar: Merge, which allow you to merge any selected transactions.\n  - Adjusted the operation logic of mutilple selection when holding Ctrl.\n- UI Adjustments:\n  - Adjusted 0 Change text color when enable Change Text Coloring.\n- Others:\n  - Adjusted some appropiate expressions in English localization."
 }

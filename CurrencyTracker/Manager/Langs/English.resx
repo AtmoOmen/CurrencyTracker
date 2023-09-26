@@ -236,10 +236,10 @@ Note 2: The exported transactions will be subject to all the sorting and filteri
     <value>Please enter a threshold</value>
   </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
-    <value>Merged</value>
+    <value>Merged </value>
   </data>
   <data name="MergeTransactionsHelp2" xml:space="preserve">
-    <value> records.</value>
+    <value> transactions.</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
     <value>Merge transactions under the currently selected currency with the same location, adjacent to each other, and with a Change &lt; threshold.
@@ -271,16 +271,16 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
   </data>
   <data name="MinimumRecordValueHelp" xml:space="preserve">
     <value>Current Settings:
-In Duty: Only record when the absolute change is ≥</value>
+In Duty: Only record when the absolute Change is ≥</value>
   </data>
   <data name="MinimumRecordValueHelp1" xml:space="preserve">
     <value>,
-Out of Duty: Only record when the absolute change is ≥</value>
+Out of Duty: Only record when the absolute Change is ≥</value>
   </data>
   <data name="MinimumRecordValueHelp2" xml:space="preserve">
     <value>
 
-Note: May cause inaccurate location recording / When duty completed, a new record will be made regardless of whether current Change reaches the threshold.</value>
+Note: May cause inaccurate location recording / When duty completed, a new transaction will be made regardless of whether current Change reaches the threshold.</value>
   </data>
   <data name="MinimumRecordValueLabel" xml:space="preserve">
     <value>In Duty:</value>
@@ -566,5 +566,11 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="SelectAll" xml:space="preserve">
     <value>Select All</value>
+  </data>
+  <data name="Merge" xml:space="preserve">
+    <value>Merge</value>
+  </data>
+  <data name="MergeTransactionsHelp4" xml:space="preserve">
+    <value>Please select at least 2 transactions.</value>
   </data>
 </root>

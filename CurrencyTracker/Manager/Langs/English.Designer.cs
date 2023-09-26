@@ -836,6 +836,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Merge 的本地化字符串。
+        /// </summary>
+        internal static string Merge {
+            get {
+                return ResourceManager.GetString("Merge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Please enter a threshold 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsHelp {
@@ -845,7 +854,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Merged 的本地化字符串。
+        ///   查找类似 Merged  的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsHelp1 {
             get {
@@ -854,7 +863,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  records. 的本地化字符串。
+        ///   查找类似  transactions. 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsHelp2 {
             get {
@@ -872,6 +881,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string MergeTransactionsHelp3 {
             get {
                 return ResourceManager.GetString("MergeTransactionsHelp3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Please select at least 2 transactions. 的本地化字符串。
+        /// </summary>
+        internal static string MergeTransactionsHelp4 {
+            get {
+                return ResourceManager.GetString("MergeTransactionsHelp4", resourceCulture);
             }
         }
         
@@ -931,7 +949,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Current Settings:
-        ///In Duty: Only record when the absolute change is ≥ 的本地化字符串。
+        ///In Duty: Only record when the absolute Change is ≥ 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp {
             get {
@@ -941,7 +959,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 ,
-        ///Out of Duty: Only record when the absolute change is ≥ 的本地化字符串。
+        ///Out of Duty: Only record when the absolute Change is ≥ 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp1 {
             get {
@@ -952,7 +970,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 
         ///
-        ///Note: May cause inaccurate location recording / When duty completed, a new record will be made regardless of whether current Change reaches the threshold. 的本地化字符串。
+        ///Note: May cause inaccurate location recording / When duty completed, a new transaction will be made regardless of whether current Change reaches the threshold. 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp2 {
             get {

@@ -567,4 +567,10 @@
   <data name="SelectAll" xml:space="preserve">
     <value>全选</value>
   </data>
+  <data name="Merge" xml:space="preserve">
+    <value>合并</value>
+  </data>
+  <data name="MergeTransactionsHelp4" xml:space="preserve">
+    <value>请至少选择 2 条记录</value>
+  </data>
 </root>

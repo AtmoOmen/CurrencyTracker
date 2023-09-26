@@ -1,3 +1,4 @@
+using CurrencyTracker.Windows;
 using Dalamud.Logging;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,59 @@ namespace CurrencyTracker.Manager
             }
 
             return allTransactions;
+        }
+
+        public List<TransactionsConvertor> LoadLatestTransaction(string CurrencyName)
+        {
+            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
+            transactionsConvertor ??= new TransactionsConvertor();
+
+            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            PlayerDataFolder = playerDataFolder;
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+
+            List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+
+            List<TransactionsConvertor> latestTransactions = new List<TransactionsConvertor>();
+
+            if (allTransactions.Count > 0)
+            {
+                TransactionsConvertor latestTransaction = allTransactions.Last();
+                latestTransactions.Add(latestTransaction);
+            }
+            else
+            {
+                TransactionsConvertor defaultTransaction = new TransactionsConvertor
+                {
+                    TimeStamp = DateTime.Now,
+                    Amount = 0,
+                    Change = 0,
+                    LocationName = Lang.GetText("UnknownLocation")
+                };
+                latestTransactions.Add(defaultTransaction);
+            }
+
+            return latestTransactions;
+        }
+
+        public List<TransactionsConvertor> LoadTransactionsInRange(string CurrencyName, int startIndex, int endIndex)
+        {
+            List<TransactionsConvertor> allTransactions = LoadAllTransactions(CurrencyName);
+
+            if (startIndex < 0 || startIndex >= allTransactions.Count || endIndex < 0 || endIndex >= allTransactions.Count)
+            {
+                throw new ArgumentException("Invalid index range.");
+            }
+
+            List<TransactionsConvertor> transactionsInRange = new List<TransactionsConvertor>();
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                transactionsInRange.Add(allTransactions[i]);
+            }
+
+            return transactionsInRange;
         }
 
         public TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
@@ -185,6 +239,67 @@ namespace CurrencyTracker.Manager
             transactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
+        }
+
+        public int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions)
+        {
+            transactionsConvertor ??= new TransactionsConvertor();
+
+            var allTransactions = LoadAllTransactions(CurrencyName);
+            var latestTime = DateTime.MinValue;
+            long overallChange = 0;
+            long finalAmount = 0;
+            var currentIndex = 0;
+
+            if (allTransactions.Count <= 1)
+            {
+                return 0;
+            }
+
+            foreach (var transaction in selectedTransactions)
+            {
+                var foundTransaction = allTransactions.FirstOrDefault(t => Widgets.IsTransactionEqual(t, transaction));
+
+                if (foundTransaction == null)
+                {
+                    continue;
+                }
+
+                if (latestTime < foundTransaction.TimeStamp)
+                {
+                    latestTime = foundTransaction.TimeStamp;
+                    finalAmount = foundTransaction.Amount;
+                }
+
+                overallChange += foundTransaction.Change;
+
+                if (currentIndex != selectedTransactions.Count - 1)
+                {
+                    allTransactions.Remove(foundTransaction);
+                }
+                else if (currentIndex == selectedTransactions.Count - 1)
+                {
+                    var finalTransaction = allTransactions.FirstOrDefault(t => Widgets.IsTransactionEqual(t, transaction));
+                    if (finalTransaction != null)
+                    {
+                        finalTransaction.TimeStamp = latestTime;
+                        finalTransaction.Change = overallChange;
+                        finalTransaction.LocationName = LocationName;
+                        finalTransaction.Amount = finalAmount;
+                    }
+                    else
+                    {
+                        Service.Chat.Print("最后记录修改失败");
+                    }
+                }
+
+                currentIndex++;
+            }
+
+            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+
+            return selectedTransactions.Count;
         }
 
         public int ClearExceptionRecords(string selectedCurrencyName)
