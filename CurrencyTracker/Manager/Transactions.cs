@@ -30,8 +30,26 @@ namespace CurrencyTracker.Manager
                         TimeStamp = clusterTime,
                         Amount = 0,
                         Change = 0,
-                        LocationName = $"{transaction.LocationName}..."
+                        LocationName = string.Empty
                     });
+                }
+
+                if (!string.IsNullOrWhiteSpace(transaction.LocationName) && !transaction.LocationName.Equals("Unknown") && !transaction.LocationName.Equals("未知地点"))
+                {
+                    var cluster = clusteredTransactions[clusterTime];
+                    if (string.IsNullOrWhiteSpace(cluster.LocationName))
+                    {
+                        cluster.LocationName = transaction.LocationName;
+                    }
+                    else
+                    {
+                        // 添加前三个LocationName
+                        var locationNames = cluster.LocationName.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                        if (locationNames.Length < 3)
+                        {
+                            cluster.LocationName += $", {transaction.LocationName}";
+                        }
+                    }
                 }
 
                 clusteredTransactions[clusterTime].Change += transaction.Change;
@@ -39,6 +57,14 @@ namespace CurrencyTracker.Manager
                 if (clusteredTransactions[clusterTime].TimeStamp <= transaction.TimeStamp)
                 {
                     clusteredTransactions[clusterTime].Amount = transaction.Amount;
+                }
+            }
+
+            foreach (var cluster in clusteredTransactions.Values)
+            {
+                if (!cluster.LocationName.EndsWith("..."))
+                {
+                    cluster.LocationName = cluster.LocationName.TrimEnd() + "...";
                 }
             }
 

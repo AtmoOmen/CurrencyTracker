@@ -1,4 +1,5 @@
 using CurrencyTracker.Manager;
+using Dalamud.Interface;
 using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using TinyPinyin;
 
 namespace CurrencyTracker.Windows;
 
@@ -14,6 +16,7 @@ public partial class Main
 {
 #pragma warning disable CS8602
 #pragma warning disable CS8604
+
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()
     {
@@ -68,7 +71,7 @@ public partial class Main
 
         foreach (var transaction in transactions)
         {
-            if (transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= filterEndDate)
+            if (transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= filterEndDate.AddDays(1))
             {
                 filteredTransactions.Add(transaction);
             }
@@ -77,10 +80,10 @@ public partial class Main
     }
 
     // 按地点名显示交易记录 Hide Unmatched Transactions By Location
-    private List<TransactionsConvertor> ApplyLocationFilter(List<TransactionsConvertor> transactions, string LocationName)
+    private List<TransactionsConvertor> ApplyLocationFilter(List<TransactionsConvertor> transactions, string query)
     {
-        LocationName = LocationName.Normalize(NormalizationForm.FormKC);
-        if (LocationName.IsNullOrWhitespace())
+        query = query.Normalize(NormalizationForm.FormKC);
+        if (query.IsNullOrEmpty())
         {
             return transactions;
         }
@@ -91,12 +94,19 @@ public partial class Main
         {
             var normalizedLocation = transaction.LocationName.Normalize(NormalizationForm.FormKC);
 
-            if (normalizedLocation.IndexOf(LocationName, StringComparison.OrdinalIgnoreCase) >= 0)
+            var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
+
+            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(query, StringComparison.OrdinalIgnoreCase))
             {
                 filteredTransactions.Add(transaction);
             }
         }
         return filteredTransactions;
+    }
+
+    private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        UpdateTransactions();
     }
 
     // 合并交易记录用 Used to simplified merging transactions code
@@ -123,34 +133,29 @@ public partial class Main
     // 调整列表框和表格高度用 Used to adjust the height of listbox and chart
     private float ChildframeHeightAdjust()
     {
-        var trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions) + Convert.ToInt32(showSortOptions);
+        var trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions);
         var ChildFrameHeight = ImGui.GetWindowHeight() - 245;
 
-        if (showRecordOptions)
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 175;
-        }
-        else
-        {
-            if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 210;
-            if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
-            if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
-        }
-
-        if (showSortOptions) if (isTimeFilterEnabled) ChildFrameHeight -= 35;
+        if (trueCount == 2) ChildFrameHeight = ImGui.GetWindowHeight() - 185;
+        if (trueCount == 1) ChildFrameHeight = ImGui.GetWindowHeight() - 150;
+        if (trueCount == 0) ChildFrameHeight = ImGui.GetWindowHeight() - 85;
 
         return ChildFrameHeight;
+    }
+
+    // 调整文本长度用
+    private string CalcNumSpaces()
+    {
+        var fontSize = ImGui.GetFontSize() / 2;
+        var numSpaces = (int)(ImGui.GetColumnWidth() / fontSize);
+        var spaces = new string('　', numSpaces);
+
+        return spaces;
     }
 
     // 应用筛选器 Apply Filters
     private List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
     {
-        if (isReversed)
-        {
-            currentTypeTransactions = currentTypeTransactions.OrderByDescending(item => item.TimeStamp).ToList();
-        }
-
         if (isClusteredByTime && clusterHour > 0)
         {
             TimeSpan interval = TimeSpan.FromHours(clusterHour);
@@ -166,17 +171,125 @@ public partial class Main
         if (isLocationFilterEnabled)
             currentTypeTransactions = ApplyLocationFilter(currentTypeTransactions, searchLocationName);
 
+        if (isReversed)
+        {
+            currentTypeTransactions = currentTypeTransactions.OrderByDescending(item => item.TimeStamp).ToList();
+        }
+
         return currentTypeTransactions;
     }
 
+    // 日期筛选器 Date Picker
+    private void CreateDatePicker(ref DateTime currentDate, bool enableStartDate)
+    {
+        ImGui.Separator();
+
+        if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "LastYear") && enableStartDate)
+        {
+            currentDate = currentDate.AddYears(-1);
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        ImGui.SameLine();
+
+        if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left) && enableStartDate)
+        {
+            currentDate = currentDate.AddMonths(-1);
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        ImGui.SameLine();
+        ImGui.Text($"{currentDate.Year}.{string.Format("{0:MM}", currentDate)}");
+        ImGui.SameLine();
+
+        if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right))
+        {
+            currentDate = currentDate.AddMonths(1);
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        ImGui.SameLine();
+
+        if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "NextYear") && enableStartDate)
+        {
+            currentDate = currentDate.AddYears(1);
+            searchTimer.Stop();
+            searchTimer.Start();
+        }
+
+        if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
+        {
+            var weekDaysData = Lang.GetText("WeekDays");
+            string[] weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var day in weekDays)
+            {
+                ImGui.TableNextColumn();
+                ImGui.Text(day);
+            }
+
+            ImGui.TableNextRow(ImGuiTableRowFlags.None);
+
+            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            int firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+
+            int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+
+            for (int i = 0; i < firstDayOfWeek; i++)
+            {
+                ImGui.TableNextColumn();
+                ImGui.Text("");
+            }
+
+            for (int day = 1; day <= daysInMonth; day++)
+            {
+                ImGui.TableNextColumn();
+                if (currentDate.Day == day)
+                {
+                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
+                    if (ImGui.Selectable(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                    }
+                    ImGui.PopStyleColor();
+                }
+                else
+                {
+                    if (enableStartDate && (currentDate.Year == filterEndDate.Year && currentDate.Month == filterEndDate.Month && day >= filterEndDate.Day) || currentDate.Year > filterEndDate.Year || currentDate.Month > filterEndDate.Month)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+                        ImGui.Text(day.ToString());
+                        ImGui.PopStyleColor();
+                    }
+                    else if (!enableStartDate && (currentDate.Year == filterStartDate.Year && currentDate.Month == filterStartDate.Month && day <= filterStartDate.Day) || currentDate.Year < filterStartDate.Year || currentDate.Month < filterStartDate.Month)
+                    {
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+                        ImGui.Text(day.ToString());
+                        ImGui.PopStyleColor();
+                    }
+                    else
+                    {
+                        if (ImGui.Selectable(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                        {
+                            currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                            searchTimer.Stop();
+                            searchTimer.Start();
+                        }
+                    }
+                }
+            }
+            ImGui.EndTable();
+        }
+    }
+
     // 用于在记录新增时更新记录 Used to update transactions when transactions added
-    public void HandleEvent(object sender, EventArgs e)
+    public void UpdateTransactionsEvent(object sender, EventArgs e)
     {
         if (selectedCurrencyName != null)
         {
-            currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
-            selectedStates[selectedCurrencyName].Clear();
-            selectedTransactions[selectedCurrencyName].Clear();
+            UpdateTransactions();
             PluginLog.Debug("事件触发，已重新加载货币数据");
         }
         else if (!Plugin.Instance.Main.IsOpen)
@@ -189,10 +302,10 @@ public partial class Main
         }
     }
 
-    // 用于在筛选时更新记录
+    // 用于在筛选时更新记录 Used to update transactions
     private void UpdateTransactions()
     {
-        if (currentTypeTransactions == null || selectedCurrencyName.IsNullOrWhitespace())
+        if (currentTypeTransactions == null || selectedCurrencyName.IsNullOrEmpty())
         {
             return;
         }

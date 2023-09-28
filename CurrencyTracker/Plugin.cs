@@ -59,7 +59,7 @@ namespace CurrencyTracker
             }
 
             Service.Tracker = new Tracker();
-            Service.Tracker.OnCurrencyChanged += Main.HandleEvent;
+            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
 
             Service.Transactions = new Transactions();
 
@@ -139,7 +139,7 @@ namespace CurrencyTracker
             Main.Dispose();
             Graph.Dispose();
 
-            Service.Tracker.OnCurrencyChanged -= Main.HandleEvent;
+            Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
 

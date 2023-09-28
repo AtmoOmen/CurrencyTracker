@@ -453,7 +453,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 搜索框 的本地化字符串。
+        ///   查找类似 搜索... 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyLabel4 {
             get {
@@ -557,6 +557,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string EditHelp3 {
             get {
                 return ResourceManager.GetString("EditHelp3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 结束日期 的本地化字符串。
+        /// </summary>
+        internal static string EndDate {
+            get {
+                return ResourceManager.GetString("EndDate", resourceCulture);
             }
         }
         
@@ -1159,6 +1168,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 开始日期 的本地化字符串。
+        /// </summary>
+        internal static string StartDate {
+            get {
+                return ResourceManager.GetString("StartDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 时间 的本地化字符串。
         /// </summary>
         internal static string Time {
@@ -1362,6 +1380,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string Unselect {
             get {
                 return ResourceManager.GetString("Unselect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 日, 一, 二, 三, 四, 五, 六 的本地化字符串。
+        /// </summary>
+        internal static string WeekDays {
+            get {
+                return ResourceManager.GetString("WeekDays", resourceCulture);
             }
         }
         

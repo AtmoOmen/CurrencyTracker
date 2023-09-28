@@ -2,7 +2,6 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
-using FFXIVClientStructs.FFXIV.Client.Game.Event;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,7 +40,7 @@ namespace CurrencyTracker.Manager
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        protected virtual void OnMyEvent(EventArgs e)
+        protected virtual void OnTransactionsUpdate(EventArgs e)
         {
             OnCurrencyChanged?.Invoke(this, e);
         }
@@ -251,12 +250,12 @@ namespace CurrencyTracker.Manager
                         }
                     }
                 }
-                OnMyEvent(EventArgs.Empty);
+                OnTransactionsUpdate(EventArgs.Empty);
             }
             else
             {
                 transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName);
-                OnMyEvent(EventArgs.Empty);
+                OnTransactionsUpdate(EventArgs.Empty);
             }
         }
 

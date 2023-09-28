@@ -169,7 +169,7 @@
     <value>Select a currency...</value>
   </data>
   <data name="CustomCurrencyLabel4" xml:space="preserve">
-    <value>Search Filter</value>
+    <value>Search...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
     <value>Fail to Add: The Currency You Selected Has Already Existed</value>
@@ -572,5 +572,14 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="MergeTransactionsHelp4" xml:space="preserve">
     <value>Please select at least 2 transactions.</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date</value>
+  </data>
+  <data name="WeekDays" xml:space="preserve">
+    <value>Sun, Mon, Tue, Wed, Thu, Fri, Sat</value>
   </data>
 </root>

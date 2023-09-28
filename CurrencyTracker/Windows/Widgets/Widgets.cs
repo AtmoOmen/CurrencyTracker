@@ -2,6 +2,7 @@ using CurrencyTracker.Manager;
 using Dalamud.Interface;
 using Dalamud.Logging;
 using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
 
@@ -9,6 +10,7 @@ namespace CurrencyTracker.Windows
 {
     public static class Widgets
     {
+
         public static bool IsTransactionEqual(TransactionsConvertor t1, TransactionsConvertor t2)
         {
             return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change && t1.LocationName == t2.LocationName;
@@ -32,8 +34,7 @@ namespace CurrencyTracker.Windows
             return true;
         }
 
-
-        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", int width = -1)
+        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", int width = -1)
         {
             bool result;
             ImGui.PushFont(UiBuilder.IconFont);
@@ -41,7 +42,7 @@ namespace CurrencyTracker.Windows
             if (width > 0)
                 ImGui.SetNextItemWidth(32);
 
-            result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{tooltip}");
+            result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}");
             ImGui.PopFont();
 
             if (tooltip != null && tooltip != "None")

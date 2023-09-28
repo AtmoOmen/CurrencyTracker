@@ -301,7 +301,7 @@
     <value>请选择...</value>
   </data>
   <data name="CustomCurrencyLabel4" xml:space="preserve">
-    <value>搜索框</value>
+    <value>搜索...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
     <value>添加失败: 货币已存在</value>
@@ -572,5 +572,14 @@
   </data>
   <data name="MergeTransactionsHelp4" xml:space="preserve">
     <value>请至少选择 2 条记录</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>结束日期</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>开始日期</value>
+  </data>
+  <data name="WeekDays" xml:space="preserve">
+    <value>日, 一, 二, 三, 四, 五, 六</value>
   </data>
 </root>
