@@ -1,5 +1,4 @@
 using CurrencyTracker.Manager;
-
 using Dalamud.Plugin.Services;
 using Dalamud.IoC;
 using Dalamud.Plugin;
