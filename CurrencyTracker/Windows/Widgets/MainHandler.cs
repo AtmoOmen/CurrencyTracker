@@ -290,15 +290,15 @@ public partial class Main
         if (selectedCurrencyName != null)
         {
             UpdateTransactions();
-            PluginLog.Debug("事件触发，已重新加载货币数据");
+            Service.PluginLog.Debug("Event Triggered, currency transactions data in main window has been reloaded.");
         }
         else if (!Plugin.Instance.Main.IsOpen)
         {
-            PluginLog.Debug("事件触发，窗口未打开，不进行重新加载");
+            Service.PluginLog.Debug("Event Triggered, no window open, no reload.");
         }
         else
         {
-            PluginLog.Debug("事件触发，但未选择货币类型，不进行重新加载");
+            Service.PluginLog.Debug("Event Triggered, no currency selected, no reload.");
         }
     }
 

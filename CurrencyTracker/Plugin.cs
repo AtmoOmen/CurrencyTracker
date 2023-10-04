@@ -2,7 +2,7 @@ using CurrencyTracker.Manager;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using Dalamud.Plugin;
 using Lumina.Excel.GeneratedSheets;
 using System;
@@ -16,7 +16,7 @@ namespace CurrencyTracker
     {
         public string Name => "Currency Tracker";
         public DalamudPluginInterface PluginInterface { get; init; }
-        public CommandManager CommandManager { get; init; }
+        public ICommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         internal Main Main { get; init; }
@@ -29,7 +29,7 @@ namespace CurrencyTracker
         internal Dictionary<uint, string> ItemNames = new();
         private string playerLang = string.Empty;
 
-        public Plugin(DalamudPluginInterface pluginInterface, CommandManager commandManager)
+        public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager)
         {
             Instance = this;
             PluginInterface = pluginInterface;
@@ -69,7 +69,7 @@ namespace CurrencyTracker
             Service.ClientState.Login += HandleLogin;
         }
 
-        private void HandleLogin(object? sender, EventArgs e)
+        private void HandleLogin()
         {
             CurrentCharacter = GetCurrentCharacter();
         }
@@ -102,7 +102,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                PluginLog.Debug("Configuration file activation character matches current character");
+                Service.PluginLog.Debug("Configuration file activation character matches current character");
             }
             else
             {
@@ -124,7 +124,7 @@ namespace CurrencyTracker
                     }
                     Configuration.SelectedLanguage = playerLang;
                 }
-                PluginLog.Debug("Successfully Create Directory");
+                Service.PluginLog.Debug("Successfully Create Directory");
             }
 
             Configuration.Save();

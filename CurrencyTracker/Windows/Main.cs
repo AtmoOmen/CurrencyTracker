@@ -782,12 +782,12 @@ public partial class Main : Window, IDisposable
                 }
                 else
                 {
-                    PluginLog.Error("Unsupported OS");
+                    Service.PluginLog.Error("Unsupported OS");
                 }
             }
             catch (Exception ex)
             {
-                PluginLog.Error($"Error :{ex.Message}");
+                Service.PluginLog.Error($"Error :{ex.Message}");
             }
         }
     }
@@ -817,7 +817,7 @@ public partial class Main : Window, IDisposable
             }
             else
             {
-                PluginLog.Error("Unsupported OS");
+                Service.PluginLog.Error("Unsupported OS");
                 return;
             }
 

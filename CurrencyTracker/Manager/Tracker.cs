@@ -2,6 +2,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,6 +11,7 @@ using System.Threading;
 
 namespace CurrencyTracker.Manager
 {
+# pragma warning disable CS8602
     public class Tracker : IDisposable
     {
         private int timerInterval = 0;
@@ -36,6 +38,9 @@ namespace CurrencyTracker.Manager
         private Transactions transactions = new Transactions();
         private static LanguageManager? Lang;
         private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
+
+        private string dutyLocationName = string.Empty;
+        private bool dutyStartFlag = false;
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
         public event CurrencyChangedHandler? OnCurrencyChanged;
@@ -130,6 +135,8 @@ namespace CurrencyTracker.Manager
 
             if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
 
+            if (!dutyStartFlag) return;
+
             foreach (var currency in CurrencyType)
             {
                 if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
@@ -192,7 +199,7 @@ namespace CurrencyTracker.Manager
             }
         }
 
-        private void CheckCurrency(string currencyName, uint currencyID, bool isDutyEnd)
+        private void CheckCurrency(string currencyName, uint currencyID, bool isDutyEnd, string currentLocationName = "-1")
         {
             currencyInfo ??= new CurrencyInfo();
             transactions ??= new Transactions();
@@ -200,7 +207,10 @@ namespace CurrencyTracker.Manager
             TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-            string currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+            if (currentLocationName == "-1" || currentLocationName == "")
+            {
+                currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+            }
             minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
 
             if (latestTransaction != null)
@@ -259,7 +269,7 @@ namespace CurrencyTracker.Manager
             }
         }
 
-        private void OnZoneChange(object? sender, ushort e)
+        private void OnZoneChange(ushort sender)
         {
             if (IsBoundByDuty()) return;
 
@@ -281,47 +291,65 @@ namespace CurrencyTracker.Manager
                     PluginLog.Debug($"[{typeValue}]{chatmessage}");
                 }
             }
+
+            if (new[] { "任务结束了", "has ended", "の攻略を終了した" }.Any(chatmessage.Contains))
+            {
+                PluginLog.Debug("测试信息：某某任务结束了，开始检查货币变化");
+                foreach (var currency in CurrencyType)
+                {
+                    if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                    {
+                        string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+                        if (currencyName != "Unknown" && currencyName != null)
+                        {
+                            CheckCurrency(currencyName, currencyID, true, dutyLocationName);
+                        }
+                    }
+                }
+                foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
+                {
+                    if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
+                    {
+                        if (currency != "Unknown" && currency != null)
+                        {
+                            CheckCurrency(currency, currencyID, true, dutyLocationName);
+                        }
+                    }
+                }
+
+                PluginLog.Debug("测试信息：某某任务结束了，结束检查货币变化");
+                dutyStartFlag = false;
+                dutyLocationName = string.Empty;
+            }
 #endif
 
+
+
+
             if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
+
         }
 
         private void isDutyStarted(object? sender, ushort e)
         {
             if (Plugin.Instance.PluginInterface.IsDev)
             {
-                PluginLog.Debug("测试信息：副本开始");
+                Service.PluginLog.Debug("测试信息：副本开始");
             }
+            dutyStartFlag = true;
+            uint locationKey = Service.ClientState.TerritoryType;
+            dutyLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
         }
 
         private void isDutyCompleted(object? sender, ushort e)
         {
             if (Plugin.Instance.PluginInterface.IsDev)
             {
-                PluginLog.Debug("测试信息：副本完成");
+                Service.PluginLog.Debug("测试信息：副本完成");
             }
 
-            foreach (var currency in CurrencyType)
-            {
-                if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
-                {
-                    string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
-                    if (currencyName != "Unknown" && currencyName != null)
-                    {
-                        CheckCurrency(currencyName, currencyID, true);
-                    }
-                }
-            }
-            foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-            {
-                if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out uint currencyID))
-                {
-                    if (currency != "Unknown" && currency != null)
-                    {
-                        CheckCurrency(currency, currencyID, true);
-                    }
-                }
-            }
+            dutyStartFlag = false;
+            dutyLocationName = string.Empty;
         }
 
         public void Dispose()
