@@ -92,7 +92,7 @@ namespace CurrencyTracker.Manager
             }
             catch (Exception ex)
             {
-                PluginLog.Debug($"Error Loding All Transactionsa from the data file: {ex.Message}");
+                Service.PluginLog.Debug($"Error Loding All Transactionsa from the data file: {ex.Message}");
             }
 
             return allTransactions;

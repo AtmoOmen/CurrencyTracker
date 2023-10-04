@@ -69,7 +69,7 @@ public class TransactionsConvertor
         }
         catch (Exception ex)
         {
-            PluginLog.Debug($"Error parsing entire data file.: {ex.Message}");
+            Service.PluginLog.Debug($"Error parsing entire data file.: {ex.Message}");
         }
 
         return transactions;
@@ -92,7 +92,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug($"Failure to add individual transaction to the data file retroactively: {ex.Message}");
+            Service.PluginLog.Debug($"Failure to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
@@ -117,7 +117,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            PluginLog.Debug($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
+            Service.PluginLog.Debug($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
 }
