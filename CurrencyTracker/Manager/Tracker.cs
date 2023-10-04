@@ -1,8 +1,6 @@
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Logging;
-using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,6 +10,7 @@ using System.Threading;
 namespace CurrencyTracker.Manager
 {
 # pragma warning disable CS8602
+
     public class Tracker : IDisposable
     {
         private int timerInterval = 0;
@@ -43,6 +42,7 @@ namespace CurrencyTracker.Manager
         private bool dutyStartFlag = false;
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
+
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
         protected virtual void OnTransactionsUpdate(EventArgs e)
@@ -323,11 +323,7 @@ namespace CurrencyTracker.Manager
             }
 #endif
 
-
-
-
             if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
-
         }
 
         private void isDutyStarted(object? sender, ushort e)

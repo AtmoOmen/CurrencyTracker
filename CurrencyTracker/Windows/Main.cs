@@ -3,7 +3,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;

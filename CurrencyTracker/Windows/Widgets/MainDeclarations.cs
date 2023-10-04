@@ -100,17 +100,21 @@ public partial class Main
 
     // 收支染色 Change Text Colors
     private Vector4 positiveChangeColor = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+
     private Vector4 negativeChangeColor = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 
     // 每页显示的项数和页数 Items in Custom Currency Paging Function
     private int itemsPerPage = 10;
+
     private int currentItemPage = 0;
 
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
+
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
+
     // 这个 bool 永远为 false，仅为填充用，无实际作用
     // This bool will always be false, for method filling purposes only, no actual effect
     private bool selectTimeDeco = false;
@@ -130,7 +134,4 @@ public partial class Main
     internal long[]? LinePlotData;
 
     private System.Timers.Timer searchTimer = new System.Timers.Timer(100); // 500毫秒延迟
-
-    
-
 }

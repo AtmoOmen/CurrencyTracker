@@ -1,6 +1,5 @@
 using CurrencyTracker.Manager;
 using Dalamud.Interface;
-using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;
