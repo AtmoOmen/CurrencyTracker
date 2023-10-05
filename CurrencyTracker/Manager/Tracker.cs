@@ -31,6 +31,8 @@ namespace CurrencyTracker.Manager
             57, 0, 2110, 2105, 62, 3006, 3001
         };
 
+        private static readonly string[] DutyEndStrings = new[] { "任务结束了", "has ended", "の攻略を終了した", "wurde beendet", "prend fin" };
+
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly Stopwatch timer = new Stopwatch();
         private CurrencyInfo currencyInfo = new CurrencyInfo();
@@ -39,13 +41,12 @@ namespace CurrencyTracker.Manager
         private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
 
         private string dutyLocationName = string.Empty;
-        private bool dutyStartFlag = false;
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        protected virtual void OnTransactionsUpdate(EventArgs e)
+        public virtual void OnTransactionsUpdate(EventArgs e)
         {
             OnCurrencyChanged?.Invoke(this, e);
         }
@@ -54,7 +55,7 @@ namespace CurrencyTracker.Manager
         private static readonly ushort[] IgnoreChatTypes = new ushort[]
         {
             // 战斗相关 Related to Battle
-            2091, 2218, 2857, 2729, 2224, 2222, 2859, 2219, 2221, 4139, 4398, 4270, 4397, 4269, 4400, 4777, 10283, 10537, 10409, 18475, 19113, 4783, 10544, 10929, 19632, 4399, 2223, 2225, 4401, 18734, 12331, 4783, 12331, 12585, 12591, 18605, 10922, 18733, 10928, 4778, 13098, 4922, 10410, 9001, 8235, 8752, 9007, 8236, 8746, 8750, 13104, 13102, 12713, 12719, 6959,
+            2091, 2218, 2857, 2729, 2224, 2222, 2859, 2219, 2221, 4139, 4398, 4270, 4397, 4269, 4400, 4777, 10283, 10537, 10409, 18475, 19113, 4783, 10544, 10929, 19632, 4399, 2223, 2225, 4401, 18734, 12331, 4783, 12331, 12585, 12591, 18605, 10922, 18733, 10928, 4778, 13098, 4922, 10410, 9001, 8235, 8752, 9007, 8236, 8746, 8750, 13104, 13102, 12713, 12719, 6959, 2874, 2831, 8749,
             // 新人频道 Novice Network
             27
         };
@@ -107,19 +108,26 @@ namespace CurrencyTracker.Manager
             cancellationTokenSource.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
 
+            Service.ClientState.TerritoryChanged -= OnZoneChange;
+            Service.Chat.ChatMessage -= OnChatMessage;
+
             UpdateCurrenciesTimer();
             Service.ClientState.TerritoryChanged += OnZoneChange;
-            Service.Chat.ChatMessage -= OnChatMessage;
         }
 
-        private void InitializeChatTracking()
+        public void InitializeChatTracking()
         {
+            Service.ClientState.TerritoryChanged -= OnZoneChange;
+            Service.Chat.ChatMessage -= OnChatMessage;
+
             Service.Chat.ChatMessage += OnChatMessage;
             Service.ClientState.TerritoryChanged -= OnZoneChange;
 
             cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
+
+            UpdateCurrenciesByChat();
         }
 
         private void UpdateCurrenciesByChat()
@@ -134,8 +142,6 @@ namespace CurrencyTracker.Manager
             }
 
             if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
-
-            if (!dutyStartFlag) return;
 
             foreach (var currency in CurrencyType)
             {
@@ -283,18 +289,12 @@ namespace CurrencyTracker.Manager
         {
             var chatmessage = message.TextValue;
             var typeValue = (ushort)type;
-#if DEV
-            if (Plugin.Instance.PluginInterface.IsDev)
-            {
-                if (!IgnoreChatTypes.Contains(typeValue))
-                {
-                    PluginLog.Debug($"[{typeValue}]{chatmessage}");
-                }
-            }
 
-            if (new[] { "任务结束了", "has ended", "の攻略を終了した" }.Any(chatmessage.Contains))
+            if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
+
+            if (DutyEndStrings.Any(chatmessage.Contains))
             {
-                PluginLog.Debug("测试信息：某某任务结束了，开始检查货币变化");
+                Service.PluginLog.Debug("Duty End, Currency Change Check Start.");
                 foreach (var currency in CurrencyType)
                 {
                     if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
@@ -317,13 +317,19 @@ namespace CurrencyTracker.Manager
                     }
                 }
 
-                PluginLog.Debug("测试信息：某某任务结束了，结束检查货币变化");
-                dutyStartFlag = false;
+                Service.PluginLog.Debug("Currency Change Check Completes.");
                 dutyLocationName = string.Empty;
             }
-#endif
 
-            if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
+#if ISDEV
+            if (Plugin.Instance.PluginInterface.IsDev)
+            {
+                if (!IgnoreChatTypes.Contains(typeValue))
+                {
+                    Service.PluginLog.Debug($"[{typeValue}]{chatmessage}");
+                }
+            }
+#endif
         }
 
         private void isDutyStarted(object? sender, ushort e)
@@ -332,7 +338,6 @@ namespace CurrencyTracker.Manager
             {
                 Service.PluginLog.Debug("测试信息：副本开始");
             }
-            dutyStartFlag = true;
             uint locationKey = Service.ClientState.TerritoryType;
             dutyLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
         }
@@ -343,9 +348,6 @@ namespace CurrencyTracker.Manager
             {
                 Service.PluginLog.Debug("测试信息：副本完成");
             }
-
-            dutyStartFlag = false;
-            dutyLocationName = string.Empty;
         }
 
         public void Dispose()

@@ -56,7 +56,7 @@ public class Graph : Window, IDisposable
             Plugin.Instance.Graph.IsOpen = false;
         }
 
-        ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
+        ImGui.Text($"{Lang.GetText("Now")}:");
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, main.selectedCurrencyName);
         ImGui.SameLine();

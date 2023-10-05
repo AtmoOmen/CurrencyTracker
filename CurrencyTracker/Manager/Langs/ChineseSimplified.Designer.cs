@@ -435,15 +435,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 当前选择: 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel2 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 请选择... 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyLabel3 {
@@ -1114,15 +1105,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 还原 (双击右键) 的本地化字符串。
-        /// </summary>
-        internal static string OrderChangeLabel1 {
-            get {
-                return ResourceManager.GetString("OrderChangeLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似  页 的本地化字符串。
         /// </summary>
         internal static string Page {
@@ -1146,6 +1128,16 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string PreviousPage {
             get {
                 return ResourceManager.GetString("PreviousPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 还原
+        ///(双击右键) 的本地化字符串。
+        /// </summary>
+        internal static string RestoreHidden {
+            get {
+                return ResourceManager.GetString("RestoreHidden", resourceCulture);
             }
         }
         

@@ -382,8 +382,9 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 Note:
         ///1. The 19 preset currencies cannot be deleted, you can only hide them.
-        ///2. Not recommend to track not-currency items, there should be another plugin to do that. (If you insist, that&apos;s also ok)
-        ///3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary. 的本地化字符串。
+        ///2. Not recommend to track not-currency items, there should be another plugin to do that.
+        ///(If you insist, that&apos;s also ok)
+        ///3. Deleting currencies will not delete the existing data files, if necessary, please delete them yourself. 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp {
             get {
@@ -392,7 +393,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Fail to Add: The Currency You Selected Has Already Existed 的本地化字符串。
+        ///   查找类似 Fail to Add: the currency you selected has already existed 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp1 {
             get {
@@ -401,7 +402,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Fail to Delete: The Currency You Selected Doesn&apos;t Exist 的本地化字符串。
+        ///   查找类似 Fail to Delete: the currency you selected does not exist 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyHelp2 {
             get {
@@ -428,16 +429,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Currently Selected: 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel2 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Select a currency... 的本地化字符串。
+        ///   查找类似 Select... 的本地化字符串。
         /// </summary>
         internal static string CustomCurrencyLabel3 {
             get {
@@ -692,7 +684,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 -Suggest enabling filters on the main window to reduce the number of transactions shown here.
         ///-You can adjust a plot by clicking on the horizontal or vertical axis.
-        ///-This window is still in the testing stage. If you encounter any bugs or have ideas for new features, please submit a ISSUE. 的本地化字符串。
+        ///-This window is still in testing. If you encounter any bugs or have ideas for new features, please submit an issue on my Github page. 的本地化字符串。
         /// </summary>
         internal static string GraphHelpMessages1 {
             get {
@@ -701,7 +693,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Records Amount: 的本地化字符串。
+        ///   查找类似 Transactions Amount: 的本地化字符串。
         /// </summary>
         internal static string GraphLabel {
             get {
@@ -728,7 +720,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Hide (Double Right-Click) 的本地化字符串。
+        ///   查找类似 Hide
+        ///(Double Right-Click) 的本地化字符串。
         /// </summary>
         internal static string Hide {
             get {
@@ -1105,15 +1098,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Restore (Double Right-Click) 的本地化字符串。
-        /// </summary>
-        internal static string OrderChangeLabel1 {
-            get {
-                return ResourceManager.GetString("OrderChangeLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似  的本地化字符串。
         /// </summary>
         internal static string Page {
@@ -1137,6 +1121,16 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string PreviousPage {
             get {
                 return ResourceManager.GetString("PreviousPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Restore Hidden
+        ///(Double Right-Click) 的本地化字符串。
+        /// </summary>
+        internal static string RestoreHidden {
+            get {
+                return ResourceManager.GetString("RestoreHidden", resourceCulture);
             }
         }
         

@@ -16,7 +16,7 @@ namespace CurrencyTracker
         // 存储用户自定义货币ID的字典 Dic saving custom currencies' names
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
 
-        // 存储最小变更值设置的字典
+        // 存储最小变更值设置的字典 Dic used to store min track value
         public Dictionary<string, Dictionary<string, int>> MinTrackValueDic { get; set; } = new Dictionary<string, Dictionary<string, int>>
         {
             {
@@ -37,7 +37,7 @@ namespace CurrencyTracker
         public int TrackMode { get; set; } = 0;
         public int RecordsPerPage { get; set; } = 20;
         public int TimerInterval { get; set; } = 500;
-        public bool ChangeTextColoring { get; set; } = false;
+        public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
 

@@ -153,8 +153,9 @@
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>Note:
 1. The 19 preset currencies cannot be deleted, you can only hide them.
-2. Not recommend to track not-currency items, there should be another plugin to do that. (If you insist, that's also ok)
-3. Deleting currencies does not delete the existing data files, please delete them yourself if necessary.</value>
+2. Not recommend to track not-currency items, there should be another plugin to do that.
+(If you insist, that's also ok)
+3. Deleting currencies will not delete the existing data files, if necessary, please delete them yourself.</value>
   </data>
   <data name="CustomCurrencyLabel" xml:space="preserve">
     <value>Custom Tracker</value>
@@ -162,20 +163,17 @@
   <data name="CustomCurrencyLabel1" xml:space="preserve">
     <value>Custom Currency Tracker</value>
   </data>
-  <data name="CustomCurrencyLabel2" xml:space="preserve">
-    <value>Currently Selected:</value>
-  </data>
   <data name="CustomCurrencyLabel3" xml:space="preserve">
-    <value>Select a currency...</value>
+    <value>Select...</value>
   </data>
   <data name="CustomCurrencyLabel4" xml:space="preserve">
     <value>Search...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
-    <value>Fail to Add: The Currency You Selected Has Already Existed</value>
+    <value>Fail to Add: the currency you selected has already existed</value>
   </data>
   <data name="CustomCurrencyHelp2" xml:space="preserve">
-    <value>Fail to Delete: The Currency You Selected Doesn't Exist</value>
+    <value>Fail to Delete: the currency you selected does not exist</value>
   </data>
   <data name="Day" xml:space="preserve">
     <value>D</value>
@@ -412,10 +410,10 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="GraphHelpMessages1" xml:space="preserve">
     <value>-Suggest enabling filters on the main window to reduce the number of transactions shown here.
 -You can adjust a plot by clicking on the horizontal or vertical axis.
--This window is still in the testing stage. If you encounter any bugs or have ideas for new features, please submit a ISSUE.</value>
+-This window is still in testing. If you encounter any bugs or have ideas for new features, please submit an issue on my Github page.</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
-    <value>Records Amount:</value>
+    <value>Transactions Amount:</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>Amount Graph </value>
@@ -478,7 +476,8 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Graphs</value>
   </data>
   <data name="Hide" xml:space="preserve">
-    <value>Hide (Double Right-Click)</value>
+    <value>Hide
+(Double Right-Click)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
     <value>All hidden currencies have been restored!</value>
@@ -492,8 +491,9 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="OrderChangeLabel" xml:space="preserve">
     <value>Current Order:</value>
   </data>
-  <data name="OrderChangeLabel1" xml:space="preserve">
-    <value>Restore (Double Right-Click)</value>
+  <data name="RestoreHidden" xml:space="preserve">
+    <value>Restore Hidden
+(Double Right-Click)</value>
   </data>
   <data name="ClearExTransactionsHelp2" xml:space="preserve">
     <value>Removed </value>

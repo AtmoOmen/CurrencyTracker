@@ -294,9 +294,6 @@
   <data name="CustomCurrencyLabel1" xml:space="preserve">
     <value>自定义货币追踪</value>
   </data>
-  <data name="CustomCurrencyLabel2" xml:space="preserve">
-    <value>当前选择:</value>
-  </data>
   <data name="CustomCurrencyLabel3" xml:space="preserve">
     <value>请选择...</value>
   </data>
@@ -489,8 +486,9 @@
   <data name="OrderChangeLabel" xml:space="preserve">
     <value>当前位置:</value>
   </data>
-  <data name="OrderChangeLabel1" xml:space="preserve">
-    <value>还原 (双击右键)</value>
+  <data name="RestoreHidden" xml:space="preserve">
+    <value>还原
+(双击右键)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
     <value>所有隐藏货币均已还原</value>

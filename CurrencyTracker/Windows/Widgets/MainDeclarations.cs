@@ -110,10 +110,17 @@ public partial class Main
 
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
-
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
+
+    private string[] filterNamesForCCT = new string[] 
+    { 
+        // 过期物品 Dated items
+        "†", "过期", "Dated", "Ex-" ,
+        // 腰带类物品 Belt
+        "腰带", "ベルト", "Gürtel", "gürtel", "Ceinture"
+    };
 
     // 这个 bool 永远为 false，仅为填充用，无实际作用
     // This bool will always be false, for method filling purposes only, no actual effect
@@ -133,5 +140,7 @@ public partial class Main
     internal List<TransactionsConvertor> lastTransactions = new List<TransactionsConvertor>();
     internal long[]? LinePlotData;
 
-    private System.Timers.Timer searchTimer = new System.Timers.Timer(100); // 500毫秒延迟
+    // UI外观用 Used to slow down UI refresh speed
+    private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
+
 }

@@ -3,6 +3,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
+using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;
@@ -163,8 +164,6 @@ public partial class Main : Window, IDisposable
             MinRecordValueInDuty();
             ImGui.SameLine();
             MergeTransactions();
-            ImGui.SameLine();
-            CustomCurrencyTracker();
             ImGui.SameLine();
             RecordMode();
             ImGui.SameLine();
@@ -445,7 +444,6 @@ public partial class Main : Window, IDisposable
     // 最小记录值 Minimum Change Permitted to Create a New Transaction
     private void MinRecordValueInDuty()
     {
-        if (!isTrackedinDuty) return;
         if (ImGui.Button(Lang.GetText("MinimumRecordValue")))
         {
             if (selectedCurrencyName != null)
@@ -471,18 +469,26 @@ public partial class Main : Window, IDisposable
                 ImGui.Separator();
                 ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
                 ImGui.SetNextItemWidth(175);
-                ImGui.InputInt("##MinInDuty", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
-                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
-                ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}");
-                ImGui.SetNextItemWidth(175);
-                ImGui.InputInt("##MinOutDuty", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
-                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
-                if (ImGui.Button(Lang.GetText("MinimumRecordValueLabel2")))
+
+                var flags = isTrackedinDuty ? 0 : ImGuiInputTextFlags.ReadOnly;
+
+                if (ImGui.InputInt("##MinInDuty", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue | flags))
                 {
                     Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName] = inDutyMinTrackValue;
+                    Plugin.Instance.Configuration.Save();
+                }
+
+                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
+
+                ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}");
+                ImGui.SetNextItemWidth(175);
+                if (ImGui.InputInt("##MinOutDuty", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue))
+                {
                     Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName] = outDutyMinTrackValue;
                     Plugin.Instance.Configuration.Save();
                 }
+                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
+
                 ImGuiComponents.HelpMarker($"{Lang.GetText("MinimumRecordValueHelp")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp2")}");
             }
             else
@@ -496,7 +502,7 @@ public partial class Main : Window, IDisposable
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyTracker()
     {
-        if (ImGui.Button(Lang.GetText("CustomCurrencyLabel")))
+        if (Widgets.IconButton(FontAwesomeIcon.Plus, Lang.GetText("CustomCurrencyLabel"), "CustomCurrencyAdd"))
         {
             ImGui.OpenPopup("CustomCurrency");
         }
@@ -505,12 +511,15 @@ public partial class Main : Window, IDisposable
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("CustomCurrencyLabel1"));
             ImGuiComponents.HelpMarker(Lang.GetText("CustomCurrencyHelp"));
-            ImGui.Text(Lang.GetText("CustomCurrencyLabel2"));
+            ImGui.Text($"{Lang.GetText("Now")}:");
+
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(210);
+
             if (ImGui.BeginCombo("", Plugin.Instance.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Lang.GetText("CustomCurrencyLabel3"), ImGuiComboFlags.HeightLarge))
             {
                 int startIndex = currentItemPage * itemsPerPage;
                 int endIndex = Math.Min(startIndex + itemsPerPage, Plugin.Instance.ItemNames.Count);
-                int pageCount = (int)Math.Ceiling((double)Plugin.Instance.ItemNames.Count / itemsPerPage) - 4;
 
                 ImGui.SetNextItemWidth(200f);
                 ImGui.InputTextWithHint("##selectflts", Lang.GetText("CustomCurrencyLabel4"), ref searchFilter, 50);
@@ -521,67 +530,67 @@ public partial class Main : Window, IDisposable
                 if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentItemPage > 0)
                     currentItemPage--;
                 ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentItemPage < pageCount)
+                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right))
                     currentItemPage++;
                 ImGui.SameLine();
-                if (Widgets.IconButton(FontAwesomeIcon.Forward))
-                    currentItemPage = pageCount;
+
                 ImGui.Separator();
 
                 int visibleItems = 0;
 
                 foreach (var x in Plugin.Instance.ItemNames)
                 {
-                    var shouldSkip = false;
-                    foreach (var y in permanentCurrencyName)
+                    if (options.All(y => !x.Value.Contains(y)) && (!filterNamesForCCT.Any(filter => x.Value.Contains(filter))))
                     {
-                        if (x.Value.Contains(y))
+                        if (string.IsNullOrWhiteSpace(searchFilter) || x.Value.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
                         {
-                            shouldSkip = true;
+                            if (visibleItems >= startIndex && visibleItems < endIndex)
+                            {
+                                if (ImGui.Selectable(x.Value))
+                                {
+                                    customCurrency = x.Key;
+                                }
+
+                                if (ImGui.IsWindowAppearing() && customCurrency == x.Key)
+                                {
+                                    ImGui.SetScrollHereY();
+                                }
+                            }
+                            visibleItems++;
+                        }
+
+                        if (visibleItems >= endIndex)
+                        {
                             break;
                         }
                     }
-                    if (shouldSkip)
-                    {
-                        continue;
-                    }
-
-                    if (searchFilter != string.Empty && !x.Value.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)) continue;
-
-                    // 只显示当前页的项
-                    if (visibleItems >= startIndex && visibleItems < endIndex)
-                    {
-                        if (ImGui.Selectable(x.Value))
-                        {
-                            customCurrency = x.Key;
-                        }
-
-                        if (ImGui.IsWindowAppearing() && customCurrency == x.Key)
-                        {
-                            ImGui.SetScrollHereY();
-                        }
-                    }
-
-                    visibleItems++;
                 }
+
+
 
                 ImGui.EndCombo();
             }
 
-            if (ImGui.Button($"{Lang.GetText("Add")}{selected}"))
+            ImGui.SameLine();
+
+            if (Widgets.IconButton(FontAwesomeIcon.Plus, "None", "AddCustomCurrency"))
             {
                 if (string.IsNullOrEmpty(selected))
                 {
                     Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
                     return;
                 }
+
                 if (options.Contains(selected))
                 {
                     Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
+
                 if (Plugin.Instance.Configuration.CustomCurrencyType.Contains(selected))
+                {
                     Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
+                }
                 Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
 
                 if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
@@ -594,31 +603,22 @@ public partial class Main : Window, IDisposable
                 selectedStates.Add(selected, new List<bool>());
                 selectedTransactions.Add(selected, new List<TransactionsConvertor>());
                 ReloadOrderedOptions();
-            }
 
-            ImGui.SameLine();
-
-            if (ImGui.Button($"{Lang.GetText("Delete")}{selected}"))
-            {
-                if (string.IsNullOrEmpty(selected))
+                if (recordMode == 1)
                 {
-                    Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
-                    return;
+                    Service.Tracker.InitializeChatTracking();
+                    Service.Tracker.OnTransactionsUpdate(EventArgs.Empty);
                 }
-                if (!options.Contains(selected))
-                {
-                    Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp2"));
-                    return;
-                }
-                Plugin.Instance.Configuration.CustomCurrencies.Remove(selected);
-                Plugin.Instance.Configuration.CustomCurrencyType.Remove(selected);
-                Plugin.Instance.Configuration.Save();
-                options.Remove(selected);
-                selectedStates.Remove(selected);
-                selectedTransactions.Remove(selected);
-                ReloadOrderedOptions();
-            }
 
+                selectedOptionIndex = ordedOptions.Count - 1;
+                selectedCurrencyName = selected;
+                currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                lastTransactions = currentTypeTransactions;
+
+                customCurrency = 0;
+
+                ImGui.CloseCurrentPopup();
+            }
             ImGui.EndPopup();
         }
     }
@@ -905,6 +905,122 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker($"{Lang.GetText("TrackModeHelp2")}");
             ImGui.EndPopup();
+        }
+    }
+
+    // 货币列表顶端工具栏 Listbox tools
+    private void ListboxTools()
+    {
+        ImGui.SetCursorPosX(25);
+        CustomCurrencyTracker();   
+
+        ImGui.SameLine();
+
+        if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up) && selectedOptionIndex > 0)
+        {
+            SwapOptions(selectedOptionIndex, selectedOptionIndex - 1);
+            selectedOptionIndex--;
+        }
+
+        ImGui.SameLine();
+        {
+            if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1)
+            {
+                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+                Widgets.IconButton(FontAwesomeIcon.EyeSlash);
+                ImGui.PopStyleVar();
+            }
+            else if (!permanentCurrencyName.Contains(selectedCurrencyName))
+            {
+                Widgets.IconButton(FontAwesomeIcon.Trash, "Delete\n(Double Right-Click)", "ToolsDelete");
+                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+                {
+                    if (string.IsNullOrEmpty(selectedCurrencyName))
+                    {
+                        Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+                        return;
+                    }
+                    if (!options.Contains(selectedCurrencyName))
+                    {
+                        Service.Chat.PrintError(Lang.GetText("CustomCurrencyHelp2"));
+                        return;
+                    }
+                    Plugin.Instance.Configuration.CustomCurrencies.Remove(selectedCurrencyName);
+                    Plugin.Instance.Configuration.CustomCurrencyType.Remove(selectedCurrencyName);
+                    Plugin.Instance.Configuration.Save();
+                    options.Remove(selectedCurrencyName);
+                    selectedStates.Remove(selectedCurrencyName);
+                    selectedTransactions.Remove(selectedCurrencyName);
+                    ReloadOrderedOptions();
+                    selectedCurrencyName = string.Empty;
+                }
+            }
+            else
+            {
+                Widgets.IconButton(FontAwesomeIcon.EyeSlash, Lang.GetText("Hide"));
+                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+                {
+                    if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName)) return;
+
+                    options.Remove(selectedCurrencyName);
+                    selectedStates[selectedCurrencyName].Clear();
+                    selectedTransactions[selectedCurrencyName].Clear();
+                    hiddenOptions.Add(selectedCurrencyName);
+                    if (!Plugin.Instance.Configuration.HiddenOptions.Contains(selectedCurrencyName))
+                        Plugin.Instance.Configuration.HiddenOptions.Add(selectedCurrencyName);
+                    Plugin.Instance.Configuration.Save();
+                    ReloadOrderedOptions();
+                    selectedCurrencyName = string.Empty;
+                    selectedOptionIndex = -1;
+                }
+            }
+        }
+
+        ImGui.SameLine();
+
+        if (ImGui.ArrowButton("DownArrow", ImGuiDir.Down) && selectedOptionIndex < ordedOptions.Count - 1 && selectedOptionIndex > -1)
+        {
+            SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
+            selectedOptionIndex++;
+        }
+
+        ImGui.SameLine();
+
+        if (hiddenOptions.Count == 0)
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+            Widgets.IconButton(FontAwesomeIcon.TrashRestore);
+            ImGui.PopStyleVar();
+        }
+        else
+        {
+            Widgets.IconButton(FontAwesomeIcon.TrashRestore, Lang.GetText("RestoreHidden"));
+            if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+            {
+                if (hiddenOptions.Count == 0)
+                {
+                    Service.Chat.PrintError(Lang.GetText("OrderChangeHelp"));
+                    return;
+                }
+                HashSet<string> addedOptions = new HashSet<string>();
+
+                foreach (var option in hiddenOptions)
+                {
+                    if (!addedOptions.Contains(option))
+                    {
+                        options.Add(option);
+                        permanentCurrencyName.Add(option);
+                        selectedStates.Add(option, new List<bool>());
+                        selectedTransactions.Add(option, new List<TransactionsConvertor>());
+                        addedOptions.Add(option);
+                    }
+                }
+                hiddenOptions.Clear();
+                Plugin.Instance.Configuration.HiddenOptions.Clear();
+                Plugin.Instance.Configuration.Save();
+                Service.Chat.Print($"{Lang.GetText("OrderChangeHelp1")} {addedOptions.Count} {Lang.GetText("OrderChangeHelp2")}");
+                ReloadOrderedOptions();
+            }
         }
     }
 
@@ -1216,85 +1332,10 @@ public partial class Main : Window, IDisposable
         Vector2 childScale = new Vector2(243, ChildFrameHeight);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
-            ImGui.SetCursorPosX(42);
-            if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName))
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                Widgets.IconButton(FontAwesomeIcon.EyeSlash);
-                ImGui.PopStyleVar();
-            }
-            else
-            {
-                Widgets.IconButton(FontAwesomeIcon.EyeSlash, Lang.GetText("Hide"));
-                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
-                {
-                    if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName)) return;
-
-                    options.Remove(selectedCurrencyName);
-                    selectedStates[selectedCurrencyName].Clear();
-                    selectedTransactions[selectedCurrencyName].Clear();
-                    hiddenOptions.Add(selectedCurrencyName);
-                    if (!Plugin.Instance.Configuration.HiddenOptions.Contains(selectedCurrencyName))
-                        Plugin.Instance.Configuration.HiddenOptions.Add(selectedCurrencyName);
-                    Plugin.Instance.Configuration.Save();
-                    ReloadOrderedOptions();
-                    selectedCurrencyName = string.Empty;
-                    selectedOptionIndex = -1;
-                }
-            }
-
-            ImGui.SameLine();
-            if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up) && selectedOptionIndex > 0)
-            {
-                SwapOptions(selectedOptionIndex, selectedOptionIndex - 1);
-                selectedOptionIndex--;
-            }
-            ImGui.SameLine();
-            if (ImGui.ArrowButton("DownArrow", ImGuiDir.Down) && selectedOptionIndex < ordedOptions.Count - 1 && selectedOptionIndex > -1)
-            {
-                SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
-                selectedOptionIndex++;
-            }
-            ImGui.SameLine();
-
-            if (hiddenOptions.Count == 0)
-            {
-                ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                Widgets.IconButton(FontAwesomeIcon.TrashRestore);
-                ImGui.PopStyleVar();
-            }
-            else
-            {
-                Widgets.IconButton(FontAwesomeIcon.TrashRestore, Lang.GetText("OrderChangeLabel1"));
-                if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
-                {
-                    if (hiddenOptions.Count == 0)
-                    {
-                        Service.Chat.PrintError(Lang.GetText("OrderChangeHelp"));
-                        return;
-                    }
-                    HashSet<string> addedOptions = new HashSet<string>();
-
-                    foreach (var option in hiddenOptions)
-                    {
-                        if (!addedOptions.Contains(option))
-                        {
-                            options.Add(option);
-                            permanentCurrencyName.Add(option);
-                            selectedStates.Add(option, new List<bool>());
-                            selectedTransactions.Add(option, new List<TransactionsConvertor>());
-                            addedOptions.Add(option);
-                        }
-                    }
-                    hiddenOptions.Clear();
-                    Plugin.Instance.Configuration.HiddenOptions.Clear();
-                    Plugin.Instance.Configuration.Save();
-                    Service.Chat.Print($"{Lang.GetText("OrderChangeHelp1")} {addedOptions.Count} {Lang.GetText("OrderChangeHelp2")}");
-                    ReloadOrderedOptions();
-                }
-            }
+            ListboxTools();
 
             ImGui.Separator();
+
             ImGui.SetNextItemWidth(235);
             for (int i = 0; i < ordedOptions.Count; i++)
             {
