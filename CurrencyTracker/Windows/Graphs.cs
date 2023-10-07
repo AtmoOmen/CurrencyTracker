@@ -100,7 +100,7 @@ public class Graph : Window, IDisposable
 
             var graphTitle = $"{Lang.GetText("AmountGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle}{Lang.GetText("AmountGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("AmountGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -119,9 +119,9 @@ public class Graph : Window, IDisposable
                     if (ImPlot.IsAxisHovered(ImAxis.X1))
                     {
                         ImGui.BeginTooltip();
-                        ImGui.Text($"{Lang.GetText("AmountGraph2")}{overallChangeRate}%%");
+                        ImGui.Text($"{Lang.GetText("AmountGraph2")}: {overallChangeRate}%%");
                         AppendChangeRateToolTip(overallChangeRate);
-                        ImGui.Text($"{Lang.GetText("AmountGraph3")}{newestChangeRate}%%");
+                        ImGui.Text($"{Lang.GetText("AmountGraph3")}: {newestChangeRate}%%");
                         AppendChangeRateToolTip(newestChangeRate);
                         ImGui.EndTooltip();
                     }
@@ -148,7 +148,7 @@ public class Graph : Window, IDisposable
         {
             var graphTitle = $"{Lang.GetText("ChangeGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle}{Lang.GetText("ChangeGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("ChangeGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -191,7 +191,7 @@ public class Graph : Window, IDisposable
         {
             var graphTitle = Lang.GetText("LocationGraph");
 
-            if (ImGui.CollapsingHeader($"{graphTitle}{Lang.GetText("LocationGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("LocationGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -233,7 +233,7 @@ public class Graph : Window, IDisposable
         {
             var graphTitle = $"{Lang.GetText("LocationAmountGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle}{Lang.GetText("LocationAmountGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("LocationAmountGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -267,17 +267,17 @@ public class Graph : Window, IDisposable
         else if (averageAmount >= 1000 && averageAmount < 1000000)
         {
             dividedFactor = 1000;
-            dividedName += Lang.GetText("DividedName");
+            dividedName += Lang.GetText("DividedUnitThou");
         }
         else if (averageAmount >= 1000000 && averageAmount < 1000000000)
         {
             dividedFactor = 1000000;
-            dividedName += Lang.GetText("DividedName1");
+            dividedName += Lang.GetText("DividedUnitMil");
         }
         else if (averageAmount >= 1000000000)
         {
             dividedFactor = 1000000000;
-            dividedName += Lang.GetText("DividedName2");
+            dividedName += Lang.GetText("DividedUnitBil");
         }
         return (dividedFactor, dividedName);
     }

@@ -139,7 +139,7 @@
     <value>小时</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>当前设置: 以</value>
+    <value>以</value>
   </data>
   <data name="ClusterByTimeHelp2" xml:space="preserve">
     <value>小时 为间隔显示数据</value>
@@ -162,15 +162,6 @@
   <data name="FilterByTime" xml:space="preserve">
     <value>时间筛选</value>
   </data>
-  <data name="TimeFilterLabel" xml:space="preserve">
-    <value>仅显示</value>
-  </data>
-  <data name="TimeFilterLabel1" xml:space="preserve">
-    <value> 至 </value>
-  </data>
-  <data name="TimeFilterLabel2" xml:space="preserve">
-    <value>期间的记录</value>
-  </data>
   <data name="Year" xml:space="preserve">
     <value>年</value>
   </data>
@@ -184,11 +175,9 @@
     <value>记录副本内数据</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>部分副本、特殊场景探索中会给予货币奖励
-插件默认当玩家在副本、特殊场景探索中时暂停记录，等待玩家退出它们时再计算期间货币的总增减，无法记录副本内货币变化的地点
-你可以通过开启本项目关闭此功能
+    <value>如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。
 
-注: 这可能会使插件记录大量小额数据，使得记录量大幅增加，但可以正常记录副本内货币变化的地点</value>
+推荐同时配置 最小记录值 功能。</value>
   </data>
   <data name="MinimumRecordValue" xml:space="preserve">
     <value>最小记录值</value>
@@ -203,17 +192,21 @@
     <value>应用更改</value>
   </data>
   <data name="MinimumRecordValueHelp" xml:space="preserve">
-    <value>当前设置:
-副本内: 当货币收支的绝对值≥ </value>
+    <value>副本内:
+当货币收支的绝对值≥ </value>
   </data>
   <data name="MinimumRecordValueHelp1" xml:space="preserve">
-    <value>,
-副本外: 当货币收支的绝对值≥ </value>
+    <value>副本外:
+当货币收支的绝对值≥ </value>
   </data>
   <data name="MinimumRecordValueHelp2" xml:space="preserve">
-    <value> 时，
-才进行一次数据记录
-注: 可能造成不准确的地点记录 / 副本完成时，无论当前改变量是否到达临界值，都会进行一次记录</value>
+    <value>时才进行一次数据记录
+
+注:
+1.根据你设定的值，可能造成不准确的位置记录
+2.当你离开副本区域时，无论目前发生改变的货币的具体收支是否达到了你所设定的临界值，
+都会进行一次记录
+   所以，如果你想要“一个副本一条记录”的效果，把 副本内最小记录值 设置的高点就行    (比如给金币设置个 10万 的临界值)</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
     <value>单页记录数:</value>
@@ -282,22 +275,19 @@
   <data name="UnknownLocation" xml:space="preserve">
     <value>未知区域</value>
   </data>
-  <data name="CustomCurrencyLabel" xml:space="preserve">
-    <value>自定义货币追踪</value>
-  </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>注:
-1.插件预设的19种货币不可删除，只可以隐藏
+1.插件预设的3种货币不可删除，只可以隐藏
 2.不建议对非货币物品进行追踪, 建议使用其他插件来追踪非货币物品
 3.删除货币并不会删除已有的数据文件，如有需要请自行删除</value>
   </data>
-  <data name="CustomCurrencyLabel1" xml:space="preserve">
+  <data name="CustomCurrencyTracker" xml:space="preserve">
     <value>自定义货币追踪</value>
   </data>
-  <data name="CustomCurrencyLabel3" xml:space="preserve">
+  <data name="PleaseSelect" xml:space="preserve">
     <value>请选择...</value>
   </data>
-  <data name="CustomCurrencyLabel4" xml:space="preserve">
+  <data name="PleaseSearch" xml:space="preserve">
     <value>搜索...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
@@ -318,13 +308,13 @@
   <data name="MergeTransactionsLabel" xml:space="preserve">
     <value>合并记录</value>
   </data>
-  <data name="MergeTransactionsLabel1" xml:space="preserve">
+  <data name="Threshold" xml:space="preserve">
     <value>临界值</value>
   </data>
-  <data name="MergeTransactionsLabel2" xml:space="preserve">
+  <data name="TwoWayMerge" xml:space="preserve">
     <value>双向合并</value>
   </data>
-  <data name="MergeTransactionsLabel3" xml:space="preserve">
+  <data name="OneWayMerge" xml:space="preserve">
     <value>单项合并</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
@@ -394,10 +384,10 @@
   </data>
   <data name="TrackModeHelp" xml:space="preserve">
     <value>计时器模式:
-每隔 </value>
+每隔</value>
   </data>
   <data name="TrackModeHelp1" xml:space="preserve">
-    <value> 毫秒，检查一次所有货币的变化情况</value>
+    <value>毫秒，检查一次所有货币的变化情况</value>
   </data>
   <data name="TrackModeHelp2" xml:space="preserve">
     <value>消息模式:
@@ -413,13 +403,13 @@
     <value>数量图表 </value>
   </data>
   <data name="AmountGraph1" xml:space="preserve">
-    <value> [时间 - 数量]</value>
+    <value>[时间 - 数量]</value>
   </data>
   <data name="AmountGraph2" xml:space="preserve">
-    <value>总体变化率: </value>
+    <value>总体变化率</value>
   </data>
   <data name="AmountGraph3" xml:space="preserve">
-    <value>最新变化率: </value>
+    <value>最新变化率</value>
   </data>
   <data name="AmountGraph4" xml:space="preserve">
     <value>* 本图表主要反映时间变化下货币数量发生的变化</value>
@@ -428,7 +418,7 @@
     <value>收支图表 </value>
   </data>
   <data name="ChangeGraph1" xml:space="preserve">
-    <value> [时间 - 收支]</value>
+    <value>[时间 - 收支]</value>
   </data>
   <data name="ChangeGraph2" xml:space="preserve">
     <value>* 本图表主要反映时间变化下货币收支量的变化</value>
@@ -439,13 +429,13 @@
   <data name="ChangeRateToolTip1" xml:space="preserve">
     <value>(下降中)</value>
   </data>
-  <data name="DividedName" xml:space="preserve">
+  <data name="DividedUnitThou" xml:space="preserve">
     <value>(单位: 千)</value>
   </data>
-  <data name="DividedName1" xml:space="preserve">
+  <data name="DividedUnitMil" xml:space="preserve">
     <value>(单位: 百万)</value>
   </data>
-  <data name="DividedName2" xml:space="preserve">
+  <data name="DividedUnitBil" xml:space="preserve">
     <value>(单位: 十亿)</value>
   </data>
   <data name="GraphHelpMessages" xml:space="preserve">
@@ -466,7 +456,7 @@
     <value>地点收支图表 </value>
   </data>
   <data name="LocationAmountGraph1" xml:space="preserve">
-    <value>  [地点 - 收支]</value>
+    <value> [地点 - 收支]</value>
   </data>
   <data name="LocationAmountGraph2" xml:space="preserve">
     <value>* 本图表主要反映该货币记录中各地点下所产生收支的总额</value>
@@ -475,7 +465,7 @@
     <value>地点图表</value>
   </data>
   <data name="LocationGraph1" xml:space="preserve">
-    <value>  [地点 - 地点频次]</value>
+    <value> [地点 - 地点频次]</value>
   </data>
   <data name="LocationGraph2" xml:space="preserve">
     <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
@@ -524,7 +514,7 @@
     <value>当前未选中任何记录</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>编辑 [测试]</value>
+    <value>编辑</value>
   </data>
   <data name="Export" xml:space="preserve">
     <value>导出</value>
@@ -579,5 +569,8 @@
   </data>
   <data name="WeekDays" xml:space="preserve">
     <value>日, 一, 二, 三, 四, 五, 六</value>
+  </data>
+  <data name="Current Settings" xml:space="preserve">
+    <value>当前设置</value>
   </data>
 </root>

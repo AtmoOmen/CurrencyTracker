@@ -32,7 +32,7 @@ namespace CurrencyTracker
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public List<string> HiddenOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
-        public bool TrackedInDuty { get; set; } = false;
+        public bool TrackedInDuty { get; set; } = true;
         public string SelectedLanguage { get; set; } = string.Empty;
         public int TrackMode { get; set; } = 0;
         public int RecordsPerPage { get; set; } = 20;

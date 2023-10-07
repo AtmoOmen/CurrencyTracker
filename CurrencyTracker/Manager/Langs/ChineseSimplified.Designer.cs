@@ -88,7 +88,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  [时间 - 数量] 的本地化字符串。
+        ///   查找类似 [时间 - 数量] 的本地化字符串。
         /// </summary>
         internal static string AmountGraph1 {
             get {
@@ -97,7 +97,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 总体变化率:  的本地化字符串。
+        ///   查找类似 总体变化率 的本地化字符串。
         /// </summary>
         internal static string AmountGraph2 {
             get {
@@ -106,7 +106,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 最新变化率:  的本地化字符串。
+        ///   查找类似 最新变化率 的本地化字符串。
         /// </summary>
         internal static string AmountGraph3 {
             get {
@@ -169,7 +169,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  [时间 - 收支] 的本地化字符串。
+        ///   查找类似 [时间 - 收支] 的本地化字符串。
         /// </summary>
         internal static string ChangeGraph1 {
             get {
@@ -270,7 +270,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 当前设置: 以 的本地化字符串。
+        ///   查找类似 以 的本地化字符串。
         /// </summary>
         internal static string ClusterByTimeHelp1 {
             get {
@@ -380,6 +380,15 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 当前设置 的本地化字符串。
         /// </summary>
+        internal static string Current_Settings {
+            get {
+                return ResourceManager.GetString("Current Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 当前设置 的本地化字符串。
+        /// </summary>
         internal static string CurrentSettings {
             get {
                 return ResourceManager.GetString("CurrentSettings", resourceCulture);
@@ -388,7 +397,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 注:
-        ///1.插件预设的19种货币不可删除，只可以隐藏
+        ///1.插件预设的3种货币不可删除，只可以隐藏
         ///2.不建议对非货币物品进行追踪, 建议使用其他插件来追踪非货币物品
         ///3.删除货币并不会删除已有的数据文件，如有需要请自行删除 的本地化字符串。
         /// </summary>
@@ -419,36 +428,9 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 自定义货币追踪 的本地化字符串。
         /// </summary>
-        internal static string CustomCurrencyLabel {
+        internal static string CustomCurrencyTracker {
             get {
-                return ResourceManager.GetString("CustomCurrencyLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 自定义货币追踪 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel1 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请选择... 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel3 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 搜索... 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel4 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel4", resourceCulture);
+                return ResourceManager.GetString("CustomCurrencyTracker", resourceCulture);
             }
         }
         
@@ -480,34 +462,34 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 (单位: 千) 的本地化字符串。
+        ///   查找类似 (单位: 十亿) 的本地化字符串。
         /// </summary>
-        internal static string DividedName {
+        internal static string DividedUnitBil {
             get {
-                return ResourceManager.GetString("DividedName", resourceCulture);
+                return ResourceManager.GetString("DividedUnitBil", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 (单位: 百万) 的本地化字符串。
         /// </summary>
-        internal static string DividedName1 {
+        internal static string DividedUnitMil {
             get {
-                return ResourceManager.GetString("DividedName1", resourceCulture);
+                return ResourceManager.GetString("DividedUnitMil", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 (单位: 十亿) 的本地化字符串。
+        ///   查找类似 (单位: 千) 的本地化字符串。
         /// </summary>
-        internal static string DividedName2 {
+        internal static string DividedUnitThou {
             get {
-                return ResourceManager.GetString("DividedName2", resourceCulture);
+                return ResourceManager.GetString("DividedUnitThou", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 编辑 [测试] 的本地化字符串。
+        ///   查找类似 编辑 的本地化字符串。
         /// </summary>
         internal static string Edit {
             get {
@@ -780,7 +762,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似   [地点 - 收支] 的本地化字符串。
+        ///   查找类似  [地点 - 收支] 的本地化字符串。
         /// </summary>
         internal static string LocationAmountGraph1 {
             get {
@@ -816,7 +798,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似   [地点 - 地点频次] 的本地化字符串。
+        ///   查找类似  [地点 - 地点频次] 的本地化字符串。
         /// </summary>
         internal static string LocationGraph1 {
             get {
@@ -912,33 +894,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 临界值 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel1 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 双向合并 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel2 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 单项合并 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel3 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 手动合并 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsLabel4 {
@@ -957,8 +912,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 当前设置:
-        ///副本内: 当货币收支的绝对值≥  的本地化字符串。
+        ///   查找类似 副本内:
+        ///当货币收支的绝对值≥  的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp {
             get {
@@ -967,8 +922,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 ,
-        ///副本外: 当货币收支的绝对值≥  的本地化字符串。
+        ///   查找类似 副本外:
+        ///当货币收支的绝对值≥  的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp1 {
             get {
@@ -977,9 +932,13 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  时，
-        ///才进行一次数据记录
-        ///注: 可能造成不准确的地点记录 / 副本完成时，无论当前改变量是否到达临界值，都会进行一次记录 的本地化字符串。
+        ///   查找类似 时才进行一次数据记录
+        ///
+        ///注:
+        ///1.根据你设定的值，可能造成不准确的位置记录
+        ///2.当你离开副本区域时，无论目前发生改变的货币的具体收支是否达到了你所设定的临界值，
+        ///都会进行一次记录
+        ///   所以，如果你想要“一个副本一条记录”的效果，把 副本内最小记录值 设置的高点就行    (比如给金币设置个 10万 的临界值) 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp2 {
             get {
@@ -1060,6 +1019,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 单项合并 的本地化字符串。
+        /// </summary>
+        internal static string OneWayMerge {
+            get {
+                return ResourceManager.GetString("OneWayMerge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 打开数据文件夹 的本地化字符串。
         /// </summary>
         internal static string OpenDataFolder {
@@ -1110,6 +1078,24 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string Page {
             get {
                 return ResourceManager.GetString("Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 搜索... 的本地化字符串。
+        /// </summary>
+        internal static string PleaseSearch {
+            get {
+                return ResourceManager.GetString("PleaseSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择... 的本地化字符串。
+        /// </summary>
+        internal static string PleaseSelect {
+            get {
+                return ResourceManager.GetString("PleaseSelect", resourceCulture);
             }
         }
         
@@ -1169,38 +1155,20 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 临界值 的本地化字符串。
+        /// </summary>
+        internal static string Threshold {
+            get {
+                return ResourceManager.GetString("Threshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 时间 的本地化字符串。
         /// </summary>
         internal static string Time {
             get {
                 return ResourceManager.GetString("Time", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 仅显示 的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似  至  的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel1 {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 期间的记录 的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel2 {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel2", resourceCulture);
             }
         }
         
@@ -1214,11 +1182,9 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 部分副本、特殊场景探索中会给予货币奖励
-        ///插件默认当玩家在副本、特殊场景探索中时暂停记录，等待玩家退出它们时再计算期间货币的总增减，无法记录副本内货币变化的地点
-        ///你可以通过开启本项目关闭此功能
+        ///   查找类似 如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。
         ///
-        ///注: 这可能会使插件记录大量小额数据，使得记录量大幅增加，但可以正常记录副本内货币变化的地点 的本地化字符串。
+        ///推荐同时配置 最小记录值 功能。 的本地化字符串。
         /// </summary>
         internal static string TrackInDutyHelp {
             get {
@@ -1228,7 +1194,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 计时器模式:
-        ///每隔  的本地化字符串。
+        ///每隔 的本地化字符串。
         /// </summary>
         internal static string TrackModeHelp {
             get {
@@ -1237,7 +1203,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  毫秒，检查一次所有货币的变化情况 的本地化字符串。
+        ///   查找类似 毫秒，检查一次所有货币的变化情况 的本地化字符串。
         /// </summary>
         internal static string TrackModeHelp1 {
             get {
@@ -1345,6 +1311,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string TransactionsPerPage {
             get {
                 return ResourceManager.GetString("TransactionsPerPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 双向合并 的本地化字符串。
+        /// </summary>
+        internal static string TwoWayMerge {
+            get {
+                return ResourceManager.GetString("TwoWayMerge", resourceCulture);
             }
         }
         

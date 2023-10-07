@@ -130,10 +130,10 @@
     <value>Cluster By Time</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>Current Setting: Display transactions in</value>
+    <value>Display transactions in</value>
   </data>
   <data name="ClusterByTimeHelp2" xml:space="preserve">
-    <value>h interval</value>
+    <value>hour(s) interval</value>
   </data>
   <data name="ClusterInterval" xml:space="preserve">
     <value>Hours</value>
@@ -152,21 +152,18 @@
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>Note:
-1. The 19 preset currencies cannot be deleted, you can only hide them.
+1. The 3 preset currencies cannot be deleted, you can only hide them.
 2. Not recommend to track not-currency items, there should be another plugin to do that.
 (If you insist, that's also ok)
 3. Deleting currencies will not delete the existing data files, if necessary, please delete them yourself.</value>
   </data>
-  <data name="CustomCurrencyLabel" xml:space="preserve">
-    <value>Custom Tracker</value>
-  </data>
-  <data name="CustomCurrencyLabel1" xml:space="preserve">
+  <data name="CustomCurrencyTracker" xml:space="preserve">
     <value>Custom Currency Tracker</value>
   </data>
-  <data name="CustomCurrencyLabel3" xml:space="preserve">
+  <data name="PleaseSelect" xml:space="preserve">
     <value>Select...</value>
   </data>
-  <data name="CustomCurrencyLabel4" xml:space="preserve">
+  <data name="PleaseSearch" xml:space="preserve">
     <value>Search...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
@@ -252,13 +249,13 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
   <data name="MergeTransactionsLabel" xml:space="preserve">
     <value>Merge</value>
   </data>
-  <data name="MergeTransactionsLabel1" xml:space="preserve">
+  <data name="Threshold" xml:space="preserve">
     <value>Threshold</value>
   </data>
-  <data name="MergeTransactionsLabel2" xml:space="preserve">
+  <data name="TwoWayMerge" xml:space="preserve">
     <value>Two-Way Merge</value>
   </data>
-  <data name="MergeTransactionsLabel3" xml:space="preserve">
+  <data name="OneWayMerge" xml:space="preserve">
     <value>One-Way Merge</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
@@ -268,17 +265,19 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
     <value>Min Value</value>
   </data>
   <data name="MinimumRecordValueHelp" xml:space="preserve">
-    <value>Current Settings:
-In Duty: Only record when the absolute Change is ≥</value>
+    <value>In Duty:
+Only make a new transaction when absolute Change is ≥</value>
   </data>
   <data name="MinimumRecordValueHelp1" xml:space="preserve">
-    <value>,
-Out of Duty: Only record when the absolute Change is ≥</value>
+    <value>Out of Duty:
+Only make a new transaction when absolute Change is ≥</value>
   </data>
   <data name="MinimumRecordValueHelp2" xml:space="preserve">
     <value>
-
-Note: May cause inaccurate location recording / When duty completed, a new transaction will be made regardless of whether current Change reaches the threshold.</value>
+Note:
+1.May cause inaccurate location recording, based on the value you set.
+2.When leave a duty zone, a new transaction will be made regardless of whether current Change reaches the threshold.
+   So if you just want "One Duty, One Transaction", you could just set the In Duty value to a high one (like 100k for Gil etc.)</value>
   </data>
   <data name="MinimumRecordValueLabel" xml:space="preserve">
     <value>In Duty:</value>
@@ -304,31 +303,20 @@ Note: May cause inaccurate location recording / When duty completed, a new trans
   <data name="ReverseSort" xml:space="preserve">
     <value>Inverse Sort</value>
   </data>
-  <data name="TimeFilterLabel" xml:space="preserve">
-    <value>Only display transactions between</value>
-  </data>
-  <data name="TimeFilterLabel1" xml:space="preserve">
-    <value>and</value>
-  </data>
-  <data name="TimeFilterLabel2" xml:space="preserve">
-    <value />
-  </data>
   <data name="TrackInDuty" xml:space="preserve">
     <value>Track in Duty</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>By Default, the plugin will pause recording when players are in Duty or Field Entry
-and waits until players exit those before calculating the total Changes in currency during that period.
-You can disable this behavior by enabling this option.
+    <value>If you left this unchecked, the plugin will pause recording any Changes when you are in Duty until left, which will also result in recording inaccurate Location.
 
-Note: This may result in recording a large number of transactions with small changes, significantly increasing the amount of transactions</value>
+It is recommended to configure Min Value simultaneously.</value>
   </data>
   <data name="TrackModeHelp" xml:space="preserve">
     <value>Timer Mode:
-Check all currency changes every </value>
+Check all currency changes every</value>
   </data>
   <data name="TrackModeHelp1" xml:space="preserve">
-    <value> milliseconds</value>
+    <value>milliseconds</value>
   </data>
   <data name="TrackModeHelp2" xml:space="preserve">
     <value>Chat Mode:
@@ -419,24 +407,24 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Amount Graph </value>
   </data>
   <data name="AmountGraph1" xml:space="preserve">
-    <value> [Time - Amount]</value>
+    <value>[Time - Amount]</value>
   </data>
   <data name="AmountGraph2" xml:space="preserve">
-    <value>Overall Rate: </value>
+    <value>Overall Rate</value>
   </data>
   <data name="AmountGraph3" xml:space="preserve">
-    <value>Latest Rate: </value>
+    <value>Latest Rate</value>
   </data>
   <data name="AmountGraph4" xml:space="preserve">
     <value>* This plot mainly reflects changes in the Amount of the currency over Time.</value>
   </data>
-  <data name="DividedName" xml:space="preserve">
+  <data name="DividedUnitThou" xml:space="preserve">
     <value>(Unit: Thousand)</value>
   </data>
-  <data name="DividedName1" xml:space="preserve">
+  <data name="DividedUnitMil" xml:space="preserve">
     <value>(Unit: Million)</value>
   </data>
-  <data name="DividedName2" xml:space="preserve">
+  <data name="DividedUnitBil" xml:space="preserve">
     <value>(Unit: Billion)</value>
   </data>
   <data name="ChangeRateToolTip" xml:space="preserve">
@@ -449,7 +437,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Change Graph</value>
   </data>
   <data name="ChangeGraph1" xml:space="preserve">
-    <value> [Time - Change]</value>
+    <value>[Time - Change]</value>
   </data>
   <data name="ChangeGraph2" xml:space="preserve">
     <value>* This plot mainly reflects changes in the Change of the currency over Time.</value>
@@ -458,7 +446,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Location Graph</value>
   </data>
   <data name="LocationGraph1" xml:space="preserve">
-    <value>  [Location - Frequency]</value>
+    <value> [Location - Frequency]</value>
   </data>
   <data name="LocationGraph2" xml:space="preserve">
     <value>* This plot mainly reflects the frequency of occurrence of each location in the currency transactions.</value>
@@ -467,7 +455,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Location Change Graph</value>
   </data>
   <data name="LocationAmountGraph1" xml:space="preserve">
-    <value>  [Location - Change]</value>
+    <value> [Location - Change]</value>
   </data>
   <data name="LocationAmountGraph2" xml:space="preserve">
     <value>* This plot mainly reflects the the total amount of Change of each location in the currency transactions.</value>
@@ -526,7 +514,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>transactions to clipboard.</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>Edit [DEV]</value>
+    <value>Edit</value>
   </data>
   <data name="Export" xml:space="preserve">
     <value>Export</value>
@@ -581,5 +569,8 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="WeekDays" xml:space="preserve">
     <value>Sun, Mon, Tue, Wed, Thu, Fri, Sat</value>
+  </data>
+  <data name="Current Settings" xml:space="preserve">
+    <value>Current Settings</value>
   </data>
 </root>

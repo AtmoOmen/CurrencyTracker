@@ -13,23 +13,7 @@ public class CurrencyInfo : IDisposable
     // 存储一般货币的ID的字典（这里的string非货币名）
     public Dictionary<string, uint> permanentCurrencies = new Dictionary<string, uint>
     {
-        { "StormSeal", 20 },
-        { "SerpentSeal", 21 },
-        { "FlameSeal", 22 },
-        { "WolfMark", 25 },
-        { "TrophyCrystal", 36656 },
-        { "AlliedSeal", 27 },
-        { "CenturioSeal", 10307 },
-        { "SackOfNut", 26533 },
-        { "BicolorGemstone", 26807 },
-        { "Poetic", 28 },
-        { "WhiteCrafterScript", 25199 },
-        { "WhiteGatherersScript", 25200 },
-        { "PurpleCrafterScript", 33913 },
-        { "PurpleGatherersScript", 33914 },
-        { "SkybuildersScript", 28063 },
         { "Gil", 1 },
-        { "MGP", 29 },
         { "NonLimitedTomestone", GetNonLimitedTomestoneId() },
         { "LimitedTomestone", GetLimitedTomestoneId() }
     };

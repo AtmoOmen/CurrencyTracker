@@ -13,45 +13,19 @@ namespace CurrencyTracker.Manager
 
     public class Tracker : IDisposable
     {
-        private int timerInterval = 0;
-
         public static readonly string[] CurrencyType = new string[]
         {
-            "Gil","MGP",
-            "StormSeal","SerpentSeal","FlameSeal",
-            "WolfMark","TrophyCrystal",
-            "AlliedSeal","CenturioSeal","SackOfNut",
-            "BicolorGemstone","SkybuildersScript",
-            "WhiteCrafterScript","WhiteGatherersScript","PurpleCrafterScript","PurpleGatherersScript",
-            "NonLimitedTomestone", "LimitedTomestone", "Poetic"
+            "Gil",
+            "NonLimitedTomestone", "LimitedTomestone"
         };
+
+        private static readonly string[] DutyEndStrings = new[] { "任务结束了", "has ended", "の攻略を終了した", "wurde beendet", "prend fin" };
 
         private static readonly ushort[] TriggerChatTypes = new ushort[]
         {
             57, 0, 2110, 2105, 62, 3006, 3001
         };
 
-        private static readonly string[] DutyEndStrings = new[] { "任务结束了", "has ended", "の攻略を終了した", "wurde beendet", "prend fin" };
-
-        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private readonly Stopwatch timer = new Stopwatch();
-        private CurrencyInfo currencyInfo = new CurrencyInfo();
-        private Transactions transactions = new Transactions();
-        private static LanguageManager? Lang;
-        private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
-
-        private string dutyLocationName = string.Empty;
-
-        public delegate void CurrencyChangedHandler(object sender, EventArgs e);
-
-        public event CurrencyChangedHandler? OnCurrencyChanged;
-
-        public virtual void OnTransactionsUpdate(EventArgs e)
-        {
-            OnCurrencyChanged?.Invoke(this, e);
-        }
-
-        // 测试用 For dev
         private static readonly ushort[] IgnoreChatTypes = new ushort[]
         {
             // 战斗相关 Related to Battle
@@ -60,11 +34,33 @@ namespace CurrencyTracker.Manager
             27
         };
 
-        public static bool IsBoundByDuty()
+        private static bool IsBoundByDuty()
         {
             return Service.Condition[ConditionFlag.BoundByDuty] ||
                    Service.Condition[ConditionFlag.BoundByDuty56] ||
                    Service.Condition[ConditionFlag.BoundByDuty95];
+        }
+
+        private CurrencyInfo currencyInfo = new CurrencyInfo();
+        private Transactions transactions = new Transactions();
+        private static LanguageManager? Lang;
+
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private readonly Stopwatch timer = new Stopwatch();
+
+        public delegate void CurrencyChangedHandler(object sender, EventArgs e);
+
+        public event CurrencyChangedHandler? OnCurrencyChanged;
+
+        private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
+        private string dutyLocationName = string.Empty;
+        private int timerInterval = 0;
+        public string NonLimitedTomestoneName = string.Empty;
+        public string LimitedTomestoneName = string.Empty;
+
+        public virtual void OnTransactionsUpdate(EventArgs e)
+        {
+            OnCurrencyChanged?.Invoke(this, e);
         }
 
         public Tracker()
@@ -77,9 +73,29 @@ namespace CurrencyTracker.Manager
             {
                 InitializeChatTracking();
             }
+
             LoadMinTrackValue();
+
             Service.DutyState.DutyStarted += isDutyStarted;
             Service.DutyState.DutyCompleted += isDutyCompleted;
+
+            if (currencyInfo.permanentCurrencies.TryGetValue("NonLimitedTomestone", out uint NonLimitedTomestoneID))
+            {
+                string? currencyName = currencyInfo.CurrencyLocalName(NonLimitedTomestoneID);
+                if (currencyName != "Unknown" && currencyName != null)
+                {
+                    NonLimitedTomestoneName = currencyName;
+                }
+            }
+
+            if (currencyInfo.permanentCurrencies.TryGetValue("LimitedTomestone", out uint LimitedTomestoneID))
+            {
+                string? currencyName = currencyInfo.CurrencyLocalName(LimitedTomestoneID);
+                if (currencyName != "Unknown" && currencyName != null)
+                {
+                    LimitedTomestoneName = currencyName;
+                }
+            }
         }
 
         public void ChangeTracker()

@@ -88,7 +88,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  [Time - Amount] 的本地化字符串。
+        ///   查找类似 [Time - Amount] 的本地化字符串。
         /// </summary>
         internal static string AmountGraph1 {
             get {
@@ -97,7 +97,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Overall Rate:  的本地化字符串。
+        ///   查找类似 Overall Rate 的本地化字符串。
         /// </summary>
         internal static string AmountGraph2 {
             get {
@@ -106,7 +106,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Latest Rate:  的本地化字符串。
+        ///   查找类似 Latest Rate 的本地化字符串。
         /// </summary>
         internal static string AmountGraph3 {
             get {
@@ -169,7 +169,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  [Time - Change] 的本地化字符串。
+        ///   查找类似 [Time - Change] 的本地化字符串。
         /// </summary>
         internal static string ChangeGraph1 {
             get {
@@ -272,7 +272,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Current Setting: Display transactions in 的本地化字符串。
+        ///   查找类似 Display transactions in 的本地化字符串。
         /// </summary>
         internal static string ClusterByTimeHelp1 {
             get {
@@ -281,7 +281,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 h interval 的本地化字符串。
+        ///   查找类似 hour(s) interval 的本地化字符串。
         /// </summary>
         internal static string ClusterByTimeHelp2 {
             get {
@@ -373,6 +373,15 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 Current Settings 的本地化字符串。
         /// </summary>
+        internal static string Current_Settings {
+            get {
+                return ResourceManager.GetString("Current Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Current Settings 的本地化字符串。
+        /// </summary>
         internal static string CurrentSettings {
             get {
                 return ResourceManager.GetString("CurrentSettings", resourceCulture);
@@ -381,7 +390,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Note:
-        ///1. The 19 preset currencies cannot be deleted, you can only hide them.
+        ///1. The 3 preset currencies cannot be deleted, you can only hide them.
         ///2. Not recommend to track not-currency items, there should be another plugin to do that.
         ///(If you insist, that&apos;s also ok)
         ///3. Deleting currencies will not delete the existing data files, if necessary, please delete them yourself. 的本地化字符串。
@@ -411,38 +420,11 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Custom Tracker 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Custom Currency Tracker 的本地化字符串。
         /// </summary>
-        internal static string CustomCurrencyLabel1 {
+        internal static string CustomCurrencyTracker {
             get {
-                return ResourceManager.GetString("CustomCurrencyLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Select... 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel3 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Search... 的本地化字符串。
-        /// </summary>
-        internal static string CustomCurrencyLabel4 {
-            get {
-                return ResourceManager.GetString("CustomCurrencyLabel4", resourceCulture);
+                return ResourceManager.GetString("CustomCurrencyTracker", resourceCulture);
             }
         }
         
@@ -474,34 +456,34 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 (Unit: Thousand) 的本地化字符串。
+        ///   查找类似 (Unit: Billion) 的本地化字符串。
         /// </summary>
-        internal static string DividedName {
+        internal static string DividedUnitBil {
             get {
-                return ResourceManager.GetString("DividedName", resourceCulture);
+                return ResourceManager.GetString("DividedUnitBil", resourceCulture);
             }
         }
         
         /// <summary>
         ///   查找类似 (Unit: Million) 的本地化字符串。
         /// </summary>
-        internal static string DividedName1 {
+        internal static string DividedUnitMil {
             get {
-                return ResourceManager.GetString("DividedName1", resourceCulture);
+                return ResourceManager.GetString("DividedUnitMil", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 (Unit: Billion) 的本地化字符串。
+        ///   查找类似 (Unit: Thousand) 的本地化字符串。
         /// </summary>
-        internal static string DividedName2 {
+        internal static string DividedUnitThou {
             get {
-                return ResourceManager.GetString("DividedName2", resourceCulture);
+                return ResourceManager.GetString("DividedUnitThou", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 Edit [DEV] 的本地化字符串。
+        ///   查找类似 Edit 的本地化字符串。
         /// </summary>
         internal static string Edit {
             get {
@@ -775,7 +757,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似   [Location - Change] 的本地化字符串。
+        ///   查找类似  [Location - Change] 的本地化字符串。
         /// </summary>
         internal static string LocationAmountGraph1 {
             get {
@@ -811,7 +793,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似   [Location - Frequency] 的本地化字符串。
+        ///   查找类似  [Location - Frequency] 的本地化字符串。
         /// </summary>
         internal static string LocationGraph1 {
             get {
@@ -905,33 +887,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Threshold 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel1 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Two-Way Merge 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel2 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 One-Way Merge 的本地化字符串。
-        /// </summary>
-        internal static string MergeTransactionsLabel3 {
-            get {
-                return ResourceManager.GetString("MergeTransactionsLabel3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 Manual Merge 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsLabel4 {
@@ -950,8 +905,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Current Settings:
-        ///In Duty: Only record when the absolute Change is ≥ 的本地化字符串。
+        ///   查找类似 In Duty:
+        ///Only make a new transaction when absolute Change is ≥ 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp {
             get {
@@ -960,8 +915,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 ,
-        ///Out of Duty: Only record when the absolute Change is ≥ 的本地化字符串。
+        ///   查找类似 Out of Duty:
+        ///Only make a new transaction when absolute Change is ≥ 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp1 {
             get {
@@ -971,8 +926,10 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 
-        ///
-        ///Note: May cause inaccurate location recording / When duty completed, a new transaction will be made regardless of whether current Change reaches the threshold. 的本地化字符串。
+        ///Note:
+        ///1.May cause inaccurate location recording, based on the value you set.
+        ///2.When leave a duty zone, a new transaction will be made regardless of whether current Change reaches the threshold.
+        ///   So if you just want &quot;One Duty, One Transaction&quot;, you could just set the In Duty value to a high one (like 100k for Gil etc.) 的本地化字符串。
         /// </summary>
         internal static string MinimumRecordValueHelp2 {
             get {
@@ -1053,6 +1010,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 One-Way Merge 的本地化字符串。
+        /// </summary>
+        internal static string OneWayMerge {
+            get {
+                return ResourceManager.GetString("OneWayMerge", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Data Folder 的本地化字符串。
         /// </summary>
         internal static string OpenDataFolder {
@@ -1103,6 +1069,24 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string Page {
             get {
                 return ResourceManager.GetString("Page", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Search... 的本地化字符串。
+        /// </summary>
+        internal static string PleaseSearch {
+            get {
+                return ResourceManager.GetString("PleaseSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select... 的本地化字符串。
+        /// </summary>
+        internal static string PleaseSelect {
+            get {
+                return ResourceManager.GetString("PleaseSelect", resourceCulture);
             }
         }
         
@@ -1162,38 +1146,20 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Threshold 的本地化字符串。
+        /// </summary>
+        internal static string Threshold {
+            get {
+                return ResourceManager.GetString("Threshold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Time 的本地化字符串。
         /// </summary>
         internal static string Time {
             get {
                 return ResourceManager.GetString("Time", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Only display transactions between 的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 and 的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel1 {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似  的本地化字符串。
-        /// </summary>
-        internal static string TimeFilterLabel2 {
-            get {
-                return ResourceManager.GetString("TimeFilterLabel2", resourceCulture);
             }
         }
         
@@ -1207,11 +1173,9 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 By Default, the plugin will pause recording when players are in Duty or Field Entry
-        ///and waits until players exit those before calculating the total Changes in currency during that period.
-        ///You can disable this behavior by enabling this option.
+        ///   查找类似 If you left this unchecked, the plugin will pause recording any Changes when you are in Duty until left, which will also result in recording inaccurate Location.
         ///
-        ///Note: This may result in recording a large number of transactions with small changes, significantly increasing the amount of transactions 的本地化字符串。
+        ///It is recommended to configure Min Value simultaneously. 的本地化字符串。
         /// </summary>
         internal static string TrackInDutyHelp {
             get {
@@ -1221,7 +1185,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Timer Mode:
-        ///Check all currency changes every  的本地化字符串。
+        ///Check all currency changes every 的本地化字符串。
         /// </summary>
         internal static string TrackModeHelp {
             get {
@@ -1230,7 +1194,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似  milliseconds 的本地化字符串。
+        ///   查找类似 milliseconds 的本地化字符串。
         /// </summary>
         internal static string TrackModeHelp1 {
             get {
@@ -1338,6 +1302,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string TransactionsPerPage {
             get {
                 return ResourceManager.GetString("TransactionsPerPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Two-Way Merge 的本地化字符串。
+        /// </summary>
+        internal static string TwoWayMerge {
+            get {
+                return ResourceManager.GetString("TwoWayMerge", resourceCulture);
             }
         }
         

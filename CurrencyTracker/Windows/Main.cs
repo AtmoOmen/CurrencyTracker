@@ -267,7 +267,8 @@ public partial class Main : Window, IDisposable
                     searchTimer.Start();
                 }
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker($"{Lang.GetText("ClusterByTimeHelp1")} {clusterHour}{Lang.GetText("ClusterByTimeHelp2")}");
+                ImGuiComponents.HelpMarker($"{Lang.GetText("CurrentSettings")}:\n" +
+                    $"{Lang.GetText("ClusterByTimeHelp1")} {clusterHour} {Lang.GetText("ClusterByTimeHelp2")}");
             }
 
             if (ImGui.Checkbox($"{Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled))
@@ -318,7 +319,7 @@ public partial class Main : Window, IDisposable
         if (ImGui.BeginPopup("LocationSearch"))
         {
             ImGui.SetNextItemWidth(200);
-            if (ImGui.InputTextWithHint("##LocationSearch", Lang.GetText("CustomCurrencyLabel4"), ref searchLocationName, 80))
+            if (ImGui.InputTextWithHint("##LocationSearch", Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
                 if (!searchLocationName.IsNullOrEmpty())
                 {
@@ -466,6 +467,12 @@ public partial class Main : Window, IDisposable
                 ImGui.Text($"{Lang.GetText("Now")}:");
                 ImGui.SameLine();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, selectedCurrencyName);
+                ImGui.SameLine(10);
+                ImGuiComponents.HelpMarker($"{Lang.GetText("Current Settings")}:\n\n" +
+                    $"{Lang.GetText("MinimumRecordValueHelp")} {Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}\n" +
+                    $"{Lang.GetText("MinimumRecordValueHelp1")} {Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}\n" +
+                    $"{Lang.GetText("MinimumRecordValueHelp2")}");
+
                 ImGui.Separator();
                 ImGui.Text($"{Lang.GetText("MinimumRecordValueLabel")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
                 ImGui.SetNextItemWidth(175);
@@ -488,8 +495,6 @@ public partial class Main : Window, IDisposable
                     Plugin.Instance.Configuration.Save();
                 }
                 if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
-
-                ImGuiComponents.HelpMarker($"{Lang.GetText("MinimumRecordValueHelp")}{Plugin.Instance.Configuration.MinTrackValueDic["InDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp1")}{Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}{Lang.GetText("MinimumRecordValueHelp2")}");
             }
             else
             {
@@ -502,27 +507,27 @@ public partial class Main : Window, IDisposable
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyTracker()
     {
-        if (Widgets.IconButton(FontAwesomeIcon.Plus, Lang.GetText("CustomCurrencyLabel"), "CustomCurrencyAdd"))
+        if (Widgets.IconButton(FontAwesomeIcon.Plus, Lang.GetText("Add"), "CustomCurrencyAdd"))
         {
             ImGui.OpenPopup("CustomCurrency");
         }
 
         if (ImGui.BeginPopup("CustomCurrency", ImGuiWindowFlags.AlwaysAutoResize))
         {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("CustomCurrencyLabel1"));
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("CustomCurrencyTracker"));
             ImGuiComponents.HelpMarker(Lang.GetText("CustomCurrencyHelp"));
             ImGui.Text($"{Lang.GetText("Now")}:");
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(210);
 
-            if (ImGui.BeginCombo("", Plugin.Instance.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Lang.GetText("CustomCurrencyLabel3"), ImGuiComboFlags.HeightLarge))
+            if (ImGui.BeginCombo("", Plugin.Instance.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
                 int startIndex = currentItemPage * itemsPerPage;
                 int endIndex = Math.Min(startIndex + itemsPerPage, Plugin.Instance.ItemNames.Count);
 
                 ImGui.SetNextItemWidth(200f);
-                ImGui.InputTextWithHint("##selectflts", Lang.GetText("CustomCurrencyLabel4"), ref searchFilter, 50);
+                ImGui.InputTextWithHint("##selectflts", Lang.GetText("PleaseSearch"), ref searchFilter, 50);
                 ImGui.SameLine();
                 if (Widgets.IconButton(FontAwesomeIcon.Backward))
                     currentItemPage = 0;
@@ -636,7 +641,7 @@ public partial class Main : Window, IDisposable
         if (ImGui.BeginPopup("MergeTransactions"))
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("MergeTransactionsLabel4"));
-            ImGui.Text(Lang.GetText("MergeTransactionsLabel1"));
+            ImGui.Text(Lang.GetText("Threshold"));
             ImGui.SameLine();
             ImGui.SetNextItemWidth(150f);
             ImGui.InputInt("##MergeThreshold", ref mergeThreshold, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue);
@@ -648,7 +653,7 @@ public partial class Main : Window, IDisposable
             ImGuiComponents.HelpMarker($"{Lang.GetText("MergeTransactionsHelp3")}{Lang.GetText("TransactionsHelp2")}");
 
             // 双向合并 Two-Way Merge
-            if (ImGui.Button(Lang.GetText("MergeTransactionsLabel2")))
+            if (ImGui.Button(Lang.GetText("TwoWayMerge")))
             {
                 int mergeCount = MergeTransactions(false);
                 if (mergeCount == 0)
@@ -658,7 +663,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
 
             // 单向合并 One-Way Merge
-            if (ImGui.Button(Lang.GetText("MergeTransactionsLabel3")))
+            if (ImGui.Button(Lang.GetText("OneWayMerge")))
             {
                 int mergeCount = MergeTransactions(true);
                 if (mergeCount == 0)
@@ -895,7 +900,7 @@ public partial class Main : Window, IDisposable
                 }
             }
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker($"{Lang.GetText("TrackModeHelp")}{timerInterval}{Lang.GetText("TrackModeHelp1")}");
+            ImGuiComponents.HelpMarker($"{Lang.GetText("TrackModeHelp")} {timerInterval} {Lang.GetText("TrackModeHelp1")}");
             if (ImGui.RadioButton($"{Lang.GetText("TrackModeLabel2")}##RecordMode", ref recordMode, 1))
             {
                 Plugin.Instance.Configuration.TrackMode = recordMode;
