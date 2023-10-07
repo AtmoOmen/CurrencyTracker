@@ -28,6 +28,8 @@ namespace CurrencyTracker
             }
         };
 
+        public bool FisrtOpen = true;
+
         public List<string> CustomCurrencyType { get; set; } = new List<string>();
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public List<string> HiddenOptions { get; set; } = new List<string>();

@@ -44,29 +44,29 @@ namespace CurrencyTracker
                 HelpMessage = "Open the main window of the plugin\n/ct <currencyname> → Open the main window with specific currency shown."
             });
 
+            if (Configuration.CurrentActiveCharacter == null)
+            {
+                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
+            }
+
+            UpdateTerritoryNames();
+            UpdateItemNames();
+
+            Service.ClientState.Login += HandleLogin;
+
+            Service.Tracker = new Tracker();
+
+            Service.Transactions = new Transactions();
+
             Main = new Main(this);
             WindowSystem.AddWindow(Main);
+            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
 
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-
-            if (Configuration.CurrentActiveCharacter == null)
-            {
-                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
-            }
-
-            Service.Tracker = new Tracker();
-            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
-
-            Service.Transactions = new Transactions();
-
-            UpdateTerritoryNames();
-            UpdateItemNames();
-
-            Service.ClientState.Login += HandleLogin;
         }
 
         private void HandleLogin()

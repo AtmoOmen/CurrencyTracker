@@ -1,9 +1,11 @@
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Pipes;
 using System.Linq;
 using System.Threading;
 
@@ -79,23 +81,7 @@ namespace CurrencyTracker.Manager
             Service.DutyState.DutyStarted += isDutyStarted;
             Service.DutyState.DutyCompleted += isDutyCompleted;
 
-            if (currencyInfo.permanentCurrencies.TryGetValue("NonLimitedTomestone", out uint NonLimitedTomestoneID))
-            {
-                string? currencyName = currencyInfo.CurrencyLocalName(NonLimitedTomestoneID);
-                if (currencyName != "Unknown" && currencyName != null)
-                {
-                    NonLimitedTomestoneName = currencyName;
-                }
-            }
-
-            if (currencyInfo.permanentCurrencies.TryGetValue("LimitedTomestone", out uint LimitedTomestoneID))
-            {
-                string? currencyName = currencyInfo.CurrencyLocalName(LimitedTomestoneID);
-                if (currencyName != "Unknown" && currencyName != null)
-                {
-                    LimitedTomestoneName = currencyName;
-                }
-            }
+            DealWithCurrencies();
         }
 
         public void ChangeTracker()
@@ -161,7 +147,7 @@ namespace CurrencyTracker.Manager
 
             foreach (var currency in CurrencyType)
             {
-                if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                     if (currencyName != "Unknown" && currencyName != null)
@@ -184,7 +170,6 @@ namespace CurrencyTracker.Manager
 
         private void UpdateCurrenciesTimer()
         {
-            currencyInfo ??= new CurrencyInfo();
             timerInterval = Plugin.Instance.Configuration.TimerInterval;
 
             Service.Framework.RunOnTick(UpdateCurrenciesTimer, TimeSpan.FromMilliseconds(timerInterval), 0, cancellationTokenSource.Token);
@@ -200,7 +185,7 @@ namespace CurrencyTracker.Manager
 
             foreach (var currency in CurrencyType)
             {
-                if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                     if (currencyName != "Unknown" && currencyName != null)
@@ -313,7 +298,7 @@ namespace CurrencyTracker.Manager
                 Service.PluginLog.Debug("Duty End, Currency Change Check Start.");
                 foreach (var currency in CurrencyType)
                 {
-                    if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                    if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
                     {
                         string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                         if (currencyName != "Unknown" && currencyName != null)
@@ -363,6 +348,52 @@ namespace CurrencyTracker.Manager
             if (Plugin.Instance.PluginInterface.IsDev)
             {
                 Service.PluginLog.Debug("测试信息：副本完成");
+            }
+        }
+
+        private void DealWithCurrencies()
+        {
+            if (CurrencyInfo.permanentCurrencies.TryGetValue("NonLimitedTomestone", out uint NonLimitedTomestoneID))
+            {
+                string? currencyName = currencyInfo.CurrencyLocalName(NonLimitedTomestoneID);
+                if (currencyName != "Unknown" && currencyName != null)
+                {
+                    NonLimitedTomestoneName = currencyName;
+                }
+            }
+
+            if (CurrencyInfo.permanentCurrencies.TryGetValue("LimitedTomestone", out uint LimitedTomestoneID))
+            {
+                string? currencyName = currencyInfo.CurrencyLocalName(LimitedTomestoneID);
+                if (currencyName != "Unknown" && currencyName != null)
+                {
+                    LimitedTomestoneName = currencyName;
+                }
+            }
+
+            if (Plugin.Instance.Configuration.FisrtOpen)
+            {
+                foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd) 
+                {
+                    string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+
+                    if (currencyName.IsNullOrEmpty()) continue;
+
+                    if (!Plugin.Instance.Configuration.CustomCurrencyType.Contains(currencyName) && !Plugin.Instance.Configuration.CustomCurrencies.ContainsKey(currencyName))
+                    {
+                        Plugin.Instance.Configuration.CustomCurrencyType.Add(currencyName);
+                        Plugin.Instance.Configuration.CustomCurrencies.Add(currencyName, currencyID);
+                    }
+
+                    if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(currencyName) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(currencyName))
+                    {
+                        Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(currencyName, 0);
+                        Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(currencyName, 0);
+                    }
+                }
+
+                Plugin.Instance.Configuration.FisrtOpen = false;
+                Plugin.Instance.Configuration.Save();
             }
         }
 

@@ -10,8 +10,13 @@ namespace CurrencyTracker.Manager;
 
 public class CurrencyInfo : IDisposable
 {
+    public static readonly List<uint> defaultCurrenciesToAdd = new List<uint> 
+    { 
+        20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
+    };
+
     // 存储一般货币的ID的字典（这里的string非货币名）
-    public Dictionary<string, uint> permanentCurrencies = new Dictionary<string, uint>
+    public static readonly Dictionary<string, uint> permanentCurrencies = new Dictionary<string, uint>
     {
         { "Gil", 1 },
         { "NonLimitedTomestone", GetNonLimitedTomestoneId() },

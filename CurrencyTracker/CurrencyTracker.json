@@ -16,5 +16,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
-    "Changelog": "- Preset currencies have been reduced from 19 to 3 (Now: Gil, Tomestones with/without weekly capped [exclude Poetic]).\n\nNote: The transactions data for currencies removed from the preset currencies are not deleted, all you have to do is to add back the currencies you want in the form of a custom currency tracker (Click the \"+\" above the currency list)!"
+    "Changelog": "- Preset currencies have been reduced from 19 to 3 (Now: Gil, Tomestones with/without weekly capped [exclude Poetic]). So you can delete most of them instead of just hiding now.\n- Optimised the problem that the mouse wheel page flip function was too sensitive\n- Custom Tracker now also supports mouse wheel page flipping."
 }

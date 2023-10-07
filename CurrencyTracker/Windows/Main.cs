@@ -70,7 +70,7 @@ public partial class Main : Window, IDisposable
 
         foreach (var currency in Tracker.CurrencyType)
         {
-            if (currencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+            if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
 
@@ -539,6 +539,12 @@ public partial class Main : Window, IDisposable
                     currentItemPage++;
                 ImGui.SameLine();
 
+                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0) && currentItemPage > 0)
+                    currentItemPage--;
+
+                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0))
+                    currentItemPage++;
+
                 ImGui.Separator();
 
                 int visibleItems = 0;
@@ -592,11 +598,16 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                if (Plugin.Instance.Configuration.CustomCurrencyType.Contains(selected))
+                if (!Plugin.Instance.Configuration.CustomCurrencyType.Contains(selected))
+                {
+                    Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
+                }
+
+                if (Plugin.Instance.Configuration.CustomCurrencyType.Contains(selected) && !Plugin.Instance.Configuration.CustomCurrencies.ContainsKey(selected))
                 {
                     Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
                 }
-                Plugin.Instance.Configuration.CustomCurrencyType.Add(selected);
+                
 
                 if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
                 {
@@ -1288,7 +1299,7 @@ public partial class Main : Window, IDisposable
 
         ImGui.SameLine();
 
-        if ((ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) || ImGui.GetIO().MouseWheel > 0) && currentPage > 0)
+        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0)
             currentPage--;
 
         ImGui.SameLine();
@@ -1317,7 +1328,7 @@ public partial class Main : Window, IDisposable
 
         ImGui.SameLine();
 
-        if ((ImGui.ArrowButton("NextPage", ImGuiDir.Right) || ImGui.GetIO().MouseWheel < 0) && currentPage < pageCount - 1)
+        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1)
             currentPage++;
 
         ImGui.SameLine();
@@ -1327,6 +1338,18 @@ public partial class Main : Window, IDisposable
 
         visibleStartIndex = currentPage * transactionsPerPage;
         visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
+
+        {
+            if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
+            {
+                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel > 0) && currentPage > 0)
+                    currentPage--;
+
+                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0) && currentPage < pageCount - 1)
+                    currentPage++;
+            }
+            
+        }
     }
 
     // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
