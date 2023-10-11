@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/10/11 | 1.2.4.2 | - Fixed a bug of not refreshing transactions when using the /ct command to open the main window when a certain currency was previously selected |
 | 2023/10/07 | 1.2.4.1 | - Preset currencies have been reduced from 19 to 3 (Now: Gil, Tomestones with/without weekly capped [exclude Poetic]). So you can delete most of them instead of just hiding now.<br/>- Optimised the problem that the mouse wheel page flip function was too sensitive<br/>- Custom Tracker now also supports mouse wheel page flipping. |
 | 2023/10/05 | 1.2.4.0 | - UI Adjustments:<br/>  - Custom Tracker now is above currencies listbox.<br/>  - Reformed the interface of Custom Tracker, which should bring much performance improvement.<br/>  - Now the Delete button in Custom Tracker is merged with the Hide button above currencies listbox. When selecting a preset currency, the Hide button will be displayed, while when selecting a custom currency, the delete button will be displayed.<br/>- BUG Fixes / Functional Adjustments:<br/>  - Fix an issue that cause Chat Mode failing in some certain situations.<br/>  - Fixed compatibility issues with Custom Tracker and some new features.<br/>  - Modified the code logic after adding currency in Custom Tracker<br/>  - Modified the logic of the Min Value, and optimized the code logic for handling currency changes that occur after the Duty is completed but still within the Duty area<br/>  - The switch of Track In Duty no longer affects the display of Min Value button |
 | 2023/10/04 | 1.2.3.4 | 6.5 / API9                                                   |
@@ -32,6 +33,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年10月11日 | 1.2.4.2 | - 修复了当先前已经选中了某种货币时使用 /ct 命令打开主界面时没有刷新记录的问题 |
 | 2023年10月7日 | 1.2.4.1 | - 预设货币由 19 种减少到了 3 种 (金币和有/无周获取限制的神典石[不含诗学])。所以现在你可以随意进行删除而不是隐藏了<br>- 优化了鼠标滚轮翻页功能过于敏感的问题<br>- 自定义货币追踪 现在也支持鼠标滚轮翻页了 |
 | 2023年10月5日 | 1.2.4.0 | - 界面调整:<br>  - 自定义货币追踪 功能现在位于货币列表上方工具栏<br>  - 重构了 自定义货币追踪 功能的界面，应该可以带来极大的性能改善<br>  - 现在 自定义货币追踪 中的删除按钮与货币列表上方工具栏中的隐藏按钮合并，选中预设货币时会显示隐藏按钮，而选中自定义货币则会显示删除按钮<br>- BUG 修复/功能调整<br>  - 修复了上一版本中消息模式在特定情况下失效的问题<br>  - 修复了 自定义货币追踪 功能和新增功能的兼容性问题<br>  - 修改了 自定义货币追踪 中新增货币后的代码逻辑<br>  - 修改了 最小记录值 功能逻辑，优化了处理副本结束后但仍在副本区域内发生的货币变化的代码逻辑<br>  - 记录副本内数据 功能的开关不再影响 最小记录值 功能按钮的显示 |
 | 2023年10月4日 | 1.2.3.4 | 更新至 API9 |

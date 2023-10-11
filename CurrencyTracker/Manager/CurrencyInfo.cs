@@ -1,3 +1,4 @@
+using Dalamud.Logging;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using KamiLib.Caching;
@@ -15,8 +16,14 @@ public class CurrencyInfo : IDisposable
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
 
+    public static readonly InventoryType[] RetainersInventory = new InventoryType[]
+    {
+        InventoryType.RetainerPage1, InventoryType.RetainerPage2, InventoryType.RetainerPage3, InventoryType.RetainerPage4, InventoryType.RetainerGil,
+        InventoryType.RetainerCrystals, InventoryType.RetainerPage5, InventoryType.RetainerPage6, InventoryType.RetainerPage7,
+    };
+
     // 存储一般货币的ID的字典（这里的string非货币名）
-    public static readonly Dictionary<string, uint> permanentCurrencies = new Dictionary<string, uint>
+    public static readonly Dictionary<string, uint> presetCurrencies = new Dictionary<string, uint>
     {
         { "Gil", 1 },
         { "NonLimitedTomestone", GetNonLimitedTomestoneId() },
@@ -41,6 +48,45 @@ public class CurrencyInfo : IDisposable
         unsafe
         {
             return InventoryManager.Instance()->GetInventoryItemCount(currencyID);
+        }
+    }
+
+    public long GetRetainerAmount(uint currencyID)
+    {
+        unsafe
+        {
+            InventoryManager* inventoryManagerPtr = InventoryManager.Instance();
+
+            long itemCount = 0;
+            foreach (var flag in RetainersInventory)
+            {
+                itemCount += inventoryManagerPtr->GetItemCountInContainer(currencyID, flag);
+            }
+            
+            return itemCount;
+        }
+    }
+
+    public ulong GetRetainerID()
+    {
+        unsafe
+        {
+            uint SomeGil = 0;
+            var retainerManager = RetainerManager.Instance();
+            if (retainerManager != null)
+            {
+                for (uint i = 0; i < retainerManager->GetRetainerCount(); i++)
+                {
+                    var retainer = retainerManager->GetRetainerBySortedIndex(i);
+                    if (retainer != null)
+                    {
+                        SomeGil += retainer->Gil;
+                        Service.PluginLog.Debug($"SomeGil:{SomeGil}");
+                    }
+                }
+            }
+
+            return SomeGil;
         }
     }
 

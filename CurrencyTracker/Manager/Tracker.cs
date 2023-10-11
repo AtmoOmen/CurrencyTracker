@@ -134,7 +134,6 @@ namespace CurrencyTracker.Manager
 
         private void UpdateCurrenciesByChat()
         {
-            currencyInfo ??= new CurrencyInfo();
 
             if (!Service.ClientState.IsLoggedIn) return;
 
@@ -147,7 +146,7 @@ namespace CurrencyTracker.Manager
 
             foreach (var currency in CurrencyType)
             {
-                if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                     if (currencyName != "Unknown" && currencyName != null)
@@ -185,7 +184,7 @@ namespace CurrencyTracker.Manager
 
             foreach (var currency in CurrencyType)
             {
-                if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out uint currencyID))
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                     if (currencyName != "Unknown" && currencyName != null)
@@ -208,12 +207,12 @@ namespace CurrencyTracker.Manager
 
         private void CheckCurrency(string currencyName, uint currencyID, bool isDutyEnd, string currentLocationName = "-1")
         {
-            currencyInfo ??= new CurrencyInfo();
-            transactions ??= new Transactions();
             Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
             TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
+
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
+
             if (currentLocationName == "-1" || currentLocationName == "")
             {
                 currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
@@ -298,7 +297,7 @@ namespace CurrencyTracker.Manager
                 Service.PluginLog.Debug("Duty End, Currency Change Check Start.");
                 foreach (var currency in CurrencyType)
                 {
-                    if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+                    if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out uint currencyID))
                     {
                         string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
                         if (currencyName != "Unknown" && currencyName != null)
@@ -353,7 +352,7 @@ namespace CurrencyTracker.Manager
 
         private void DealWithCurrencies()
         {
-            if (CurrencyInfo.permanentCurrencies.TryGetValue("NonLimitedTomestone", out uint NonLimitedTomestoneID))
+            if (CurrencyInfo.presetCurrencies.TryGetValue("NonLimitedTomestone", out uint NonLimitedTomestoneID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(NonLimitedTomestoneID);
                 if (currencyName != "Unknown" && currencyName != null)
@@ -362,7 +361,7 @@ namespace CurrencyTracker.Manager
                 }
             }
 
-            if (CurrencyInfo.permanentCurrencies.TryGetValue("LimitedTomestone", out uint LimitedTomestoneID))
+            if (CurrencyInfo.presetCurrencies.TryGetValue("LimitedTomestone", out uint LimitedTomestoneID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(LimitedTomestoneID);
                 if (currencyName != "Unknown" && currencyName != null)

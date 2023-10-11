@@ -321,12 +321,14 @@ Check all currency changes every</value>
   <data name="TrackModeHelp2" xml:space="preserve">
     <value>Chat Mode:
 Check all currency changes whenever a new chat message from specific types is received
-(May record more accurate transactions data)
+(Will record more accurate transactions data)
 
 Note: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!</value>
   </data>
   <data name="TrackModeHelp3" xml:space="preserve">
-    <value>Too low trigger interval may result in higher performance overhead (not significant)</value>
+    <value>Too low trigger interval may result in higher performance overhead
+
+Note: Please choose Chat Mode if nothing goes wrong!</value>
   </data>
   <data name="TrackModeLabel" xml:space="preserve">
     <value>Track Mode</value>

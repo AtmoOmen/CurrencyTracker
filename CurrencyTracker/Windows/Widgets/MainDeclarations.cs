@@ -130,7 +130,7 @@ public partial class Main
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
     private Transactions transactions = new Transactions();
     private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
-    private CurrencyInfo? currencyInfo = null!;
+    private CurrencyInfo currencyInfo = new CurrencyInfo();
     private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
@@ -142,5 +142,9 @@ public partial class Main
 
     // UI外观用 Used to slow down UI refresh speed
     private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
+
+    long testResult = 0;
+    ulong testResult2 = 0;
+
 
 }

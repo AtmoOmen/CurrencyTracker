@@ -1,7 +1,7 @@
 {
     "Author": "AtmoOmen",
     "Name": "Currency Tracker",
-    "AssemblyVersion": "1.2.4.1",
+    "AssemblyVersion": "1.2.4.2",
     "Punchline": "Track your Currencies' Changes!",
     "Description": "Aimed to help you track changes of various in-game currencies and record them as transactions.\nAlso provides features for queries, graphs, exporting data, and custom currencies tracker.",
     "InternalName": "CurrencyTracker",
@@ -16,5 +16,5 @@
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img2.png"
     ],
-    "Changelog": "- Preset currencies have been reduced from 19 to 3 (Now: Gil, Tomestones with/without weekly capped [exclude Poetic]). So you can delete most of them instead of just hiding now.\n- Optimised the problem that the mouse wheel page flip function was too sensitive\n- Custom Tracker now also supports mouse wheel page flipping."
+    "Changelog": "- Fixed a bug of not refreshing transactions when using the /ct command to open the main window when a certain currency was previously selected."
 }

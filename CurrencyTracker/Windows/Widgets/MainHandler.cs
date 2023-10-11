@@ -302,7 +302,7 @@ public partial class Main
     }
 
     // 用于在筛选时更新记录 Used to update transactions
-    private void UpdateTransactions()
+    public void UpdateTransactions()
     {
         if (currentTypeTransactions == null || selectedCurrencyName.IsNullOrEmpty())
         {

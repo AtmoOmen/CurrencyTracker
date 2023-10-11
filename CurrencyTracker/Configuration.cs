@@ -36,7 +36,7 @@ namespace CurrencyTracker
         public bool ReverseSort { get; set; } = false;
         public bool TrackedInDuty { get; set; } = true;
         public string SelectedLanguage { get; set; } = string.Empty;
-        public int TrackMode { get; set; } = 0;
+        public int TrackMode { get; set; } = 1;
         public int RecordsPerPage { get; set; } = 20;
         public int TimerInterval { get; set; } = 500;
         public bool ChangeTextColoring { get; set; } = true;

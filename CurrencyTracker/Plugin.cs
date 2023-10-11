@@ -179,6 +179,7 @@ namespace CurrencyTracker
                 {
                     Main.selectedCurrencyName = currencyName;
                     Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
+                    Main.UpdateTransactions();
                     Main.IsOpen = true;
                 }
                 else
@@ -191,6 +192,7 @@ namespace CurrencyTracker
                     {
                         Main.selectedCurrencyName = currencyName;
                         Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
+                        Main.UpdateTransactions();
                     }
                 }
             }

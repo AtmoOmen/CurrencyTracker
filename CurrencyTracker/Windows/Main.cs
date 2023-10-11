@@ -32,14 +32,11 @@ public partial class Main : Window, IDisposable
         searchTimer.Stop();
     }
 
-#pragma warning disable CS8602
-#pragma warning disable CS8604
+#pragma warning disable CS8602, CS8604
 
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
-        transactions ??= new Transactions();
-
         isReversed = plugin.Configuration.ReverseSort;
         isTrackedinDuty = plugin.Configuration.TrackedInDuty;
         recordMode = plugin.Configuration.TrackMode;
@@ -65,12 +62,11 @@ public partial class Main : Window, IDisposable
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
     private void LoadOptions()
     {
-        currencyInfo ??= new CurrencyInfo();
         HashSet<string> addedOptions = new HashSet<string>();
 
         foreach (var currency in Tracker.CurrencyType)
         {
-            if (CurrencyInfo.permanentCurrencies.TryGetValue(currency, out uint currencyID))
+            if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out uint currencyID))
             {
                 string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
 
@@ -124,7 +120,7 @@ public partial class Main : Window, IDisposable
         Lang = new LanguageManager(playerLang);
     }
 
-    // 初始化自定义货币最小记录值
+    // 初始化自定义货币最小记录值 Initialize Min Track Values
     private void LoadCustomMinTrackValue()
     {
         HashSet<string> addedCurrencies = new HashSet<string>();
@@ -145,7 +141,6 @@ public partial class Main : Window, IDisposable
     public override void Draw()
     {
         if (!Service.ClientState.IsLoggedIn) return;
-        transactions ??= new Transactions();
 
         if (!showRecordOptions) ImGui.TextColored(ImGuiColors.DalamudGrey, Lang.GetText("ConfigLabel1"));
         else ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("ConfigLabel1"));
@@ -200,6 +195,8 @@ public partial class Main : Window, IDisposable
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
+
+
         CurrenciesList();
 
         TransactionsChildframe();
@@ -208,6 +205,15 @@ public partial class Main : Window, IDisposable
     // 测试用功能区 Some features still under testing
     private void FeaturesUnderTest()
     {
+
+        if (ImGui.Button("获取测试数据"))
+        {
+            testResult = currencyInfo.GetRetainerAmount(1);
+            testResult2 = currencyInfo.GetRetainerID();
+        }
+        ImGui.SameLine();
+        ImGui.Text($"测试1:{testResult}测试2:{testResult2}");
+
     }
 
     // 倒序排序 Reverse Sort
@@ -438,6 +444,8 @@ public partial class Main : Window, IDisposable
             Plugin.Instance.Configuration.TrackedInDuty = isTrackedinDuty;
             Plugin.Instance.Configuration.Save();
         }
+
+        ImGui.SameLine();
 
         ImGuiComponents.HelpMarker(Lang.GetText("TrackInDutyHelp"));
     }

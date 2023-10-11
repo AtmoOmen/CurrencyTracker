@@ -1205,7 +1205,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 Chat Mode:
         ///Check all currency changes whenever a new chat message from specific types is received
-        ///(May record more accurate transactions data)
+        ///(Will record more accurate transactions data)
         ///
         ///Note: If you found the plugin didn&apos;t record the change under certain circumstances, please report it with the situation! 的本地化字符串。
         /// </summary>
@@ -1216,7 +1216,9 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Too low trigger interval may result in higher performance overhead (not significant) 的本地化字符串。
+        ///   查找类似 Too low trigger interval may result in higher performance overhead
+        ///
+        ///Note: Please choose Chat Mode if nothing goes wrong! 的本地化字符串。
         /// </summary>
         internal static string TrackModeHelp3 {
             get {
