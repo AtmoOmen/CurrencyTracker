@@ -575,4 +575,16 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="Current Settings" xml:space="preserve">
     <value>Current Settings</value>
   </data>
+  <data name="TeleportTo" xml:space="preserve">
+    <value>Teleport to</value>
+  </data>
+  <data name="TeleportWithinArea" xml:space="preserve">
+    <value>Teleport within Area</value>
+  </data>
+  <data name="MergedSpecificHelp" xml:space="preserve">
+    <value>Merged from</value>
+  </data>
+  <data name="MergedSpecificHelp1" xml:space="preserve">
+    <value>transactions</value>
+  </data>
 </root>

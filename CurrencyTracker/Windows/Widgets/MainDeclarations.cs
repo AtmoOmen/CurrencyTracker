@@ -114,6 +114,7 @@ public partial class Main
     private bool startDateEnable;
     private bool endDateEnable;
 
+    // 自定义货币追踪过滤物品用 Used to filter some outdate/abandoned items in custom tracker item list
     private string[] filterNamesForCCT = new string[] 
     { 
         // 过期物品 Dated items
@@ -126,10 +127,15 @@ public partial class Main
     // This bool will always be false, for method filling purposes only, no actual effect
     private bool selectTimeDeco = false;
 
+    // 是否启用备注编辑
+    internal Dictionary<string, List<bool>>? noteEditEnabled = new Dictionary<string, List<bool>>();
+
+    string editNoteContent = string.Empty;
+
     internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
-    private Transactions transactions = new Transactions();
-    private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
+    internal Transactions transactions = new Transactions();
+    internal TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
     private CurrencyInfo currencyInfo = new CurrencyInfo();
     private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();

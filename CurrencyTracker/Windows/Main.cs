@@ -77,6 +77,7 @@ public partial class Main : Window, IDisposable
                     addedOptions.Add(currencyName);
                     selectedStates.Add(currencyName, new List<bool>());
                     selectedTransactions.Add(currencyName, new List<TransactionsConvertor>());
+                    noteEditEnabled.Add(currencyName, new List<bool>());
                 }
             }
         }
@@ -91,6 +92,7 @@ public partial class Main : Window, IDisposable
                     addedOptions.Add(currency);
                     selectedStates.Add(currency, new List<bool>());
                     selectedTransactions.Add(currency, new List<TransactionsConvertor>());
+                    noteEditEnabled.Add(currency, new List<bool>());
                 }
             }
         }
@@ -205,7 +207,7 @@ public partial class Main : Window, IDisposable
     // 测试用功能区 Some features still under testing
     private void FeaturesUnderTest()
     {
-
+        /*
         if (ImGui.Button("获取测试数据"))
         {
             testResult = currencyInfo.GetRetainerAmount(1);
@@ -213,7 +215,7 @@ public partial class Main : Window, IDisposable
         }
         ImGui.SameLine();
         ImGui.Text($"测试1:{testResult}测试2:{testResult2}");
-
+        */
     }
 
     // 倒序排序 Reverse Sort
@@ -877,6 +879,9 @@ public partial class Main : Window, IDisposable
                 {
                     Lang = new LanguageManager(language);
                     Graph.Lang = new LanguageManager(language);
+                    Transactions.Lang = new LanguageManager(language);
+                    TransactionsConvertor.Lang = new LanguageManager(language);
+                    Tracker.Lang = new LanguageManager(language);
 
                     playerLang = language;
 
@@ -1244,9 +1249,7 @@ public partial class Main : Window, IDisposable
 
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
-                    var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-                    var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-                    string filePath = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", $"{selectedCurrencyName}.txt");
+                    string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
                     var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
 
                     int index = -1;
@@ -1413,13 +1416,14 @@ public partial class Main : Window, IDisposable
 
             TransactionsPagingTools();
 
-            if (ImGui.BeginTable("Transactions", 6, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
+            if (ImGui.BeginTable("Transactions", 7, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
             {
                 ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10, 0);
                 ImGui.TableSetupColumn("Time", ImGuiTableColumnFlags.None, 150, 0);
                 ImGui.TableSetupColumn("Amount", ImGuiTableColumnFlags.None, 130, 0);
                 ImGui.TableSetupColumn("Change", ImGuiTableColumnFlags.None, 100, 0);
                 ImGui.TableSetupColumn("Location", ImGuiTableColumnFlags.None, 150, 0);
+                ImGui.TableSetupColumn("Note", ImGuiTableColumnFlags.None, 150, 0);
                 ImGui.TableSetupColumn("Selected", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 30, 0);
 
                 ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
@@ -1433,7 +1437,7 @@ public partial class Main : Window, IDisposable
                 TimeFunctions();
 
                 ImGui.TableNextColumn();
-                ImGui.Selectable($" {Lang.GetText("Amount")}{CalcNumSpaces()}");
+                ImGui.Text($" {Lang.GetText("Amount")}{CalcNumSpaces()}");
 
                 ImGui.TableNextColumn();
                 ImGui.Selectable($" {Lang.GetText("Change")}{CalcNumSpaces()}");
@@ -1442,6 +1446,9 @@ public partial class Main : Window, IDisposable
                 ImGui.TableNextColumn();
                 ImGui.Selectable($" {Lang.GetText("Location")}{CalcNumSpaces()}");
                 SortByLocation();
+
+                ImGui.TableNextColumn();
+                ImGui.Text($" {Lang.GetText("Note")}{CalcNumSpaces()}");
 
                 ImGui.TableNextColumn();
 
@@ -1462,7 +1469,13 @@ public partial class Main : Window, IDisposable
                             selectedStates[selectedCurrencyName].Add(false);
                         }
 
+                        while (noteEditEnabled[selectedCurrencyName].Count <= i)
+                        {
+                            noteEditEnabled[selectedCurrencyName].Add(false);
+                        }
+
                         bool selected = selectedStates[selectedCurrencyName][i];
+                        bool noteOnEdit = noteEditEnabled[selectedCurrencyName][i];
 
                         ImGui.TableNextColumn();
                         if (isReversed)
@@ -1577,6 +1590,12 @@ public partial class Main : Window, IDisposable
                             ImGui.SetClipboardText(transaction.LocationName);
                             Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.LocationName}");
                         }
+
+                        ImGui.TableNextColumn();
+                            ImGui.Selectable($"{transaction.Note}##_{i}", ref noteOnEdit);
+                         
+
+                        
 
                         ImGui.TableNextColumn();
                         if (ImGui.Checkbox($"##select_{i}", ref selected))

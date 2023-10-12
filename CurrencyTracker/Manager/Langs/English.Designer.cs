@@ -829,6 +829,24 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Merged from 的本地化字符串。
+        /// </summary>
+        internal static string MergedSpecificHelp {
+            get {
+                return ResourceManager.GetString("MergedSpecificHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 transactions 的本地化字符串。
+        /// </summary>
+        internal static string MergedSpecificHelp1 {
+            get {
+                return ResourceManager.GetString("MergedSpecificHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Please enter a threshold 的本地化字符串。
         /// </summary>
         internal static string MergeTransactionsHelp {
@@ -1142,6 +1160,24 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string StartDate {
             get {
                 return ResourceManager.GetString("StartDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Teleport to 的本地化字符串。
+        /// </summary>
+        internal static string TeleportTo {
+            get {
+                return ResourceManager.GetString("TeleportTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Teleport within Area 的本地化字符串。
+        /// </summary>
+        internal static string TeleportWithinArea {
+            get {
+                return ResourceManager.GetString("TeleportWithinArea", resourceCulture);
             }
         }
         

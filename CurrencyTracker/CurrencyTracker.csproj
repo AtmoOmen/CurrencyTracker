@@ -29,6 +29,14 @@
     <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
   </PropertyGroup>
  
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+     <NoWarn>1701;1702;CS0414</NoWarn>
+   </PropertyGroup>
+ 
+   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+     <NoWarn>1701;1702;CS0414</NoWarn>
+   </PropertyGroup>
+ 
    <ItemGroup>
      <Compile Remove="Manager\TransactionsConvertor1.cs" />
    </ItemGroup>

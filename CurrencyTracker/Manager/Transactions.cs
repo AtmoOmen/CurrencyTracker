@@ -1,4 +1,5 @@
 using CurrencyTracker.Windows;
+using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,14 +10,12 @@ namespace CurrencyTracker.Manager
 {
     public partial class Transactions
     {
-        private TransactionsConvertor? transactionsConvertor;
+        private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
         private readonly List<TransactionsConvertor> temporarySingleTransactionList = new List<TransactionsConvertor>();
-        private static LanguageManager? Lang;
-        public string PlayerDataFolder = string.Empty;
+        internal static LanguageManager Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
 
         public List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
-            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
             var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
 
             foreach (var transaction in transactions)
@@ -74,11 +73,12 @@ namespace CurrencyTracker.Manager
         {
             List<TransactionsConvertor> allTransactions = new List<TransactionsConvertor>();
 
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            var playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-            PlayerDataFolder = playerDataFolder;
-            var filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Load All Transactions: Player Data Folder Path Missed.");
+                return allTransactions;
+            }
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             try
             {
@@ -99,14 +99,13 @@ namespace CurrencyTracker.Manager
 
         public List<TransactionsConvertor> LoadLatestTransaction(string CurrencyName)
         {
-            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
-            transactionsConvertor ??= new TransactionsConvertor();
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Load Lastest Transaction: Player Data Folder Path Missed.");
+                return new List<TransactionsConvertor>() ;
+            }
 
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-            PlayerDataFolder = playerDataFolder;
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
 
@@ -152,14 +151,14 @@ namespace CurrencyTracker.Manager
 
         public TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
         {
-            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
-            transactionsConvertor ??= new TransactionsConvertor();
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
+                return new TransactionsConvertor();
+            }
 
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-            PlayerDataFolder = playerDataFolder;
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
 
@@ -174,24 +173,32 @@ namespace CurrencyTracker.Manager
             return latestTransaction;
         }
 
-        public void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName)
+        public void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
         {
-            transactionsConvertor ??= new TransactionsConvertor();
             var singleTransaction = new TransactionsConvertor
             {
                 TimeStamp = Timestamp,
                 CurrencyName = CurrencyName,
                 Amount = Amount,
                 Change = Change,
-                LocationName = LocationName
+                LocationName = LocationName,
+                Note = Note
             };
+
             temporarySingleTransactionList.Add(singleTransaction);
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
+                return;
+            }
+
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             singleTransaction.AppendTransactionToFile(filePath, temporarySingleTransactionList);
             temporarySingleTransactionList.Clear();
         }
 
-        public void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName)
+        public void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
         {
             var Transaction = new TransactionsConvertor
             {
@@ -199,18 +206,24 @@ namespace CurrencyTracker.Manager
                 CurrencyName = CurrencyName,
                 Amount = Amount,
                 Change = Change,
-                LocationName = LocationName
+                LocationName = LocationName,
+                Note = Note
             };
             temporarySingleTransactionList.Add(Transaction);
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Add Transaction: Player Data Folder Path Missed.");
+                return;
+            }
+
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             Transaction.WriteTransactionsToFile(filePath, temporarySingleTransactionList);
             temporarySingleTransactionList.Clear();
         }
 
         public int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
         {
-            transactionsConvertor ??= new TransactionsConvertor();
-
             var allTransactions = LoadAllTransactions(CurrencyName);
 
             if (allTransactions.Count <= 1)
@@ -260,7 +273,13 @@ namespace CurrencyTracker.Manager
                 currentIndex = nextIndex;
             }
 
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                return 0;
+            }
+
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             transactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
@@ -268,8 +287,6 @@ namespace CurrencyTracker.Manager
 
         public int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions)
         {
-            transactionsConvertor ??= new TransactionsConvertor();
-
             var allTransactions = LoadAllTransactions(CurrencyName);
             var latestTime = DateTime.MinValue;
             long overallChange = 0;
@@ -311,17 +328,24 @@ namespace CurrencyTracker.Manager
                         finalTransaction.Change = overallChange;
                         finalTransaction.LocationName = LocationName;
                         finalTransaction.Amount = finalAmount;
+                        finalTransaction.Note = $"({Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Lang.GetText("MergedSpecificHelp1")})";
                     }
                     else
                     {
-                        Service.Chat.Print("最后记录修改失败");
+                        Service.Chat.PrintError("Fail to Edit");
                     }
                 }
 
                 currentIndex++;
             }
 
-            string filePath = Path.Combine(PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                return 0;
+            }
+
+            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return selectedTransactions.Count;
@@ -329,13 +353,14 @@ namespace CurrencyTracker.Manager
 
         public int ClearExceptionRecords(string selectedCurrencyName)
         {
-            transactionsConvertor = new TransactionsConvertor();
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Clear Transactions: Player Data Folder Path Missed.");
+                return 0;
+            }
 
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-            string filePath = Path.Join(playerDataFolder ?? "", $"{selectedCurrencyName}.txt");
+            string filePath = Path.Join(Plugin.Instance.PlayerDataFolder ?? "", $"{selectedCurrencyName}.txt");
 
             List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
             List<TransactionsConvertor> recordsToRemove = new List<TransactionsConvertor>();
@@ -374,9 +399,13 @@ namespace CurrencyTracker.Manager
 
         public string ExportToCsv(List<TransactionsConvertor> transactions, string FileName, string selectedCurrencyName, string Headers)
         {
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Combine(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", "Exported");
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Export Transactions: Player Data Folder Path Missed.");
+                return "Fail";
+            }
+
+            string playerDataFolder = Path.Combine(Plugin.Instance.PlayerDataFolder, "Exported");
 
             Directory.CreateDirectory(playerDataFolder);
 

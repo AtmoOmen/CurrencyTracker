@@ -11,21 +11,20 @@ public class TransactionsConvertor
     public DateTime TimeStamp { get; set; } // 时间戳 TimeStamp
     public long Change { get; set; } // 变化量 Change
     public long Amount { get; set; } // 总金额 Currency Amount
-    public string LocationName { get; set; } = string.Empty;
+    public string LocationName { get; set; } = string.Empty; // 地名 Location Name
+    public string Note { get; set; } = string.Empty; // 备注 Note
 
-    private static LanguageManager? Lang;
+    internal static LanguageManager Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
 
     // 将字典改变为字符串，存储至数据文件 Change the dic into strings and save the strings to the data file
     public string ToFileLine()
     {
-        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName}";
+        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
     }
 
     // 解析文件中的一行数据 Parse a line of transactions in the data file
     public static TransactionsConvertor FromFileLine(string line)
     {
-        Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
-
         string[] parts = line.Split(";");
 
         TransactionsConvertor transaction = new TransactionsConvertor
@@ -35,6 +34,7 @@ public class TransactionsConvertor
             Change = Convert.ToInt64(parts[2])
         };
 
+        // 支持老版本数据解析 Support parsing older versions' data files
         if (parts.Length > 3)
         {
             transaction.LocationName = parts[3];
@@ -42,6 +42,15 @@ public class TransactionsConvertor
         else
         {
             transaction.LocationName = Lang.GetText("UnknownLocation");
+        }
+
+        if (parts.Length > 4)
+        {
+            transaction.Note = parts[4];
+        }
+        else
+        {
+            transaction.Note = string.Empty;
         }
 
         return transaction;
@@ -91,11 +100,11 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            Service.PluginLog.Debug($"Failure to add individual transaction to the data file retroactively: {ex.Message}");
+            Service.PluginLog.Debug($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
-    // 同步将整个交易记录覆写进数据文件(异常数据处理) Overwrite the data file (Exceptions)
+    // 同步将整个交易记录覆写进数据文件(异常数据处理) Overwrite the data file (Exception situations)
     public void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
         try

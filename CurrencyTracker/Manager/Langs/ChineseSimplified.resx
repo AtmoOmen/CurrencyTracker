@@ -573,4 +573,16 @@
   <data name="Current Settings" xml:space="preserve">
     <value>当前设置</value>
   </data>
+  <data name="TeleportTo" xml:space="preserve">
+    <value>传送至</value>
+  </data>
+  <data name="TeleportWithinArea" xml:space="preserve">
+    <value>地图内传送</value>
+  </data>
+  <data name="MergedSpecificHelp" xml:space="preserve">
+    <value>由</value>
+  </data>
+  <data name="MergedSpecificHelp1" xml:space="preserve">
+    <value>条记录合并而成</value>
+  </data>
 </root>

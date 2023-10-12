@@ -21,9 +21,11 @@ namespace CurrencyTracker
         public WindowSystem WindowSystem = new("CurrencyTracker");
         internal Main Main { get; init; }
         internal Graph Graph { get; init; }
+        private HookManager hookManager;
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
         private const string CommandName = "/ct";
+        public string PlayerDataFolder = string.Empty;
 
         internal Dictionary<uint, string> TerritoryNames = new();
         internal Dictionary<uint, string> ItemNames = new();
@@ -54,9 +56,13 @@ namespace CurrencyTracker
 
             Service.ClientState.Login += HandleLogin;
 
+            GetCurrentCharcterDataFolder();
+
             Service.Tracker = new Tracker();
 
             Service.Transactions = new Transactions();
+
+            hookManager = new HookManager(this);
 
             Main = new Main(this);
             WindowSystem.AddWindow(Main);
@@ -67,6 +73,8 @@ namespace CurrencyTracker
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+
+
         }
 
         private void HandleLogin()
@@ -127,6 +135,8 @@ namespace CurrencyTracker
                 Service.PluginLog.Debug("Successfully Create Directory");
             }
 
+            PlayerDataFolder = dataFolderName;
+
             Configuration.Save();
 
             return CurrentCharacter;
@@ -138,6 +148,8 @@ namespace CurrencyTracker
 
             Main.Dispose();
             Graph.Dispose();
+
+            hookManager.Dispose();
 
             Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
             Service.Tracker.Dispose();
@@ -179,7 +191,8 @@ namespace CurrencyTracker
                 {
                     Main.selectedCurrencyName = currencyName;
                     Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                    Main.UpdateTransactions();
+                    Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                    Main.lastTransactions = Main.currentTypeTransactions;
                     Main.IsOpen = true;
                 }
                 else
@@ -192,7 +205,8 @@ namespace CurrencyTracker
                     {
                         Main.selectedCurrencyName = currencyName;
                         Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                        Main.UpdateTransactions();
+                        Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                        Main.lastTransactions = Main.currentTypeTransactions;
                     }
                 }
             }
@@ -237,6 +251,18 @@ namespace CurrencyTracker
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.Name}");
+        }
+
+        private void GetCurrentCharcterDataFolder()
+        {
+            if (Service.ClientState.LocalPlayer != null)
+            {
+                var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+                var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+                var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+                PlayerDataFolder = dataFolderName;
+            }
         }
     }
 }

@@ -1,11 +1,11 @@
+using CurrencyTracker.Windows;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Pipes;
+using System.IO;
 using System.Linq;
 using System.Threading;
 
@@ -45,10 +45,9 @@ namespace CurrencyTracker.Manager
 
         private CurrencyInfo currencyInfo = new CurrencyInfo();
         private Transactions transactions = new Transactions();
-        private static LanguageManager? Lang;
+        internal static LanguageManager Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
 
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private readonly Stopwatch timer = new Stopwatch();
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
@@ -56,9 +55,13 @@ namespace CurrencyTracker.Manager
 
         private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
         private string dutyLocationName = string.Empty;
-        private int timerInterval = 0;
+        private int timerInterval = 500;
         public string NonLimitedTomestoneName = string.Empty;
         public string LimitedTomestoneName = string.Empty;
+
+        public string previousLocationName = string.Empty;
+        public string currentLocationName = string.Empty;
+        public uint teleportCost = 0;
 
         public virtual void OnTransactionsUpdate(EventArgs e)
         {
@@ -70,18 +73,26 @@ namespace CurrencyTracker.Manager
             if (Plugin.Instance.Configuration.TrackMode == 0)
             {
                 InitializeTimerTracking();
+                Service.PluginLog.Debug("Timer Mode Activated");
             }
             else if (Plugin.Instance.Configuration.TrackMode == 1)
             {
                 InitializeChatTracking();
+                Service.PluginLog.Debug("Chat Mode Activated");
             }
 
             LoadMinTrackValue();
 
             Service.DutyState.DutyStarted += isDutyStarted;
-            Service.DutyState.DutyCompleted += isDutyCompleted;
+            Service.ClientState.TerritoryChanged += OnZoneChange;
+
+            Service.ClientState.EnterPvP += isPvPEntered;
+            Service.ClientState.LeavePvP += isPvPLeft;
 
             DealWithCurrencies();
+
+            previousLocationName = currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+            Service.PluginLog.Debug($"当前区域: {previousLocationName}");
         }
 
         public void ChangeTracker()
@@ -89,10 +100,12 @@ namespace CurrencyTracker.Manager
             if (Plugin.Instance.Configuration.TrackMode == 0)
             {
                 InitializeTimerTracking();
+                Service.PluginLog.Debug("Timer Mode Activated");
             }
             else if (Plugin.Instance.Configuration.TrackMode == 1)
             {
                 InitializeChatTracking();
+                Service.PluginLog.Debug("Chat Mode Activated");
             }
         }
 
@@ -110,20 +123,16 @@ namespace CurrencyTracker.Manager
             cancellationTokenSource.Dispose();
             cancellationTokenSource = new CancellationTokenSource();
 
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
 
             UpdateCurrenciesTimer();
-            Service.ClientState.TerritoryChanged += OnZoneChange;
         }
 
         public void InitializeChatTracking()
         {
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
 
             Service.Chat.ChatMessage += OnChatMessage;
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
 
             cancellationTokenSource.Cancel();
             cancellationTokenSource.Dispose();
@@ -134,7 +143,6 @@ namespace CurrencyTracker.Manager
 
         private void UpdateCurrenciesByChat()
         {
-
             if (!Service.ClientState.IsLoggedIn) return;
 
             if (!Plugin.Instance.Configuration.TrackedInDuty)
@@ -142,7 +150,10 @@ namespace CurrencyTracker.Manager
                 if (IsBoundByDuty()) return;
             }
 
-            if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
+            if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51])
+            {
+                return;
+            }
 
             foreach (var currency in CurrencyType)
             {
@@ -205,9 +216,8 @@ namespace CurrencyTracker.Manager
             }
         }
 
-        private void CheckCurrency(string currencyName, uint currencyID, bool isDutyEnd, string currentLocationName = "-1")
+        private void CheckCurrency(string currencyName, uint currencyID, bool isDutyEnd, string currentLocationName = "-1", string currencyNote = "-1")
         {
-            Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
             TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
 
             long currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
@@ -217,6 +227,12 @@ namespace CurrencyTracker.Manager
             {
                 currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
             }
+
+            if (currencyNote == "-1" || currencyNote == "")
+            {
+                currencyNote = string.Empty;
+            }
+
             minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
 
             if (latestTransaction != null)
@@ -238,7 +254,7 @@ namespace CurrencyTracker.Manager
                             {
                                 if (Math.Abs(currencyChange) >= currencyThreshold)
                                 {
-                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                                 }
                                 else return;
                             }
@@ -246,7 +262,7 @@ namespace CurrencyTracker.Manager
                             {
                                 if (Math.Abs(currencyChange) >= 0)
                                 {
-                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                                 }
                                 else return;
                             }
@@ -260,7 +276,7 @@ namespace CurrencyTracker.Manager
                             var currencyThreshold = outOfDutyMinTrackValue[currencyName];
                             if (Math.Abs(currencyChange) >= currencyThreshold)
                             {
-                                transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName);
+                                transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                             }
                             else return;
                         }
@@ -270,7 +286,7 @@ namespace CurrencyTracker.Manager
             }
             else
             {
-                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName);
+                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
                 OnTransactionsUpdate(EventArgs.Empty);
             }
         }
@@ -279,10 +295,36 @@ namespace CurrencyTracker.Manager
         {
             if (IsBoundByDuty()) return;
 
-            if (timer.Elapsed.Minutes >= 5 || !timer.IsRunning)
+            currentLocationName = Plugin.Instance.TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
+
+            if (teleportCost != 0)
             {
-                timer.Restart();
+                if (currentLocationName != previousLocationName)
+                {
+                    string? currencyName = currencyInfo.CurrencyLocalName(1);
+
+                    string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+                    var editedTransactions = transactions.LoadAllTransactions(currencyName);
+
+                    editedTransactions.LastOrDefault().Note = $"{Lang.GetText("TeleportTo")} {currentLocationName}";
+
+                    Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+
+                    Plugin.Instance.Main.UpdateTransactions();
+
+                    teleportCost = 0;
+                    previousLocationName = currentLocationName;
+
+                }
             }
+            else
+            {
+                if (currentLocation != previousLocationName)
+                {
+                    previousLocationName = currentLocationName;
+                }
+            }
+
         }
 
         private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -290,7 +332,10 @@ namespace CurrencyTracker.Manager
             var chatmessage = message.TextValue;
             var typeValue = (ushort)type;
 
-            if (TriggerChatTypes.Contains(typeValue)) UpdateCurrenciesByChat();
+            if (TriggerChatTypes.Contains(typeValue))
+            {
+                UpdateCurrenciesByChat();
+            }
 
             if (DutyEndStrings.Any(chatmessage.Contains))
             {
@@ -321,7 +366,6 @@ namespace CurrencyTracker.Manager
                 dutyLocationName = string.Empty;
             }
 
-#if ISDEV
             if (Plugin.Instance.PluginInterface.IsDev)
             {
                 if (!IgnoreChatTypes.Contains(typeValue))
@@ -329,24 +373,37 @@ namespace CurrencyTracker.Manager
                     Service.PluginLog.Debug($"[{typeValue}]{chatmessage}");
                 }
             }
-#endif
         }
 
         private void isDutyStarted(object? sender, ushort e)
         {
-            if (Plugin.Instance.PluginInterface.IsDev)
-            {
-                Service.PluginLog.Debug("测试信息：副本开始");
-            }
+            Service.PluginLog.Debug("Duty Start");
             uint locationKey = Service.ClientState.TerritoryType;
             dutyLocationName = Plugin.Instance.TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Lang.GetText("UnknownLocation");
         }
 
-        private void isDutyCompleted(object? sender, ushort e)
+        private void isPvPEntered()
         {
-            if (Plugin.Instance.PluginInterface.IsDev)
+        }
+
+        private void isPvPLeft()
+        {
+        }
+
+        public void TeleportingCostGil(uint GilAmount)
+        {
+            teleportCost = GilAmount;
+
+            if (teleportCost != 0)
             {
-                Service.PluginLog.Debug("测试信息：副本完成");
+                if (CurrencyInfo.presetCurrencies.TryGetValue("Gil", out uint currencyID))
+                {
+                    string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+                    if (currencyName != "Unknown" && currencyName != null)
+                    {
+                        CheckCurrency(currencyName, currencyID, false, previousLocationName, Lang.GetText("TeleportWithinArea"));
+                    }
+                }
             }
         }
 
@@ -372,7 +429,7 @@ namespace CurrencyTracker.Manager
 
             if (Plugin.Instance.Configuration.FisrtOpen)
             {
-                foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd) 
+                foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd)
                 {
                     string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
 
@@ -401,7 +458,9 @@ namespace CurrencyTracker.Manager
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
             Service.DutyState.DutyStarted -= isDutyStarted;
-            Service.DutyState.DutyCompleted -= isDutyCompleted;
+
+            Service.ClientState.EnterPvP -= isPvPEntered;
+            Service.ClientState.LeavePvP -= isPvPLeft;
 
             if (Plugin.Instance.Configuration.TrackMode == 0)
             {
