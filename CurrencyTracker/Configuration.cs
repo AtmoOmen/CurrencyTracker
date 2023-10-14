@@ -38,10 +38,14 @@ namespace CurrencyTracker
         public string SelectedLanguage { get; set; } = string.Empty;
         public int TrackMode { get; set; } = 1;
         public int RecordsPerPage { get; set; } = 20;
-        public int TimerInterval { get; set; } = 500;
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+        public int ExportDataFileType { get; set; } = 0;
+        public bool ShowLocationColumn { get; set; } = true;
+        public bool ShowNoteColumn { get; set; } = true;
+        public bool ShowOrderColumn { get; set; } = true;
+
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

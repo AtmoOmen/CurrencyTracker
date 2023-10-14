@@ -3,7 +3,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
-using Dalamud.Logging;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;
@@ -32,21 +31,22 @@ public partial class Main : Window, IDisposable
         searchTimer.Stop();
     }
 
-#pragma warning disable CS8602, CS8604
-
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
         isReversed = plugin.Configuration.ReverseSort;
         isTrackedinDuty = plugin.Configuration.TrackedInDuty;
         recordMode = plugin.Configuration.TrackMode;
-        timerInterval = plugin.Configuration.TimerInterval;
         transactionsPerPage = plugin.Configuration.RecordsPerPage;
         ordedOptions = plugin.Configuration.OrdedOptions;
         hiddenOptions = plugin.Configuration.HiddenOptions;
         isChangeColoring = plugin.Configuration.ChangeTextColoring;
         positiveChangeColor = plugin.Configuration.PositiveChangeColor;
         negativeChangeColor = plugin.Configuration.NegativeChangeColor;
+        exportDataFileType = plugin.Configuration.ExportDataFileType;
+        isShowLocationColumn = plugin.Configuration.ShowLocationColumn;
+        isShowNoteColumn = plugin.Configuration.ShowNoteColumn;
+        isShowOrderColumn = plugin.Configuration.ShowOrderColumn;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -77,7 +77,6 @@ public partial class Main : Window, IDisposable
                     addedOptions.Add(currencyName);
                     selectedStates.Add(currencyName, new List<bool>());
                     selectedTransactions.Add(currencyName, new List<TransactionsConvertor>());
-                    noteEditEnabled.Add(currencyName, new List<bool>());
                 }
             }
         }
@@ -92,7 +91,6 @@ public partial class Main : Window, IDisposable
                     addedOptions.Add(currency);
                     selectedStates.Add(currency, new List<bool>());
                     selectedTransactions.Add(currency, new List<TransactionsConvertor>());
-                    noteEditEnabled.Add(currency, new List<bool>());
                 }
             }
         }
@@ -162,8 +160,6 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             MergeTransactions();
             ImGui.SameLine();
-            RecordMode();
-            ImGui.SameLine();
             ClearExceptions();
         }
 
@@ -181,7 +177,7 @@ public partial class Main : Window, IDisposable
         }
         if (showOthers)
         {
-            ExportToCSV();
+            ExportData();
             ImGui.SameLine();
             OpenDataFolder();
             ImGui.SameLine();
@@ -197,7 +193,6 @@ public partial class Main : Window, IDisposable
         ImGui.Spacing();
         ImGui.Separator();
         ImGui.Spacing();
-
 
         CurrenciesList();
 
@@ -249,7 +244,7 @@ public partial class Main : Window, IDisposable
     // 与时间相关的功能 Functions related to Time
     private void TimeFunctions()
     {
-        if (ImGui.IsItemClicked())
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("TimeFunctions");
         }
@@ -317,10 +312,10 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 按地点筛选 Sort By Location
-    private void SortByLocation()
+    // 与地点相关的功能 Functions related to Location
+    private void LocationFunctions()
     {
-        if (ImGui.IsItemClicked())
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("LocationSearch");
         }
@@ -347,10 +342,40 @@ public partial class Main : Window, IDisposable
         }
     }
 
+    // 与备注相关的功能 Functions related to Note
+    private void NoteFunctions()
+    {
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            ImGui.OpenPopup("NoteSearch");
+        }
+        if (ImGui.BeginPopup("NoteSearch"))
+        {
+            ImGui.SetNextItemWidth(200);
+            if (ImGui.InputTextWithHint("##NoteSearch", Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
+            {
+                if (!searchNoteContent.IsNullOrEmpty())
+                {
+                    isNoteFilterEnabled = true;
+                    searchTimer.Stop();
+                    searchTimer.Start();
+                }
+                else
+                {
+                    isNoteFilterEnabled = false;
+                    searchTimer.Stop();
+                    UpdateTransactions();
+                }
+            }
+
+            ImGui.EndPopup();
+        }
+    }
+
     // 与收支相关的功能 Functions related to Change
     private void ChangeFunctions()
     {
-        if (ImGui.IsItemClicked())
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("ChangeFunctions");
         }
@@ -587,8 +612,6 @@ public partial class Main : Window, IDisposable
                     }
                 }
 
-
-
                 ImGui.EndCombo();
             }
 
@@ -617,7 +640,6 @@ public partial class Main : Window, IDisposable
                 {
                     Plugin.Instance.Configuration.CustomCurrencies.Add(selected, customCurrency);
                 }
-                
 
                 if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(selected) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
                 {
@@ -730,20 +752,38 @@ public partial class Main : Window, IDisposable
     }
 
     // 导出数据为.CSV文件 Export Transactions To a .csv File
-    private void ExportToCSV()
+    private void ExportData()
     {
-        if (ImGui.Button(Lang.GetText("ExportCsv")))
+        if (ImGui.Button(Lang.GetText("Export")))
         {
             ImGui.OpenPopup(str_id: "ExportFileRename");
         }
 
         if (ImGui.BeginPopup("ExportFileRename"))
         {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("FileRenameLabel"));
-            ImGui.Text(Lang.GetText("FileRenameLabel1"));
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Lang.GetText("ExportFileType")}:");
             ImGui.SameLine();
+            
+            if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
+            {
+                Plugin.Instance.Configuration.ExportDataFileType = exportDataFileType;
+                Plugin.Instance.Configuration.Save();
+            }
+            ImGui.SameLine();
+            if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
+            {
+                Plugin.Instance.Configuration.ExportDataFileType = exportDataFileType;
+                Plugin.Instance.Configuration.Save();
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Lang.GetText("ExportFileHelp"));
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("FileRenameLabel"));
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Lang.GetText("ExportFileHelp1"));
             ImGui.SetNextItemWidth(200);
-            if (ImGui.InputText($"_{selectedCurrencyName}_{Lang.GetText("FileRenameLabel2")}.csv", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputText($"_{selectedCurrencyName}_{Lang.GetText("FileRenameLabel2")}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if (selectedCurrencyName == null)
                 {
@@ -755,15 +795,13 @@ public partial class Main : Window, IDisposable
                     Service.Chat.PrintError(Lang.GetText("ExportCsvMessage1"));
                     return;
                 }
-                var filePath = transactions.ExportToCsv(currentTypeTransactions, fileName, selectedCurrencyName, Lang.GetText("ExportCsvMessage2"));
+                var filePath = transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyName, exportDataFileType);
                 Service.Chat.Print($"{Lang.GetText("ExportCsvMessage3")}{filePath}");
             }
             if (ImGui.IsItemHovered())
             {
                 ImGui.SetTooltip($"{Lang.GetText("FileRenameHelp1")}{selectedCurrencyName}_{Lang.GetText("FileRenameLabel2")}.csv");
             }
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker(Lang.GetText("FileRenameHelp"));
             ImGui.EndPopup();
         }
     }
@@ -893,9 +931,10 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 记录模式切换 Record Mode Change
+    // 记录模式切换(已废弃) Record Mode Change (Abandoned)
     private void RecordMode()
     {
+        /*
         if (ImGui.Button($"{Lang.GetText("TrackModeLabel")}"))
         {
             ImGui.OpenPopup("RecordMode");
@@ -935,13 +974,14 @@ public partial class Main : Window, IDisposable
             ImGuiComponents.HelpMarker($"{Lang.GetText("TrackModeHelp2")}");
             ImGui.EndPopup();
         }
+        */
     }
 
     // 货币列表顶端工具栏 Listbox tools
     private void ListboxTools()
     {
         ImGui.SetCursorPosX(25);
-        CustomCurrencyTracker();   
+        CustomCurrencyTracker();
 
         ImGui.SameLine();
 
@@ -1059,6 +1099,7 @@ public partial class Main : Window, IDisposable
         ImGui.Text($"{Lang.GetText("Now")}: {selectedTransactions[selectedCurrencyName].Count} {Lang.GetText("Transactions")}");
         ImGui.Separator();
 
+        // 取消选择 Unselect
         if (ImGui.Selectable(Lang.GetText("Unselect")))
         {
             if (selectedTransactions[selectedCurrencyName].Count == 0)
@@ -1070,6 +1111,7 @@ public partial class Main : Window, IDisposable
             selectedTransactions[selectedCurrencyName].Clear();
         }
 
+        // 全选 Select All
         if (ImGui.Selectable(Lang.GetText("SelectAll")))
         {
             selectedTransactions[selectedCurrencyName].Clear();
@@ -1085,6 +1127,7 @@ public partial class Main : Window, IDisposable
             }
         }
 
+        // 反选 Inverse Select
         if (ImGui.Selectable(Lang.GetText("InverseSelect")))
         {
             for (int i = 0; i < selectedStates[selectedCurrencyName].Count; i++)
@@ -1107,21 +1150,39 @@ public partial class Main : Window, IDisposable
             }
         }
 
+        // 复制 Copy
         if (ImGui.Selectable(Lang.GetText("Copy")))
         {
             string columnData = string.Empty;
+            string header = string.Empty;
+
+            if (exportDataFileType == 0)
+            {
+                header = Lang.GetText("ExportFileCSVHeader");
+            }
+            else if (exportDataFileType == 1)
+            {
+                header = Lang.GetText("ExportFileMDHeader1");
+            }
+
             int count = selectedTransactions[selectedCurrencyName].Count;
+
+            columnData += header;
 
             for (int t = 0; t < count; t++)
             {
                 var record = selectedTransactions[selectedCurrencyName][t];
                 string change = $"{record.Change:+ #,##0;- #,##0;0}";
-                columnData += $"{record.TimeStamp} | {record.Amount} | {change} | {record.LocationName}";
 
-                if (t < count - 1)
+                if (exportDataFileType == 0)
                 {
-                    columnData += "\n";
+                    columnData += $"\n{record.TimeStamp},{record.Amount},{change},{record.LocationName},{record.Note}";
                 }
+                else if (exportDataFileType == 1)
+                {
+                    columnData += $"\n{record.TimeStamp} | {record.Amount} | {change} | {record.LocationName} | {record.Note}";
+                }
+
             }
 
             if (!string.IsNullOrEmpty(columnData))
@@ -1136,6 +1197,7 @@ public partial class Main : Window, IDisposable
             }
         }
 
+        // 删除 Delete
         if (ImGui.Selectable(Lang.GetText("Delete")))
         {
             if (selectedTransactions[selectedCurrencyName].Count == 0)
@@ -1158,10 +1220,10 @@ public partial class Main : Window, IDisposable
 
                 transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
             }
-            selectedStates[selectedCurrencyName].Clear();
-            selectedTransactions[selectedCurrencyName].Clear();
+            UpdateTransactions();
         }
 
+        // 导出 Export
         if (ImGui.Selectable(Lang.GetText("Export")))
         {
             if (selectedTransactions[selectedCurrencyName].Count == 0)
@@ -1169,10 +1231,11 @@ public partial class Main : Window, IDisposable
                 Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
                 return;
             }
-            var filePath = transactions.ExportToCsv(selectedTransactions[selectedCurrencyName], "", selectedCurrencyName, Lang.GetText("ExportCsvMessage2"));
+            var filePath = transactions.ExportData(selectedTransactions[selectedCurrencyName], "", selectedCurrencyName, exportDataFileType);
             Service.Chat.Print($"{Lang.GetText("ExportCsvMessage3")}{filePath}");
         }
 
+        // 合并 Merge
         ImGui.Selectable(Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups);
 
         if (isOnMergingTT)
@@ -1217,6 +1280,7 @@ public partial class Main : Window, IDisposable
             }
         }
 
+        // 编辑
         ImGui.Selectable(Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups);
 
         if (isOnEdit)
@@ -1224,16 +1288,21 @@ public partial class Main : Window, IDisposable
             if (isOnMergingTT) isOnMergingTT = !isOnMergingTT;
 
             ImGui.Separator();
-            ImGui.Text($"{Lang.GetText("Location")}:");
-            ImGui.SetNextItemWidth(210);
 
             if (selectedTransactions[selectedCurrencyName].Count != 0)
             {
                 editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
+                editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
             }
-            else editedLocationName = string.Empty;
+            else
+            {
+                editedLocationName = string.Empty;
+                editedNoteContent = string.Empty;
+            }
 
-            if (ImGui.InputTextWithHint("", Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+            ImGui.Text($"{Lang.GetText("Location")}:");
+            ImGui.SetNextItemWidth(210);
+            if (ImGui.InputTextWithHint("##EditLocationName", Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if (selectedTransactions[selectedCurrencyName].Count == 0)
                 {
@@ -1275,6 +1344,49 @@ public partial class Main : Window, IDisposable
 
                 isOnEdit = false;
             }
+
+            ImGui.Text($"{Lang.GetText("Note")}:");
+            ImGui.SetNextItemWidth(210);
+            if (ImGui.InputTextWithHint("##EditNoteContent", Lang.GetText("EditHelp"), ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+            {
+                if (selectedTransactions[selectedCurrencyName].Count == 0)
+                {
+                    Service.Chat.PrintError(Lang.GetText("NoTransactionsSelected"));
+                    return;
+                }
+
+                foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
+                {
+                    var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+
+                    int index = -1;
+                    for (int i = 0; i < editedTransactions.Count; i++)
+                    {
+                        if (Widgets.IsTransactionEqual(editedTransactions[i], selectedTransaction))
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+
+                    if (index != -1)
+                    {
+                        editedTransactions[index].Note = editedNoteContent;
+                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                    }
+                }
+
+                Service.Chat.Print($"{Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Lang.GetText("EditHelp4")}: {editedNoteContent}");
+
+                UpdateTransactions();
+
+            }
+            if (!editedNoteContent.IsNullOrEmpty())
+            {
+                ImGui.TextWrapped(editedNoteContent);
+            }
+
         }
     }
 
@@ -1289,8 +1401,8 @@ public partial class Main : Window, IDisposable
             if (Plugin.Instance.Graph.IsOpen) Plugin.Instance.Graph.IsOpen = false;
         }
 
+        // 图表 Graphs
         ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - ImGui.CalcTextSize(Lang.GetText("    ")).X);
-
         if (Widgets.IconButton(FontAwesomeIcon.ChartBar, Lang.GetText("Graphs")) && pageCount > 0)
         {
             if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
@@ -1302,20 +1414,25 @@ public partial class Main : Window, IDisposable
         }
 
         ImGui.SameLine();
+
+        // 首页 First Page
         float pageButtonPosX = (ImGui.GetWindowWidth() - 360) / 2 - 40;
         ImGui.SetCursorPosX(pageButtonPosX);
-
         if (Widgets.IconButton(FontAwesomeIcon.Backward))
             currentPage = 0;
 
         ImGui.SameLine();
 
+        // 上一页 Last Page
         if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0)
             currentPage--;
 
         ImGui.SameLine();
+
+        // 页数显示 Pages
         ImGui.Text($"{Lang.GetText("Di")}{currentPage + 1}{Lang.GetText("Page")} / {Lang.GetText("Gong")}{pageCount}{Lang.GetText("Page")}");
 
+        // 每页显示记录条数 Transactions Per Page
         if (ImGui.IsItemClicked())
         {
             ImGui.OpenPopup("TransactionsPerPage");
@@ -1339,17 +1456,65 @@ public partial class Main : Window, IDisposable
 
         ImGui.SameLine();
 
+        // 下一页 Next Page
         if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1)
             currentPage++;
 
         ImGui.SameLine();
 
+        // 尾页 Final Page
         if (Widgets.IconButton(FontAwesomeIcon.Forward) && currentPage >= 0)
             currentPage = pageCount;
+
+        ImGui.SameLine();
+
+        // 表格外观
+        if (Widgets.IconButton(FontAwesomeIcon.Table, Lang.GetText("TableAppearance"), "TableAppearance"))
+            ImGui.OpenPopup("TableAppearence");
+
+        if (ImGui.BeginPopup("TableAppearence"))
+        {
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Lang.GetText("ColumnsDisplayed")}:");
+
+            if (ImGui.Checkbox($"{Lang.GetText("Order")}##DisplayOrderColumn", ref isShowOrderColumn))
+            {
+                Plugin.Instance.Configuration.ShowOrderColumn = isShowOrderColumn;
+                Plugin.Instance.Configuration.Save();
+            }
+
+            ImGui.SameLine();
+
+            if (ImGui.Checkbox($"{Lang.GetText("Location")}##DisplayLocationColumn", ref isShowLocationColumn))
+            {
+                Plugin.Instance.Configuration.ShowLocationColumn = isShowLocationColumn;
+                Plugin.Instance.Configuration.Save();
+            }
+
+            ImGui.SameLine();
+
+            if (ImGui.Checkbox($"{Lang.GetText("Note")}##DisplayNoteColumn", ref isShowNoteColumn))
+            {
+                Plugin.Instance.Configuration.ShowNoteColumn = isShowNoteColumn;
+                Plugin.Instance.Configuration.Save();
+            }
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Lang.GetText("TransactionsPerPage"));
+            ImGui.SetNextItemWidth(150);
+
+            if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
+            {
+                transactionsPerPage = Math.Max(transactionsPerPage, 0);
+                Plugin.Instance.Configuration.RecordsPerPage = transactionsPerPage;
+                Plugin.Instance.Configuration.Save();
+            }
+
+            ImGui.EndPopup();
+        }
 
         visibleStartIndex = currentPage * transactionsPerPage;
         visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
 
+        // 鼠标滚轮控制 Logic controlling Mouse Wheel Filpping
         {
             if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
             {
@@ -1359,7 +1524,6 @@ public partial class Main : Window, IDisposable
                 if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0) && currentPage < pageCount - 1)
                     currentPage++;
             }
-            
         }
     }
 
@@ -1416,20 +1580,25 @@ public partial class Main : Window, IDisposable
 
             TransactionsPagingTools();
 
-            if (ImGui.BeginTable("Transactions", 7, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
+            var columnCount = 4 + Convert.ToInt32(isShowOrderColumn) + Convert.ToInt32(isShowLocationColumn) + Convert.ToInt32(isShowNoteColumn);
+
+            if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
             {
-                ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10, 0);
+                if (isShowOrderColumn) ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10, 0);
                 ImGui.TableSetupColumn("Time", ImGuiTableColumnFlags.None, 150, 0);
                 ImGui.TableSetupColumn("Amount", ImGuiTableColumnFlags.None, 130, 0);
                 ImGui.TableSetupColumn("Change", ImGuiTableColumnFlags.None, 100, 0);
-                ImGui.TableSetupColumn("Location", ImGuiTableColumnFlags.None, 150, 0);
-                ImGui.TableSetupColumn("Note", ImGuiTableColumnFlags.None, 150, 0);
+                if (isShowLocationColumn) ImGui.TableSetupColumn("Location", ImGuiTableColumnFlags.None, 150, 0);
+                if (isShowNoteColumn) ImGui.TableSetupColumn("Note", ImGuiTableColumnFlags.None, 160, 0);
                 ImGui.TableSetupColumn("Selected", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 30, 0);
 
                 ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
 
-                ImGui.TableNextColumn();
-                ReverseSort();
+                if (isShowOrderColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ReverseSort();
+                }
 
                 ImGui.TableNextColumn();
 
@@ -1443,15 +1612,21 @@ public partial class Main : Window, IDisposable
                 ImGui.Selectable($" {Lang.GetText("Change")}{CalcNumSpaces()}");
                 ChangeFunctions();
 
-                ImGui.TableNextColumn();
-                ImGui.Selectable($" {Lang.GetText("Location")}{CalcNumSpaces()}");
-                SortByLocation();
+                if (isShowLocationColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable($" {Lang.GetText("Location")}{CalcNumSpaces()}");
+                    LocationFunctions();
+                }
+                
+                if (isShowNoteColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable($" {Lang.GetText("Note")}{CalcNumSpaces()}");
+                    NoteFunctions();
+                }
 
                 ImGui.TableNextColumn();
-                ImGui.Text($" {Lang.GetText("Note")}{CalcNumSpaces()}");
-
-                ImGui.TableNextColumn();
-
                 if (Widgets.IconButton(FontAwesomeIcon.EllipsisH))
                 {
                     ImGui.OpenPopup("TableTools");
@@ -1469,30 +1644,29 @@ public partial class Main : Window, IDisposable
                             selectedStates[selectedCurrencyName].Add(false);
                         }
 
-                        while (noteEditEnabled[selectedCurrencyName].Count <= i)
-                        {
-                            noteEditEnabled[selectedCurrencyName].Add(false);
-                        }
-
                         bool selected = selectedStates[selectedCurrencyName][i];
-                        bool noteOnEdit = noteEditEnabled[selectedCurrencyName][i];
 
-                        ImGui.TableNextColumn();
-                        if (isReversed)
+                        // 序号 Order Number
+                        if (isShowOrderColumn)
                         {
-                            ImGui.SetCursorPosX(Widgets.SetColumnCenterAligned((currentTypeTransactions.Count - i).ToString(), 0, 8));
-                            ImGui.Text((currentTypeTransactions.Count - i).ToString());
-                        }
-                        else
-                        {
-                            ImGui.SetCursorPosX(Widgets.SetColumnCenterAligned((i + 1).ToString(), 0, 8));
-                            ImGui.Text((i + 1).ToString());
+                            ImGui.TableNextColumn();
+                            if (isReversed)
+                            {
+                                ImGui.SetCursorPosX(Widgets.SetColumnCenterAligned((currentTypeTransactions.Count - i).ToString(), 0, 8));
+                                ImGui.Text((currentTypeTransactions.Count - i).ToString());
+                            }
+                            else
+                            {
+                                ImGui.SetCursorPosX(Widgets.SetColumnCenterAligned((i + 1).ToString(), 0, 8));
+                                ImGui.Text((i + 1).ToString());
+                            }
                         }
 
+                        // 时间 Time
                         ImGui.TableNextColumn();
                         if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.IsMouseDown(ImGuiMouseButton.Right))
                         {
-                            ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"), selected, ImGuiSelectableFlags.SpanAllColumns);
+                            ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", selected, ImGuiSelectableFlags.SpanAllColumns);
                             if (ImGui.IsItemHovered())
                             {
                                 selectedStates[selectedCurrencyName][i] = selected = true;
@@ -1514,7 +1688,7 @@ public partial class Main : Window, IDisposable
                         }
                         else if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                         {
-                            if (ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"), ref selected, ImGuiSelectableFlags.SpanAllColumns))
+                            if (ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", ref selected, ImGuiSelectableFlags.SpanAllColumns))
                             {
                                 selectedStates[selectedCurrencyName][i] = selected;
 
@@ -1535,7 +1709,7 @@ public partial class Main : Window, IDisposable
                         }
                         else
                         {
-                            ImGui.Selectable(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
+                            ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}");
                         }
 
                         if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
@@ -1544,8 +1718,9 @@ public partial class Main : Window, IDisposable
                             Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
                         }
 
+                        // 货币数 Amount
                         ImGui.TableNextColumn();
-                        ImGui.Selectable(transaction.Amount.ToString("#,##0"));
+                        ImGui.Selectable($"{transaction.Amount.ToString("#,##0")}##_{i}");
 
                         if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                         {
@@ -1553,6 +1728,7 @@ public partial class Main : Window, IDisposable
                             Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.Amount.ToString("#,##0")}");
                         }
 
+                        // 收支 Change
                         ImGui.TableNextColumn();
                         if (isChangeColoring)
                         {
@@ -1582,21 +1758,107 @@ public partial class Main : Window, IDisposable
                             Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")} : {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
                         }
 
-                        ImGui.TableNextColumn();
-                        ImGui.Selectable(transaction.LocationName);
-
-                        if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                        // 地名 Location
+                        if (isShowLocationColumn)
                         {
-                            ImGui.SetClipboardText(transaction.LocationName);
-                            Service.Chat.Print($"{Lang.GetText("CopiedToClipboard")}: {transaction.LocationName}");
+                            ImGui.TableNextColumn();
+                            ImGui.Selectable($"{transaction.LocationName}##_{i}");
+
+                            if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                            {
+                                ImGui.OpenPopup($"EditLocationName##_{i}");
+                                editedLocationName = transaction.LocationName;
+                            }
+
+                            if (ImGui.BeginPopup($"EditLocationName##_{i}"))
+                            {
+                                if (!editedLocationName.IsNullOrEmpty())
+                                {
+                                    ImGui.TextWrapped(editedLocationName);
+                                }
+                                ImGui.SetNextItemWidth(270);
+                                if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+                                {
+                                    var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+                                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                                    var index = -1;
+
+                                    for (int d = 0; d < editedTransactions.Count; d++)
+                                    {
+                                        if (Widgets.IsTransactionEqual(editedTransactions[d], transaction))
+                                        {
+                                            index = d;
+                                            break;
+                                        }
+                                    }
+                                    if (index != -1)
+                                    {
+                                        editedTransactions[index].LocationName = editedLocationName;
+                                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        searchTimer.Stop();
+                                        searchTimer.Start();
+                                    }
+                                }
+
+                                ImGui.EndPopup();
+                            }
                         }
 
-                        ImGui.TableNextColumn();
-                            ImGui.Selectable($"{transaction.Note}##_{i}", ref noteOnEdit);
-                         
+                        // 备注 Note
+                        if (isShowNoteColumn)
+                        {
+                            ImGui.TableNextColumn();
+                            ImGui.Selectable($"{transaction.Note}##_{i}");
 
-                        
+                            if (ImGui.IsItemHovered())
+                            {
+                                if (!transaction.Note.IsNullOrEmpty())
+                                {
+                                    ImGui.SetTooltip(transaction.Note);
+                                }
+                            }
 
+                            if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                            {
+                                ImGui.OpenPopup($"EditTransactionNote##_{i}");
+                                editedNoteContent = transaction.Note;
+                            }
+
+                            if (ImGui.BeginPopup($"EditTransactionNote##_{i}"))
+                            {
+                                if (!editedNoteContent.IsNullOrEmpty())
+                                {
+                                    ImGui.TextWrapped(editedNoteContent);
+                                }
+                                ImGui.SetNextItemWidth(270);
+                                if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+                                {
+                                    var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+                                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                                    var index = -1;
+
+                                    for (int d = 0; d < editedTransactions.Count; d++)
+                                    {
+                                        if (Widgets.IsTransactionEqual(editedTransactions[d], transaction))
+                                        {
+                                            index = d;
+                                            break;
+                                        }
+                                    }
+                                    if (index != -1)
+                                    {
+                                        editedTransactions[index].Note = editedNoteContent;
+                                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        searchTimer.Stop();
+                                        searchTimer.Start();
+                                    }
+                                }
+
+                                ImGui.EndPopup();
+                            }
+                        }
+
+                        // 勾选框 Checkboxes
                         ImGui.TableNextColumn();
                         if (ImGui.Checkbox($"##select_{i}", ref selected))
                         {

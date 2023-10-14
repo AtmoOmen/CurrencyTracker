@@ -11,8 +11,6 @@ using System.Numerics;
 
 namespace CurrencyTracker.Windows;
 
-#pragma warning disable CS8602
-
 public class Graph : Window, IDisposable
 {
     internal static LanguageManager? Lang;

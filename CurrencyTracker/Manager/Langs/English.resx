@@ -187,24 +187,20 @@
   <data name="ExportCsvMessage1" xml:space="preserve">
     <value>No transactions under the currently selected currency.</value>
   </data>
-  <data name="ExportCsvMessage2" xml:space="preserve">
-    <value>Time,Amount,Change,Location</value>
+  <data name="ExportFileCSVHeader" xml:space="preserve">
+    <value>Time,Amount,Change,Location,Note</value>
   </data>
   <data name="ExportCsvMessage3" xml:space="preserve">
     <value>A .csv file has been exported to: </value>
   </data>
-  <data name="FileRenameHelp" xml:space="preserve">
-    <value>Note 1: To avoid errors, please do not enter a file name that is "too long"
-Note 2: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging).</value>
+  <data name="ExportFileHelp1" xml:space="preserve">
+    <value>Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging).</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>If left blank, the file name will be:</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
-    <value>Enter a File Name: (Press Enter to Confirm)</value>
-  </data>
-  <data name="FileRenameLabel1" xml:space="preserve">
-    <value>Filename:</value>
+    <value>File Name: (Press Enter to Confirm)</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>CurrentTime</value>
@@ -531,7 +527,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Changed</value>
   </data>
   <data name="EditHelp3" xml:space="preserve">
-    <value>transactions' Location to:</value>
+    <value>transactions' Location to</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Copy</value>
@@ -586,5 +582,36 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="MergedSpecificHelp1" xml:space="preserve">
     <value>transactions</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>Note</value>
+  </data>
+  <data name="ExportFileHelp" xml:space="preserve">
+    <value>Note: The choice of Export File Type here will also be applied elsewhere.</value>
+  </data>
+  <data name="ExportFileHelp2" xml:space="preserve">
+    <value>Invalid Export File Type</value>
+  </data>
+  <data name="ExportFileMDHeader" xml:space="preserve">
+    <value># Transactions Export -</value>
+  </data>
+  <data name="ExportFileMDHeader1" xml:space="preserve">
+    <value>| Time | Amount | Change | Location | Note |
+| --- | --- | --- | --- | --- |</value>
+  </data>
+  <data name="ExportFileType" xml:space="preserve">
+    <value>Export File Type</value>
+  </data>
+  <data name="ColumnsDisplayed" xml:space="preserve">
+    <value>Displayed Columns</value>
+  </data>
+  <data name="EditHelp4" xml:space="preserve">
+    <value>transactions' Note to</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Order</value>
+  </data>
+  <data name="TableAppearance" xml:space="preserve">
+    <value>Table Appearance</value>
   </data>
 </root>

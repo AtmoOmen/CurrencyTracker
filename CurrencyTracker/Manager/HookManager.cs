@@ -5,7 +5,7 @@ namespace CurrencyTracker.Manager;
 
 internal class HookManager
 {
-    // From Tracky Track
+    // From Tracky Track, now used to control teleport cost
     private const string ActorControlSig = "E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64";
     private delegate void ActorControlSelfDelegate(uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, UInt64 targetId, byte param7);
     private Hook<ActorControlSelfDelegate> actorControlSelfHook;
@@ -29,7 +29,7 @@ internal class HookManager
             switch (param1)
             {
                 case 4590:
-                    Service.Tracker.TeleportingCostGil(param2);
+                    Service.Tracker.TeleportWithGilCost(param2);
                     break;
             }
         }

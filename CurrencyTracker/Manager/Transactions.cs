@@ -234,6 +234,7 @@ namespace CurrencyTracker.Manager
             var mergedTransactions = new List<TransactionsConvertor>();
             var currentIndex = 0;
             var mergedCount = 0;
+            var seperateMergedCount = 0;
 
             while (currentIndex < allTransactions.Count)
             {
@@ -261,7 +262,8 @@ namespace CurrencyTracker.Manager
                         }
 
                         nextIndex++;
-                        mergedCount++;
+                        mergedCount += 2;
+                        seperateMergedCount++;
                     }
                     else
                     {
@@ -269,9 +271,16 @@ namespace CurrencyTracker.Manager
                     }
                 }
 
+                if (seperateMergedCount > 0)
+                {
+                    currentTransaction.Note = $"({Lang.GetText("MergedSpecificHelp")} {seperateMergedCount + 1} {Lang.GetText("MergedSpecificHelp1")})";
+                    seperateMergedCount = 0;
+                }
+
                 mergedTransactions.Add(currentTransaction);
                 currentIndex = nextIndex;
             }
+
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -397,8 +406,28 @@ namespace CurrencyTracker.Manager
             }
         }
 
-        public string ExportToCsv(List<TransactionsConvertor> transactions, string FileName, string selectedCurrencyName, string Headers)
+        public string ExportData(List<TransactionsConvertor> data, string fileName, string selectedCurrencyName, int exportType)
         {
+            string fileExtension;
+            string headers;
+
+            if (exportType == 0)
+            {
+                fileExtension = "csv";
+                headers = Lang.GetText("ExportFileCSVHeader");
+            }
+            else if (exportType == 1)
+            {
+                fileExtension = "md";
+                headers = $"{Lang.GetText("ExportFileMDHeader")} {selectedCurrencyName}\n\n" +
+                          $"{Lang.GetText("ExportFileMDHeader1")}";
+            }
+            else
+            {
+                Service.Chat.PrintError(Lang.GetText("ExportFileHelp2"));
+                return "Fail";
+            }
+
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
                 Service.PluginLog.Warning("Fail to Export Transactions: Player Data Folder Path Missed.");
@@ -406,27 +435,36 @@ namespace CurrencyTracker.Manager
             }
 
             string playerDataFolder = Path.Combine(Plugin.Instance.PlayerDataFolder, "Exported");
-
             Directory.CreateDirectory(playerDataFolder);
 
-            string NowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
+            string nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
+
             string finalFileName;
-            if (string.IsNullOrWhiteSpace(FileName)) finalFileName = $"{selectedCurrencyName}_{NowTime}.csv";
-            else finalFileName = $"{FileName}_{selectedCurrencyName}_{NowTime}.csv";
+            if (string.IsNullOrWhiteSpace(fileName)) finalFileName = $"{selectedCurrencyName}_{nowTime}.{fileExtension}";
+            else finalFileName = $"{fileName}_{selectedCurrencyName}_{nowTime}.{fileExtension}";
 
             string filePath = Path.Combine(playerDataFolder, finalFileName);
 
             using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
             {
-                writer.WriteLine(Headers);
+                writer.WriteLine(headers);
 
-                foreach (var transaction in transactions)
+                foreach (var transaction in data)
                 {
-                    string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName}";
-                    writer.WriteLine(line);
+                    if (exportType == 0) // .csv
+                    {
+                        string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName},{transaction.Note}";
+                        writer.WriteLine(line);
+                    }
+                    else if (exportType == 1) // .md
+                    {
+                        string line = $"| {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")} | {transaction.Amount} | {transaction.Change} | {transaction.LocationName} | {transaction.Note} |";
+                        writer.WriteLine(line);
+                    }
                 }
             }
             return filePath;
         }
+
     }
 }

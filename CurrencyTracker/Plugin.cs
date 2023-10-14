@@ -93,7 +93,6 @@ namespace CurrencyTracker
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
             var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-#pragma warning disable CS8604
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
                 throw new InvalidOperationException("Can't Load Current Character Info");

@@ -48,6 +48,73 @@ namespace CurrencyTracker.Windows
             return result;
         }
 
+        public static void AddSoftReturnsToText(ref string str, float multilineWidth)
+        {
+            float textSize = 0;
+            string tmpStr = "";
+            string finalStr = "";
+            int curChr = 0;
+            while (curChr < str.Length)
+            {
+                if (str[curChr] == '\n')
+                {
+                    finalStr += tmpStr + "\n";
+                    tmpStr = "";
+                }
+
+                tmpStr += str[curChr];
+                textSize = ImGui.CalcTextSize(tmpStr).X;
+
+                if (textSize > multilineWidth)
+                {
+                    int lastSpace = tmpStr.Length - 1;
+                    while (tmpStr[lastSpace] != ' ' && lastSpace > 0)
+                        lastSpace--;
+                    if (lastSpace == 0)
+                        lastSpace = tmpStr.Length - 2;
+                    finalStr += tmpStr.Substring(0, lastSpace + 1) + "\r\n";
+                    if (lastSpace + 1 > tmpStr.Length)
+                        tmpStr = "";
+                    else
+                        tmpStr = tmpStr.Substring(lastSpace + 1);
+                }
+                curChr++;
+            }
+            if (tmpStr.Length > 0)
+                finalStr += tmpStr;
+
+            str = finalStr;
+        }
+
+        public static bool ImGuiAutosizingMultilineInput(string label, ref string str, Vector2 sizeMin, Vector2 sizeMax, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+        {
+            ImGui.PushTextWrapPos(sizeMax.X);
+            var textSize = ImGui.CalcTextSize(str);
+            if (textSize.X > sizeMax.X)
+            {
+                float ratio = textSize.X / sizeMax.X;
+                textSize.X = sizeMax.X;
+                textSize.Y *= ratio;
+                textSize.Y += 20;    // add space for an extra line
+            }
+
+            textSize.Y += 8;    // to compensate for inputbox margins
+
+            if (textSize.X < sizeMin.X)
+                textSize.X = sizeMin.X;
+            if (textSize.Y < sizeMin.Y)
+                textSize.Y = sizeMin.Y;
+            if (textSize.X > sizeMax.X)
+                textSize.X = sizeMax.X;
+            if (textSize.Y > sizeMax.Y)
+                textSize.Y = sizeMax.Y;
+
+            bool valueChanged = ImGui.InputTextMultiline(label, ref str, 150, textSize, flags);
+            ImGui.PopTextWrapPos();
+
+            return valueChanged;
+        }
+
         public static void TextTooltip(string text)
         {
             if (ImGui.IsItemHovered())

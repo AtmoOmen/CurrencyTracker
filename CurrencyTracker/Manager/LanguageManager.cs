@@ -47,7 +47,6 @@ namespace CurrencyTracker.Manager
 
         public string GetText(string key)
         {
-#pragma warning disable CS8602
             return resourceManager.GetString(key) ?? key;
         }
     }

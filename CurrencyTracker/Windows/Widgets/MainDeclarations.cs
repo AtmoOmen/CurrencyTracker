@@ -7,10 +7,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    // 计时器触发间隔 Timer Trigger Interval
-    private int timerInterval = 500;
-
-    // 记录模式: 0为计时器模式, 1为聊天记录模式 Record Mode: 0 for Timer Mode, 1 for Chat Mode
+    // 记录模式: 1为聊天记录模式 Record Mode: 1 for Chat Mode
     private int recordMode = 0;
 
     // 是否显示记录选项 If Show Record Options
@@ -40,8 +37,14 @@ public partial class Main
     // 地点筛选开关 Location Filter Switch
     private bool isLocationFilterEnabled;
 
-    // 地点筛选名称 Locatio Filter Key
+    // 备注筛选开关 Note Filter Switch
+    private bool isNoteFilterEnabled;
+
+    // 地点筛选名称 Location Filter Key
     private string? searchLocationName = string.Empty;
+
+    // 备注筛选名称 Note Filter Key
+    private string? searchNoteContent = string.Empty;
 
     // 筛选模式：0为大于，1为小于 Filtering Mode: 0 for Above, 1 for Below
     private int filterMode;
@@ -127,10 +130,20 @@ public partial class Main
     // This bool will always be false, for method filling purposes only, no actual effect
     private bool selectTimeDeco = false;
 
-    // 是否启用备注编辑
-    internal Dictionary<string, List<bool>>? noteEditEnabled = new Dictionary<string, List<bool>>();
+    // 导出文件的类型 Export Data File Type : 0 - .csv ; 1 - .md
+    private int exportDataFileType = 0;
 
-    string editNoteContent = string.Empty;
+    // 编辑的备注内容 Edited Note Content
+    private string editedNoteContent = string.Empty;
+
+    // 是否显示表格地点列 Whether Show Location Column
+    private bool isShowLocationColumn = true;
+
+    // 是否显示表格备注列 Whether Show Note Column
+    private bool isShowNoteColumn = true;
+
+    // 是否显示序号列 Where Show Order Column
+    private bool isShowOrderColumn = true;
 
     internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
@@ -146,11 +159,6 @@ public partial class Main
     internal List<TransactionsConvertor> lastTransactions = new List<TransactionsConvertor>();
     internal long[]? LinePlotData;
 
-    // UI外观用 Used to slow down UI refresh speed
+    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
     private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
-
-    long testResult = 0;
-    ulong testResult2 = 0;
-
-
 }

@@ -215,17 +215,13 @@
     <value>导出为CSV</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
-    <value>请输入文件名: (按Enter键确认)</value>
-  </data>
-  <data name="FileRenameLabel1" xml:space="preserve">
-    <value>文件名: </value>
+    <value>文件名: (按 Enter 键确认)</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>当前时间</value>
   </data>
-  <data name="FileRenameHelp" xml:space="preserve">
-    <value>注1: 为避免错误，请勿输入过长的文件名
-注2: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
+  <data name="ExportFileHelp1" xml:space="preserve">
+    <value>注: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>如果留空，文件名则为: </value>
@@ -234,7 +230,7 @@
     <value>当前货币下无收支记录</value>
   </data>
   <data name="ExportCsvMessage2" xml:space="preserve">
-    <value>时间,货币数,收支,地点</value>
+    <value>时间,货币数,收支,地点,备注</value>
   </data>
   <data name="ExportCsvMessage3" xml:space="preserve">
     <value>已导出CSV文件至: </value>
@@ -529,7 +525,7 @@
     <value>已修改</value>
   </data>
   <data name="EditHelp3" xml:space="preserve">
-    <value>条记录的地名为:</value>
+    <value>条记录的地名为</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>复制</value>
@@ -584,5 +580,36 @@
   </data>
   <data name="MergedSpecificHelp1" xml:space="preserve">
     <value>条记录合并而成</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>备注</value>
+  </data>
+  <data name="ExportFileHelp" xml:space="preserve">
+    <value>注: 此处的导出文件类型选择同样会影响其他地方的导出文件格式</value>
+  </data>
+  <data name="ExportFileHelp2" xml:space="preserve">
+    <value>非法的文件导出类型</value>
+  </data>
+  <data name="ExportFileMDHeader" xml:space="preserve">
+    <value># 货币数据导出 -</value>
+  </data>
+  <data name="ExportFileMDHeader1" xml:space="preserve">
+    <value>| 时间 | 货币数 | 收支 | 地点 | 备注 |
+| --- | --- | --- | --- | --- |</value>
+  </data>
+  <data name="ExportFileType" xml:space="preserve">
+    <value>导出文件类型</value>
+  </data>
+  <data name="ColumnsDisplayed" xml:space="preserve">
+    <value>显示列</value>
+  </data>
+  <data name="EditHelp4" xml:space="preserve">
+    <value>条记录的备注为</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>序号</value>
+  </data>
+  <data name="TableAppearance" xml:space="preserve">
+    <value>表格外观</value>
   </data>
 </root>

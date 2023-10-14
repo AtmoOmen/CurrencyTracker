@@ -299,6 +299,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Displayed Columns 的本地化字符串。
+        /// </summary>
+        internal static string ColumnsDisplayed {
+            get {
+                return ResourceManager.GetString("ColumnsDisplayed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Filiter Options 的本地化字符串。
         /// </summary>
         internal static string ConfigLabel {
@@ -519,11 +528,20 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 transactions&apos; Location to: 的本地化字符串。
+        ///   查找类似 transactions&apos; Location to 的本地化字符串。
         /// </summary>
         internal static string EditHelp3 {
             get {
                 return ResourceManager.GetString("EditHelp3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 transactions&apos; Note to 的本地化字符串。
+        /// </summary>
+        internal static string EditHelp4 {
+            get {
+                return ResourceManager.GetString("EditHelp4", resourceCulture);
             }
         }
         
@@ -564,15 +582,6 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Time,Amount,Change,Location 的本地化字符串。
-        /// </summary>
-        internal static string ExportCsvMessage2 {
-            get {
-                return ResourceManager.GetString("ExportCsvMessage2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 A .csv file has been exported to:  的本地化字符串。
         /// </summary>
         internal static string ExportCsvMessage3 {
@@ -582,12 +591,66 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Note 1: To avoid errors, please do not enter a file name that is &quot;too long&quot;
-        ///Note 2: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging). 的本地化字符串。
+        ///   查找类似 Time,Amount,Change,Location,Note 的本地化字符串。
         /// </summary>
-        internal static string FileRenameHelp {
+        internal static string ExportFileCSVHeader {
             get {
-                return ResourceManager.GetString("FileRenameHelp", resourceCulture);
+                return ResourceManager.GetString("ExportFileCSVHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Note: The choice of Export File Type here will also be applied elsewhere. 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileHelp {
+            get {
+                return ResourceManager.GetString("ExportFileHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging). 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileHelp1 {
+            get {
+                return ResourceManager.GetString("ExportFileHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Invalid Export File Type 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileHelp2 {
+            get {
+                return ResourceManager.GetString("ExportFileHelp2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 # Transactions Export - 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileMDHeader {
+            get {
+                return ResourceManager.GetString("ExportFileMDHeader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 | Time | Amount | Change | Location | Note |
+        ///| --- | --- | --- | --- | --- | 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileMDHeader1 {
+            get {
+                return ResourceManager.GetString("ExportFileMDHeader1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Export File Type 的本地化字符串。
+        /// </summary>
+        internal static string ExportFileType {
+            get {
+                return ResourceManager.GetString("ExportFileType", resourceCulture);
             }
         }
         
@@ -601,20 +664,11 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Enter a File Name: (Press Enter to Confirm) 的本地化字符串。
+        ///   查找类似 File Name: (Press Enter to Confirm) 的本地化字符串。
         /// </summary>
         internal static string FileRenameLabel {
             get {
                 return ResourceManager.GetString("FileRenameLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Filename: 的本地化字符串。
-        /// </summary>
-        internal static string FileRenameLabel1 {
-            get {
-                return ResourceManager.GetString("FileRenameLabel1", resourceCulture);
             }
         }
         
@@ -1010,6 +1064,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Note 的本地化字符串。
+        /// </summary>
+        internal static string Note {
+            get {
+                return ResourceManager.GetString("Note", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 No transactions currently selected. 的本地化字符串。
         /// </summary>
         internal static string NoTransactionsSelected {
@@ -1042,6 +1105,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string OpenDataFolder {
             get {
                 return ResourceManager.GetString("OpenDataFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Order 的本地化字符串。
+        /// </summary>
+        internal static string Order {
+            get {
+                return ResourceManager.GetString("Order", resourceCulture);
             }
         }
         
@@ -1160,6 +1232,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string StartDate {
             get {
                 return ResourceManager.GetString("StartDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Table Appearance 的本地化字符串。
+        /// </summary>
+        internal static string TableAppearance {
+            get {
+                return ResourceManager.GetString("TableAppearance", resourceCulture);
             }
         }
         

@@ -13,8 +13,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-#pragma warning disable CS8602
-#pragma warning disable CS8604
 
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()
@@ -103,6 +101,31 @@ public partial class Main
         return filteredTransactions;
     }
 
+    // 按备注显示交易记录 Hide Unmatched Transactions By Note
+    private List<TransactionsConvertor> ApplyNoteFilter(List<TransactionsConvertor> transactions, string query)
+    {
+        query = query.Normalize(NormalizationForm.FormKC);
+        if (query.IsNullOrEmpty())
+        {
+            return transactions;
+        }
+
+        List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+
+        foreach (var transaction in transactions)
+        {
+            var normalizedLocation = transaction.Note.Normalize(NormalizationForm.FormKC);
+
+            var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
+
+            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(query, StringComparison.OrdinalIgnoreCase))
+            {
+                filteredTransactions.Add(transaction);
+            }
+        }
+        return filteredTransactions;
+    }
+
     private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         UpdateTransactions();
@@ -169,6 +192,9 @@ public partial class Main
 
         if (isLocationFilterEnabled)
             currentTypeTransactions = ApplyLocationFilter(currentTypeTransactions, searchLocationName);
+
+        if (isNoteFilterEnabled)
+            currentTypeTransactions = ApplyNoteFilter(currentTypeTransactions, searchNoteContent);
 
         if (isReversed)
         {
@@ -302,15 +328,18 @@ public partial class Main
     }
 
     // 用于在筛选时更新记录 Used to update transactions
-    public void UpdateTransactions()
+    public void UpdateTransactions(int ifClearSelectedStates = 1)
     {
         if (currentTypeTransactions == null || selectedCurrencyName.IsNullOrEmpty())
         {
             return;
         }
 
-        selectedStates[selectedCurrencyName].Clear();
-        selectedTransactions[selectedCurrencyName].Clear();
+        if (ifClearSelectedStates == 1)
+        {
+            selectedStates[selectedCurrencyName].Clear();
+            selectedTransactions[selectedCurrencyName].Clear();
+        }
 
         currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
     }
