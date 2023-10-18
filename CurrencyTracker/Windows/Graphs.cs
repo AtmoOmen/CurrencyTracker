@@ -13,21 +13,16 @@ namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    internal static LanguageManager? Lang;
     private readonly Main main = Plugin.Instance.Main;
     private List<TransactionsConvertor>? currentTypeTransactions = new List<TransactionsConvertor>();
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
-
-    // 选择的语言 Selected Language
-    internal string playerLang = string.Empty;
 
     public Graph(Plugin plugin) : base("Currency Tracker - Graphs")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
 
         Initialize();
-        Lang = new LanguageManager(main.playerLang);
     }
 
     public void Dispose()
@@ -54,11 +49,11 @@ public class Graph : Window, IDisposable
             Plugin.Instance.Graph.IsOpen = false;
         }
 
-        ImGui.Text($"{Lang.GetText("Now")}:");
+        ImGui.Text($"{Service.Lang.GetText("Now")}:");
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, main.selectedCurrencyName);
         ImGui.SameLine();
-        ImGui.Text(Lang.GetText("GraphLabel"));
+        ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, main.currentTypeTransactions.Count.ToString());
         ImGui.SameLine();
@@ -76,7 +71,7 @@ public class Graph : Window, IDisposable
     }
 
     private void HelpMessages()
-    { ImGuiComponents.HelpMarker(Lang.GetText("GraphHelpMessages1")); }
+    { ImGuiComponents.HelpMarker(Service.Lang.GetText("GraphHelpMessages1")); }
 
     private void AmountGraph(List<TransactionsConvertor> currentTypeTransactions)
     {
@@ -96,9 +91,9 @@ public class Graph : Window, IDisposable
             var overallChangeRate = Math.Round((latestValue - oldestValue) / oldestValue * 100f, 2);
             var newestChangeRate = Math.Round((latestValue - secondToLastValue) / secondToLastValue * 100f, 2);
 
-            var graphTitle = $"{Lang.GetText("AmountGraph")}{dividedName}";
+            var graphTitle = $"{Service.Lang.GetText("AmountGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("AmountGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("AmountGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -117,9 +112,9 @@ public class Graph : Window, IDisposable
                     if (ImPlot.IsAxisHovered(ImAxis.X1))
                     {
                         ImGui.BeginTooltip();
-                        ImGui.Text($"{Lang.GetText("AmountGraph2")}: {overallChangeRate}%%");
+                        ImGui.Text($"{Service.Lang.GetText("AmountGraph2")}: {overallChangeRate}%%");
                         AppendChangeRateToolTip(overallChangeRate);
-                        ImGui.Text($"{Lang.GetText("AmountGraph3")}: {newestChangeRate}%%");
+                        ImGui.Text($"{Service.Lang.GetText("AmountGraph3")}: {newestChangeRate}%%");
                         AppendChangeRateToolTip(newestChangeRate);
                         ImGui.EndTooltip();
                     }
@@ -127,7 +122,7 @@ public class Graph : Window, IDisposable
                     ImPlot.EndPlot();
                 }
 
-                ImGui.TextDisabled(Lang.GetText("AmountGraph4"));
+                ImGui.TextDisabled(Service.Lang.GetText("AmountGraph4"));
             }
         }
     }
@@ -144,9 +139,9 @@ public class Graph : Window, IDisposable
 
         if (currencyChangeData != null)
         {
-            var graphTitle = $"{Lang.GetText("ChangeGraph")}{dividedName}";
+            var graphTitle = $"{Service.Lang.GetText("ChangeGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("ChangeGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("ChangeGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -168,7 +163,7 @@ public class Graph : Window, IDisposable
                         ImPlotLineFlags.SkipNaN);
                     ImPlot.EndPlot();
                 }
-                ImGui.TextDisabled(Lang.GetText("ChangeGraph2"));
+                ImGui.TextDisabled(Service.Lang.GetText("ChangeGraph2"));
             }
         }
     }
@@ -187,9 +182,9 @@ public class Graph : Window, IDisposable
 
         if (locationCounts != null)
         {
-            var graphTitle = Lang.GetText("LocationGraph");
+            var graphTitle = Service.Lang.GetText("LocationGraph");
 
-            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("LocationGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("LocationGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -206,7 +201,7 @@ public class Graph : Window, IDisposable
                     ImPlot.EndPlot();
                 }
 
-                ImGui.TextDisabled(Lang.GetText("LocationGraph2"));
+                ImGui.TextDisabled(Service.Lang.GetText("LocationGraph2"));
             }
         }
     }
@@ -229,9 +224,9 @@ public class Graph : Window, IDisposable
 
         if (locationAmounts != null)
         {
-            var graphTitle = $"{Lang.GetText("LocationAmountGraph")}{dividedName}";
+            var graphTitle = $"{Service.Lang.GetText("LocationAmountGraph")}{dividedName}";
 
-            if (ImGui.CollapsingHeader($"{graphTitle} {Lang.GetText("LocationAmountGraph1")}"))
+            if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("LocationAmountGraph1")}"))
             {
                 if (ImPlot.BeginPlot(
                     graphTitle,
@@ -247,7 +242,7 @@ public class Graph : Window, IDisposable
                     ImPlot.PlotBarGroups(locationsLegend, ref amounts[0], 1, locations.Length);
                     ImPlot.EndPlot();
                 }
-                ImGui.TextDisabled(Lang.GetText("LocationAmountGraph2"));
+                ImGui.TextDisabled(Service.Lang.GetText("LocationAmountGraph2"));
             }
         }
     }
@@ -265,17 +260,17 @@ public class Graph : Window, IDisposable
         else if (averageAmount >= 1000 && averageAmount < 1000000)
         {
             dividedFactor = 1000;
-            dividedName += Lang.GetText("DividedUnitThou");
+            dividedName += Service.Lang.GetText("DividedUnitThou");
         }
         else if (averageAmount >= 1000000 && averageAmount < 1000000000)
         {
             dividedFactor = 1000000;
-            dividedName += Lang.GetText("DividedUnitMil");
+            dividedName += Service.Lang.GetText("DividedUnitMil");
         }
         else if (averageAmount >= 1000000000)
         {
             dividedFactor = 1000000000;
-            dividedName += Lang.GetText("DividedUnitBil");
+            dividedName += Service.Lang.GetText("DividedUnitBil");
         }
         return (dividedFactor, dividedName);
     }
@@ -285,12 +280,12 @@ public class Graph : Window, IDisposable
         if (changRate > 0)
         {
             ImGui.SameLine();
-            ImGui.TextColored(ImGuiColors.DPSRed, Lang.GetText("ChangeRateToolTip"));
+            ImGui.TextColored(ImGuiColors.DPSRed, Service.Lang.GetText("ChangeRateToolTip"));
         }
         if (changRate < 0)
         {
             ImGui.SameLine();
-            ImGui.TextColored(ImGuiColors.HealerGreen, Lang.GetText("ChangeRateToolTip1"));
+            ImGui.TextColored(ImGuiColors.HealerGreen, Service.Lang.GetText("ChangeRateToolTip1"));
         }
     }
 }

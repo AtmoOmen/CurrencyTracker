@@ -5,9 +5,14 @@ namespace CurrencyTracker.Manager;
 
 internal class HookManager
 {
+    private Configuration? C = Plugin.Instance.Configuration;
+    private Plugin? P = Plugin.Instance;
+
     // From Tracky Track, now used to control teleport cost
     private const string ActorControlSig = "E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64";
+
     private delegate void ActorControlSelfDelegate(uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, UInt64 targetId, byte param7);
+
     private Hook<ActorControlSelfDelegate> actorControlSelfHook;
 
     public HookManager(Plugin plugin)
@@ -24,12 +29,21 @@ internal class HookManager
         if (eventId != 517)
             return;
 
+        if (!C.RecordTeleport)
+        {
+            return;
+        }
+
         try
         {
             switch (param1)
             {
                 case 4590:
-                    Service.Tracker.TeleportWithGilCost(param2);
+                    Service.Tracker.TeleportWithCost((int)param2);
+                    break;
+
+                case 4591:
+                    Service.Tracker.TeleportWithCost(-1);
                     break;
             }
         }

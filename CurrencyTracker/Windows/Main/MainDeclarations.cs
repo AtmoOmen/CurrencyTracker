@@ -25,9 +25,6 @@ public partial class Main
     // 倒序排序开关 Reverse Sorting Switch
     internal bool isReversed;
 
-    // 副本内记录开关 Duty Tracking Switch
-    private bool isTrackedinDuty;
-
     // 收支筛选开关 Income/Expense Filter Switch
     private bool isChangeFilterEnabled;
 
@@ -113,13 +110,14 @@ public partial class Main
 
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
+
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
 
     // 自定义货币追踪过滤物品用 Used to filter some outdate/abandoned items in custom tracker item list
-    private string[] filterNamesForCCT = new string[] 
-    { 
+    private string[] filterNamesForCCT = new string[]
+    {
         // 过期物品 Dated items
         "†", "过期", "Dated", "Ex-" ,
         // 腰带类物品 Belt
@@ -145,12 +143,23 @@ public partial class Main
     // 是否显示序号列 Where Show Order Column
     private bool isShowOrderColumn = true;
 
+    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
+    private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
+
+    // 临时 Temp
+    private bool isRecordContentName;
+    private bool isRecordTeleportDes;
+    private bool isRecordTeleport;
+    private bool isTrackinDuty;
+    private bool isWaitExComplete;
+    private bool isRecordMiniCactpot;
+    private bool isRecordTripleTriad;
+
     internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
     internal Transactions transactions = new Transactions();
     internal TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
     private CurrencyInfo currencyInfo = new CurrencyInfo();
-    private static LanguageManager? Lang;
     private List<string> permanentCurrencyName = new List<string>();
     internal List<string> options = new List<string>();
     internal List<string>? ordedOptions = new List<string>();
@@ -159,6 +168,6 @@ public partial class Main
     internal List<TransactionsConvertor> lastTransactions = new List<TransactionsConvertor>();
     internal long[]? LinePlotData;
 
-    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
-    private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
+    private Configuration? C = Plugin.Instance.Configuration;
+    private Plugin? P = Plugin.Instance;
 }

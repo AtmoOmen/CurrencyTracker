@@ -12,7 +12,6 @@ namespace CurrencyTracker.Manager
     {
         private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
         private readonly List<TransactionsConvertor> temporarySingleTransactionList = new List<TransactionsConvertor>();
-        internal static LanguageManager Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
 
         public List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
@@ -102,7 +101,7 @@ namespace CurrencyTracker.Manager
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
                 Service.PluginLog.Warning("Fail to Load Lastest Transaction: Player Data Folder Path Missed.");
-                return new List<TransactionsConvertor>() ;
+                return new List<TransactionsConvertor>();
             }
 
             string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
@@ -123,7 +122,7 @@ namespace CurrencyTracker.Manager
                     TimeStamp = DateTime.Now,
                     Amount = 0,
                     Change = 0,
-                    LocationName = Lang.GetText("UnknownLocation")
+                    LocationName = Service.Lang.GetText("UnknownLocation")
                 };
                 latestTransactions.Add(defaultTransaction);
             }
@@ -157,7 +156,6 @@ namespace CurrencyTracker.Manager
                 return new TransactionsConvertor();
             }
 
-
             string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
@@ -167,7 +165,7 @@ namespace CurrencyTracker.Manager
                 TimeStamp = DateTime.Now,
                 Amount = 0,
                 Change = 0,
-                LocationName = Lang.GetText("UnknownLocation")
+                LocationName = Service.Lang.GetText("UnknownLocation")
             };
 
             return latestTransaction;
@@ -273,14 +271,13 @@ namespace CurrencyTracker.Manager
 
                 if (seperateMergedCount > 0)
                 {
-                    currentTransaction.Note = $"({Lang.GetText("MergedSpecificHelp")} {seperateMergedCount + 1} {Lang.GetText("MergedSpecificHelp1")})";
+                    currentTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {seperateMergedCount + 1} {Service.Lang.GetText("MergedSpecificHelp1")})";
                     seperateMergedCount = 0;
                 }
 
                 mergedTransactions.Add(currentTransaction);
                 currentIndex = nextIndex;
             }
-
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -337,7 +334,7 @@ namespace CurrencyTracker.Manager
                         finalTransaction.Change = overallChange;
                         finalTransaction.LocationName = LocationName;
                         finalTransaction.Amount = finalAmount;
-                        finalTransaction.Note = $"({Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Lang.GetText("MergedSpecificHelp1")})";
+                        finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Service.Lang.GetText("MergedSpecificHelp1")})";
                     }
                     else
                     {
@@ -367,7 +364,6 @@ namespace CurrencyTracker.Manager
                 Service.PluginLog.Warning("Fail to Clear Transactions: Player Data Folder Path Missed.");
                 return 0;
             }
-
 
             string filePath = Path.Join(Plugin.Instance.PlayerDataFolder ?? "", $"{selectedCurrencyName}.txt");
 
@@ -414,17 +410,17 @@ namespace CurrencyTracker.Manager
             if (exportType == 0)
             {
                 fileExtension = "csv";
-                headers = Lang.GetText("ExportFileCSVHeader");
+                headers = Service.Lang.GetText("ExportFileCSVHeader");
             }
             else if (exportType == 1)
             {
                 fileExtension = "md";
-                headers = $"{Lang.GetText("ExportFileMDHeader")} {selectedCurrencyName}\n\n" +
-                          $"{Lang.GetText("ExportFileMDHeader1")}";
+                headers = $"{Service.Lang.GetText("ExportFileMDHeader")} {selectedCurrencyName}\n\n" +
+                          $"{Service.Lang.GetText("ExportFileMDHeader1")}";
             }
             else
             {
-                Service.Chat.PrintError(Lang.GetText("ExportFileHelp2"));
+                Service.Chat.PrintError(Service.Lang.GetText("ExportFileHelp2"));
                 return "Fail";
             }
 
@@ -465,6 +461,5 @@ namespace CurrencyTracker.Manager
             }
             return filePath;
         }
-
     }
 }

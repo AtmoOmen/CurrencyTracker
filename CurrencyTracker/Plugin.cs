@@ -1,10 +1,11 @@
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,14 +22,15 @@ namespace CurrencyTracker
         public WindowSystem WindowSystem = new("CurrencyTracker");
         internal Main Main { get; init; }
         internal Graph Graph { get; init; }
-        private HookManager hookManager;
+        /*
+        internal RecordSettings RecordSettings { get; init; }
+        */
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
         private const string CommandName = "/ct";
-        public string PlayerDataFolder = string.Empty;
+        private HookManager hookManager;
 
-        internal Dictionary<uint, string> TerritoryNames = new();
-        internal Dictionary<uint, string> ItemNames = new();
+        public string PlayerDataFolder = string.Empty;
         private string playerLang = string.Empty;
 
         public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager)
@@ -37,30 +39,27 @@ namespace CurrencyTracker
             PluginInterface = pluginInterface;
             CommandManager = commandManager;
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            Configuration.Initialize(PluginInterface);
 
             Service.Initialize(pluginInterface);
-            Configuration.Initialize(PluginInterface);
+            InitLanguage();
+
+            // 已登录 Not Log in
+            if (Service.ClientState.LocalPlayer != null || Service.ClientState.LocalContentId != 0)
+            {
+                CurrentCharacter = GetCurrentCharacter();
+            }
+
+            Service.ClientState.Login += HandleLogin;
+            Service.Tracker = new Tracker();
 
             CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = "Open the main window of the plugin\n/ct <currencyname> → Open the main window with specific currency shown."
             });
 
-            if (Configuration.CurrentActiveCharacter == null)
-            {
-                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
-            }
-
-            UpdateTerritoryNames();
-            UpdateItemNames();
-
-            Service.ClientState.Login += HandleLogin;
-
-            GetCurrentCharcterDataFolder();
-
-            Service.Tracker = new Tracker();
-
-            Service.Transactions = new Transactions();
+            PluginInterface.UiBuilder.Draw += DrawUI;
+            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
             hookManager = new HookManager(this);
 
@@ -71,20 +70,28 @@ namespace CurrencyTracker
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
 
-            PluginInterface.UiBuilder.Draw += DrawUI;
-            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-
-
+            /*
+            RecordSettings = new RecordSettings(this);
+            WindowSystem.AddWindow(RecordSettings);
+            */
         }
+
 
         private void HandleLogin()
         {
+            if (Configuration.CurrentActiveCharacter == null)
+            {
+                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
+            }
+
             CurrentCharacter = GetCurrentCharacter();
         }
 
         public CharacterInfo GetCurrentCharacter()
         {
-            if (CurrentCharacter != null)
+            if (Service.ClientState.LocalContentId == 0) return null;
+
+            if (CurrentCharacter != null && CurrentCharacter.Name == Service.ClientState.LocalPlayer.Name.TextValue)
             {
                 return CurrentCharacter;
             }
@@ -109,7 +116,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                Service.PluginLog.Debug("Configuration file activation character matches current character");
+                Service.PluginLog.Debug("Activation character in configuration matches current character");
             }
             else
             {
@@ -119,18 +126,11 @@ namespace CurrencyTracker
                     Server = serverName,
                 };
                 Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
-                Directory.CreateDirectory(dataFolderName);
+            }
 
-                playerLang = Configuration.SelectedLanguage;
-                if (string.IsNullOrEmpty(playerLang))
-                {
-                    playerLang = Service.ClientState.ClientLanguage.ToString();
-                    if (playerLang != "ChineseSimplified" && playerLang != "English")
-                    {
-                        playerLang = "English";
-                    }
-                    Configuration.SelectedLanguage = playerLang;
-                }
+            if (!Directory.Exists(dataFolderName))
+            {
+                Directory.CreateDirectory(dataFolderName);
                 Service.PluginLog.Debug("Successfully Create Directory");
             }
 
@@ -141,20 +141,16 @@ namespace CurrencyTracker
             return CurrentCharacter;
         }
 
-        public void Dispose()
+        private void GetCurrentCharcterDataFolder()
         {
-            WindowSystem.RemoveAllWindows();
+            if (Service.ClientState.LocalPlayer != null)
+            {
+                var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+                var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
+                var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-            Main.Dispose();
-            Graph.Dispose();
-
-            hookManager.Dispose();
-
-            Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
-            Service.Tracker.Dispose();
-            Service.ClientState.Login -= HandleLogin;
-
-            CommandManager.RemoveHandler(CommandName);
+                PlayerDataFolder = dataFolderName;
+            }
         }
 
         private void OnCommand(string command, string args)
@@ -211,6 +207,22 @@ namespace CurrencyTracker
             }
         }
 
+        private void InitLanguage()
+        {
+            playerLang = Configuration.SelectedLanguage;
+            if (string.IsNullOrEmpty(playerLang))
+            {
+                playerLang = Service.ClientState.ClientLanguage.ToString();
+                if (playerLang != "ChineseSimplified" && playerLang != "English")
+                {
+                    playerLang = "English";
+                }
+                Configuration.SelectedLanguage = playerLang;
+            }
+
+            Service.Lang = new LanguageManager(playerLang);
+        }
+
         private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
         {
             return currencyList
@@ -234,34 +246,23 @@ namespace CurrencyTracker
             Main.IsOpen = !Main.IsOpen;
         }
 
-        private void UpdateTerritoryNames()
+        public void Dispose()
         {
-            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
-                .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.PlaceName?.Value?.Name}");
-        }
+            WindowSystem.RemoveAllWindows();
 
-        private void UpdateItemNames()
-        {
-            ItemNames = Service.DataManager.GetExcelSheet<Item>()
-                .Where(x => !string.IsNullOrEmpty(x.Name?.ToString()))
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.Name}");
-        }
+            Main.Dispose();
+            Graph.Dispose();
+            /*
+            RecordSettings.Dispose();
+            */
 
-        private void GetCurrentCharcterDataFolder()
-        {
-            if (Service.ClientState.LocalPlayer != null)
-            {
-                var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-                var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-                var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+            hookManager.Dispose();
 
-                PlayerDataFolder = dataFolderName;
-            }
+            Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
+            Service.Tracker.Dispose();
+            Service.ClientState.Login -= HandleLogin;
+
+            CommandManager.RemoveHandler(CommandName);
         }
     }
 }

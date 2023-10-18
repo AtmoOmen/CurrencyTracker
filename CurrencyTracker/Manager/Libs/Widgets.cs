@@ -2,7 +2,9 @@ using CurrencyTracker.Manager;
 using Dalamud.Interface;
 using ImGuiNET;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace CurrencyTracker.Windows
 {
@@ -29,6 +31,35 @@ namespace CurrencyTracker.Windows
             }
 
             return true;
+        }
+
+        // 打开链接用 Used to open URL
+        public static void OpenUrl(string url)
+        {
+            ProcessStartInfo psi = new ProcessStartInfo();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                psi.FileName = url;
+                psi.UseShellExecute = true;
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                psi.FileName = "xdg-open";
+                psi.ArgumentList.Add(url);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                psi.FileName = "open";
+                psi.ArgumentList.Add(url);
+            }
+            else
+            {
+                Service.PluginLog.Error("Unsupported OS");
+                return;
+            }
+
+            Process.Start(psi);
         }
 
         public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", int width = -1)

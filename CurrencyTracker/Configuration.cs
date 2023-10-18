@@ -34,7 +34,6 @@ namespace CurrencyTracker
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public List<string> HiddenOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
-        public bool TrackedInDuty { get; set; } = true;
         public string SelectedLanguage { get; set; } = string.Empty;
         public int TrackMode { get; set; } = 1;
         public int RecordsPerPage { get; set; } = 20;
@@ -46,6 +45,14 @@ namespace CurrencyTracker
         public bool ShowNoteColumn { get; set; } = true;
         public bool ShowOrderColumn { get; set; } = true;
 
+        // 备注选项 Note Settings
+        public bool RecordContentName { get; set; } = true;
+        public bool RecordTeleportDes { get; set; } = true;
+        public bool WaitExComplete { get; set; } = true;
+        public bool RecordTeleport { get; set; } = true;
+        public bool TrackedInDuty { get; set; } = true;
+        public bool RecordMiniCactpot { get; set; } = true;
+        public bool RecordTripleTriad { get; set; } = true;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
@@ -57,7 +64,7 @@ namespace CurrencyTracker
 
         public void Save()
         {
-            this.pluginInterface!.SavePluginConfig(this);
+            pluginInterface!.SavePluginConfig(this);
         }
     }
 }

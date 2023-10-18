@@ -1,4 +1,3 @@
-using Dalamud.Logging;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using KamiLib.Caching;
@@ -11,8 +10,8 @@ namespace CurrencyTracker.Manager;
 
 public class CurrencyInfo : IDisposable
 {
-    public static readonly List<uint> defaultCurrenciesToAdd = new List<uint> 
-    { 
+    public static readonly List<uint> defaultCurrenciesToAdd = new List<uint>
+    {
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
 
@@ -62,7 +61,7 @@ public class CurrencyInfo : IDisposable
             {
                 itemCount += inventoryManagerPtr->GetItemCountInContainer(currencyID, flag);
             }
-            
+
             return itemCount;
         }
     }

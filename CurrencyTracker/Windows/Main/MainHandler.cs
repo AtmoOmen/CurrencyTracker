@@ -4,8 +4,10 @@ using Dalamud.Utility;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using TinyPinyin;
 
@@ -13,7 +15,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()
     {
@@ -136,7 +137,7 @@ public partial class Main
     {
         if (string.IsNullOrEmpty(selectedCurrencyName))
         {
-            Service.Chat.PrintError(Lang.GetText("TransactionsHelp1"));
+            Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
             return 0;
         }
 
@@ -144,9 +145,9 @@ public partial class Main
         int mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
 
         if (mergeCount > 0)
-            Service.Chat.Print($"{Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Lang.GetText("MergeTransactionsHelp2")}");
+            Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Service.Lang.GetText("MergeTransactionsHelp2")}");
         else
-            Service.Chat.PrintError(Lang.GetText("TransactionsHelp"));
+            Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
         UpdateTransactions();
         return mergeCount;
@@ -165,7 +166,7 @@ public partial class Main
         return ChildFrameHeight;
     }
 
-    // 调整文本长度用
+    // 调整文本长度用 Used to adjust the length of the text in header columns.
     private string CalcNumSpaces()
     {
         var fontSize = ImGui.GetFontSize() / 2;
@@ -247,7 +248,7 @@ public partial class Main
 
         if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
         {
-            var weekDaysData = Lang.GetText("WeekDays");
+            var weekDaysData = Service.Lang.GetText("WeekDays");
             string[] weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var day in weekDays)
             {
@@ -315,15 +316,6 @@ public partial class Main
         if (selectedCurrencyName != null)
         {
             UpdateTransactions();
-            Service.PluginLog.Debug("Event Triggered, currency transactions data in main window has been reloaded.");
-        }
-        else if (!Plugin.Instance.Main.IsOpen)
-        {
-            Service.PluginLog.Debug("Event Triggered, no window open, no reload.");
-        }
-        else
-        {
-            Service.PluginLog.Debug("Event Triggered, no currency selected, no reload.");
         }
     }
 

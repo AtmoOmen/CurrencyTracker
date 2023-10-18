@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 namespace KamiLib.Caching;
 
+// From KamiLib, used to extract some res
 public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
 {
     private readonly Func<uint, T?> searchAction;

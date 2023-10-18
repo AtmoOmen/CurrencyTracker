@@ -614,4 +614,78 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="TableAppearance" xml:space="preserve">
     <value>Table Appearance</value>
   </data>
+  <data name="From" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="UnknownContent" xml:space="preserve">
+    <value>Unknown Content</value>
+  </data>
+  <data name="MiniCactpot" xml:space="preserve">
+    <value>Mini Cactpot</value>
+  </data>
+  <data name="TripleTriad" xml:space="preserve">
+    <value>Triple Triad</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="GoldSaucer" xml:space="preserve">
+    <value>Gold Saucer</value>
+  </data>
+  <data name="HelpTranslate" xml:space="preserve">
+    <value>Help Translate!</value>
+  </data>
+  <data name="HelpTranslateHelp" xml:space="preserve">
+    <value>Sincere thanks to everyone who has contributed to localization</value>
+  </data>
+  <data name="NeedHelp" xml:space="preserve">
+    <value>Need Help</value>
+  </data>
+  <data name="OperationGuide" xml:space="preserve">
+    <value>Operation Guide</value>
+  </data>
+  <data name="OperationGuideHelp" xml:space="preserve">
+    <value>Click the button to view some shortcut operations for better using the plugin</value>
+  </data>
+  <data name="Overworld" xml:space="preserve">
+    <value>Overworld</value>
+  </data>
+  <data name="RecordContentName" xml:space="preserve">
+    <value>Record Content Name</value>
+  </data>
+  <data name="RecordContentNameHelp" xml:space="preserve">
+    <value>This includes contents and PVP</value>
+  </data>
+  <data name="RecordGoldSaucerHelp" xml:space="preserve">
+    <value>Options below mean the Note of specific transactions will filled with its source if checked.
+
+An example of Note: (From Triple Triad)</value>
+  </data>
+  <data name="RecordMiniCactpot" xml:space="preserve">
+    <value>Record Mini Cactpot</value>
+  </data>
+  <data name="RecordSettings" xml:space="preserve">
+    <value>Record Settings</value>
+  </data>
+  <data name="RecordTPCosts" xml:space="preserve">
+    <value>Record TP Costs</value>
+  </data>
+  <data name="RecordTPCostsHelp" xml:space="preserve">
+    <value>Costs include Gil and Aetheryte Ticket.</value>
+  </data>
+  <data name="RecordTPDest" xml:space="preserve">
+    <value>Record TP Destination</value>
+  </data>
+  <data name="RecordTripleTriad" xml:space="preserve">
+    <value>Record Triple Triad</value>
+  </data>
+  <data name="SuggestOrReport" xml:space="preserve">
+    <value>Sugeest or Report</value>
+  </data>
+  <data name="WaitExchange" xml:space="preserve">
+    <value>Awaiting Exchange Completion</value>
+  </data>
+  <data name="WaitExchangeHelp" xml:space="preserve">
+    <value>If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, employee/company chest, or supply duty.</value>
+  </data>
 </root>

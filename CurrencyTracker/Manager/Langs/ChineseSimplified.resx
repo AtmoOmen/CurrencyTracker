@@ -612,4 +612,78 @@
   <data name="TableAppearance" xml:space="preserve">
     <value>表格外观</value>
   </data>
+  <data name="UnknownContent" xml:space="preserve">
+    <value>未知副本</value>
+  </data>
+  <data name="From" xml:space="preserve">
+    <value>来自</value>
+  </data>
+  <data name="MiniCactpot" xml:space="preserve">
+    <value>仙人微彩</value>
+  </data>
+  <data name="TripleTriad" xml:space="preserve">
+    <value>九宫幻卡</value>
+  </data>
+  <data name="Content" xml:space="preserve">
+    <value>副本</value>
+  </data>
+  <data name="GoldSaucer" xml:space="preserve">
+    <value>金碟</value>
+  </data>
+  <data name="Overworld" xml:space="preserve">
+    <value>主世界</value>
+  </data>
+  <data name="RecordContentName" xml:space="preserve">
+    <value>记录副本名称</value>
+  </data>
+  <data name="RecordContentNameHelp" xml:space="preserve">
+    <value>包含副本与PVP</value>
+  </data>
+  <data name="RecordGoldSaucerHelp" xml:space="preserve">
+    <value>下面的选项仅代表勾选后相关记录的备注部分会被填入其来源
+
+如: (来自 九宫幻卡) </value>
+  </data>
+  <data name="RecordMiniCactpot" xml:space="preserve">
+    <value>记录仙人微彩</value>
+  </data>
+  <data name="RecordSettings" xml:space="preserve">
+    <value>记录设置</value>
+  </data>
+  <data name="RecordTPCosts" xml:space="preserve">
+    <value>记录传送费</value>
+  </data>
+  <data name="RecordTPCostsHelp" xml:space="preserve">
+    <value>传送费包含金币以及传送网使用券</value>
+  </data>
+  <data name="RecordTPDest" xml:space="preserve">
+    <value>记录传送目的地</value>
+  </data>
+  <data name="RecordTripleTriad" xml:space="preserve">
+    <value>记录九宫幻卡</value>
+  </data>
+  <data name="WaitExchange" xml:space="preserve">
+    <value>等待交易完成</value>
+  </data>
+  <data name="WaitExchangeHelp" xml:space="preserve">
+    <value>如果选中此项，则当你使用系统商店、市场布告板、雇员/部队箱或军队筹备时，会等待交换结束，再检查所有货币的增减情况</value>
+  </data>
+  <data name="HelpTranslate" xml:space="preserve">
+    <value>帮忙翻译</value>
+  </data>
+  <data name="HelpTranslateHelp" xml:space="preserve">
+    <value>诚挚感谢每一位为本地化做出贡献的你</value>
+  </data>
+  <data name="NeedHelp" xml:space="preserve">
+    <value>需要帮助</value>
+  </data>
+  <data name="OperationGuide" xml:space="preserve">
+    <value>操作指南</value>
+  </data>
+  <data name="OperationGuideHelp" xml:space="preserve">
+    <value>点击右侧按钮来查看一些插件使用上的快捷操作</value>
+  </data>
+  <data name="SuggestOrReport" xml:space="preserve">
+    <value>建议或反馈</value>
+  </data>
 </root>

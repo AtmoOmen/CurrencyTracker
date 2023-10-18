@@ -14,8 +14,6 @@ public class TransactionsConvertor
     public string LocationName { get; set; } = string.Empty; // 地名 Location Name
     public string Note { get; set; } = string.Empty; // 备注 Note
 
-    internal static LanguageManager Lang = new LanguageManager(Plugin.Instance.Configuration.SelectedLanguage);
-
     // 将字典改变为字符串，存储至数据文件 Change the dic into strings and save the strings to the data file
     public string ToFileLine()
     {
@@ -41,7 +39,7 @@ public class TransactionsConvertor
         }
         else
         {
-            transaction.LocationName = Lang.GetText("UnknownLocation");
+            transaction.LocationName = Service.Lang.GetText("UnknownLocation");
         }
 
         if (parts.Length > 4)
