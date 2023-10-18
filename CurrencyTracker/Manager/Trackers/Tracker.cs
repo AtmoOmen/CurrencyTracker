@@ -78,7 +78,6 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.RecordTeleport) InitTeleportCosts();
             if (C.TrackedInDuty) InitDutyRewards();
-            InitExchangeCompletes();
             InitGoldSaucer();
         }
 
@@ -288,7 +287,6 @@ namespace CurrencyTracker.Manager.Trackers
         {
             UninitTeleportCosts();
             UninitDutyRewards();
-            UninitExchangeCompletes();
             UninitGoldSaucer();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;

@@ -61,16 +61,6 @@ namespace CurrencyTracker.Windows
                     {
                         C.WaitExComplete = isWaitExComplete;
                         C.Save();
-
-                        if (isWaitExComplete)
-                        {
-                            Service.Tracker.UninitExchangeCompletes();
-                            Service.Tracker.InitExchangeCompletes();
-                        }
-                        else
-                        {
-                            Service.Tracker.UninitExchangeCompletes();
-                        }
                     }
 
                     ImGui.EndTabItem();
