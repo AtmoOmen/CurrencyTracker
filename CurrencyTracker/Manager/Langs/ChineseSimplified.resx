@@ -672,7 +672,7 @@
     <value>帮忙翻译</value>
   </data>
   <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>诚挚感谢每一位为本地化做出贡献的你</value>
+    <value>诚挚感谢你的付出</value>
   </data>
   <data name="NeedHelp" xml:space="preserve">
     <value>需要帮助</value>
@@ -681,9 +681,15 @@
     <value>操作指南</value>
   </data>
   <data name="OperationGuideHelp" xml:space="preserve">
-    <value>点击右侧按钮来查看一些插件使用上的快捷操作</value>
+    <value>一些快捷操作</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>建议或反馈</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>打开插件主界面</value>
+  </data>
+  <data name="CommandHelp1" xml:space="preserve">
+    <value>/ct &lt;货币名&gt; → 打开指定货币的数据界面</value>
   </data>
 </root>

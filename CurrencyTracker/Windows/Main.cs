@@ -7,14 +7,15 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
 using Lumina.Excel.GeneratedSheets;
+using TinyPinyin;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -385,15 +386,15 @@ public partial class Main : Window, IDisposable
                 Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/issues");
             }
             ImGui.SameLine();
-            if (ImGui.Button("Discord Threads"))
+            if (ImGui.Button("Discord Thread"))
             {
                 Widgets.OpenUrl("https://discord.com/channels/581875019861328007/1019646133305344090/threads/1163039624957010021");
             }
             if (C.SelectedLanguage == "ChineseSimplified")
             {
-                ImGui.TextColored(ImGuiColors.DalamudYellow, "如果你是国服用户, 请注意, 你的问题/建议可能已在更新的版本中已被修复/采纳\n" +
-                    "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下选择 插件问答帮助 频道，\n" +
-                    "然后 @AtmoOmen 向我提问");
+                ImGui.TextColored(ImGuiColors.DalamudYellow, "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
+                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问" +
+                    "(如果你是国服用户, 请注意, 你的问题/建议可能已在更新的版本中已被修复/采纳)");
                 if (ImGui.Button("QQ频道【艾欧泽亚泛獭保护协会】"))
                 {
                     Widgets.OpenUrl("https://pd.qq.com/s/fttirpnql");
@@ -402,12 +403,12 @@ public partial class Main : Window, IDisposable
             
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("HelpTranslate")}!");
             ImGui.Separator();
-            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")} -> ");
-            ImGui.SameLine();
             if (ImGui.Button($"Crowdin"))
             {
                 Widgets.OpenUrl("https://crowdin.com/project/dalamud-currencytracker");
             }
+            ImGui.SameLine();
+            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");            
 
             ImGui.EndPopup();
         }
@@ -772,9 +773,14 @@ public partial class Main : Window, IDisposable
 
                 foreach (var x in Tracker.ItemNames)
                 {
-                    if (options.All(y => !x.Value.Contains(y)) && (!filterNamesForCCT.Any(filter => x.Value.Contains(filter))))
+                    var itemName = x.Value.Normalize(NormalizationForm.FormKC);
+
+                    var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+                    var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(itemName, "") : string.Empty;
+
+                    if (options.All(y => !itemName.Contains(y)) && (!filterNamesForCCT.Any(filter => itemName.Contains(filter))))
                     {
-                        if (string.IsNullOrWhiteSpace(searchFilter) || x.Value.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
+                        if (string.IsNullOrWhiteSpace(searchFilter) || (isChineseSimplified ? pinyin.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) : itemName.IndexOf(searchFilter, StringComparison.OrdinalIgnoreCase) >= 0))
                         {
                             if (visibleItems >= startIndex && visibleItems < endIndex)
                             {

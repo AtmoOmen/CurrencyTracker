@@ -306,6 +306,24 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 打开插件主界面 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp {
+            get {
+                return ResourceManager.GetString("CommandHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 /ct &lt;货币名&gt; → 打开指定货币的数据界面 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp1 {
+            get {
+                return ResourceManager.GetString("CommandHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 筛选排序选项 的本地化字符串。
         /// </summary>
         internal static string ConfigLabel {
@@ -798,7 +816,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 诚挚感谢每一位为本地化做出贡献的你 的本地化字符串。
+        ///   查找类似 诚挚感谢你的付出 的本地化字符串。
         /// </summary>
         internal static string HelpTranslateHelp {
             get {
@@ -1190,7 +1208,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 点击右侧按钮来查看一些插件使用上的快捷操作 的本地化字符串。
+        ///   查找类似 一些快捷操作 的本地化字符串。
         /// </summary>
         internal static string OperationGuideHelp {
             get {

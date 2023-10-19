@@ -308,6 +308,24 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Open the main window of the plugin 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp {
+            get {
+                return ResourceManager.GetString("CommandHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 /ct &lt;currencyname&gt; → Open the main window with specific currency shown. 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp1 {
+            get {
+                return ResourceManager.GetString("CommandHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Filiter Options 的本地化字符串。
         /// </summary>
         internal static string ConfigLabel {
@@ -783,7 +801,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Help Translate! 的本地化字符串。
+        ///   查找类似 Help Translate 的本地化字符串。
         /// </summary>
         internal static string HelpTranslate {
             get {
@@ -792,7 +810,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Sincere thanks to everyone who has contributed to localization 的本地化字符串。
+        ///   查找类似 Sincerely thanks for your contributions 的本地化字符串。
         /// </summary>
         internal static string HelpTranslateHelp {
             get {
@@ -1181,7 +1199,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Click the button to view some shortcut operations for better using the plugin 的本地化字符串。
+        ///   查找类似 Some shortcut operations 的本地化字符串。
         /// </summary>
         internal static string OperationGuideHelp {
             get {

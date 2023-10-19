@@ -87,14 +87,14 @@ public partial class Main
         }
 
         List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
 
         foreach (var transaction in transactions)
         {
             var normalizedLocation = transaction.LocationName.Normalize(NormalizationForm.FormKC);
+            var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedLocation, "") : string.Empty;
 
-            var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
-
-            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(query, StringComparison.OrdinalIgnoreCase))
+            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
@@ -112,20 +112,21 @@ public partial class Main
         }
 
         List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
 
         foreach (var transaction in transactions)
         {
-            var normalizedLocation = transaction.Note.Normalize(NormalizationForm.FormKC);
+            var normalizedNote = transaction.Note.Normalize(NormalizationForm.FormKC);
+            var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedNote, "") : string.Empty;
 
-            var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
-
-            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(query, StringComparison.OrdinalIgnoreCase))
+            if (normalizedNote.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
         }
         return filteredTransactions;
     }
+
 
     private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {

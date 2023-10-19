@@ -3,7 +3,7 @@
     "Name": "Currency Tracker",
     "AssemblyVersion": "1.3.0.0",
     "Punchline": "Track your Currencies' Changes!",
-    "Description": "Aimed to help you track changes of various in-game currencies and record them as transactions.\nAlso allow you to query, export, add custom currencies tracker and view visualized data.",
+    "Description": "Track changes of Currencies and Record them as Transactions.\n\nAlso allow you to query, export, add custom currencies tracker and view visualized data.",
     "InternalName": "CurrencyTracker",
     "ApplicableVersion": "any",
     "RepoUrl": "https://github.com/AtmoOmen/CurrencyTracker",

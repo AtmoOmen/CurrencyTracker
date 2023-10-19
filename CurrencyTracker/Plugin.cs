@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using TinyPinyin;
 
 namespace CurrencyTracker
 {
@@ -44,7 +46,7 @@ namespace CurrencyTracker
             Service.Initialize(pluginInterface);
             InitLanguage();
 
-            // 已登录 Not Log in
+            // 已登录 Have Logged in
             if (Service.ClientState.LocalPlayer != null || Service.ClientState.LocalContentId != 0)
             {
                 CurrentCharacter = GetCurrentCharacter();
@@ -55,7 +57,7 @@ namespace CurrencyTracker
 
             CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
-                HelpMessage = "Open the main window of the plugin\n/ct <currencyname> → Open the main window with specific currency shown."
+                HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
             });
 
             PluginInterface.UiBuilder.Draw += DrawUI;
@@ -85,6 +87,12 @@ namespace CurrencyTracker
             }
 
             CurrentCharacter = GetCurrentCharacter();
+
+            if (WindowSystem.Windows.Contains(Main) && !Main.selectedCurrencyName.IsNullOrEmpty())
+            {
+                Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                Main.lastTransactions = Main.currentTypeTransactions;
+            }
         }
 
         public CharacterInfo GetCurrentCharacter()
@@ -225,10 +233,28 @@ namespace CurrencyTracker
 
         private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
         {
+            var isChineseSimplified = Configuration.SelectedLanguage == "ChineseSimplified";
+
+            partialName = partialName.Normalize(NormalizationForm.FormKC);
+
             return currencyList
-                .Where(currency => currency.Contains(partialName))
+                .Where(currency =>
+                {
+                    var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
+
+                    if (isChineseSimplified)
+                    {
+                        var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
+                        return normalizedCurrency.IndexOf(partialName, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+                    }
+                    else
+                    {
+                        return normalizedCurrency.IndexOf(partialName, StringComparison.OrdinalIgnoreCase) >= 0;
+                    }
+                })
                 .ToList();
         }
+
 
         private void DrawUI()
         {

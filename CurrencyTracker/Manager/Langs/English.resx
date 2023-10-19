@@ -633,10 +633,10 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Gold Saucer</value>
   </data>
   <data name="HelpTranslate" xml:space="preserve">
-    <value>Help Translate!</value>
+    <value>Help Translate</value>
   </data>
   <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>Sincere thanks to everyone who has contributed to localization</value>
+    <value>Sincerely thanks for your contributions</value>
   </data>
   <data name="NeedHelp" xml:space="preserve">
     <value>Need Help</value>
@@ -645,7 +645,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>Operation Guide</value>
   </data>
   <data name="OperationGuideHelp" xml:space="preserve">
-    <value>Click the button to view some shortcut operations for better using the plugin</value>
+    <value>Some shortcut operations</value>
   </data>
   <data name="Overworld" xml:space="preserve">
     <value>Overworld</value>
@@ -687,5 +687,11 @@ An example of Note: (From Triple Triad)</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
     <value>If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, employee/company chest, or supply duty.</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>Open the main window of the plugin</value>
+  </data>
+  <data name="CommandHelp1" xml:space="preserve">
+    <value>/ct &lt;currencyname&gt; → Open the main window with specific currency shown.</value>
   </data>
 </root>
