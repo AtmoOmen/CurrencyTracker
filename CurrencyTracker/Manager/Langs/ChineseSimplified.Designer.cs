@@ -534,6 +534,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 编辑失败 的本地化字符串。
+        /// </summary>
+        internal static string EditFailed {
+            get {
+                return ResourceManager.GetString("EditFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 按 Enter 键确认 的本地化字符串。
         /// </summary>
         internal static string EditHelp {
@@ -807,6 +816,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 指南 的本地化字符串。
+        /// </summary>
+        internal static string Guide {
+            get {
+                return ResourceManager.GetString("Guide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 帮忙翻译 的本地化字符串。
         /// </summary>
         internal static string HelpTranslate {
@@ -965,6 +983,17 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string MergedSpecificHelp1 {
             get {
                 return ResourceManager.GetString("MergedSpecificHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 如果此项留空,
+        ///合并后记录的 备注 部分则为:
+        ///(由 X 条记录合并而成) 的本地化字符串。
+        /// </summary>
+        internal static string MergeNoteHelp {
+            get {
+                return ResourceManager.GetString("MergeNoteHelp", resourceCulture);
             }
         }
         
@@ -1204,15 +1233,6 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string OperationGuide {
             get {
                 return ResourceManager.GetString("OperationGuide", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 一些快捷操作 的本地化字符串。
-        /// </summary>
-        internal static string OperationGuideHelp {
-            get {
-                return ResourceManager.GetString("OperationGuideHelp", resourceCulture);
             }
         }
         

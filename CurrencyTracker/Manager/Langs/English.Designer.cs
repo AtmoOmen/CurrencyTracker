@@ -528,6 +528,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Edit Failed. 的本地化字符串。
+        /// </summary>
+        internal static string EditFailed {
+            get {
+                return ResourceManager.GetString("EditFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Press Enter to Confirm 的本地化字符串。
         /// </summary>
         internal static string EditHelp {
@@ -801,6 +810,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Guide 的本地化字符串。
+        /// </summary>
+        internal static string Guide {
+            get {
+                return ResourceManager.GetString("Guide", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Help Translate 的本地化字符串。
         /// </summary>
         internal static string HelpTranslate {
@@ -960,6 +978,17 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string MergedSpecificHelp1 {
             get {
                 return ResourceManager.GetString("MergedSpecificHelp1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 If left blank,
+        ///the Note of the merged transaction will be:
+        ///(Merged from X transactions) 的本地化字符串。
+        /// </summary>
+        internal static string MergeNoteHelp {
+            get {
+                return ResourceManager.GetString("MergeNoteHelp", resourceCulture);
             }
         }
         
@@ -1195,15 +1224,6 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string OperationGuide {
             get {
                 return ResourceManager.GetString("OperationGuide", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Some shortcut operations 的本地化字符串。
-        /// </summary>
-        internal static string OperationGuideHelp {
-            get {
-                return ResourceManager.GetString("OperationGuideHelp", resourceCulture);
             }
         }
         
@@ -1688,7 +1708,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, employee/company chest, or supply duty. 的本地化字符串。
+        ///   查找类似 If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, retainer/company chest, or supply duty. 的本地化字符串。
         /// </summary>
         internal static string WaitExchangeHelp {
             get {

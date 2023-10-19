@@ -677,11 +677,8 @@
   <data name="NeedHelp" xml:space="preserve">
     <value>需要帮助</value>
   </data>
-  <data name="OperationGuide" xml:space="preserve">
-    <value>操作指南</value>
-  </data>
-  <data name="OperationGuideHelp" xml:space="preserve">
-    <value>一些快捷操作</value>
+  <data name="Guide" xml:space="preserve">
+    <value>指南</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>建议或反馈</value>
@@ -691,5 +688,16 @@
   </data>
   <data name="CommandHelp1" xml:space="preserve">
     <value>/ct &lt;货币名&gt; → 打开指定货币的数据界面</value>
+  </data>
+  <data name="EditFailed" xml:space="preserve">
+    <value>编辑失败</value>
+  </data>
+  <data name="MergeNoteHelp" xml:space="preserve">
+    <value>如果此项留空,
+合并后记录的 备注 部分则为:
+(由 X 条记录合并而成)</value>
+  </data>
+  <data name="OperationGuide" xml:space="preserve">
+    <value>操作指南</value>
   </data>
 </root>

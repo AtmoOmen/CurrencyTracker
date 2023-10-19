@@ -15,6 +15,10 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void IsOnExchange()
         {
+            // 罗薇娜商会
+            var ICS = Service.GameGui.GetAddonByName("InclusionShop");
+            // 收藏品交易
+            var CS = Service.GameGui.GetAddonByName("CollectablesShop");
             // 部队战绩交换
             var FCE = Service.GameGui.GetAddonByName("FreeCompanyExchange");
             // 部队战绩交换 (道具)
@@ -36,22 +40,22 @@ namespace CurrencyTracker.Manager.Trackers
             // 传唤铃/部队箱
             var SB = Service.Condition[ConditionFlag.OccupiedSummoningBell] ? 1 : nint.Zero;
 
-            var nintVariables = new nint[] { FCE, FCCS, SEC, GCSL, GCE, SHOP, IS, SEI, SIE, SB };
+            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, SHOP, IS, SEI, SIE, SB };
 
-            var hasNonZeroValue = nintVariables.Any(value => value != nint.Zero);
+            var isAnyOpen = exchangeUI.Any(value => value != nint.Zero);
 
-            if (hasNonZeroValue && !isOnExchanging)
+            if (isAnyOpen && !isOnExchanging)
             {
                 isOnExchanging = true;
                 Service.Chat.ChatMessage -= OnChatMessage;
-                Service.PluginLog.Debug("正在进行交换");
+                Service.PluginLog.Debug("Exchange Starts");
             }
-            if (!hasNonZeroValue && isOnExchanging)
+            if (!isAnyOpen && isOnExchanging)
             {
                 isOnExchanging = false;
                 Service.Chat.ChatMessage += OnChatMessage;
                 UpdateCurrenciesByChat();
-                Service.PluginLog.Debug("交换完成");
+                Service.PluginLog.Debug("Exchange Completes");
             }
 
 

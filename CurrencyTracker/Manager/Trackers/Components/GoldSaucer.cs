@@ -10,7 +10,7 @@ namespace CurrencyTracker.Manager.Trackers
         // 仙人微彩 Mini Cactpot
         private bool isMCOn = false;
 
-        // 九宫幻卡
+        // 九宫幻卡 Triple Triad
         private bool isTTOn = false;
 
         private void InitGoldSaucer()

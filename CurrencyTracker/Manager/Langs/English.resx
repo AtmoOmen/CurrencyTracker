@@ -641,11 +641,8 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="NeedHelp" xml:space="preserve">
     <value>Need Help</value>
   </data>
-  <data name="OperationGuide" xml:space="preserve">
-    <value>Operation Guide</value>
-  </data>
-  <data name="OperationGuideHelp" xml:space="preserve">
-    <value>Some shortcut operations</value>
+  <data name="Guide" xml:space="preserve">
+    <value>Guide</value>
   </data>
   <data name="Overworld" xml:space="preserve">
     <value>Overworld</value>
@@ -686,12 +683,23 @@ An example of Note: (From Triple Triad)</value>
     <value>Awaiting Exchange Completion</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, employee/company chest, or supply duty.</value>
+    <value>If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, retainer/company chest, or supply duty.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Open the main window of the plugin</value>
   </data>
   <data name="CommandHelp1" xml:space="preserve">
     <value>/ct &lt;currencyname&gt; → Open the main window with specific currency shown.</value>
+  </data>
+  <data name="EditFailed" xml:space="preserve">
+    <value>Edit Failed.</value>
+  </data>
+  <data name="MergeNoteHelp" xml:space="preserve">
+    <value>If left blank,
+the Note of the merged transaction will be:
+(Merged from X transactions)</value>
+  </data>
+  <data name="OperationGuide" xml:space="preserve">
+    <value>Operation Guide</value>
   </data>
 </root>

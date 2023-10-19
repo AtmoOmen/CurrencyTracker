@@ -369,10 +369,8 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("NeedHelp"))
         {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("OperationGuide")}:");
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Guide")}:");
             ImGui.Separator();
-            ImGui.Text($"{Service.Lang.GetText("OperationGuideHelp")} -> ");
-            ImGui.SameLine();
             if (ImGui.Button($"{Service.Lang.GetText("OperationGuide")} (GitHub)"))
             {
                 Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/wiki/Operations");
@@ -393,7 +391,7 @@ public partial class Main : Window, IDisposable
             if (C.SelectedLanguage == "ChineseSimplified")
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
-                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问" +
+                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问\n" +
                     "(如果你是国服用户, 请注意, 你的问题/建议可能已在更新的版本中已被修复/采纳)");
                 if (ImGui.Button("QQ频道【艾欧泽亚泛獭保护协会】"))
                 {
@@ -1294,14 +1292,14 @@ public partial class Main : Window, IDisposable
         // 反选 Inverse Select
         if (ImGui.Selectable(Service.Lang.GetText("InverseSelect")))
         {
-            for (int i = 0; i < selectedStates[selectedCurrencyName].Count; i++)
+            for (var i = 0; i < selectedStates[selectedCurrencyName].Count; i++)
             {
                 selectedStates[selectedCurrencyName][i] = !selectedStates[selectedCurrencyName][i];
             }
 
             foreach (var transaction in currentTypeTransactions)
             {
-                bool exists = selectedTransactions[selectedCurrencyName].Any(selectedTransaction => Widgets.IsTransactionEqual(selectedTransaction, transaction));
+                var exists = selectedTransactions[selectedCurrencyName].Any(selectedTransaction => Widgets.IsTransactionEqual(selectedTransaction, transaction));
 
                 if (exists)
                 {
@@ -1406,16 +1404,32 @@ public partial class Main : Window, IDisposable
             if (isOnEdit) isOnEdit = !isOnEdit;
 
             ImGui.Separator();
-            ImGui.Text($"{Service.Lang.GetText("Location")}:");
-            ImGui.SetNextItemWidth(210);
+            
 
             if (selectedTransactions[selectedCurrencyName].Count != 0)
             {
                 editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
+                editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
             }
-            else editedLocationName = string.Empty;
+            else
+            {
+                editedLocationName = string.Empty;
+                editedNoteContent = string.Empty;
+            }
 
-            if (ImGui.InputTextWithHint("", Service.Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+            ImGui.Text($"{Service.Lang.GetText("Location")}:");
+            ImGui.SetNextItemWidth(210);
+            ImGui.InputText("##MergeLocationName", ref editedLocationName, 80);
+
+            ImGui.Text($"{Service.Lang.GetText("Note")}:");
+            ImGui.SetNextItemWidth(210);
+            ImGui.InputText("##MergeNoteContent", ref editedNoteContent, 150);
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip($"{Service.Lang.GetText("MergeNoteHelp")}");
+            }
+
+            if (ImGui.SmallButton(Service.Lang.GetText("Confirm")))
             {
                 if (selectedTransactions[selectedCurrencyName].Count == 0)
                 {
@@ -1435,7 +1449,7 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                var mergeCount = transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName]);
+                var mergeCount = transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent);
                 Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Service.Lang.GetText("MergeTransactionsHelp2")}");
 
                 UpdateTransactions();
@@ -1443,7 +1457,7 @@ public partial class Main : Window, IDisposable
             }
         }
 
-        // 编辑
+        // 编辑 Edit
         ImGui.Selectable(Service.Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups);
 
         if (isOnEdit)
@@ -1479,13 +1493,15 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
+                var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+                var failCounts = 0; 
+
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
-                    string filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
                     var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
 
-                    int index = -1;
-                    for (int i = 0; i < editedTransactions.Count; i++)
+                    var index = -1;
+                    for (var i = 0; i < editedTransactions.Count; i++)
                     {
                         if (Widgets.IsTransactionEqual(editedTransactions[i], selectedTransaction))
                         {
@@ -1499,13 +1515,30 @@ public partial class Main : Window, IDisposable
                         editedTransactions[index].LocationName = editedLocationName;
                         transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
+                    else
+                    {
+                        failCounts++;
+                    }
                 }
 
-                Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                if (failCounts == 0)
+                {
+                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
 
-                UpdateTransactions();
+                    UpdateTransactions();
+                }
+                else if (failCounts > 0 && failCounts < selectedTransactions[selectedCurrencyName].Count)
+                {
+                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count - failCounts} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                    Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCounts})");
 
-                isOnEdit = false;
+                    UpdateTransactions();
+                }
+                else
+                {
+                    Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                }
+
             }
 
             ImGui.Text($"{Service.Lang.GetText("Note")}:");
@@ -1518,13 +1551,15 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
+                var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+                var failCounts = 0;
+
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
-                    var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
                     var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
 
-                    int index = -1;
-                    for (int i = 0; i < editedTransactions.Count; i++)
+                    var index = -1;
+                    for (var i = 0; i < editedTransactions.Count; i++)
                     {
                         if (Widgets.IsTransactionEqual(editedTransactions[i], selectedTransaction))
                         {
@@ -1538,12 +1573,31 @@ public partial class Main : Window, IDisposable
                         editedTransactions[index].Note = editedNoteContent;
                         transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
+                    else
+                    {
+                        failCounts++;
+                    }
                 }
 
-                Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp4")}: {editedNoteContent}");
+                if (failCounts == 0)
+                {
+                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
 
-                UpdateTransactions();
+                    UpdateTransactions();
+                }
+                else if (failCounts > 0 && failCounts < selectedTransactions[selectedCurrencyName].Count)
+                {
+                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count - failCounts} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                    Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCounts})");
+
+                    UpdateTransactions();
+                }
+                else
+                {
+                    Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                }
             }
+
             if (!editedNoteContent.IsNullOrEmpty())
             {
                 ImGui.TextWrapped(editedNoteContent);
@@ -1944,7 +1998,7 @@ public partial class Main : Window, IDisposable
                                     var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
                                     var index = -1;
 
-                                    for (int d = 0; d < editedTransactions.Count; d++)
+                                    for (var d = 0; d < editedTransactions.Count; d++)
                                     {
                                         if (Widgets.IsTransactionEqual(editedTransactions[d], transaction))
                                         {
@@ -1958,6 +2012,10 @@ public partial class Main : Window, IDisposable
                                         transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
+                                    }
+                                    else
+                                    {
+                                        Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
                                     }
                                 }
 
@@ -1998,7 +2056,7 @@ public partial class Main : Window, IDisposable
                                     var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
                                     var index = -1;
 
-                                    for (int d = 0; d < editedTransactions.Count; d++)
+                                    for (var d = 0; d < editedTransactions.Count; d++)
                                     {
                                         if (Widgets.IsTransactionEqual(editedTransactions[d], transaction))
                                         {
@@ -2012,6 +2070,10 @@ public partial class Main : Window, IDisposable
                                         transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
+                                    }
+                                    else
+                                    {
+                                        Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
                                     }
                                 }
 

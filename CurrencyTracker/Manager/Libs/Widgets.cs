@@ -12,7 +12,7 @@ namespace CurrencyTracker.Windows
     {
         public static bool IsTransactionEqual(TransactionsConvertor t1, TransactionsConvertor t2)
         {
-            return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change && t1.LocationName == t2.LocationName;
+            return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change && t1.LocationName == t2.LocationName && t1.Note == t2.Note;
         }
 
         public static bool AreTransactionsEqual(List<TransactionsConvertor> list1, List<TransactionsConvertor> list2)

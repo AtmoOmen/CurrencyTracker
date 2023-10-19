@@ -291,7 +291,7 @@ namespace CurrencyTracker.Manager
             return mergedCount;
         }
 
-        public int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions)
+        public int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
         {
             var allTransactions = LoadAllTransactions(CurrencyName);
             var latestTime = DateTime.MinValue;
@@ -334,7 +334,14 @@ namespace CurrencyTracker.Manager
                         finalTransaction.Change = overallChange;
                         finalTransaction.LocationName = LocationName;
                         finalTransaction.Amount = finalAmount;
-                        finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Service.Lang.GetText("MergedSpecificHelp1")})";
+                        if (NoteContent != "-1")
+                        {
+                            finalTransaction.Note = NoteContent;
+                        }
+                        else
+                        {
+                            finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Service.Lang.GetText("MergedSpecificHelp1")})";
+                        }
                     }
                     else
                     {
@@ -351,7 +358,7 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return selectedTransactions.Count;
