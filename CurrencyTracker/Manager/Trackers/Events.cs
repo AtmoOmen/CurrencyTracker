@@ -1,12 +1,10 @@
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin.Services;
 using System;
 using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using static Dalamud.Plugin.Services.IChatGui;
-using Dalamud.Plugin.Services;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -29,12 +27,18 @@ namespace CurrencyTracker.Manager.Trackers
                 DutyEndCheck(chatmessage);
             }
 
+            if (isQuestReadyFinish)
+            {
+                QuestEndCheck(chatmessage);
+            }
+
             if (TriggerChatTypes.Contains(typeValue))
             {
                 UpdateCurrenciesByChat();
             }
 
             /*
+
             if (Plugin.Instance.PluginInterface.IsDev)
             {
                 if (!IgnoreChatTypes.Contains(typeValue))
@@ -91,6 +95,10 @@ namespace CurrencyTracker.Manager.Trackers
                     // 无花费 No Costs
                     else if (teleportCost == 0)
                     {
+                        if (C.RecordTeleportDes)
+                        {
+                            CheckCurrency(1, false, previousLocationName, $"({Service.Lang.GetText("TeleportTo")} {currentLocationName})");
+                        }
                     }
                     // 金币 Gil
                     else
@@ -106,7 +114,6 @@ namespace CurrencyTracker.Manager.Trackers
                             Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                             Plugin.Instance.Main.UpdateTransactions();
                         }
-
                     }
                 }
                 teleportCost = 0;
@@ -137,23 +144,26 @@ namespace CurrencyTracker.Manager.Trackers
         // 角色 Condition 改变时触发的事件
         private void OnConditionChanged(ConditionFlag flag, bool value)
         {
-            if (flag == ConditionFlag.OccupiedInEvent || flag == ConditionFlag.OccupiedInQuestEvent || flag == ConditionFlag.OccupiedSummoningBell)
+            /*
+            if (flag == ConditionFlag.OccupiedInQuestEvent && isQuestReadyFinish)
             {
-                if (value)
+                if (!value)
                 {
-                    Service.Chat.ChatMessage -= OnChatMessage;
-                }
-                else
-                {
-                    Service.Chat.ChatMessage += OnChatMessage;
-                    UpdateCurrenciesByChat();
+                    isQuestFinished = true;
                 }
             }
+            */
         }
 
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
+            // 任务名 Record Quest Name
+            if (C.RecordQuestName)
+            {
+                Quests();
+            }
+
             // 九宫幻卡 Triple Triad
             TripleTriad();
 
@@ -168,7 +178,6 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 MiniCactpot();
             }
-
         }
     }
 }

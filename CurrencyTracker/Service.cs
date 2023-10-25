@@ -1,6 +1,7 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
+using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -26,6 +27,7 @@ public class Service
     [PluginService] public static IPluginLog PluginLog { get; private set; } = null!;
     [PluginService] public static IGameInteropProvider GameInteropProvider { get; private set; } = null!;
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;
+    [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new SigScanner();
     public static Tracker Tracker { get; set; } = null!;
     public static Configuration Configuration { get; set; } = null!;

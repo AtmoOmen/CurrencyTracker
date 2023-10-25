@@ -326,6 +326,24 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Mutiple Currencies Found 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp2 {
+            get {
+                return ResourceManager.GetString("CommandHelp2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 No Currency Found 的本地化字符串。
+        /// </summary>
+        internal static string CommandHelp3 {
+            get {
+                return ResourceManager.GetString("CommandHelp3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Filiter Options 的本地化字符串。
         /// </summary>
         internal static string ConfigLabel {
@@ -591,6 +609,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Exchange with 的本地化字符串。
+        /// </summary>
+        internal static string ExchangeWith {
+            get {
+                return ResourceManager.GetString("ExchangeWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Export 的本地化字符串。
         /// </summary>
         internal static string Export {
@@ -741,6 +768,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string From {
             get {
                 return ResourceManager.GetString("From", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 General 的本地化字符串。
+        /// </summary>
+        internal static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
             }
         }
         
@@ -1327,6 +1363,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Quest 的本地化字符串。
+        /// </summary>
+        internal static string Quest {
+            get {
+                return ResourceManager.GetString("Quest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Record Content Name 的本地化字符串。
         /// </summary>
         internal static string RecordContentName {
@@ -1347,7 +1392,7 @@ namespace CurrencyTracker.Manager.Langs {
         /// <summary>
         ///   查找类似 Options below mean the Note of specific transactions will filled with its source if checked.
         ///
-        ///An example of Note: (From Triple Triad) 的本地化字符串。
+        ///An example of Note: (Triple Triad with Maisenta) 的本地化字符串。
         /// </summary>
         internal static string RecordGoldSaucerHelp {
             get {
@@ -1361,6 +1406,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string RecordMiniCactpot {
             get {
                 return ResourceManager.GetString("RecordMiniCactpot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Record Quest Name 的本地化字符串。
+        /// </summary>
+        internal static string RecordQuestName {
+            get {
+                return ResourceManager.GetString("RecordQuestName", resourceCulture);
             }
         }
         
@@ -1465,6 +1519,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Teleport from 的本地化字符串。
+        /// </summary>
+        internal static string TeleportFrom {
+            get {
+                return ResourceManager.GetString("TeleportFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Teleport to 的本地化字符串。
         /// </summary>
         internal static string TeleportTo {
@@ -1517,85 +1580,6 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string TrackInDutyHelp {
             get {
                 return ResourceManager.GetString("TrackInDutyHelp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Timer Mode:
-        ///Check all currency changes every 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeHelp {
-            get {
-                return ResourceManager.GetString("TrackModeHelp", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 milliseconds 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeHelp1 {
-            get {
-                return ResourceManager.GetString("TrackModeHelp1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Chat Mode:
-        ///Check all currency changes whenever a new chat message from specific types is received
-        ///(Will record more accurate transactions data)
-        ///
-        ///Note: If you found the plugin didn&apos;t record the change under certain circumstances, please report it with the situation! 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeHelp2 {
-            get {
-                return ResourceManager.GetString("TrackModeHelp2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Too low trigger interval may result in higher performance overhead
-        ///
-        ///Note: Please choose Chat Mode if nothing goes wrong! 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeHelp3 {
-            get {
-                return ResourceManager.GetString("TrackModeHelp3", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Track Mode 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeLabel {
-            get {
-                return ResourceManager.GetString("TrackModeLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Timer Mode 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeLabel1 {
-            get {
-                return ResourceManager.GetString("TrackModeLabel1", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Chat Mode 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeLabel2 {
-            get {
-                return ResourceManager.GetString("TrackModeLabel2", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 Interval (ms) 的本地化字符串。
-        /// </summary>
-        internal static string TrackModeLabel3 {
-            get {
-                return ResourceManager.GetString("TrackModeLabel3", resourceCulture);
             }
         }
         
@@ -1681,6 +1665,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 Unknown Language 的本地化字符串。
+        /// </summary>
+        internal static string UnknownLang {
+            get {
+                return ResourceManager.GetString("UnknownLang", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Unknown 的本地化字符串。
         /// </summary>
         internal static string UnknownLocation {
@@ -1722,6 +1715,15 @@ namespace CurrencyTracker.Manager.Langs {
         internal static string WeekDays {
             get {
                 return ResourceManager.GetString("WeekDays", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 with 的本地化字符串。
+        /// </summary>
+        internal static string With {
+            get {
+                return ResourceManager.GetString("With", resourceCulture);
             }
         }
         

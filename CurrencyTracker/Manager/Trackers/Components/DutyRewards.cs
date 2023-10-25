@@ -19,6 +19,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         // Terriory ID - ContentName
         public static Dictionary<uint, string> ContentNames = new();
+
         // Terroiry ID - PVPNames
         public static Dictionary<uint, string> PVPNames = new();
 
@@ -70,14 +71,14 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
                     {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({Service.Lang.GetText("From")} {dutyContentName})" : "-1");
+                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
                     }
                 }
                 foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
                 {
                     if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
                     {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({Service.Lang.GetText("From")} {dutyContentName})" : "-1");
+                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
                     }
                 }
 

@@ -4,7 +4,6 @@ using CurrencyTracker.Windows;
 using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
@@ -19,7 +18,6 @@ namespace CurrencyTracker
     {
         public string Name => "Currency Tracker";
         public DalamudPluginInterface PluginInterface { get; init; }
-        public ICommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         internal Main Main { get; init; }
@@ -29,17 +27,17 @@ namespace CurrencyTracker
         */
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
-        private const string CommandName = "/ct";
+        internal const string CommandName = "/ct";
         private HookManager hookManager;
 
         public string PlayerDataFolder = string.Empty;
         private string playerLang = string.Empty;
 
-        public Plugin(DalamudPluginInterface pluginInterface, ICommandManager commandManager)
+        public Plugin(DalamudPluginInterface pluginInterface)
         {
             Instance = this;
             PluginInterface = pluginInterface;
-            CommandManager = commandManager;
+
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
 
@@ -55,7 +53,7 @@ namespace CurrencyTracker
             Service.ClientState.Login += HandleLogin;
             Service.Tracker = new Tracker();
 
-            CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
+            Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
                 HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
             });
@@ -77,7 +75,6 @@ namespace CurrencyTracker
             WindowSystem.AddWindow(RecordSettings);
             */
         }
-
 
         private void HandleLogin()
         {
@@ -161,7 +158,7 @@ namespace CurrencyTracker
             }
         }
 
-        private void OnCommand(string command, string args)
+        internal void OnCommand(string command, string args)
         {
             var currencyName = string.Empty;
             if (string.IsNullOrEmpty(args))
@@ -173,7 +170,7 @@ namespace CurrencyTracker
                 var matchingCurrencies = FindMatchingCurrencies(Main.options, args);
                 if (matchingCurrencies.Count > 1)
                 {
-                    Service.Chat.PrintError("Mutiple Currencies Found:");
+                    Service.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
                     foreach (var currency in matchingCurrencies)
                     {
                         Service.Chat.PrintError(currency);
@@ -182,7 +179,7 @@ namespace CurrencyTracker
                 }
                 else if (matchingCurrencies.Count == 0)
                 {
-                    Service.Chat.PrintError("No Currency Found");
+                    Service.Chat.PrintError(Service.Lang.GetText("CommandHelp3"));
                     return;
                 }
                 else
@@ -255,7 +252,6 @@ namespace CurrencyTracker
                 .ToList();
         }
 
-
         private void DrawUI()
         {
             WindowSystem.Draw();
@@ -288,7 +284,7 @@ namespace CurrencyTracker
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
 
-            CommandManager.RemoveHandler(CommandName);
+            Service.CommandManager.RemoveHandler(CommandName);
         }
     }
 }

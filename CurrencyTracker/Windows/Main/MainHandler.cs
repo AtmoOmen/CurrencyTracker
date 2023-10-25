@@ -4,10 +4,8 @@ using Dalamud.Utility;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using System.Text;
 using TinyPinyin;
 
@@ -126,7 +124,6 @@ public partial class Main
         }
         return filteredTransactions;
     }
-
 
     private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
@@ -250,7 +247,7 @@ public partial class Main
         if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
         {
             var weekDaysData = Service.Lang.GetText("WeekDays");
-            string[] weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var day in weekDays)
             {
                 ImGui.TableNextColumn();
@@ -259,18 +256,18 @@ public partial class Main
 
             ImGui.TableNextRow(ImGuiTableRowFlags.None);
 
-            DateTime firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            int firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+            var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+            var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
 
-            int daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+            var daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
 
-            for (int i = 0; i < firstDayOfWeek; i++)
+            for (var i = 0; i < firstDayOfWeek; i++)
             {
                 ImGui.TableNextColumn();
                 ImGui.Text("");
             }
 
-            for (int day = 1; day <= daysInMonth; day++)
+            for (var day = 1; day <= daysInMonth; day++)
             {
                 ImGui.TableNextColumn();
                 if (currentDate.Day == day)

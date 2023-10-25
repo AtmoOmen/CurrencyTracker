@@ -154,6 +154,7 @@ public partial class Main
     private bool isWaitExComplete;
     private bool isRecordMiniCactpot;
     private bool isRecordTripleTriad;
+    private bool isRecordQuestName;
 
     internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();

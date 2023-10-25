@@ -366,35 +366,6 @@
   <data name="UnknownCurrency" xml:space="preserve">
     <value>未知的货币类型</value>
   </data>
-  <data name="TrackModeLabel" xml:space="preserve">
-    <value>记录模式</value>
-  </data>
-  <data name="TrackModeLabel1" xml:space="preserve">
-    <value>计时器模式</value>
-  </data>
-  <data name="TrackModeLabel2" xml:space="preserve">
-    <value>消息模式</value>
-  </data>
-  <data name="TrackModeLabel3" xml:space="preserve">
-    <value>间隔 (ms)</value>
-  </data>
-  <data name="TrackModeHelp" xml:space="preserve">
-    <value>计时器模式:
-每隔</value>
-  </data>
-  <data name="TrackModeHelp1" xml:space="preserve">
-    <value>毫秒，检查一次所有货币的变化情况</value>
-  </data>
-  <data name="TrackModeHelp2" xml:space="preserve">
-    <value>消息模式:
-每当接收到特定的新消息时，检查一次所有货币的变化情况
-(此模式下会得到更加精准的记录)
-
-注：如果发现任何不记录的情况，请附上场景向我提交 ISSUE！</value>
-  </data>
-  <data name="TrackModeHelp3" xml:space="preserve">
-    <value>过低的触发间隔会带来更高的性能损耗 (不明显)</value>
-  </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>数量图表 </value>
   </data>
@@ -630,8 +601,8 @@
   <data name="GoldSaucer" xml:space="preserve">
     <value>金碟</value>
   </data>
-  <data name="Overworld" xml:space="preserve">
-    <value>主世界</value>
+  <data name="General" xml:space="preserve">
+    <value>一般</value>
   </data>
   <data name="RecordContentName" xml:space="preserve">
     <value>记录副本名称</value>
@@ -642,7 +613,7 @@
   <data name="RecordGoldSaucerHelp" xml:space="preserve">
     <value>下面的选项仅代表勾选后相关记录的备注部分会被填入其来源
 
-如: (来自 九宫幻卡) </value>
+如: (九宫幻卡 - 麦森塔) </value>
   </data>
   <data name="RecordMiniCactpot" xml:space="preserve">
     <value>记录仙人微彩</value>
@@ -699,5 +670,29 @@
   </data>
   <data name="OperationGuide" xml:space="preserve">
     <value>操作指南</value>
+  </data>
+  <data name="UnknownLang" xml:space="preserve">
+    <value>未知语言</value>
+  </data>
+  <data name="CommandHelp2" xml:space="preserve">
+    <value>发现了多种符合条件的货币</value>
+  </data>
+  <data name="CommandHelp3" xml:space="preserve">
+    <value>未找到符合条件的货币</value>
+  </data>
+  <data name="ExchangeWith" xml:space="preserve">
+    <value>交易自</value>
+  </data>
+  <data name="With" xml:space="preserve">
+    <value>-</value>
+  </data>
+  <data name="TeleportFrom" xml:space="preserve">
+    <value>传送自</value>
+  </data>
+  <data name="Quest" xml:space="preserve">
+    <value>任务</value>
+  </data>
+  <data name="RecordQuestName" xml:space="preserve">
+    <value>记录任务名称</value>
   </data>
 </root>

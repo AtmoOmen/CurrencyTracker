@@ -1,21 +1,22 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
+using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
-using TinyPinyin;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Text;
+using TinyPinyin;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -58,6 +59,7 @@ public partial class Main : Window, IDisposable
         isWaitExComplete = C.WaitExComplete;
         isRecordMiniCactpot = C.RecordMiniCactpot;
         isRecordTripleTriad = C.RecordTripleTriad;
+        isRecordQuestName = C.RecordQuestName;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -202,6 +204,7 @@ public partial class Main : Window, IDisposable
     private void FeaturesUnderTest()
     {
         /*
+
         ImGui.SameLine();
         if (!Service.ClientState.IsPvP)
         {
@@ -245,7 +248,6 @@ public partial class Main : Window, IDisposable
             ImGui.SetClipboardText(name);
         }
 
-        
         if (ImGui.Button("获取测试数据"))
         {
             testResult = currencyInfo.GetRetainerAmount(1);
@@ -299,7 +301,7 @@ public partial class Main : Window, IDisposable
                 ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordContentNameHelp"));
             }
 
-            ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("Overworld"));
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("General"));
             ImGui.Separator();
             if (ImGui.Checkbox(Service.Lang.GetText("RecordTPCosts"), ref isRecordTeleport))
             {
@@ -328,6 +330,14 @@ public partial class Main : Window, IDisposable
                     C.RecordTeleportDes = isRecordTeleportDes;
                     C.Save();
                 }
+            }
+
+            if (ImGui.Checkbox(Service.Lang.GetText("RecordQuestName"), ref isRecordQuestName))
+            {
+                Service.Tracker.InitQuests();
+
+                C.RecordQuestName = isRecordQuestName;
+                C.Save();
             }
 
             if (ImGui.Checkbox(Service.Lang.GetText("WaitExchange"), ref isWaitExComplete))
@@ -398,7 +408,7 @@ public partial class Main : Window, IDisposable
                     Widgets.OpenUrl("https://pd.qq.com/s/fttirpnql");
                 }
             }
-            
+
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("HelpTranslate")}!");
             ImGui.Separator();
             if (ImGui.Button($"Crowdin"))
@@ -406,7 +416,7 @@ public partial class Main : Window, IDisposable
                 Widgets.OpenUrl("https://crowdin.com/project/dalamud-currencytracker");
             }
             ImGui.SameLine();
-            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");            
+            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");
 
             ImGui.EndPopup();
         }
@@ -767,7 +777,7 @@ public partial class Main : Window, IDisposable
 
                 ImGui.Separator();
 
-                int visibleItems = 0;
+                var visibleItems = 0;
 
                 foreach (var x in Tracker.ItemNames)
                 {
@@ -1001,10 +1011,6 @@ public partial class Main : Window, IDisposable
     {
         if (ImGui.Button(Service.Lang.GetText("OpenDataFolder")))
         {
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            string playerDataFolder = Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-
             try
             {
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -1012,7 +1018,7 @@ public partial class Main : Window, IDisposable
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = "cmd",
-                        Arguments = $"/c start \"\" \"{playerDataFolder}\"",
+                        Arguments = $"/c start \"\" \"{P.PlayerDataFolder}\"",
                         UseShellExecute = false,
                         CreateNoWindow = true
                     });
@@ -1022,7 +1028,7 @@ public partial class Main : Window, IDisposable
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = "xdg-open",
-                        Arguments = playerDataFolder
+                        Arguments = P.PlayerDataFolder
                     });
                 }
                 else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
@@ -1030,7 +1036,7 @@ public partial class Main : Window, IDisposable
                     Process.Start(new ProcessStartInfo
                     {
                         FileName = "open",
-                        Arguments = playerDataFolder
+                        Arguments = P.PlayerDataFolder
                     });
                 }
                 else
@@ -1076,10 +1082,10 @@ public partial class Main : Window, IDisposable
                 var language = langquery.FirstOrDefault();
                 if (language.IsNullOrEmpty())
                 {
-                    Service.Chat.PrintError(Service.Lang.GetText("UnknownCurrency"));
+                    Service.Chat.PrintError(Service.Lang.GetText("UnknownLang"));
                     return;
                 }
-                if (ImGui.Button(langname))
+                if (ImGui.Button(langname) && language != playerLang)
                 {
                     Service.Lang = new LanguageManager(language);
 
@@ -1087,6 +1093,12 @@ public partial class Main : Window, IDisposable
 
                     C.SelectedLanguage = playerLang;
                     C.Save();
+
+                    Service.CommandManager.RemoveHandler(Plugin.CommandName);
+                    Service.CommandManager.AddHandler(Plugin.CommandName, new CommandInfo(P.OnCommand)
+                    {
+                        HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
+                    });
                 }
             }
             ImGui.EndPopup();
@@ -1404,7 +1416,6 @@ public partial class Main : Window, IDisposable
             if (isOnEdit) isOnEdit = !isOnEdit;
 
             ImGui.Separator();
-            
 
             if (selectedTransactions[selectedCurrencyName].Count != 0)
             {
@@ -1494,7 +1505,7 @@ public partial class Main : Window, IDisposable
                 }
 
                 var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
-                var failCounts = 0; 
+                var failCounts = 0;
 
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
@@ -1538,7 +1549,6 @@ public partial class Main : Window, IDisposable
                 {
                     Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
                 }
-
             }
 
             ImGui.Text($"{Service.Lang.GetText("Note")}:");

@@ -1,7 +1,6 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Utility;
 using System;
-using System.Collections.Generic;
-using System.IO.Pipes;
 using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -9,6 +8,7 @@ namespace CurrencyTracker.Manager.Trackers
     public partial class Tracker : IDisposable
     {
         private bool isOnExchanging = false;
+
         public void InitExchangeCompletes()
         {
         }
@@ -29,6 +29,8 @@ namespace CurrencyTracker.Manager.Trackers
             var GCSL = Service.GameGui.GetAddonByName("GrandCompanySupplyList");
             // 军队补给
             var GCE = Service.GameGui.GetAddonByName("GrandCompanyExchange");
+            // 军票提交确认
+            var GCSR = Service.GameGui.GetAddonByName("GrandCompanySupplyReward");
             // 商店
             var SHOP = Service.GameGui.GetAddonByName("Shop");
             // 市场布告栏
@@ -40,7 +42,7 @@ namespace CurrencyTracker.Manager.Trackers
             // 传唤铃/部队箱
             var SB = Service.Condition[ConditionFlag.OccupiedSummoningBell] ? 1 : nint.Zero;
 
-            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, SHOP, IS, SEI, SIE, SB };
+            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, GCSR, SHOP, IS, SEI, SIE, SB };
 
             var isAnyOpen = exchangeUI.Any(value => value != nint.Zero);
 
@@ -48,17 +50,44 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 isOnExchanging = true;
                 Service.Chat.ChatMessage -= OnChatMessage;
+                if (Service.TargetManager.Target != null)
+                {
+                    currentTargetName = Service.TargetManager.Target.Name.TextValue;
+                }
                 Service.PluginLog.Debug("Exchange Starts");
             }
             if (!isAnyOpen && isOnExchanging)
             {
                 isOnExchanging = false;
                 Service.Chat.ChatMessage += OnChatMessage;
-                UpdateCurrenciesByChat();
+
+                if (!currentTargetName.IsNullOrEmpty())
+                {
+                    foreach (var currency in CurrencyType)
+                    {
+                        if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
+                        {
+                            CheckCurrency(currencyID, false, "-1", $"({Service.Lang.GetText("ExchangeWith")} {currentTargetName})");
+                        }
+                    }
+                    foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
+                    {
+                        if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
+                        {
+                            CheckCurrency(currencyID, false, "-1", $"({Service.Lang.GetText("ExchangeWith")} {currentTargetName})");
+                        }
+                    }
+                }
+                else
+                {
+                    Service.PluginLog.Warning("Failed to get exchange target.");
+                    UpdateCurrenciesByChat();
+                }
+
+                currentTargetName = string.Empty;
+
                 Service.PluginLog.Debug("Exchange Completes");
             }
-
-
         }
 
         public void UninitExchangeCompletes()

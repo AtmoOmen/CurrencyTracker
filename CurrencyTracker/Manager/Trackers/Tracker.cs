@@ -50,6 +50,7 @@ namespace CurrencyTracker.Manager.Trackers
         private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
         public static string NonLimitedTomestoneName = string.Empty;
         public static string LimitedTomestoneName = string.Empty;
+        private string currentTargetName = string.Empty;
 
         // ID - Name
         public static Dictionary<uint, string> TerritoryNames = new();
@@ -78,7 +79,6 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.RecordTeleport) InitTeleportCosts();
             if (C.TrackedInDuty) InitDutyRewards();
-            InitGoldSaucer();
         }
 
         private void LoadMinTrackValue()
@@ -99,6 +99,9 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.ClientState.TerritoryChanged += OnZoneChange;
+
+            Service.Condition.ConditionChange -= OnConditionChanged;
+            Service.Condition.ConditionChange += OnConditionChanged;
             OnZoneChange(0);
 
             UpdateCurrenciesByChat();
@@ -287,11 +290,11 @@ namespace CurrencyTracker.Manager.Trackers
         {
             UninitTeleportCosts();
             UninitDutyRewards();
-            UninitGoldSaucer();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
             Service.Framework.Update -= OnFrameworkUpdate;
+            Service.Condition.ConditionChange -= OnConditionChanged;
         }
     }
 }

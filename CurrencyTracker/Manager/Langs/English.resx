@@ -307,37 +307,6 @@ Note:
 
 It is recommended to configure Min Value simultaneously.</value>
   </data>
-  <data name="TrackModeHelp" xml:space="preserve">
-    <value>Timer Mode:
-Check all currency changes every</value>
-  </data>
-  <data name="TrackModeHelp1" xml:space="preserve">
-    <value>milliseconds</value>
-  </data>
-  <data name="TrackModeHelp2" xml:space="preserve">
-    <value>Chat Mode:
-Check all currency changes whenever a new chat message from specific types is received
-(Will record more accurate transactions data)
-
-Note: If you found the plugin didn't record the change under certain circumstances, please report it with the situation!</value>
-  </data>
-  <data name="TrackModeHelp3" xml:space="preserve">
-    <value>Too low trigger interval may result in higher performance overhead
-
-Note: Please choose Chat Mode if nothing goes wrong!</value>
-  </data>
-  <data name="TrackModeLabel" xml:space="preserve">
-    <value>Track Mode</value>
-  </data>
-  <data name="TrackModeLabel1" xml:space="preserve">
-    <value>Timer Mode</value>
-  </data>
-  <data name="TrackModeLabel2" xml:space="preserve">
-    <value>Chat Mode</value>
-  </data>
-  <data name="TrackModeLabel3" xml:space="preserve">
-    <value>Interval (ms)</value>
-  </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>No matching transactions found.</value>
   </data>
@@ -656,7 +625,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="RecordGoldSaucerHelp" xml:space="preserve">
     <value>Options below mean the Note of specific transactions will filled with its source if checked.
 
-An example of Note: (From Triple Triad)</value>
+An example of Note: (Triple Triad with Maisenta)</value>
   </data>
   <data name="RecordMiniCactpot" xml:space="preserve">
     <value>Record Mini Cactpot</value>
@@ -701,5 +670,32 @@ the Note of the merged transaction will be:
   </data>
   <data name="OperationGuide" xml:space="preserve">
     <value>Operation Guide</value>
+  </data>
+  <data name="UnknownLang" xml:space="preserve">
+    <value>Unknown Language</value>
+  </data>
+  <data name="CommandHelp2" xml:space="preserve">
+    <value>Mutiple Currencies Found</value>
+  </data>
+  <data name="CommandHelp3" xml:space="preserve">
+    <value>No Currency Found</value>
+  </data>
+  <data name="ExchangeWith" xml:space="preserve">
+    <value>Exchange with</value>
+  </data>
+  <data name="With" xml:space="preserve">
+    <value>with</value>
+  </data>
+  <data name="TeleportFrom" xml:space="preserve">
+    <value>Teleport from</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>General</value>
+  </data>
+  <data name="Quest" xml:space="preserve">
+    <value>Quest</value>
+  </data>
+  <data name="RecordQuestName" xml:space="preserve">
+    <value>Record Quest Name</value>
   </data>
 </root>
