@@ -14,9 +14,6 @@ namespace CurrencyTracker.Manager.Trackers
         {
             previousLocationName = currentLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
             teleportCost = 0;
-
-            Service.ClientState.TerritoryChanged += OnZoneChange;
-            OnZoneChange(0);
         }
 
         public void TeleportWithCost(int GilAmount)
@@ -48,8 +45,6 @@ namespace CurrencyTracker.Manager.Trackers
             previousLocationName = string.Empty;
             currentLocationName = string.Empty;
             teleportCost = 0;
-
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
         }
     }
 }

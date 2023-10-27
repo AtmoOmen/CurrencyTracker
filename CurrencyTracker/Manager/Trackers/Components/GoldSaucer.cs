@@ -1,17 +1,26 @@
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Memory;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 
 namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        // 仙人微彩 Mini Cactpot
-        private bool isMCOn = false;
-
         // 九宫幻卡 Triple Triad
         private bool isTTOn = false;
 
+        // 当前正在玩的游戏 Currently Playing Minigame
+        private string GameName = string.Empty;
+
+        internal void InitGoldSacuer()
+        {
+            GameName = string.Empty;
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "GoldSaucerReward", GoldSaucerMain);
+        }
 
         // 九宫幻卡 Triple Triad
         private void TripleTriad()
@@ -38,11 +47,11 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 if (!currentTargetName.IsNullOrEmpty())
                 {
-                    CheckCurrency(29, false, currentLocationName, $"({Service.Lang.GetText("TripleTriad")} {Service.Lang.GetText("With")} {currentTargetName})");
+                    CheckCurrency(29, false, "-1", $"({Service.Lang.GetText("TripleTriad")} {Service.Lang.GetText("With")} {currentTargetName})");
                 }
                 else
                 {
-                    CheckCurrency(29, false, currentLocationName, $"({Service.Lang.GetText("TripleTriad")})");
+                    CheckCurrency(29, false, "-1", $"({Service.Lang.GetText("TripleTriad")})");
                 }
 
                 currentTargetName = string.Empty;
@@ -53,31 +62,35 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        // 仙人微彩 Mini Cactpot
-        private void MiniCactpot()
+        // 金碟内的大部分处理逻辑 
+        public void GoldSaucerMain(AddonEvent eventtype, AddonArgs args)
         {
-            if (!C.RecordMiniCactpot) return;
-
-            var MCGui = Service.GameGui.GetAddonByName("LotteryDaily");
-
-            if (MCGui != nint.Zero)
+            unsafe
             {
-                isMCOn = true;
-                Service.Chat.ChatMessage -= OnChatMessage;
-            }
-            else if (MCGui == nint.Zero && isMCOn)
-            {
-                if (!Service.Condition[ConditionFlag.OccupiedInQuestEvent])
+                var GSR = (AtkUnitBase*)Service.GameGui.GetAddonByName("GoldSaucerReward");
+                if (GSR != null && GSR->RootNode != null && GSR->RootNode->ChildNode != null && GSR->UldManager.NodeList != null)
                 {
-                    return;
+                    var textNode = GSR->GetTextNodeById(5);
+                    if (textNode != null)
+                    {
+                        GameName = textNode -> NodeText.ToString();
+                        if (!GameName.IsNullOrEmpty())
+                        {
+                            Service.PluginLog.Debug(GameName);
+                            CheckCurrency(29, false, "-1", $"({GameName})");
+
+                            GameName = string.Empty;
+                        }
+                    }
                 }
-                Service.PluginLog.Debug("仙人微彩结束");
-                isMCOn = false;
-
-                CheckCurrency(29, true, previousLocationName, $"({Service.Lang.GetText("MiniCactpot")})");
-
-                Service.Chat.ChatMessage += OnChatMessage;
             }
+        }
+
+        internal void UninitGoldSacuer()
+        {
+            GameName = string.Empty;
+
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostDraw, "GoldSaucerReward", GoldSaucerMain);
         }
     }
 }

@@ -2,6 +2,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using System;
 using System.IO;
 using System.Linq;
@@ -30,11 +31,23 @@ namespace CurrencyTracker.Manager.Trackers
             if (isQuestReadyFinish)
             {
                 QuestEndCheck(chatmessage);
+                return;
+            }
+
+            if (Service.ClientState.TerritoryType == 144)
+            {
+                return;
             }
 
             if (TriggerChatTypes.Contains(typeValue))
             {
                 UpdateCurrenciesByChat();
+
+                var eventInfo = Service.ClientState.GetType().GetEvent("TerritoryChanged");
+                if (eventInfo == null)
+                {
+                    Service.ClientState.TerritoryChanged += OnZoneChange;
+                }
             }
 
             /*
@@ -52,10 +65,12 @@ namespace CurrencyTracker.Manager.Trackers
         // 区域发生改变时触发的事件
         private void OnZoneChange(ushort sender)
         {
-            for (var i = 0; i < 3; i++)
+            if (P.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.Chat.ChatMessage -= OnChatMessage;
+                return;
             }
+
+            Service.Chat.ChatMessage -= OnChatMessage;
 
             currentLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
@@ -158,6 +173,12 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
+            // 等待交易完成 Wait for trade to complete
+            if (isOnTrading)
+            {
+                TradeEndCheck();
+            }
+
             // 任务名 Record Quest Name
             if (C.RecordQuestName)
             {
@@ -167,16 +188,10 @@ namespace CurrencyTracker.Manager.Trackers
             // 九宫幻卡 Triple Triad
             TripleTriad();
 
-            // 等待交换完成 Wait for exchange completes
+            // 等待交换完成 Wait for exchange to complete
             if (C.WaitExComplete)
             {
                 IsOnExchange();
-            }
-
-            // 当位于金碟 When in GS
-            if (Service.ClientState.TerritoryType == 144)
-            {
-                MiniCactpot();
             }
         }
     }

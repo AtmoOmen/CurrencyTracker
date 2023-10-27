@@ -1391,8 +1391,7 @@ namespace CurrencyTracker.Manager.Langs {
         
         /// <summary>
         ///   查找类似 Options below mean the Note of specific transactions will filled with its source if checked.
-        ///
-        ///An example of Note: (Triple Triad with Maisenta) 的本地化字符串。
+        ///Not mean the plugin will not record specific transactions if unchecked. 的本地化字符串。
         /// </summary>
         internal static string RecordGoldSaucerHelp {
             get {
@@ -1401,11 +1400,21 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Record Mini Cactpot 的本地化字符串。
+        ///   查找类似 Record MGP Reward Source 的本地化字符串。
         /// </summary>
-        internal static string RecordMiniCactpot {
+        internal static string RecordMGPSource {
             get {
-                return ResourceManager.GetString("RecordMiniCactpot", resourceCulture);
+                return ResourceManager.GetString("RecordMGPSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (Only Effective in Gold Sacuer)
+        ///If checked, the Note of specific transactions will be filled with the source of MGP you obtained. 的本地化字符串。
+        /// </summary>
+        internal static string RecordMGPSourceHelp {
+            get {
+                return ResourceManager.GetString("RecordMGPSourceHelp", resourceCulture);
             }
         }
         
@@ -1455,11 +1464,29 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 Record Triple Triad 的本地化字符串。
+        ///   查找类似 Record Trade Target 的本地化字符串。
+        /// </summary>
+        internal static string RecordTrade {
+            get {
+                return ResourceManager.GetString("RecordTrade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Record Triple Triad Result 的本地化字符串。
         /// </summary>
         internal static string RecordTripleTriad {
             get {
                 return ResourceManager.GetString("RecordTripleTriad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 If checked, the Note of specific transactions will be filled with the target you have played with. 的本地化字符串。
+        /// </summary>
+        internal static string RecordTripleTriadHelp {
+            get {
+                return ResourceManager.GetString("RecordTripleTriadHelp", resourceCulture);
             }
         }
         
@@ -1573,13 +1600,22 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 If you left this unchecked, the plugin will pause recording any Changes when you are in Duty until left, which will also result in recording inaccurate Location.
+        ///   查找类似 If unchecked, the plugin will pause recording any Change when you are in Duty until left, which will also result in recording inaccurate Location.
         ///
         ///It is recommended to configure Min Value simultaneously. 的本地化字符串。
         /// </summary>
         internal static string TrackInDutyHelp {
             get {
                 return ResourceManager.GetString("TrackInDutyHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Trade with 的本地化字符串。
+        /// </summary>
+        internal static string TradeWith {
+            get {
+                return ResourceManager.GetString("TradeWith", resourceCulture);
             }
         }
         
@@ -1701,7 +1737,7 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, retainer/company chest, or supply duty. 的本地化字符串。
+        ///   查找类似 If checked, it will wait for exchanges/purchases to finish before checking currency Changes. This includes ALL NPC Shops, GC Supply, Marketboard, Retainer and FC Chest. 的本地化字符串。
         /// </summary>
         internal static string WaitExchangeHelp {
             get {

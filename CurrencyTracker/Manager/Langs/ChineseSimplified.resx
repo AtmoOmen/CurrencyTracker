@@ -611,12 +611,11 @@
     <value>包含副本与PVP</value>
   </data>
   <data name="RecordGoldSaucerHelp" xml:space="preserve">
-    <value>下面的选项仅代表勾选后相关记录的备注部分会被填入其来源
-
-如: (九宫幻卡 - 麦森塔) </value>
+    <value>下面的选项仅代表勾选后相关记录的备注部分会被填入相应内容,
+不代表不勾选就不会记录相关收支记录</value>
   </data>
-  <data name="RecordMiniCactpot" xml:space="preserve">
-    <value>记录仙人微彩</value>
+  <data name="RecordMGPSource" xml:space="preserve">
+    <value>记录金碟币来源</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>记录设置</value>
@@ -631,13 +630,14 @@
     <value>记录传送目的地</value>
   </data>
   <data name="RecordTripleTriad" xml:space="preserve">
-    <value>记录九宫幻卡</value>
+    <value>记录九宫幻卡结果</value>
   </data>
   <data name="WaitExchange" xml:space="preserve">
     <value>等待交易完成</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>如果选中此项，则当你使用系统商店、市场布告板、雇员/部队箱或军队筹备时，会等待交换结束，再检查所有货币的增减情况</value>
+    <value>如果选中此项，会等待交换/交易结束，再检查所有货币的增减情况
+包含 所有NPC商店、军队筹备、市场布告栏、雇员和部队箱</value>
   </data>
   <data name="HelpTranslate" xml:space="preserve">
     <value>帮忙翻译</value>
@@ -694,5 +694,18 @@
   </data>
   <data name="RecordQuestName" xml:space="preserve">
     <value>记录任务名称</value>
+  </data>
+  <data name="RecordMGPSourceHelp" xml:space="preserve">
+    <value>(仅在金碟游乐场内生效)
+如果选中此项, 相关记录的备注部分会被填入你所获得的金碟币来源</value>
+  </data>
+  <data name="RecordTripleTriadHelp" xml:space="preserve">
+    <value>如果选中此项, 相关记录的备注部分会被填入与你进行对局的对象名称</value>
+  </data>
+  <data name="RecordTrade" xml:space="preserve">
+    <value>记录交易对象</value>
+  </data>
+  <data name="TradeWith" xml:space="preserve">
+    <value>交易自</value>
   </data>
 </root>

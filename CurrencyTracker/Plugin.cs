@@ -51,6 +51,7 @@ namespace CurrencyTracker
             }
 
             Service.ClientState.Login += HandleLogin;
+            Service.ClientState.Logout += HandleLogout;
             Service.Tracker = new Tracker();
 
             Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
@@ -76,6 +77,11 @@ namespace CurrencyTracker
             */
         }
 
+        private void HandleLogout()
+        {
+            Main.isFirstTime = false;
+        }
+
         private void HandleLogin()
         {
             if (Configuration.CurrentActiveCharacter == null)
@@ -84,12 +90,15 @@ namespace CurrencyTracker
             }
 
             CurrentCharacter = GetCurrentCharacter();
+            GetCurrentCharcterDataFolder();
 
             if (WindowSystem.Windows.Contains(Main) && !Main.selectedCurrencyName.IsNullOrEmpty())
             {
                 Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
                 Main.lastTransactions = Main.currentTypeTransactions;
             }
+
+            Service.Tracker.UpdateCurrenciesByChat();
         }
 
         public CharacterInfo GetCurrentCharacter()
@@ -153,6 +162,12 @@ namespace CurrencyTracker
                 var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
                 var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
                 var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+                if (!Directory.Exists(dataFolderName))
+                {
+                    Directory.CreateDirectory(dataFolderName);
+                    Service.PluginLog.Debug("Successfully Create Directory");
+                }
 
                 PlayerDataFolder = dataFolderName;
             }
@@ -283,6 +298,7 @@ namespace CurrencyTracker
             Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
+            Service.ClientState.Logout -= HandleLogout;
 
             Service.CommandManager.RemoveHandler(CommandName);
         }

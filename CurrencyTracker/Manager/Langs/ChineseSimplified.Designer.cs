@@ -1390,9 +1390,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 下面的选项仅代表勾选后相关记录的备注部分会被填入其来源
-        ///
-        ///如: (九宫幻卡 - 麦森塔)  的本地化字符串。
+        ///   查找类似 下面的选项仅代表勾选后相关记录的备注部分会被填入相应内容,
+        ///不代表不勾选就不会记录相关收支记录 的本地化字符串。
         /// </summary>
         internal static string RecordGoldSaucerHelp {
             get {
@@ -1401,11 +1400,21 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 记录仙人微彩 的本地化字符串。
+        ///   查找类似 记录金碟币来源 的本地化字符串。
         /// </summary>
-        internal static string RecordMiniCactpot {
+        internal static string RecordMGPSource {
             get {
-                return ResourceManager.GetString("RecordMiniCactpot", resourceCulture);
+                return ResourceManager.GetString("RecordMGPSource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 (仅在金碟游乐场内生效)
+        ///如果选中此项, 相关记录的备注部分会被填入你所获得的金碟币来源 的本地化字符串。
+        /// </summary>
+        internal static string RecordMGPSourceHelp {
+            get {
+                return ResourceManager.GetString("RecordMGPSourceHelp", resourceCulture);
             }
         }
         
@@ -1455,11 +1464,29 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 记录九宫幻卡 的本地化字符串。
+        ///   查找类似 记录交易对象 的本地化字符串。
+        /// </summary>
+        internal static string RecordTrade {
+            get {
+                return ResourceManager.GetString("RecordTrade", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 记录九宫幻卡结果 的本地化字符串。
         /// </summary>
         internal static string RecordTripleTriad {
             get {
                 return ResourceManager.GetString("RecordTripleTriad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 如果选中此项, 相关记录的备注部分会被填入与你进行对局的对象名称 的本地化字符串。
+        /// </summary>
+        internal static string RecordTripleTriadHelp {
+            get {
+                return ResourceManager.GetString("RecordTripleTriadHelp", resourceCulture);
             }
         }
         
@@ -1584,6 +1611,15 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
+        ///   查找类似 交易自 的本地化字符串。
+        /// </summary>
+        internal static string TradeWith {
+            get {
+                return ResourceManager.GetString("TradeWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 条记录 的本地化字符串。
         /// </summary>
         internal static string Transactions {
@@ -1701,7 +1737,8 @@ namespace CurrencyTracker.Manager.Langs {
         }
         
         /// <summary>
-        ///   查找类似 如果选中此项，则当你使用系统商店、市场布告板、雇员/部队箱或军队筹备时，会等待交换结束，再检查所有货币的增减情况 的本地化字符串。
+        ///   查找类似 如果选中此项，会等待交换/交易结束，再检查所有货币的增减情况
+        ///包含 所有NPC商店、军队筹备、市场布告栏、雇员和部队箱 的本地化字符串。
         /// </summary>
         internal static string WaitExchangeHelp {
             get {

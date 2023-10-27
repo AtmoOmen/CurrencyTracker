@@ -303,7 +303,7 @@ Note:
     <value>Track in Duty</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>If you left this unchecked, the plugin will pause recording any Changes when you are in Duty until left, which will also result in recording inaccurate Location.
+    <value>If unchecked, the plugin will pause recording any Change when you are in Duty until left, which will also result in recording inaccurate Location.
 
 It is recommended to configure Min Value simultaneously.</value>
   </data>
@@ -624,11 +624,10 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="RecordGoldSaucerHelp" xml:space="preserve">
     <value>Options below mean the Note of specific transactions will filled with its source if checked.
-
-An example of Note: (Triple Triad with Maisenta)</value>
+Not mean the plugin will not record specific transactions if unchecked.</value>
   </data>
-  <data name="RecordMiniCactpot" xml:space="preserve">
-    <value>Record Mini Cactpot</value>
+  <data name="RecordMGPSource" xml:space="preserve">
+    <value>Record MGP Reward Source</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>Record Settings</value>
@@ -643,7 +642,7 @@ An example of Note: (Triple Triad with Maisenta)</value>
     <value>Record TP Destination</value>
   </data>
   <data name="RecordTripleTriad" xml:space="preserve">
-    <value>Record Triple Triad</value>
+    <value>Record Triple Triad Result</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>Sugeest or Report</value>
@@ -652,7 +651,7 @@ An example of Note: (Triple Triad with Maisenta)</value>
     <value>Awaiting Exchange Completion</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>If checked, it will wait for exchanges/purchases to finish before checking currency changes when using the NPC store, market, retainer/company chest, or supply duty.</value>
+    <value>If checked, it will wait for exchanges/purchases to finish before checking currency Changes. This includes ALL NPC Shops, GC Supply, Marketboard, Retainer and FC Chest.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Open the main window of the plugin</value>
@@ -697,5 +696,18 @@ the Note of the merged transaction will be:
   </data>
   <data name="RecordQuestName" xml:space="preserve">
     <value>Record Quest Name</value>
+  </data>
+  <data name="RecordMGPSourceHelp" xml:space="preserve">
+    <value>(Only Effective in Gold Sacuer)
+If checked, the Note of specific transactions will be filled with the source of MGP you obtained.</value>
+  </data>
+  <data name="RecordTripleTriadHelp" xml:space="preserve">
+    <value>If checked, the Note of specific transactions will be filled with the target you have played with.</value>
+  </data>
+  <data name="RecordTrade" xml:space="preserve">
+    <value>Record Trade Target</value>
+  </data>
+  <data name="TradeWith" xml:space="preserve">
+    <value>Trade with</value>
   </data>
 </root>

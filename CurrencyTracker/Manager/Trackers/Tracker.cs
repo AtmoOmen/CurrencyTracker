@@ -79,6 +79,9 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.RecordTeleport) InitTeleportCosts();
             if (C.TrackedInDuty) InitDutyRewards();
+            if (C.RecordQuestName) InitQuests();
+            if (C.RecordMGPSource) InitGoldSacuer();
+            if (C.RecordTrade) InitTrade();
         }
 
         private void LoadMinTrackValue()
@@ -102,12 +105,11 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.Condition.ConditionChange -= OnConditionChanged;
             Service.Condition.ConditionChange += OnConditionChanged;
-            OnZoneChange(0);
 
             UpdateCurrenciesByChat();
         }
 
-        private void UpdateCurrenciesByChat()
+        internal void UpdateCurrenciesByChat()
         {
             if (!Service.ClientState.IsLoggedIn) return;
 
@@ -146,7 +148,7 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.PluginLog.Error("Invalid Currency!");
                 return;
             }
-            TransactionsConvertor? latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
+            var latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
 
             var currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
@@ -219,9 +221,12 @@ namespace CurrencyTracker.Manager.Trackers
             }
             else
             {
-                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
-                OnTransactionsUpdate(EventArgs.Empty);
-                Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
+                if (currencyAmount > 0)
+                {
+                    transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
+                    OnTransactionsUpdate(EventArgs.Empty);
+                    Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
+                }
             }
         }
 
@@ -290,6 +295,8 @@ namespace CurrencyTracker.Manager.Trackers
         {
             UninitTeleportCosts();
             UninitDutyRewards();
+            UninitGoldSacuer();
+            UninitTrade();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;

@@ -156,17 +156,11 @@ namespace CurrencyTracker.Manager
                 return new TransactionsConvertor();
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
-            List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+            var allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
 
-            TransactionsConvertor latestTransaction = allTransactions.LastOrDefault() ?? new TransactionsConvertor
-            {
-                TimeStamp = DateTime.Now,
-                Amount = 0,
-                Change = 0,
-                LocationName = Service.Lang.GetText("UnknownLocation")
-            };
+            var latestTransaction = allTransactions.LastOrDefault();
 
             return latestTransaction;
         }
@@ -191,7 +185,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             singleTransaction.AppendTransactionToFile(filePath, temporarySingleTransactionList);
             temporarySingleTransactionList.Clear();
         }
@@ -215,7 +209,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
             Transaction.WriteTransactionsToFile(filePath, temporarySingleTransactionList);
             temporarySingleTransactionList.Clear();
         }

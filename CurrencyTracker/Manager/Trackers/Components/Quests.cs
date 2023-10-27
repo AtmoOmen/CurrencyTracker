@@ -46,14 +46,14 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
                     {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({Service.Lang.GetText("Quest")} {QuestName})" : "-1");
+                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("Quest")} {QuestName})");
                     }
                 }
                 foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
                 {
                     if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
                     {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({Service.Lang.GetText("Quest")} {QuestName})" : "-1");
+                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("Quest")} {QuestName})");
                     }
                 }
 
@@ -75,7 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
                     var addon = Dalamud.SafeMemory.PtrToStructure<AddonJournalResult>(JR);
                     if (addon != null)
                     {
-                        QuestName = MemoryHelper.ReadStringNullTerminated((nint)(addon.Value.AtkTextNode250->GetText()));
+                        QuestName = addon.Value.AtkTextNode250->NodeText.ToString();
 
                         if (!QuestName.IsNullOrEmpty())
                         {

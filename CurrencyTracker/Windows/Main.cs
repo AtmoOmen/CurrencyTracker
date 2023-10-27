@@ -57,9 +57,10 @@ public partial class Main : Window, IDisposable
         isRecordTeleport = C.RecordTeleport;
         isTrackinDuty = C.TrackedInDuty;
         isWaitExComplete = C.WaitExComplete;
-        isRecordMiniCactpot = C.RecordMiniCactpot;
+        isRecordMGPSource = C.RecordMGPSource;
         isRecordTripleTriad = C.RecordTripleTriad;
         isRecordQuestName = C.RecordQuestName;
+        isRecordTrade = C.RecordTrade;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -268,9 +269,11 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("RecordSettings"))
         {
+            // 副本 Content/Duty
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("Content"));
             ImGui.Separator();
 
+            // 是否记录副本内数据 If Track in Duty
             if (ImGui.Checkbox(Service.Lang.GetText("TrackInDuty"), ref isTrackinDuty))
             {
                 C.TrackedInDuty = isTrackinDuty;
@@ -288,6 +291,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("TrackInDutyHelp"));
 
+            // 是否记录副本名称 If Record Content Name
             if (isTrackinDuty)
             {
                 ImGui.BulletText("");
@@ -301,8 +305,20 @@ public partial class Main : Window, IDisposable
                 ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordContentNameHelp"));
             }
 
+            // 一般 General
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("General"));
             ImGui.Separator();
+
+            // 是否等待交换完成 If Wait For Exchange to Complete
+            if (ImGui.Checkbox(Service.Lang.GetText("WaitExchange"), ref isWaitExComplete))
+            {
+                C.WaitExComplete = isWaitExComplete;
+                C.Save();
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("WaitExchangeHelp"));
+
+            // 是否记录传送费 If Record TP Costs
             if (ImGui.Checkbox(Service.Lang.GetText("RecordTPCosts"), ref isRecordTeleport))
             {
                 C.RecordTeleport = isRecordTeleport;
@@ -321,6 +337,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordTPCostsHelp"));
 
+            // 是否记录传送地点 If Record TP Destination
             if (isRecordTeleport)
             {
                 ImGui.BulletText("");
@@ -332,38 +349,60 @@ public partial class Main : Window, IDisposable
                 }
             }
 
+            // 是否记录任务名 If Record Quest Name
             if (ImGui.Checkbox(Service.Lang.GetText("RecordQuestName"), ref isRecordQuestName))
             {
-                Service.Tracker.InitQuests();
-
                 C.RecordQuestName = isRecordQuestName;
                 C.Save();
             }
 
-            if (ImGui.Checkbox(Service.Lang.GetText("WaitExchange"), ref isWaitExComplete))
+            // 是否记录交易对象 If Record Trade Target
+            if (ImGui.Checkbox(Service.Lang.GetText("RecordTrade"), ref isRecordTrade))
             {
-                C.WaitExComplete = isWaitExComplete;
+                C.RecordTrade = isRecordTrade;
                 C.Save();
+                if (isRecordTrade)
+                {
+                    Service.Tracker.UninitTrade();
+                    Service.Tracker.InitTrade();
+                }
+                else
+                {
+                    Service.Tracker.InitTrade();
+                }
             }
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker(Service.Lang.GetText("WaitExchangeHelp"));
 
+            // 金碟 Gold Saucer
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("GoldSaucer"));
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordGoldSaucerHelp"));
             ImGui.Separator();
 
-            if (ImGui.Checkbox(Service.Lang.GetText("RecordMiniCactpot"), ref isRecordMiniCactpot))
+            if (ImGui.Checkbox(Service.Lang.GetText("RecordMGPSource"), ref isRecordMGPSource))
             {
-                C.RecordMiniCactpot = isRecordMiniCactpot;
+                C.RecordMGPSource = isRecordMGPSource;
                 C.Save();
+                if (isRecordMGPSource)
+                {
+                    Service.Tracker.UninitGoldSacuer();
+                    Service.Tracker.InitGoldSacuer();
+                }
+                else
+                {
+                    Service.Tracker.UninitGoldSacuer();
+                }
             }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordMGPSourceHelp"));
 
+            // 记录九宫幻卡 Record Triple Triad Result
             if (ImGui.Checkbox(Service.Lang.GetText("RecordTripleTriad"), ref isRecordTripleTriad))
             {
                 C.RecordTripleTriad = isRecordTripleTriad;
                 C.Save();
             }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordTripleTriadHelp"));
 
             ImGui.EndPopup();
         }
@@ -1052,7 +1091,7 @@ public partial class Main : Window, IDisposable
     }
 
     // 打开插件 GitHub 页面 Open Plugin GitHub Page
-    private void OpenGitHubPage()
+    private static void OpenGitHubPage()
     {
         if (ImGui.Button("GitHub"))
         {
@@ -1618,7 +1657,7 @@ public partial class Main : Window, IDisposable
     // 顶端工具栏 Transactions Paging Tools
     private void TransactionsPagingTools()
     {
-        int pageCount = (currentTypeTransactions.Count > 0) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
+        var pageCount = (currentTypeTransactions.Count > 0) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
         currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
         if (pageCount == 0)
@@ -1794,8 +1833,14 @@ public partial class Main : Window, IDisposable
         if (Service.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.BetweenAreas51])
             return;
 
+        if (isFirstTime)
+        {
+            Service.Tracker.UpdateCurrenciesByChat();
+            isFirstTime = false;
+        }
+
         var childFrameHeight = ChildframeHeightAdjust();
-        Vector2 childScale = new Vector2(ImGui.GetWindowWidth() - 100, childFrameHeight);
+        var childScale = new Vector2(ImGui.GetWindowWidth() - 100, childFrameHeight);
 
         ImGui.SameLine();
 

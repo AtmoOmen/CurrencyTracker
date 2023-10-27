@@ -47,14 +47,14 @@ namespace CurrencyTracker
 
         // 备注选项 Note Settings
         public bool RecordContentName { get; set; } = true;
-
         public bool RecordTeleportDes { get; set; } = true;
         public bool WaitExComplete { get; set; } = true;
         public bool RecordTeleport { get; set; } = true;
         public bool TrackedInDuty { get; set; } = true;
-        public bool RecordMiniCactpot { get; set; } = true;
+        public bool RecordMGPSource { get; set; } = true;
         public bool RecordTripleTriad { get; set; } = true;
         public bool RecordQuestName { get; set; } = true;
+        public bool RecordTrade {  get; set; } = true;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

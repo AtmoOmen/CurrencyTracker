@@ -146,15 +146,19 @@ public partial class Main
     // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
     private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
 
+    // 是否为本回首次打开 Is First Time to Open Main Windown
+    internal bool isFirstTime = true;
+
     // 临时 Temp
     private bool isRecordContentName;
     private bool isRecordTeleportDes;
     private bool isRecordTeleport;
     private bool isTrackinDuty;
     private bool isWaitExComplete;
-    private bool isRecordMiniCactpot;
+    private bool isRecordMGPSource;
     private bool isRecordTripleTriad;
     private bool isRecordQuestName;
+    private bool isRecordTrade;
 
     internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
