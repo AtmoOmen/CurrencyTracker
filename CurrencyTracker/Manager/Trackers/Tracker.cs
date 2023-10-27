@@ -76,12 +76,6 @@ namespace CurrencyTracker.Manager.Trackers
                 InitializeChatTracking();
                 Service.PluginLog.Debug("Currency Tracker Activated");
             }
-
-            if (C.RecordTeleport) InitTeleportCosts();
-            if (C.TrackedInDuty) InitDutyRewards();
-            if (C.RecordQuestName) InitQuests();
-            if (C.RecordMGPSource) InitGoldSacuer();
-            if (C.RecordTrade) InitTrade();
         }
 
         private void LoadMinTrackValue()
@@ -94,6 +88,8 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitializeChatTracking()
         {
+            Dispose();
+
             Service.Chat.ChatMessage -= OnChatMessage;
             Service.Chat.ChatMessage += OnChatMessage;
 
@@ -105,6 +101,12 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.Condition.ConditionChange -= OnConditionChanged;
             Service.Condition.ConditionChange += OnConditionChanged;
+
+            if (C.RecordTeleport) InitTeleportCosts();
+            if (C.TrackedInDuty) InitDutyRewards();
+            if (C.RecordQuestName) InitQuests();
+            if (C.RecordMGPSource) InitGoldSacuer();
+            if (C.RecordTrade) InitTrade();
 
             UpdateCurrenciesByChat();
         }

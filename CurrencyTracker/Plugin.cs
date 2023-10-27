@@ -80,6 +80,7 @@ namespace CurrencyTracker
         private void HandleLogout()
         {
             Main.isFirstTime = false;
+            Service.Tracker.Dispose();
         }
 
         private void HandleLogin()
@@ -98,7 +99,7 @@ namespace CurrencyTracker
                 Main.lastTransactions = Main.currentTypeTransactions;
             }
 
-            Service.Tracker.UpdateCurrenciesByChat();
+            Service.Tracker.InitializeChatTracking();
         }
 
         public CharacterInfo GetCurrentCharacter()

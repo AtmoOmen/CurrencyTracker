@@ -75,7 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
                     var addon = Dalamud.SafeMemory.PtrToStructure<AddonJournalResult>(JR);
                     if (addon != null)
                     {
-                        QuestName = addon.Value.AtkTextNode250->NodeText.ToString();
+                        QuestName = addon.Value.AtkTextNode250 -> NodeText.ToString();
 
                         if (!QuestName.IsNullOrEmpty())
                         {
