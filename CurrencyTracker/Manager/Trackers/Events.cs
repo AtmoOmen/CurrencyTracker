@@ -81,6 +81,12 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     DutyEndCheck("PVPEnds");
                 }
+
+                // 强制结束 Force to end
+                if (!IsBoundByDuty())
+                {
+                    DutyEndCheck("任务结束了");
+                }
             }
 
             // 传送费用相关计算

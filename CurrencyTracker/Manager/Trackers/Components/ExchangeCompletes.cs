@@ -41,8 +41,10 @@ namespace CurrencyTracker.Manager.Trackers
             var SIE = Service.GameGui.GetAddonByName("SkyIslandExchange");
             // 传唤铃/部队箱
             var SB = Service.Condition[ConditionFlag.OccupiedSummoningBell] ? 1 : nint.Zero;
+            // 商店交换物品确认
+            var SEID = Service.GameGui.GetAddonByName("ShopExchangeItemDialog");
 
-            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, GCSR, SHOP, IS, SEI, SIE, SB };
+            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, GCSR, SHOP, IS, SEI, SIE, SB, SEID };
 
             var isAnyOpen = exchangeUI.Any(value => value != nint.Zero);
 
@@ -56,10 +58,10 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 Service.PluginLog.Debug("Exchange Starts");
             }
+
             if (!isAnyOpen && isOnExchanging)
             {
                 isOnExchanging = false;
-                Service.Chat.ChatMessage += OnChatMessage;
 
                 if (!currentTargetName.IsNullOrEmpty())
                 {
@@ -85,6 +87,8 @@ namespace CurrencyTracker.Manager.Trackers
                 }
 
                 currentTargetName = string.Empty;
+
+                Service.Chat.ChatMessage += OnChatMessage;
 
                 Service.PluginLog.Debug("Exchange Completes");
             }
