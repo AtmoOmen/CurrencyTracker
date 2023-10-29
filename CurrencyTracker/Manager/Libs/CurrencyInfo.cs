@@ -22,7 +22,7 @@ public class CurrencyInfo : IDisposable
     };
 
     // 存储一般货币的ID的字典（这里的string非货币名）
-    public static readonly Dictionary<string, uint> presetCurrencies = new Dictionary<string, uint>
+    public static readonly Dictionary<string, uint> presetCurrencies = new ()
     {
         { "Gil", 1 },
         { "NonLimitedTomestone", GetNonLimitedTomestoneId() },
@@ -34,7 +34,7 @@ public class CurrencyInfo : IDisposable
     {
         if (LuminaCache<Item>.Instance.GetRow(currencyID) is { } currencyItem)
         {
-            string CurrencyName = currencyItem.Name.ToDalamudString().TextValue;
+            var CurrencyName = currencyItem.Name.ToDalamudString().TextValue;
 
             return CurrencyName;
         }
@@ -48,6 +48,22 @@ public class CurrencyInfo : IDisposable
         {
             return InventoryManager.Instance()->GetInventoryItemCount(currencyID);
         }
+    }
+
+    private static uint GetNonLimitedTomestoneId()
+    {
+        return LuminaCache<TomestonesItem>.Instance
+            .Where(tomestone => tomestone.Tomestones.Row is 2)
+            .First()
+            .Item.Row;
+    }
+
+    private static uint GetLimitedTomestoneId()
+    {
+        return LuminaCache<TomestonesItem>.Instance
+            .Where(tomestone => tomestone.Tomestones.Row is 3)
+            .First()
+            .Item.Row;
     }
 
     public long GetRetainerAmount(uint currencyID)
@@ -87,22 +103,6 @@ public class CurrencyInfo : IDisposable
 
             return SomeGil;
         }
-    }
-
-    private static uint GetNonLimitedTomestoneId()
-    {
-        return LuminaCache<TomestonesItem>.Instance
-            .Where(tomestone => tomestone.Tomestones.Row is 2)
-            .First()
-            .Item.Row;
-    }
-
-    private static uint GetLimitedTomestoneId()
-    {
-        return LuminaCache<TomestonesItem>.Instance
-            .Where(tomestone => tomestone.Tomestones.Row is 3)
-            .First()
-            .Item.Row;
     }
 
     public void Dispose()

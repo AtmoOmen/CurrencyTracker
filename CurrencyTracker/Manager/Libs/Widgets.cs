@@ -6,11 +6,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
+using System.Transactions;
 
 namespace CurrencyTracker.Windows
 {
     public static class Widgets
     {
+
         public static bool IsTransactionEqual(TransactionsConvertor t1, TransactionsConvertor t2)
         {
             return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change && t1.LocationName == t2.LocationName && t1.Note == t2.Note;
@@ -63,12 +65,9 @@ namespace CurrencyTracker.Windows
             Process.Start(psi);
         }
 
-        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", int width = -1, Vector2 size = default)
+        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
         {
             ImGui.PushFont(UiBuilder.IconFont);
-
-            if (width > 0)
-                ImGui.SetNextItemWidth(32);
 
             var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}", size);
             ImGui.PopFont();
@@ -77,6 +76,17 @@ namespace CurrencyTracker.Windows
                 TextTooltip(tooltip);
 
             return result;
+        }
+
+        public static void TextCentered(string text)
+        {
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+            Text(text);
+        }
+
+        public static void Text(string s)
+        {
+            ImGui.TextUnformatted(s);
         }
 
         public unsafe static ImFontPtr GetFont(float size)
@@ -100,6 +110,23 @@ namespace CurrencyTracker.Windows
             var result = ImGui.Button(name);
             ImGui.PopStyleColor(3);
             return result;
+        }
+
+        public static unsafe bool SelectableIconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
+        {
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderActive)));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderHovered)));
+            ImGui.PushStyleColor(ImGuiCol.Button, 0);
+            ImGui.PushFont(UiBuilder.IconFont);
+            var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}", size);
+            ImGui.PopFont();
+            ImGui.PopStyleColor(3);
+
+            if (tooltip != null && tooltip != "None")
+                TextTooltip(tooltip);
+
+            return result;
+
         }
 
         public static void TextTooltip(string text)

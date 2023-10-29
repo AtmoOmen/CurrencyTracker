@@ -4,8 +4,6 @@ using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -76,22 +74,19 @@ public partial class Main : Window, IDisposable
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
     private void LoadOptions()
     {
-        HashSet<string> addedOptions = new HashSet<string>();
+        var addedOptions = new HashSet<string>();
 
-        foreach (var currency in Tracker.CurrencyType)
+        foreach (var currency in CurrencyInfo.presetCurrencies)
         {
-            if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out uint currencyID))
-            {
-                string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+            var currencyName = currencyInfo.CurrencyLocalName(currency.Value);
 
-                if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
-                {
-                    permanentCurrencyName.Add(currencyName);
-                    options.Add(currencyName);
-                    addedOptions.Add(currencyName);
-                    selectedStates.Add(currencyName, new List<bool>());
-                    selectedTransactions.Add(currencyName, new List<TransactionsConvertor>());
-                }
+            if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
+            {
+                permanentCurrencyName.Add(currencyName);
+                options.Add(currencyName);
+                addedOptions.Add(currencyName);
+                selectedStates.Add(currencyName, new List<bool>());
+                selectedTransactions.Add(currencyName, new List<TransactionsConvertor>());
             }
         }
 
@@ -185,13 +180,6 @@ public partial class Main : Window, IDisposable
     // 测试用功能区 Some features still under testing
     private void FeaturesUnderTest()
     {
-        ImGui.SameLine();
-        Widgets.SelectableButton("Record Settings");
-
-        ImGui.SameLine();
-        using var font = ImRaii.PushFont(Widgets.GetFont(20));
-        using var color = ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudYellow));
-        ImGui.TextWrapped("Record Settings");
         /*
 
         ImGui.SameLine();
@@ -1095,52 +1083,6 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 记录模式切换(已废弃) Record Mode Change (Abandoned)
-    private void RecordMode()
-    {
-        /*
-        if (ImGui.Button($"{Service.Lang.GetText("TrackModeLabel")}"))
-        {
-            ImGui.OpenPopup("RecordMode");
-        }
-        if (ImGui.BeginPopup("RecordMode"))
-        {
-            if (ImGui.RadioButton($"{Service.Lang.GetText("TrackModeLabel1")}##RecordMode", ref recordMode, 0))
-            {
-                C.TrackMode = recordMode;
-                C.Save();
-                Service.Tracker.ChangeTracker();
-            }
-            if (recordMode == 0)
-            {
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(135);
-                if (ImGui.InputInt($"{Service.Lang.GetText("TrackModeLabel3")}##TimerInterval", ref timerInterval, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue))
-                {
-                    if (timerInterval < 100) timerInterval = 100;
-                    C.TimerInterval = timerInterval;
-                    C.Save();
-                }
-                if (ImGui.IsItemHovered())
-                {
-                    ImGui.SetTooltip($"{Service.Lang.GetText("TrackModeHelp3")}");
-                }
-            }
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker($"{Service.Lang.GetText("TrackModeHelp")} {timerInterval} {Service.Lang.GetText("TrackModeHelp1")}");
-            if (ImGui.RadioButton($"{Service.Lang.GetText("TrackModeLabel2")}##RecordMode", ref recordMode, 1))
-            {
-                C.TrackMode = recordMode;
-                C.Save();
-                Service.Tracker.ChangeTracker();
-            }
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker($"{Service.Lang.GetText("TrackModeHelp2")}");
-            ImGui.EndPopup();
-        }
-        */
-    }
-
     // 货币列表顶端工具栏 Listbox tools
     private void ListboxTools()
     {
@@ -1399,7 +1341,7 @@ public partial class Main : Window, IDisposable
         }
 
         // 合并 Merge
-        if(ImGui.Selectable(Service.Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups))
+        if (ImGui.Selectable(Service.Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups))
         {
             if (isOnMergingTT)
             {
@@ -1755,7 +1697,7 @@ public partial class Main : Window, IDisposable
     {
         var ChildFrameHeight = ChildframeHeightAdjust();
 
-        Vector2 childScale = new Vector2(243, ChildFrameHeight);
+        var childScale = new Vector2(243, ChildFrameHeight);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
             ListboxTools();
@@ -1763,10 +1705,10 @@ public partial class Main : Window, IDisposable
             ImGui.Separator();
 
             ImGui.SetNextItemWidth(235);
-            for (int i = 0; i < ordedOptions.Count; i++)
+            for (var i = 0; i < ordedOptions.Count; i++)
             {
-                string option = ordedOptions[i];
-                bool isSelected = i == selectedOptionIndex;
+                var option = ordedOptions[i];
+                var isSelected = i == selectedOptionIndex;
 
                 if (ImGui.Selectable(option, isSelected))
                 {

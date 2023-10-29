@@ -94,9 +94,9 @@ public partial class Main
     private bool isChangeColoring = false;
 
     // 收支染色 Change Text Colors
-    private Vector4 positiveChangeColor = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+    private Vector4 positiveChangeColor = new (1.0f, 0.0f, 0.0f, 1.0f);
 
-    private Vector4 negativeChangeColor = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+    private Vector4 negativeChangeColor = new (0.0f, 1.0f, 0.0f, 1.0f);
 
     // 每页显示的项数和页数 Items in Custom Currency Paging Function
     private int itemsPerPage = 10;
