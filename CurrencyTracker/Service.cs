@@ -2,6 +2,7 @@ using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
+using Dalamud.Interface;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;

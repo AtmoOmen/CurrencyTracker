@@ -4,6 +4,8 @@ using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -69,7 +71,6 @@ public partial class Main : Window, IDisposable
         searchTimer.AutoReset = false;
 
         LoadOptions();
-        LoadCustomMinTrackValue();
     }
 
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
@@ -120,24 +121,6 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 初始化自定义货币最小记录值 Initialize Min Track Values
-    private void LoadCustomMinTrackValue()
-    {
-        HashSet<string> addedCurrencies = new HashSet<string>();
-        foreach (var currency in options)
-        {
-            if (C.MinTrackValueDic["InDuty"].ContainsKey(currency) && C.MinTrackValueDic["OutOfDuty"].ContainsKey(currency))
-                continue;
-            if (!addedCurrencies.Contains(currency))
-            {
-                C.MinTrackValueDic["InDuty"].Add(currency, 0);
-                C.MinTrackValueDic["OutOfDuty"].Add(currency, 0);
-                C.Save();
-                addedCurrencies.Add(currency);
-            }
-        }
-    }
-
     public override void Draw()
     {
         if (!Service.ClientState.IsLoggedIn) return;
@@ -155,8 +138,6 @@ public partial class Main : Window, IDisposable
         if (showRecordOptions)
         {
             TempRecordSettings();
-            ImGui.SameLine();
-            MinRecordValueInDuty();
             ImGui.SameLine();
             MergeTransactions();
             ImGui.SameLine();
@@ -204,6 +185,13 @@ public partial class Main : Window, IDisposable
     // 测试用功能区 Some features still under testing
     private void FeaturesUnderTest()
     {
+        ImGui.SameLine();
+        Widgets.SelectableButton("Record Settings");
+
+        ImGui.SameLine();
+        using var font = ImRaii.PushFont(Widgets.GetFont(20));
+        using var color = ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudYellow));
+        ImGui.TextWrapped("Record Settings");
         /*
 
         ImGui.SameLine();
@@ -314,6 +302,16 @@ public partial class Main : Window, IDisposable
             {
                 C.WaitExComplete = isWaitExComplete;
                 C.Save();
+
+                if (isWaitExComplete)
+                {
+                    Service.Tracker.UninitExchangeCompletes();
+                    Service.Tracker.InitExchangeCompletes();
+                }
+                else
+                {
+                    Service.Tracker.UninitExchangeCompletes();
+                }
             }
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("WaitExchangeHelp"));
@@ -354,6 +352,16 @@ public partial class Main : Window, IDisposable
             {
                 C.RecordQuestName = isRecordQuestName;
                 C.Save();
+
+                if (isRecordQuestName)
+                {
+                    Service.Tracker.UninitQuests();
+                    Service.Tracker.InitQuests();
+                }
+                else
+                {
+                    Service.Tracker.UninitQuests();
+                }
             }
 
             // 是否记录交易对象 If Record Trade Target
@@ -368,7 +376,7 @@ public partial class Main : Window, IDisposable
                 }
                 else
                 {
-                    Service.Tracker.InitTrade();
+                    Service.Tracker.UninitTrade();
                 }
             }
 
@@ -400,6 +408,16 @@ public partial class Main : Window, IDisposable
             {
                 C.RecordTripleTriad = isRecordTripleTriad;
                 C.Save();
+
+                if (isRecordTripleTriad)
+                {
+                    Service.Tracker.UninitTripleTriad();
+                    Service.Tracker.InitTripleTriad();
+                }
+                else
+                {
+                    Service.Tracker.UninitTripleTriad();
+                }
             }
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordTripleTriadHelp"));
@@ -711,68 +729,6 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 最小记录值 Minimum Change Permitted to Create a New Transaction
-    private void MinRecordValueInDuty()
-    {
-        if (ImGui.Button(Service.Lang.GetText("MinimumRecordValue")))
-        {
-            if (selectedCurrencyName != null)
-            {
-                ImGui.OpenPopup("MinTrackValue");
-                inDutyMinTrackValue = C.MinTrackValueDic["InDuty"][selectedCurrencyName];
-                outDutyMinTrackValue = C.MinTrackValueDic["OutOfDuty"][selectedCurrencyName];
-            }
-            else
-            {
-                Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                return;
-            }
-        }
-
-        if (ImGui.BeginPopup("MinTrackValue"))
-        {
-            if (selectedCurrencyName != null)
-            {
-                ImGui.Text($"{Service.Lang.GetText("Now")}:");
-                ImGui.SameLine();
-                ImGui.TextColored(ImGuiColors.DalamudYellow, selectedCurrencyName);
-                ImGui.SameLine(10);
-                ImGuiComponents.HelpMarker($"{Service.Lang.GetText("Current Settings")}:\n\n" +
-                    $"{Service.Lang.GetText("MinimumRecordValueHelp")} {C.MinTrackValueDic["InDuty"][selectedCurrencyName]}\n" +
-                    $"{Service.Lang.GetText("MinimumRecordValueHelp1")} {C.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}\n" +
-                    $"{Service.Lang.GetText("MinimumRecordValueHelp2")}");
-
-                ImGui.Separator();
-                ImGui.Text($"{Service.Lang.GetText("MinimumRecordValueLabel")}{C.MinTrackValueDic["InDuty"][selectedCurrencyName]}");
-                ImGui.SetNextItemWidth(175);
-
-                var flags = C.TrackedInDuty ? 0 : ImGuiInputTextFlags.ReadOnly;
-
-                if (ImGui.InputInt("##MinInDuty", ref inDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue | flags))
-                {
-                    C.MinTrackValueDic["InDuty"][selectedCurrencyName] = inDutyMinTrackValue;
-                    C.Save();
-                }
-
-                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
-
-                ImGui.Text($"{Service.Lang.GetText("MinimumRecordValueLabel1")}{C.MinTrackValueDic["OutOfDuty"][selectedCurrencyName]}");
-                ImGui.SetNextItemWidth(175);
-                if (ImGui.InputInt("##MinOutDuty", ref outDutyMinTrackValue, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue))
-                {
-                    C.MinTrackValueDic["OutOfDuty"][selectedCurrencyName] = outDutyMinTrackValue;
-                    C.Save();
-                }
-                if (inDutyMinTrackValue < 0) inDutyMinTrackValue = 0;
-            }
-            else
-            {
-                return;
-            }
-            ImGui.EndPopup();
-        }
-    }
-
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyTracker()
     {
@@ -792,8 +748,8 @@ public partial class Main : Window, IDisposable
 
             if (ImGui.BeginCombo("", Tracker.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
-                int startIndex = currentItemPage * itemsPerPage;
-                int endIndex = Math.Min(startIndex + itemsPerPage, Tracker.ItemNames.Count);
+                var startIndex = currentItemPage * itemsPerPage;
+                var endIndex = Math.Min(startIndex + itemsPerPage, Tracker.ItemNames.Count);
 
                 ImGui.SetNextItemWidth(200f);
                 ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 50);
@@ -880,11 +836,6 @@ public partial class Main : Window, IDisposable
                     C.CustomCurrencies.Add(selected, customCurrency);
                 }
 
-                if (!C.MinTrackValueDic["InDuty"].ContainsKey(selected) && !C.MinTrackValueDic["OutOfDuty"].ContainsKey(selected))
-                {
-                    C.MinTrackValueDic["InDuty"].Add(selected, 0);
-                    C.MinTrackValueDic["OutOfDuty"].Add(selected, 0);
-                }
                 C.Save();
                 options.Add(selected);
                 selectedStates.Add(selected, new List<bool>());
@@ -1334,7 +1285,7 @@ public partial class Main : Window, IDisposable
                 selectedTransactions[selectedCurrencyName].Add(transaction);
             }
 
-            for (int i = 0; i < selectedStates[selectedCurrencyName].Count; i++)
+            for (var i = 0; i < selectedStates[selectedCurrencyName].Count; i++)
             {
                 selectedStates[selectedCurrencyName][i] = true;
             }
@@ -1448,24 +1399,28 @@ public partial class Main : Window, IDisposable
         }
 
         // 合并 Merge
-        ImGui.Selectable(Service.Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups);
+        if(ImGui.Selectable(Service.Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups))
+        {
+            if (isOnMergingTT)
+            {
+                if (selectedTransactions[selectedCurrencyName].Count != 0)
+                {
+                    editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
+                    editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
+                }
+                else
+                {
+                    editedLocationName = string.Empty;
+                    editedNoteContent = string.Empty;
+                }
+            }
+        }
 
         if (isOnMergingTT)
         {
             if (isOnEdit) isOnEdit = !isOnEdit;
 
             ImGui.Separator();
-
-            if (selectedTransactions[selectedCurrencyName].Count != 0)
-            {
-                editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
-                editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
-            }
-            else
-            {
-                editedLocationName = string.Empty;
-                editedNoteContent = string.Empty;
-            }
 
             ImGui.Text($"{Service.Lang.GetText("Location")}:");
             ImGui.SetNextItemWidth(210);
@@ -1508,24 +1463,28 @@ public partial class Main : Window, IDisposable
         }
 
         // 编辑 Edit
-        ImGui.Selectable(Service.Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups);
+        if (ImGui.Selectable(Service.Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups))
+        {
+            if (isOnEdit)
+            {
+                if (selectedTransactions[selectedCurrencyName].Count != 0)
+                {
+                    editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
+                    editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
+                }
+                else
+                {
+                    editedLocationName = string.Empty;
+                    editedNoteContent = string.Empty;
+                }
+            }
+        }
 
         if (isOnEdit)
         {
             if (isOnMergingTT) isOnMergingTT = !isOnMergingTT;
 
             ImGui.Separator();
-
-            if (selectedTransactions[selectedCurrencyName].Count != 0)
-            {
-                editedLocationName = selectedTransactions[selectedCurrencyName].FirstOrDefault().LocationName;
-                editedNoteContent = selectedTransactions[selectedCurrencyName].FirstOrDefault().Note;
-            }
-            else
-            {
-                editedLocationName = string.Empty;
-                editedNoteContent = string.Empty;
-            }
 
             ImGui.Text($"{Service.Lang.GetText("Location")}:");
             ImGui.SetNextItemWidth(210);
@@ -1630,7 +1589,7 @@ public partial class Main : Window, IDisposable
 
                 if (failCounts == 0)
                 {
-                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp4")} {editedNoteContent}");
 
                     UpdateTransactions();
                 }
@@ -1906,7 +1865,7 @@ public partial class Main : Window, IDisposable
 
                 if (currentTypeTransactions.Count > 0)
                 {
-                    for (int i = visibleStartIndex; i < visibleEndIndex; i++)
+                    for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                     {
                         var transaction = currentTypeTransactions[i];
                         while (selectedStates[selectedCurrencyName].Count <= i)
@@ -1914,7 +1873,7 @@ public partial class Main : Window, IDisposable
                             selectedStates[selectedCurrencyName].Add(false);
                         }
 
-                        bool selected = selectedStates[selectedCurrencyName][i];
+                        var selected = selectedStates[selectedCurrencyName][i];
 
                         // 序号 Order Number
                         if (isShowOrderColumn)
@@ -1943,7 +1902,7 @@ public partial class Main : Window, IDisposable
 
                                 if (selected)
                                 {
-                                    bool exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+                                    var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
 
                                     if (!exists)
                                     {
@@ -1964,7 +1923,7 @@ public partial class Main : Window, IDisposable
 
                                 if (selected)
                                 {
-                                    bool exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+                                    var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
 
                                     if (!exists)
                                     {

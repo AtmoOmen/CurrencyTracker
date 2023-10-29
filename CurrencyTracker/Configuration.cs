@@ -16,18 +16,6 @@ namespace CurrencyTracker
         // 存储用户自定义货币ID的字典 Dic saving custom currencies' names
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
 
-        // 存储最小变更值设置的字典 Dic used to store min track value
-        public Dictionary<string, Dictionary<string, int>> MinTrackValueDic { get; set; } = new Dictionary<string, Dictionary<string, int>>
-        {
-            {
-                "InDuty", new Dictionary<string, int> ()
-            },
-
-            {
-                "OutOfDuty", new Dictionary<string, int> ()
-            }
-        };
-
         public bool FisrtOpen = true;
 
         public List<string> CustomCurrencyType { get; set; } = new List<string>();

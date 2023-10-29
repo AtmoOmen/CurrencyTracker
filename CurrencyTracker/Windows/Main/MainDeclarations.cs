@@ -81,11 +81,6 @@ public partial class Main
 
     private int visibleEndIndex;
 
-    // 最小值 Min Value to Make a new record
-    private int inDutyMinTrackValue;
-
-    private int outDutyMinTrackValue;
-
     // 修改后地点名 Location Name after Editing
     private string? editedLocationName = string.Empty;
 
@@ -110,7 +105,6 @@ public partial class Main
 
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
-
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;

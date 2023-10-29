@@ -47,7 +47,6 @@ namespace CurrencyTracker.Manager.Trackers
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        private Dictionary<string, Dictionary<string, int>> minTrackValue = new();
         public static string NonLimitedTomestoneName = string.Empty;
         public static string LimitedTomestoneName = string.Empty;
         private string currentTargetName = string.Empty;
@@ -61,7 +60,6 @@ namespace CurrencyTracker.Manager.Trackers
         public Tracker()
         {
             LoadConstantNames();
-            LoadMinTrackValue();
             DealWithCurrencies();
 
             // Timer Mode has been abandoned
@@ -75,14 +73,6 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 InitializeChatTracking();
                 Service.PluginLog.Debug("Currency Tracker Activated");
-            }
-        }
-
-        private void LoadMinTrackValue()
-        {
-            if (Plugin.Instance.Configuration.MinTrackValueDic != null && Plugin.Instance.Configuration.MinTrackValueDic.ContainsKey("InDuty") && Plugin.Instance.Configuration.MinTrackValueDic.ContainsKey("OutOfDuty"))
-            {
-                minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
             }
         }
 
@@ -107,6 +97,8 @@ namespace CurrencyTracker.Manager.Trackers
             if (C.RecordQuestName) InitQuests();
             if (C.RecordMGPSource) InitGoldSacuer();
             if (C.RecordTrade) InitTrade();
+            if (C.WaitExComplete) InitExchangeCompletes();
+            if (C.RecordTripleTriad) InitTripleTriad();
 
             UpdateCurrenciesByChat();
         }
@@ -150,85 +142,38 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.PluginLog.Error("Invalid Currency!");
                 return;
             }
-            var latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
 
             var currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-
             if (currentLocationName == "-1" || currentLocationName == "")
             {
                 currentLocationName = TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
             }
-
             if (currencyNote == "-1" || currencyNote == "")
             {
                 currencyNote = string.Empty;
             }
 
-            minTrackValue = Plugin.Instance.Configuration.MinTrackValueDic;
+            var latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
 
             if (latestTransaction != null)
             {
-                var currencyChange = currencyAmount - latestTransaction.Amount;
-                if (fCurrencyChange != 0)
+                var currencyChange = fCurrencyChange != 0 ? fCurrencyChange : currencyAmount - latestTransaction.Amount;
+
+                if (currencyChange == 0) return;
+                else if (Math.Abs(currencyChange) >= 0)
                 {
-                    currencyChange = fCurrencyChange;
+                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                 }
-                if (currencyChange == 0)
-                {
-                    return;
-                }
-                else
-                {
-                    if (IsBoundByDuty())
-                    {
-                        var inDutyMinTrackValue = minTrackValue["InDuty"];
-                        if (inDutyMinTrackValue.ContainsKey(currencyName))
-                        {
-                            var currencyThreshold = inDutyMinTrackValue[currencyName];
-                            if (!ForceRecording)
-                            {
-                                if (Math.Abs(currencyChange) >= currencyThreshold)
-                                {
-                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
-                                }
-                                else return;
-                            }
-                            else
-                            {
-                                if (Math.Abs(currencyChange) >= 0)
-                                {
-                                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
-                                }
-                                else return;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var outOfDutyMinTrackValue = minTrackValue["OutOfDuty"];
-                        if (outOfDutyMinTrackValue.ContainsKey(currencyName))
-                        {
-                            var currencyThreshold = outOfDutyMinTrackValue[currencyName];
-                            if (Math.Abs(currencyChange) >= currencyThreshold)
-                            {
-                                transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
-                            }
-                            else return;
-                        }
-                    }
-                }
+                else return;
                 OnTransactionsUpdate(EventArgs.Empty);
                 Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
             }
-            else
+            else if (currencyAmount > 0)
             {
-                if (currencyAmount > 0)
-                {
-                    transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
-                    OnTransactionsUpdate(EventArgs.Empty);
-                    Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
-                }
+                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
+                OnTransactionsUpdate(EventArgs.Empty);
+                Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
             }
         }
 
@@ -265,12 +210,6 @@ namespace CurrencyTracker.Manager.Trackers
                         Plugin.Instance.Configuration.CustomCurrencyType.Add(currencyName);
                         Plugin.Instance.Configuration.CustomCurrencies.Add(currencyName, currencyID);
                     }
-
-                    if (!Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].ContainsKey(currencyName) && !Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].ContainsKey(currencyName))
-                    {
-                        Plugin.Instance.Configuration.MinTrackValueDic["InDuty"].Add(currencyName, 0);
-                        Plugin.Instance.Configuration.MinTrackValueDic["OutOfDuty"].Add(currencyName, 0);
-                    }
                 }
 
                 Plugin.Instance.Configuration.FisrtOpen = false;
@@ -299,6 +238,9 @@ namespace CurrencyTracker.Manager.Trackers
             UninitDutyRewards();
             UninitGoldSacuer();
             UninitTrade();
+            UninitExchangeCompletes();
+            UninitTripleTriad();
+            UninitQuests();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;

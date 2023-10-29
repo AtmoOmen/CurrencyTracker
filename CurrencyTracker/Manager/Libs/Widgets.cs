@@ -1,6 +1,7 @@
 using CurrencyTracker.Manager;
 using Dalamud.Interface;
 using ImGuiNET;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
@@ -62,15 +63,14 @@ namespace CurrencyTracker.Windows
             Process.Start(psi);
         }
 
-        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", int width = -1)
+        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", int width = -1, Vector2 size = default)
         {
-            bool result;
             ImGui.PushFont(UiBuilder.IconFont);
 
             if (width > 0)
                 ImGui.SetNextItemWidth(32);
 
-            result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}");
+            var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}", size);
             ImGui.PopFont();
 
             if (tooltip != null && tooltip != "None")
@@ -79,71 +79,27 @@ namespace CurrencyTracker.Windows
             return result;
         }
 
-        public static void AddSoftReturnsToText(ref string str, float multilineWidth)
+        public unsafe static ImFontPtr GetFont(float size)
         {
-            float textSize = 0;
-            string tmpStr = "";
-            string finalStr = "";
-            int curChr = 0;
-            while (curChr < str.Length)
+            var style = new Dalamud.Interface.GameFonts.GameFontStyle(Dalamud.Interface.GameFonts.GameFontStyle.GetRecommendedFamilyAndSize(Dalamud.Interface.GameFonts.GameFontFamily.Axis, size));
+            var font = Plugin.Instance.PluginInterface.UiBuilder.GetGameFontHandle(style).ImFont;
+
+            if ((IntPtr)font.NativePtr == IntPtr.Zero)
             {
-                if (str[curChr] == '\n')
-                {
-                    finalStr += tmpStr + "\n";
-                    tmpStr = "";
-                }
-
-                tmpStr += str[curChr];
-                textSize = ImGui.CalcTextSize(tmpStr).X;
-
-                if (textSize > multilineWidth)
-                {
-                    int lastSpace = tmpStr.Length - 1;
-                    while (tmpStr[lastSpace] != ' ' && lastSpace > 0)
-                        lastSpace--;
-                    if (lastSpace == 0)
-                        lastSpace = tmpStr.Length - 2;
-                    finalStr += tmpStr.Substring(0, lastSpace + 1) + "\r\n";
-                    if (lastSpace + 1 > tmpStr.Length)
-                        tmpStr = "";
-                    else
-                        tmpStr = tmpStr.Substring(lastSpace + 1);
-                }
-                curChr++;
+                return ImGui.GetFont();
             }
-            if (tmpStr.Length > 0)
-                finalStr += tmpStr;
-
-            str = finalStr;
+            font.Scale = size / style.BaseSizePt;
+            return font;
         }
 
-        public static bool ImGuiAutosizingMultilineInput(string label, ref string str, Vector2 sizeMin, Vector2 sizeMax, ImGuiInputTextFlags flags = ImGuiInputTextFlags.None)
+        public static unsafe bool SelectableButton(string name)
         {
-            ImGui.PushTextWrapPos(sizeMax.X);
-            var textSize = ImGui.CalcTextSize(str);
-            if (textSize.X > sizeMax.X)
-            {
-                float ratio = textSize.X / sizeMax.X;
-                textSize.X = sizeMax.X;
-                textSize.Y *= ratio;
-                textSize.Y += 20;    // add space for an extra line
-            }
-
-            textSize.Y += 8;    // to compensate for inputbox margins
-
-            if (textSize.X < sizeMin.X)
-                textSize.X = sizeMin.X;
-            if (textSize.Y < sizeMin.Y)
-                textSize.Y = sizeMin.Y;
-            if (textSize.X > sizeMax.X)
-                textSize.X = sizeMax.X;
-            if (textSize.Y > sizeMax.Y)
-                textSize.Y = sizeMax.Y;
-
-            bool valueChanged = ImGui.InputTextMultiline(label, ref str, 150, textSize, flags);
-            ImGui.PopTextWrapPos();
-
-            return valueChanged;
+            ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderActive)));
+            ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderHovered)));
+            ImGui.PushStyleColor(ImGuiCol.Button, 0);
+            var result = ImGui.Button(name);
+            ImGui.PopStyleColor(3);
+            return result;
         }
 
         public static void TextTooltip(string text)

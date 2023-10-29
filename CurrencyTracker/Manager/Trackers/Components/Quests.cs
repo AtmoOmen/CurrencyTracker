@@ -1,7 +1,10 @@
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Linq;
 
@@ -22,6 +25,7 @@ namespace CurrencyTracker.Manager.Trackers
             isQuestFinished = false;
             isQuestReadyFinish = false;
             QuestName = string.Empty;
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", Quests);
         }
 
         private void QuestEndCheck(string message)
@@ -64,27 +68,35 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void Quests()
+        private void Quests(AddonEvent type, AddonArgs args)
         {
-            var JR = Service.GameGui.GetAddonByName("JournalResult");
+            isQuestFinished = isQuestReadyFinish = false;
+            QuestName = string.Empty;
 
-            if (JR != nint.Zero && !isQuestReadyFinish)
+            unsafe
             {
-                unsafe
-                {
-                    var addon = Dalamud.SafeMemory.PtrToStructure<AddonJournalResult>(JR);
-                    if (addon != null)
-                    {
-                        QuestName = addon.Value.AtkTextNode250 -> NodeText.ToString();
+                var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
 
-                        if (!QuestName.IsNullOrEmpty())
-                        {
-                            Service.PluginLog.Debug($"Quest {QuestName} Ready to Finish!");
-                        }
+                if (JR != null && JR->RootNode != null && JR->RootNode->ChildNode != null && JR->UldManager.NodeList != null && !isQuestReadyFinish)
+                {
+                    QuestName = JR->GetTextNodeById(30)->NodeText.ToString();
+
+                    if (!QuestName.IsNullOrEmpty())
+                    {
+                        Service.PluginLog.Debug($"Quest {QuestName} Ready to Finish!");
                     }
                     isQuestReadyFinish = true;
                 }
             }
+        }
+
+        public void UninitQuests()
+        {
+            isQuestFinished = false;
+            isQuestReadyFinish = false;
+            QuestName = string.Empty;
+
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", Quests);
         }
     }
 }

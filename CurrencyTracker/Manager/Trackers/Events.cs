@@ -26,6 +26,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (DutyStarted)
             {
                 DutyEndCheck(chatmessage);
+                return;
             }
 
             if (isQuestReadyFinish)
@@ -36,7 +37,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (Service.ClientState.TerritoryType == 144)
             {
-                return;
+                
             }
 
             if (TriggerChatTypes.Contains(typeValue))
@@ -90,56 +91,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             // 传送费用相关计算
-            if (currentLocationName != previousLocationName)
-            {
-                if (C.RecordTeleport)
-                {
-                    // 传送网使用券 Aetheryte Ticket
-                    if (teleportCost == -1)
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            var currencyName = currencyInfo.CurrencyLocalName(7569);
-                            if (!C.CustomCurrencyType.Contains(currencyName))
-                            {
-                                return;
-                            }
-                            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                            var editedTransactions = transactions.LoadAllTransactions(currencyName);
-
-                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo")} {currentLocationName})";
-
-                            Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
-                            Plugin.Instance.Main.UpdateTransactions();
-                        }
-                    }
-                    // 无花费 No Costs
-                    else if (teleportCost == 0)
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            CheckCurrency(1, false, previousLocationName, $"({Service.Lang.GetText("TeleportTo")} {currentLocationName})");
-                        }
-                    }
-                    // 金币 Gil
-                    else
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            var currencyName = currencyInfo.CurrencyLocalName(1);
-                            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                            var editedTransactions = transactions.LoadAllTransactions(currencyName);
-
-                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo")} {currentLocationName})";
-
-                            Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
-                            Plugin.Instance.Main.UpdateTransactions();
-                        }
-                    }
-                }
-                teleportCost = 0;
-                previousLocationName = currentLocationName;
-            }
+            TeleportCheck();
 
             Service.Chat.ChatMessage += OnChatMessage;
         }
@@ -153,12 +105,8 @@ namespace CurrencyTracker.Manager.Trackers
                 dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
                 dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
 
-                Service.PluginLog.Debug("Duty Starts");
-            }
-
-            if (Service.ClientState.IsPvP)
-            {
                 Service.Chat.ChatMessage -= OnChatMessage;
+                Service.PluginLog.Debug("Duty Starts");
             }
         }
 
@@ -185,19 +133,19 @@ namespace CurrencyTracker.Manager.Trackers
                 TradeEndCheck();
             }
 
-            // 任务名 Record Quest Name
-            if (C.RecordQuestName)
-            {
-                Quests();
-            }
-
             // 九宫幻卡 Triple Triad
-            TripleTriad();
+            if (isTTOn)
+            {
+                TripleTriad();
+            }
 
             // 等待交换完成 Wait for exchange to complete
             if (C.WaitExComplete)
             {
-                IsOnExchange();
+                if (isOnExchanging)
+                {
+                    IsOnExchange();
+                }
             }
         }
     }

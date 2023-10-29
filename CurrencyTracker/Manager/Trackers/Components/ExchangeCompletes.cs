@@ -1,4 +1,7 @@
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
 using System.Linq;
@@ -11,44 +14,12 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitExchangeCompletes()
         {
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "GrandCompanySupplyReward", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
         }
 
-        private void IsOnExchange()
+        private void BeginExchange(AddonEvent type, AddonArgs args)
         {
-            // 罗薇娜商会
-            var ICS = Service.GameGui.GetAddonByName("InclusionShop");
-            // 收藏品交易
-            var CS = Service.GameGui.GetAddonByName("CollectablesShop");
-            // 部队战绩交换
-            var FCE = Service.GameGui.GetAddonByName("FreeCompanyExchange");
-            // 部队战绩交换 (道具)
-            var FCCS = Service.GameGui.GetAddonByName("FreeCompanyCreditShop");
-            // 货币交易
-            var SEC = Service.GameGui.GetAddonByName("ShopExchangeCurrency");
-            // 军队筹备
-            var GCSL = Service.GameGui.GetAddonByName("GrandCompanySupplyList");
-            // 军队补给
-            var GCE = Service.GameGui.GetAddonByName("GrandCompanyExchange");
-            // 军票提交确认
-            var GCSR = Service.GameGui.GetAddonByName("GrandCompanySupplyReward");
-            // 商店
-            var SHOP = Service.GameGui.GetAddonByName("Shop");
-            // 市场布告栏
-            var IS = Service.GameGui.GetAddonByName("ItemSearch");
-            // 以物易物
-            var SEI = Service.GameGui.GetAddonByName("ShopExchangeItem");
-            // 空岛商人
-            var SIE = Service.GameGui.GetAddonByName("SkyIslandExchange");
-            // 传唤铃/部队箱
-            var SB = Service.Condition[ConditionFlag.OccupiedSummoningBell] ? 1 : nint.Zero;
-            // 商店交换物品确认
-            var SEID = Service.GameGui.GetAddonByName("ShopExchangeItemDialog");
-
-            var exchangeUI = new nint[] { ICS, CS, FCE, FCCS, SEC, GCSL, GCE, GCSR, SHOP, IS, SEI, SIE, SB, SEID };
-
-            var isAnyOpen = exchangeUI.Any(value => value != nint.Zero);
-
-            if (isAnyOpen && !isOnExchanging)
+            if (!isOnExchanging)
             {
                 isOnExchanging = true;
                 Service.Chat.ChatMessage -= OnChatMessage;
@@ -58,8 +29,14 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 Service.PluginLog.Debug("Exchange Starts");
             }
+        }
 
-            if (!isAnyOpen && isOnExchanging)
+        private void IsOnExchange()
+        {
+            var exchangeState = Service.Condition[ConditionFlag.OccupiedSummoningBell] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent];
+
+
+            if (!exchangeState && isOnExchanging)
             {
                 isOnExchanging = false;
 
@@ -96,6 +73,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void UninitExchangeCompletes()
         {
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "GrandCompanySupplyReward", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
         }
     }
 }
