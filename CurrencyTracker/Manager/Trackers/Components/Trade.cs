@@ -1,12 +1,7 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Utility;
-using ImGuiNET;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -47,19 +42,9 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 isOnTrading = false;
 
-                foreach (var currency in CurrencyType)
+                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
                 {
-                    if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("TradeWith")} {TradeTargetName})");
-                    }
-                }
-                foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-                {
-                    if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("TradeWith")} {TradeTargetName})");
-                    }
+                    CheckCurrency(currency, true, "-1", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
                 }
 
                 currentTargetName = string.Empty;

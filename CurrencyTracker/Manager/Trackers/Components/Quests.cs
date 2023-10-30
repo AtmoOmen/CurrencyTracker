@@ -1,9 +1,7 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Memory;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 using System.Linq;
@@ -46,19 +44,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (isQuestFinished && !QuestName.IsNullOrEmpty() && !Service.Condition[ConditionFlag.OccupiedInQuestEvent])
             {
                 Service.PluginLog.Debug("Quest Finished, Currency Change Check Starts.");
-                foreach (var currency in CurrencyType)
+                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
                 {
-                    if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("Quest")} {QuestName})");
-                    }
-                }
-                foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-                {
-                    if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, "-1", $"({Service.Lang.GetText("Quest")} {QuestName})");
-                    }
+                    CheckCurrency(currency, true, "-1", $"({Service.Lang.GetText("Quest", QuestName)})");
                 }
 
                 isQuestReadyFinish = false;

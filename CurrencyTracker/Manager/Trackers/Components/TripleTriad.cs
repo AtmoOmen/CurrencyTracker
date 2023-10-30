@@ -3,10 +3,6 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -79,14 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 isTTOn = false;
 
-                if (!currentTargetName.IsNullOrEmpty())
-                {
-                    CheckCurrency(29, false, "-1", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriad")} {Service.Lang.GetText("With")} {currentTargetName})");
-                }
-                else
-                {
-                    CheckCurrency(29, false, "-1", $"({Service.Lang.GetText("TripleTriad")})");
-                }
+                CheckCurrency(29, false, "-1", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", currentTargetName)})");
 
                 currentTargetName = string.Empty;
                 ttResultText = string.Empty;
@@ -103,6 +92,5 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "TripleTriad", TripleTriadCheck);
         }
-
     }
 }

@@ -11,14 +11,13 @@ namespace CurrencyTracker
     public class Configuration : IPluginConfiguration
     {
         public int Version { get; set; } = 0;
+        public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
 
         // 存储用户自定义货币ID的字典 Dic saving custom currencies' names
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
 
-        public bool FisrtOpen = true;
-
-        public List<string> CustomCurrencyType { get; set; } = new List<string>();
+        public Dictionary<string, uint> PresetCurrencies { get; set; } = new();
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public List<string> HiddenOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
@@ -26,8 +25,8 @@ namespace CurrencyTracker
         public int TrackMode { get; set; } = 1;
         public int RecordsPerPage { get; set; } = 20;
         public bool ChangeTextColoring { get; set; } = true;
-        public Vector4 PositiveChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-        public Vector4 NegativeChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+        public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
+        public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ExportDataFileType { get; set; } = 0;
         public bool ShowLocationColumn { get; set; } = true;
         public bool ShowNoteColumn { get; set; } = true;
@@ -42,7 +41,7 @@ namespace CurrencyTracker
         public bool RecordMGPSource { get; set; } = true;
         public bool RecordTripleTriad { get; set; } = true;
         public bool RecordQuestName { get; set; } = true;
-        public bool RecordTrade {  get; set; } = true;
+        public bool RecordTrade { get; set; } = true;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

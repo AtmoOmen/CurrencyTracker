@@ -95,11 +95,11 @@ namespace CurrencyTracker
 
             if (WindowSystem.Windows.Contains(Main) && !Main.selectedCurrencyName.IsNullOrEmpty())
             {
-                Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
                 Main.lastTransactions = Main.currentTypeTransactions;
             }
 
-            Service.Tracker.InitializeChatTracking();
+            Service.Tracker.InitializeTracking();
         }
 
         public CharacterInfo GetCurrentCharacter()
@@ -207,7 +207,7 @@ namespace CurrencyTracker
                 {
                     Main.selectedCurrencyName = currencyName;
                     Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                    Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                    Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
                     Main.lastTransactions = Main.currentTypeTransactions;
                     Main.IsOpen = true;
                 }
@@ -221,7 +221,7 @@ namespace CurrencyTracker
                     {
                         Main.selectedCurrencyName = currencyName;
                         Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                        Main.currentTypeTransactions = Main.transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                        Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
                         Main.lastTransactions = Main.currentTypeTransactions;
                     }
                 }
@@ -234,7 +234,7 @@ namespace CurrencyTracker
             if (string.IsNullOrEmpty(playerLang))
             {
                 playerLang = Service.ClientState.ClientLanguage.ToString();
-                if (playerLang != "ChineseSimplified" && playerLang != "English")
+                if (LanguageManager.LanguageNames.ContainsKey(playerLang))
                 {
                     playerLang = "English";
                 }

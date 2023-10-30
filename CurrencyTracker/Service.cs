@@ -2,7 +2,6 @@ using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
-using Dalamud.Interface;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -31,8 +30,10 @@ public class Service
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
-    public static SigScanner SigScanner { get; private set; } = new SigScanner();
+    public static SigScanner SigScanner { get; private set; } = new();
     public static Tracker Tracker { get; set; } = null!;
+    public static Transactions Transactions { get; set; } = new();
+    public static TransactionsConvertor TransactionsConvertor { get; set; } = new();
     public static Configuration Configuration { get; set; } = null!;
     public static LanguageManager Lang { get; set; } = null!;
 }

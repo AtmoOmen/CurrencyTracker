@@ -33,17 +33,18 @@ namespace CurrencyTracker.Manager.Trackers
                     GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        var currencyName = currencyInfo.CurrencyLocalName(29);
-                        if (!C.CustomCurrencyType.Contains(currencyName))
+                        var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
+                        if (currencyName.IsNullOrEmpty()) return;
+                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+                        var editedTransactions = Transactions.LoadAllTransactions(currencyName);
+
+                        if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 10)
                         {
                             return;
                         }
-                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                        var editedTransactions = transactions.LoadAllTransactions(currencyName);
-
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;
@@ -63,17 +64,18 @@ namespace CurrencyTracker.Manager.Trackers
                     GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        var currencyName = currencyInfo.CurrencyLocalName(29);
-                        if (!C.CustomCurrencyType.Contains(currencyName))
+                        var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
+                        if (currencyName.IsNullOrEmpty()) return;
+                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+                        var editedTransactions = Transactions.LoadAllTransactions(currencyName);
+
+                        if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 15)
                         {
                             return;
                         }
-                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                        var editedTransactions = transactions.LoadAllTransactions(currencyName);
-
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;
@@ -93,17 +95,18 @@ namespace CurrencyTracker.Manager.Trackers
                     GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        var currencyName = currencyInfo.CurrencyLocalName(29);
-                        if (!C.CustomCurrencyType.Contains(currencyName))
+                        var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
+                        if (currencyName.IsNullOrEmpty()) return;
+                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+                        var editedTransactions = Transactions.LoadAllTransactions(currencyName);
+
+                        if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 15)
                         {
                             return;
                         }
-                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                        var editedTransactions = transactions.LoadAllTransactions(currencyName);
-
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Plugin.Instance.Main.transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;

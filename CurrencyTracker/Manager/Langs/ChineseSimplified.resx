@@ -139,25 +139,19 @@
     <value>小时</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>以</value>
-  </data>
-  <data name="ClusterByTimeHelp2" xml:space="preserve">
-    <value>小时 为间隔显示数据</value>
+    <value>以 {0}小时 为间隔显示数据</value>
   </data>
   <data name="ChangeFilterEnabled" xml:space="preserve">
     <value>收支筛选</value>
   </data>
   <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>仅显示收支</value>
+    <value>仅显示收支 {0} {1} 的记录</value>
   </data>
   <data name="Greater" xml:space="preserve">
     <value>大于</value>
   </data>
   <data name="Less" xml:space="preserve">
     <value>小于</value>
-  </data>
-  <data name="ChangeFilterValueLabel" xml:space="preserve">
-    <value>的记录</value>
   </data>
   <data name="FilterByTime" xml:space="preserve">
     <value>时间筛选</value>
@@ -179,40 +173,8 @@
 
 推荐同时配置 最小记录值 功能。</value>
   </data>
-  <data name="MinimumRecordValue" xml:space="preserve">
-    <value>最小记录值</value>
-  </data>
-  <data name="MinimumRecordValueLabel" xml:space="preserve">
-    <value>副本内最小记录值: </value>
-  </data>
-  <data name="MinimumRecordValueLabel1" xml:space="preserve">
-    <value>副本外最小记录值: </value>
-  </data>
-  <data name="MinimumRecordValueLabel2" xml:space="preserve">
-    <value>应用更改</value>
-  </data>
-  <data name="MinimumRecordValueHelp" xml:space="preserve">
-    <value>副本内:
-当货币收支的绝对值≥ </value>
-  </data>
-  <data name="MinimumRecordValueHelp1" xml:space="preserve">
-    <value>副本外:
-当货币收支的绝对值≥ </value>
-  </data>
-  <data name="MinimumRecordValueHelp2" xml:space="preserve">
-    <value>时才进行一次数据记录
-
-注:
-1.根据你设定的值，可能造成不准确的位置记录
-2.当你离开副本区域时，无论目前发生改变的货币的具体收支是否达到了你所设定的临界值，
-都会进行一次记录
-   所以，如果你想要“一个副本一条记录”的效果，把 副本内最小记录值 设置的高点就行    (比如给金币设置个 10万 的临界值)</value>
-  </data>
   <data name="TransactionsPerPage" xml:space="preserve">
     <value>单页记录数:</value>
-  </data>
-  <data name="ExportCsv" xml:space="preserve">
-    <value>导出为CSV</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
     <value>文件名: (按 Enter 键确认)</value>
@@ -224,19 +186,13 @@
     <value>注: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
-    <value>如果留空，文件名则为: </value>
+    <value>如果留空，文件名则为:</value>
   </data>
   <data name="ExportCsvMessage1" xml:space="preserve">
     <value>当前货币下无收支记录</value>
   </data>
-  <data name="ExportCsvMessage2" xml:space="preserve">
-    <value>时间,货币数,收支,地点,备注</value>
-  </data>
   <data name="ExportCsvMessage3" xml:space="preserve">
-    <value>已导出CSV文件至: </value>
-  </data>
-  <data name="Page" xml:space="preserve">
-    <value> 页</value>
+    <value>已导出文件至: </value>
   </data>
   <data name="FirstPage" xml:space="preserve">
     <value>首页</value>
@@ -249,12 +205,6 @@
   </data>
   <data name="NextPage" xml:space="preserve">
     <value>下一页</value>
-  </data>
-  <data name="Di" xml:space="preserve">
-    <value>第 </value>
-  </data>
-  <data name="Gong" xml:space="preserve">
-    <value>共 </value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>时间</value>
@@ -320,10 +270,7 @@
     <value>请输入临界值</value>
   </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
-    <value>合并了 </value>
-  </data>
-  <data name="MergeTransactionsHelp2" xml:space="preserve">
-    <value> 条记录。</value>
+    <value>合并了 {0} 条记录</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
     <value>合并当前选中货币下，地点相同、彼此相邻且收支 小于 临界值的记录。
@@ -351,14 +298,10 @@
 </value>
   </data>
   <data name="ClearExTransactionsHelp1" xml:space="preserve">
-    <value>当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录
-</value>
+    <value>当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录</value>
   </data>
   <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>清除了 </value>
-  </data>
-  <data name="ClearExTransactionsHelp3" xml:space="preserve">
-    <value> 条异常记录。</value>
+    <value>清除了 {0}  条异常记录</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
@@ -437,7 +380,7 @@
   <data name="LocationGraph2" xml:space="preserve">
     <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
   </data>
-  <data name="Hide" xml:space="preserve">
+  <data name="HideCurrency" xml:space="preserve">
     <value>隐藏 (双击右键)</value>
   </data>
   <data name="OrderChangeLabel" xml:space="preserve">
@@ -472,10 +415,7 @@
     <value>取消选中</value>
   </data>
   <data name="CopyTransactionsHelp" xml:space="preserve">
-    <value>已复制</value>
-  </data>
-  <data name="CopyTransactionsHelp1" xml:space="preserve">
-    <value>条记录至剪贴板</value>
+    <value>已复制 {0} 条记录至剪贴板</value>
   </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>当前未选中任何记录</value>
@@ -492,11 +432,11 @@
   <data name="EditHelp1" xml:space="preserve">
     <value>请输入修改后的地点名称</value>
   </data>
-  <data name="EditHelp2" xml:space="preserve">
-    <value>已修改</value>
+  <data name="EditLocationHelp" xml:space="preserve">
+    <value>已修改 {0} 条记录的地名为</value>
   </data>
-  <data name="EditHelp3" xml:space="preserve">
-    <value>条记录的地名为</value>
+  <data name="EditNoteHelp" xml:space="preserve">
+    <value>已修改 {0} 条记录的备注为</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>复制</value>
@@ -537,20 +477,14 @@
   <data name="WeekDays" xml:space="preserve">
     <value>日, 一, 二, 三, 四, 五, 六</value>
   </data>
-  <data name="Current Settings" xml:space="preserve">
-    <value>当前设置</value>
-  </data>
   <data name="TeleportTo" xml:space="preserve">
-    <value>传送至</value>
+    <value>传送至 {0}</value>
   </data>
   <data name="TeleportWithinArea" xml:space="preserve">
     <value>地图内传送</value>
   </data>
   <data name="MergedSpecificHelp" xml:space="preserve">
-    <value>由</value>
-  </data>
-  <data name="MergedSpecificHelp1" xml:space="preserve">
-    <value>条记录合并而成</value>
+    <value>由 {0} 条记录合并而成</value>
   </data>
   <data name="Note" xml:space="preserve">
     <value>备注</value>
@@ -574,9 +508,6 @@
   <data name="ColumnsDisplayed" xml:space="preserve">
     <value>显示列</value>
   </data>
-  <data name="EditHelp4" xml:space="preserve">
-    <value>条记录的备注为</value>
-  </data>
   <data name="Order" xml:space="preserve">
     <value>序号</value>
   </data>
@@ -586,14 +517,11 @@
   <data name="UnknownContent" xml:space="preserve">
     <value>未知副本</value>
   </data>
-  <data name="From" xml:space="preserve">
-    <value>来自</value>
-  </data>
   <data name="MiniCactpot" xml:space="preserve">
     <value>仙人微彩</value>
   </data>
-  <data name="TripleTriad" xml:space="preserve">
-    <value>九宫幻卡</value>
+  <data name="TripleTriadWith" xml:space="preserve">
+    <value>幻卡对战 - {0}</value>
   </data>
   <data name="Content" xml:space="preserve">
     <value>副本</value>
@@ -612,7 +540,7 @@
   </data>
   <data name="RecordGoldSaucerHelp" xml:space="preserve">
     <value>下面的选项仅代表勾选后相关记录的备注部分会被填入相应内容,
-不代表不勾选就不会记录相关收支记录</value>
+不代表不勾选插件就不记录相关收支记录</value>
   </data>
   <data name="RecordMGPSource" xml:space="preserve">
     <value>记录金碟币来源</value>
@@ -681,16 +609,10 @@
     <value>未找到符合条件的货币</value>
   </data>
   <data name="ExchangeWith" xml:space="preserve">
-    <value>交易自</value>
-  </data>
-  <data name="With" xml:space="preserve">
-    <value>-</value>
-  </data>
-  <data name="TeleportFrom" xml:space="preserve">
-    <value>传送自</value>
+    <value>交易自 {0}</value>
   </data>
   <data name="Quest" xml:space="preserve">
-    <value>任务</value>
+    <value>任务 {0}</value>
   </data>
   <data name="RecordQuestName" xml:space="preserve">
     <value>记录任务名称</value>
@@ -700,12 +622,21 @@
 如果选中此项, 相关记录的备注部分会被填入你所获得的金碟币来源</value>
   </data>
   <data name="RecordTripleTriadHelp" xml:space="preserve">
-    <value>如果选中此项, 相关记录的备注部分会被填入与你进行对局的对象名称</value>
+    <value>如果选中此项, 相关记录的备注部分会被填入与你进行对局的结果</value>
   </data>
   <data name="RecordTrade" xml:space="preserve">
     <value>记录交易对象</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
-    <value>交易自</value>
+    <value>交易自 {0}</value>
+  </data>
+  <data name="DeleteCurrency" xml:space="preserve">
+    <value>删除 (双击右键)</value>
+  </data>
+  <data name="PageComponent" xml:space="preserve">
+    <value>第 {0} 页 / 共 {1} 页</value>
+  </data>
+  <data name="ExportFileCSVHeader" xml:space="preserve">
+    <value>时间,货币数,收支,地点,备注</value>
   </data>
 </root>

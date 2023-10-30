@@ -1,3 +1,4 @@
+using Dalamud.Utility;
 using System.Collections.Generic;
 using System.Resources;
 
@@ -5,10 +6,11 @@ namespace CurrencyTracker.Manager
 {
     // Language Names in Game:
     // { "Japanese", "日本語" },
-    //{ "English", "English" },
-    //{ "German", "Deutsch" },
-    //{ "French", "Français" },
-    //{ "ChineseSimplified", "简体中文" },
+    // { "English", "English" },
+    // { "German", "Deutsch" },
+    // { "French", "Français" },
+    // { "ChineseSimplified", "简体中文" },
+    // { "ChineseTraditional", "简体中文" },
     public class LanguageManager
     {
         private ResourceManager? resourceManager;
@@ -31,7 +33,7 @@ namespace CurrencyTracker.Manager
             resourceManager = new ResourceManager(resourceName, typeof(LanguageManager).Assembly);
         }
 
-        public List<string> AvailableLanguage()
+        public static List<string> AvailableLanguage()
         {
             var availablelangs = new List<string>();
             foreach (var language in LanguageNames.Keys)
@@ -45,9 +47,16 @@ namespace CurrencyTracker.Manager
             return availablelangs;
         }
 
-        public string GetText(string key)
+        public string GetText(string key, params object[] args)
         {
-            return resourceManager.GetString(key) ?? key;
+            var format = resourceManager.GetString(key);
+            if (format.IsNullOrEmpty())
+            {
+                Service.PluginLog.Error($"Localization String {key} Not Found in Current Language!");
+                return key;
+            }
+
+            return string.Format(format, args);
         }
     }
 }

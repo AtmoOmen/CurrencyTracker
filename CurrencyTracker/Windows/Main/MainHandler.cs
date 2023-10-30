@@ -16,7 +16,7 @@ public partial class Main
     // 用于处理选项顺序 Used to handle options' positions.
     private void ReloadOrderedOptions()
     {
-        bool areEqual = ordedOptions.All(options.Contains) && options.All(ordedOptions.Contains);
+        var areEqual = ordedOptions.All(options.Contains) && options.All(ordedOptions.Contains);
         if (!areEqual)
         {
             List<string> additionalElements = options.Except(ordedOptions).ToList();
@@ -139,11 +139,11 @@ public partial class Main
             return 0;
         }
 
-        int threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        int mergeCount = transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
+        var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
+        var mergeCount = Service.Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
 
         if (mergeCount > 0)
-            Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Service.Lang.GetText("MergeTransactionsHelp2")}");
+            Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
         else
             Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
@@ -180,7 +180,7 @@ public partial class Main
         if (isClusteredByTime && clusterHour > 0)
         {
             TimeSpan interval = TimeSpan.FromHours(clusterHour);
-            currentTypeTransactions = transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
+            currentTypeTransactions = Transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
         }
 
         if (isChangeFilterEnabled)
@@ -331,6 +331,6 @@ public partial class Main
             selectedTransactions[selectedCurrencyName].Clear();
         }
 
-        currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+        currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
     }
 }

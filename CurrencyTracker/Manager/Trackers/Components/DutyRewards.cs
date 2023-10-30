@@ -53,6 +53,7 @@ namespace CurrencyTracker.Manager.Trackers
                 dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
                 dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
                 DutyStarted = true;
+                Service.Chat.ChatMessage -= OnChatMessage;
             }
 
             Service.DutyState.DutyStarted += isDutyStarted;
@@ -67,31 +68,18 @@ namespace CurrencyTracker.Manager.Trackers
             if (DutyEndStrings.Any(ChatMessage.Contains) || ChatMessage == "PVPEnds")
             {
                 Service.PluginLog.Debug("Duty Ends, Currency Change Check Starts.");
-                foreach (var currency in CurrencyType)
+                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
                 {
-                    if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
-                    }
-                }
-                foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-                {
-                    if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
-                    {
-                        CheckCurrency(currencyID, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
-                    }
+                    CheckCurrency(currency, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
                 }
 
                 DutyStarted = false;
                 dutyLocationName = string.Empty;
                 dutyContentName = string.Empty;
-                Service.PluginLog.Debug("Currency Change Check Completes.");
-            }
-
-            if (ChatMessage == "PVPEnds")
-            {
                 Service.Chat.ChatMessage -= OnChatMessage;
                 Service.Chat.ChatMessage += OnChatMessage;
+
+                Service.PluginLog.Debug("Currency Change Check Completes.");
             }
         }
 

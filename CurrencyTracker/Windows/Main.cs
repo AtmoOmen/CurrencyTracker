@@ -76,31 +76,14 @@ public partial class Main : Window, IDisposable
     {
         var addedOptions = new HashSet<string>();
 
-        foreach (var currency in CurrencyInfo.presetCurrencies)
+        foreach (var currency in C.PresetCurrencies.Keys.Concat(C.CustomCurrencies.Keys))
         {
-            var currencyName = currencyInfo.CurrencyLocalName(currency.Value);
-
-            if (!addedOptions.Contains(currencyName) && !hiddenOptions.Contains(currencyName))
+            if (!addedOptions.Contains(currency) && !hiddenOptions.Contains(currency))
             {
-                permanentCurrencyName.Add(currencyName);
-                options.Add(currencyName);
-                addedOptions.Add(currencyName);
-                selectedStates.Add(currencyName, new List<bool>());
-                selectedTransactions.Add(currencyName, new List<TransactionsConvertor>());
-            }
-        }
-
-        foreach (var currency in C.CustomCurrencyType)
-        {
-            if (C.CustomCurrencies.TryGetValue(currency, out _))
-            {
-                if (!addedOptions.Contains(currency))
-                {
-                    options.Add(currency);
-                    addedOptions.Add(currency);
-                    selectedStates.Add(currency, new List<bool>());
-                    selectedTransactions.Add(currency, new List<TransactionsConvertor>());
-                }
+                options.Add(currency);
+                addedOptions.Add(currency);
+                selectedStates.Add(currency, new List<bool>());
+                selectedTransactions.Add(currency, new List<TransactionsConvertor>());
             }
         }
 
@@ -525,7 +508,7 @@ public partial class Main : Window, IDisposable
                 }
                 ImGui.SameLine();
                 ImGuiComponents.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n" +
-                    $"{Service.Lang.GetText("ClusterByTimeHelp1")} {clusterHour} {Service.Lang.GetText("ClusterByTimeHelp2")}");
+                    $"{Service.Lang.GetText("ClusterByTimeHelp1", clusterHour)}");
             }
 
             if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled))
@@ -662,7 +645,7 @@ public partial class Main : Window, IDisposable
                     searchTimer.Stop();
                     searchTimer.Start();
                 }
-                ImGuiComponents.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel")} {(Service.Lang.GetText(filterMode == 0 ? "Greater" : filterMode == 1 ? "Less" : ""))} {filterValue} {Service.Lang.GetText("ChangeFilterValueLabel")}");
+                ImGuiComponents.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : filterMode == 1 ? "Less" : ""), filterValue)}");
             }
 
             if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
@@ -814,12 +797,7 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                if (!C.CustomCurrencyType.Contains(selected))
-                {
-                    C.CustomCurrencyType.Add(selected);
-                }
-
-                if (C.CustomCurrencyType.Contains(selected) && !C.CustomCurrencies.ContainsKey(selected))
+                if (!C.CustomCurrencies.ContainsKey(selected))
                 {
                     C.CustomCurrencies.Add(selected, customCurrency);
                 }
@@ -832,13 +810,13 @@ public partial class Main : Window, IDisposable
 
                 if (recordMode == 1)
                 {
-                    Service.Tracker.InitializeChatTracking();
+                    Service.Tracker.InitializeTracking();
                     Service.Tracker.OnTransactionsUpdate(EventArgs.Empty);
                 }
 
                 selectedOptionIndex = ordedOptions.Count - 1;
                 selectedCurrencyName = selected;
-                currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                 lastTransactions = currentTypeTransactions;
 
                 customCurrency = 0;
@@ -852,8 +830,6 @@ public partial class Main : Window, IDisposable
     // 按临界值合并记录 Merge Transactions By Threshold
     private void MergeTransactions()
     {
-        transactions ??= new Transactions();
-
         if (ImGui.Button(Service.Lang.GetText("MergeTransactionsLabel")))
         {
             ImGui.OpenPopup("MergeTransactions");
@@ -912,10 +888,10 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                var removedCount = transactions.ClearExceptionRecords(selectedCurrencyName);
+                var removedCount = Transactions.ClearExceptionRecords(selectedCurrencyName);
                 if (removedCount > 0)
                 {
-                    Service.Chat.Print($"{Service.Lang.GetText("ClearExTransactionsHelp2")}{removedCount}{Service.Lang.GetText("ClearExTransactionsHelp3")}");
+                    Service.Chat.Print($"{Service.Lang.GetText("ClearExTransactionsHelp2", removedCount)}");
                     UpdateTransactions();
                 }
                 else
@@ -924,7 +900,7 @@ public partial class Main : Window, IDisposable
                 }
             }
             ImGui.SameLine();
-            ImGuiComponents.HelpMarker($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}{Service.Lang.GetText("TransactionsHelp2")}");
+            ImGuiComponents.HelpMarker($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}\n{Service.Lang.GetText("TransactionsHelp2")}");
             ImGui.EndPopup();
         }
     }
@@ -973,12 +949,12 @@ public partial class Main : Window, IDisposable
                     Service.Chat.PrintError(Service.Lang.GetText("ExportCsvMessage1"));
                     return;
                 }
-                var filePath = transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyName, exportDataFileType);
+                var filePath = Transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyName, exportDataFileType);
                 Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
             }
             if (ImGui.IsItemHovered())
             {
-                ImGui.SetTooltip($"{Service.Lang.GetText("FileRenameHelp1")}{selectedCurrencyName}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
+                ImGui.SetTooltip($"{Service.Lang.GetText("FileRenameHelp1")} {selectedCurrencyName}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
             }
             ImGui.EndPopup();
         }
@@ -1041,7 +1017,7 @@ public partial class Main : Window, IDisposable
     // 界面语言切换功能 Language Switch
     private void LanguageSwitch()
     {
-        var AvailableLangs = Service.Lang.AvailableLanguage();
+        var AvailableLangs = LanguageManager.AvailableLanguage();
 
         var lang = string.Empty;
 
@@ -1105,9 +1081,9 @@ public partial class Main : Window, IDisposable
                 Widgets.IconButton(FontAwesomeIcon.EyeSlash);
                 ImGui.PopStyleVar();
             }
-            else if (!permanentCurrencyName.Contains(selectedCurrencyName))
+            else if (!CurrencyInfo.PresetCurrencies.Keys.Any(key => CurrencyInfo.CurrencyLocalName(CurrencyInfo.PresetCurrencies[key]) == selectedCurrencyName))
             {
-                Widgets.IconButton(FontAwesomeIcon.Trash, "Delete\n(Double Right-Click)", "ToolsDelete");
+                Widgets.IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete");
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
                     if (string.IsNullOrEmpty(selectedCurrencyName))
@@ -1121,7 +1097,6 @@ public partial class Main : Window, IDisposable
                         return;
                     }
                     C.CustomCurrencies.Remove(selectedCurrencyName);
-                    C.CustomCurrencyType.Remove(selectedCurrencyName);
                     C.Save();
                     options.Remove(selectedCurrencyName);
                     selectedStates.Remove(selectedCurrencyName);
@@ -1132,14 +1107,14 @@ public partial class Main : Window, IDisposable
             }
             else
             {
-                Widgets.IconButton(FontAwesomeIcon.EyeSlash, Service.Lang.GetText("Hide"));
+                Widgets.IconButton(FontAwesomeIcon.EyeSlash, Service.Lang.GetText("HideCurrency"));
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
-                    if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !permanentCurrencyName.Contains(selectedCurrencyName)) return;
+                    if (string.IsNullOrWhiteSpace(selectedCurrencyName) || selectedOptionIndex == -1 || !CurrencyInfo.PresetCurrencies.Keys.Any(key => CurrencyInfo.CurrencyLocalName(CurrencyInfo.PresetCurrencies[key]) == selectedCurrencyName)) return;
 
                     options.Remove(selectedCurrencyName);
-                    selectedStates[selectedCurrencyName].Clear();
-                    selectedTransactions[selectedCurrencyName].Clear();
+                    selectedStates.Remove(selectedCurrencyName);
+                    selectedTransactions.Remove(selectedCurrencyName);
                     hiddenOptions.Add(selectedCurrencyName);
                     if (!C.HiddenOptions.Contains(selectedCurrencyName))
                         C.HiddenOptions.Add(selectedCurrencyName);
@@ -1177,14 +1152,13 @@ public partial class Main : Window, IDisposable
                     Service.Chat.PrintError(Service.Lang.GetText("OrderChangeHelp"));
                     return;
                 }
-                HashSet<string> addedOptions = new HashSet<string>();
+                var addedOptions = new HashSet<string>();
 
                 foreach (var option in hiddenOptions)
                 {
                     if (!addedOptions.Contains(option))
                     {
                         options.Add(option);
-                        permanentCurrencyName.Add(option);
                         selectedStates.Add(option, new List<bool>());
                         selectedTransactions.Add(option, new List<TransactionsConvertor>());
                         addedOptions.Add(option);
@@ -1259,8 +1233,14 @@ public partial class Main : Window, IDisposable
         // 复制 Copy
         if (ImGui.Selectable(Service.Lang.GetText("Copy")))
         {
-            string columnData = string.Empty;
-            string header = string.Empty;
+            if (selectedTransactions[selectedCurrencyName].Count == 0)
+            {
+                Service.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
+                return;
+            }
+
+            var columnData = string.Empty;
+            var header = string.Empty;
 
             if (exportDataFileType == 0)
             {
@@ -1271,14 +1251,14 @@ public partial class Main : Window, IDisposable
                 header = Service.Lang.GetText("ExportFileMDHeader1");
             }
 
-            int count = selectedTransactions[selectedCurrencyName].Count;
+            var count = selectedTransactions[selectedCurrencyName].Count;
 
             columnData += header;
 
-            for (int t = 0; t < count; t++)
+            for (var t = 0; t < count; t++)
             {
                 var record = selectedTransactions[selectedCurrencyName][t];
-                string change = $"{record.Change:+ #,##0;- #,##0;0}";
+                var change = $"{record.Change:+ #,##0;- #,##0;0}";
 
                 if (exportDataFileType == 0)
                 {
@@ -1293,7 +1273,7 @@ public partial class Main : Window, IDisposable
             if (!string.IsNullOrEmpty(columnData))
             {
                 ImGui.SetClipboardText(columnData);
-                Service.Chat.Print($"{Service.Lang.GetText("CopyTransactionsHelp")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("CopyTransactionsHelp1")}");
+                Service.Chat.Print($"{Service.Lang.GetText("CopyTransactionsHelp", selectedTransactions[selectedCurrencyName].Count)}");
             }
             else
             {
@@ -1315,7 +1295,7 @@ public partial class Main : Window, IDisposable
                 var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
                 var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
                 string filePath = Path.Combine(P.PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}", $"{selectedCurrencyName}.txt");
-                var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                 var foundTransaction = editedTransactions.FirstOrDefault(t => Widgets.IsTransactionEqual(t, selectedTransaction));
 
                 if (foundTransaction != null)
@@ -1323,7 +1303,7 @@ public partial class Main : Window, IDisposable
                     editedTransactions.Remove(foundTransaction);
                 }
 
-                transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
             }
             UpdateTransactions();
         }
@@ -1336,7 +1316,7 @@ public partial class Main : Window, IDisposable
                 Service.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
                 return;
             }
-            var filePath = transactions.ExportData(selectedTransactions[selectedCurrencyName], "", selectedCurrencyName, exportDataFileType);
+            var filePath = Transactions.ExportData(selectedTransactions[selectedCurrencyName], "", selectedCurrencyName, exportDataFileType);
             Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
         }
 
@@ -1396,8 +1376,8 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                var mergeCount = transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent);
-                Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1")}{mergeCount}{Service.Lang.GetText("MergeTransactionsHelp2")}");
+                var mergeCount = Service.Transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent);
+                Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
                 UpdateTransactions();
                 isOnMergingTT = false;
@@ -1449,7 +1429,7 @@ public partial class Main : Window, IDisposable
 
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
-                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
 
                     var index = -1;
                     for (var i = 0; i < editedTransactions.Count; i++)
@@ -1464,7 +1444,7 @@ public partial class Main : Window, IDisposable
                     if (index != -1)
                     {
                         editedTransactions[index].LocationName = editedLocationName;
-                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
                     else
                     {
@@ -1474,13 +1454,13 @@ public partial class Main : Window, IDisposable
 
                 if (failCounts == 0)
                 {
-                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                    Service.Chat.Print($"{Service.Lang.GetText("EditLocationHelp", selectedTransactions[selectedCurrencyName].Count)}");
 
                     UpdateTransactions();
                 }
                 else if (failCounts > 0 && failCounts < selectedTransactions[selectedCurrencyName].Count)
                 {
-                    Service.Chat.Print($"{Service.Lang.GetText("EditHelp2")} {selectedTransactions[selectedCurrencyName].Count - failCounts} {Service.Lang.GetText("EditHelp3")} {editedLocationName}");
+                    Service.Chat.Print($"{Service.Lang.GetText("EditLocationHelp", selectedTransactions[selectedCurrencyName].Count - failCounts)}");
                     Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCounts})");
 
                     UpdateTransactions();
@@ -1506,7 +1486,7 @@ public partial class Main : Window, IDisposable
 
                 foreach (var selectedTransaction in selectedTransactions[selectedCurrencyName])
                 {
-                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
 
                     var index = -1;
                     for (var i = 0; i < editedTransactions.Count; i++)
@@ -1521,7 +1501,7 @@ public partial class Main : Window, IDisposable
                     if (index != -1)
                     {
                         editedTransactions[index].Note = editedNoteContent;
-                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
                     else
                     {
@@ -1555,7 +1535,7 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 顶端工具栏 Transactions Paging Tools
+    // 顶端翻页工具栏 Transactions Paging Tools
     private void TransactionsPagingTools()
     {
         var pageCount = (currentTypeTransactions.Count > 0) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
@@ -1567,7 +1547,7 @@ public partial class Main : Window, IDisposable
         }
 
         // 图表 Graphs
-        ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - ImGui.CalcTextSize(Service.Lang.GetText("    ")).X);
+        ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - ImGui.CalcTextSize("    ").X);
         if (Widgets.IconButton(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")) && pageCount > 0)
         {
             if (selectedCurrencyName != null && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
@@ -1581,7 +1561,7 @@ public partial class Main : Window, IDisposable
         ImGui.SameLine();
 
         // 首页 First Page
-        float pageButtonPosX = (ImGui.GetWindowWidth() - 360) / 2 - 40;
+        var pageButtonPosX = (ImGui.GetWindowWidth() - 360) / 2 - 40;
         ImGui.SetCursorPosX(pageButtonPosX);
         if (Widgets.IconButton(FontAwesomeIcon.Backward))
             currentPage = 0;
@@ -1595,7 +1575,7 @@ public partial class Main : Window, IDisposable
         ImGui.SameLine();
 
         // 页数显示 Pages
-        ImGui.Text($"{Service.Lang.GetText("Di")}{currentPage + 1}{Service.Lang.GetText("Page")} / {Service.Lang.GetText("Gong")}{pageCount}{Service.Lang.GetText("Page")}");
+        ImGui.Text($"{Service.Lang.GetText("PageComponent", currentPage + 1, pageCount)}");
 
         // 每页显示记录条数 Transactions Per Page
         if (ImGui.IsItemClicked())
@@ -1715,7 +1695,7 @@ public partial class Main : Window, IDisposable
                     selectedOptionIndex = i;
                     selectedCurrencyName = option;
 
-                    currentTypeTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                    currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                     lastTransactions = currentTypeTransactions;
                 }
             }
@@ -1736,7 +1716,7 @@ public partial class Main : Window, IDisposable
 
         if (isFirstTime)
         {
-            Service.Tracker.UpdateCurrenciesByChat();
+            Service.Tracker.UpdateCurrencies();
             isFirstTime = false;
         }
 
@@ -1951,7 +1931,7 @@ public partial class Main : Window, IDisposable
                                 if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                                 {
                                     var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
-                                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                                     var index = -1;
 
                                     for (var d = 0; d < editedTransactions.Count; d++)
@@ -1965,7 +1945,7 @@ public partial class Main : Window, IDisposable
                                     if (index != -1)
                                     {
                                         editedTransactions[index].LocationName = editedLocationName;
-                                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
                                     }
@@ -2009,7 +1989,7 @@ public partial class Main : Window, IDisposable
                                 if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                                 {
                                     var filePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
-                                    var editedTransactions = transactions.LoadAllTransactions(selectedCurrencyName);
+                                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                                     var index = -1;
 
                                     for (var d = 0; d < editedTransactions.Count; d++)
@@ -2023,7 +2003,7 @@ public partial class Main : Window, IDisposable
                                     if (index != -1)
                                     {
                                         editedTransactions[index].Note = editedNoteContent;
-                                        transactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
                                     }

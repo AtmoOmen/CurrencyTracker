@@ -94,23 +94,24 @@ public partial class Main
     private bool isChangeColoring = false;
 
     // 收支染色 Change Text Colors
-    private Vector4 positiveChangeColor = new (1.0f, 0.0f, 0.0f, 1.0f);
+    private Vector4 positiveChangeColor = new(1.0f, 0.0f, 0.0f, 1.0f);
 
-    private Vector4 negativeChangeColor = new (0.0f, 1.0f, 0.0f, 1.0f);
+    private Vector4 negativeChangeColor = new(0.0f, 1.0f, 0.0f, 1.0f);
 
     // 每页显示的项数和页数 Items in Custom Currency Paging Function
-    private int itemsPerPage = 10;
+    private readonly int itemsPerPage = 10;
 
     private int currentItemPage = 0;
 
     // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
+
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
 
     // 自定义货币追踪过滤物品用 Used to filter some outdate/abandoned items in custom tracker item list
-    private string[] filterNamesForCCT = new string[]
+    private static readonly string[] filterNamesForCCT = new string[]
     {
         // 过期物品 Dated items
         "†", "过期", "Dated", "Ex-" ,
@@ -145,6 +146,7 @@ public partial class Main
 
     // 临时 Temp
     private bool isRecordContentName;
+
     private bool isRecordTeleportDes;
     private bool isRecordTeleport;
     private bool isTrackinDuty;
@@ -154,17 +156,13 @@ public partial class Main
     private bool isRecordQuestName;
     private bool isRecordTrade;
 
-    internal Dictionary<string, List<bool>>? selectedStates = new Dictionary<string, List<bool>>();
-    internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new Dictionary<string, List<TransactionsConvertor>>();
-    internal Transactions transactions = new Transactions();
-    internal TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
-    private CurrencyInfo currencyInfo = new CurrencyInfo();
-    private List<string> permanentCurrencyName = new List<string>();
-    internal List<string> options = new List<string>();
-    internal List<string>? ordedOptions = new List<string>();
-    internal List<string>? hiddenOptions = new List<string>();
-    internal List<TransactionsConvertor> currentTypeTransactions = new List<TransactionsConvertor>();
-    internal List<TransactionsConvertor> lastTransactions = new List<TransactionsConvertor>();
+    internal Dictionary<string, List<bool>>? selectedStates = new();
+    internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new();
+    internal List<string> options = new();
+    internal List<string>? ordedOptions = new();
+    internal List<string>? hiddenOptions = new();
+    internal List<TransactionsConvertor> currentTypeTransactions = new();
+    internal List<TransactionsConvertor> lastTransactions = new();
     internal long[]? LinePlotData;
 
     private Configuration? C = Plugin.Instance.Configuration;

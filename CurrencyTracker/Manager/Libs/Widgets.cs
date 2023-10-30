@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Transactions;
 
 namespace CurrencyTracker.Windows
 {
     public static class Widgets
     {
-
         public static bool IsTransactionEqual(TransactionsConvertor t1, TransactionsConvertor t2)
         {
             return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change && t1.LocationName == t2.LocationName && t1.Note == t2.Note;
@@ -89,7 +87,7 @@ namespace CurrencyTracker.Windows
             ImGui.TextUnformatted(s);
         }
 
-        public unsafe static ImFontPtr GetFont(float size)
+        public static unsafe ImFontPtr GetFont(float size)
         {
             var style = new Dalamud.Interface.GameFonts.GameFontStyle(Dalamud.Interface.GameFonts.GameFontStyle.GetRecommendedFamilyAndSize(Dalamud.Interface.GameFonts.GameFontFamily.Axis, size));
             var font = Plugin.Instance.PluginInterface.UiBuilder.GetGameFontHandle(style).ImFont;
@@ -126,7 +124,6 @@ namespace CurrencyTracker.Windows
                 TextTooltip(tooltip);
 
             return result;
-
         }
 
         public static void TextTooltip(string text)

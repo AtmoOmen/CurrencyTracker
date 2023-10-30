@@ -1,7 +1,6 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
 using System.Linq;
@@ -35,32 +34,21 @@ namespace CurrencyTracker.Manager.Trackers
         {
             var exchangeState = Service.Condition[ConditionFlag.OccupiedSummoningBell] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent];
 
-
             if (!exchangeState && isOnExchanging)
             {
                 isOnExchanging = false;
 
                 if (!currentTargetName.IsNullOrEmpty())
                 {
-                    foreach (var currency in CurrencyType)
+                    foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
                     {
-                        if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
-                        {
-                            CheckCurrency(currencyID, false, "-1", $"({Service.Lang.GetText("ExchangeWith")} {currentTargetName})");
-                        }
-                    }
-                    foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-                    {
-                        if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
-                        {
-                            CheckCurrency(currencyID, false, "-1", $"({Service.Lang.GetText("ExchangeWith")} {currentTargetName})");
-                        }
+                        CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
                     }
                 }
                 else
                 {
                     Service.PluginLog.Warning("Failed to get exchange target.");
-                    UpdateCurrenciesByChat();
+                    UpdateCurrencies();
                 }
 
                 currentTargetName = string.Empty;

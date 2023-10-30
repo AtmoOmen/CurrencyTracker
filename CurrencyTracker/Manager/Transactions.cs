@@ -10,10 +10,9 @@ namespace CurrencyTracker.Manager
 {
     public partial class Transactions
     {
-        private TransactionsConvertor transactionsConvertor = new TransactionsConvertor();
         private readonly List<TransactionsConvertor> temporarySingleTransactionList = new List<TransactionsConvertor>();
 
-        public List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
+        public static List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
             var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
 
@@ -40,7 +39,6 @@ namespace CurrencyTracker.Manager
                     }
                     else
                     {
-                        // 添加前三个LocationName
                         var locationNames = cluster.LocationName.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
                         if (locationNames.Length < 3)
                         {
@@ -68,7 +66,7 @@ namespace CurrencyTracker.Manager
             return clusteredTransactions.Values.ToList();
         }
 
-        public List<TransactionsConvertor> LoadAllTransactions(string CurrencyName)
+        public static List<TransactionsConvertor> LoadAllTransactions(string CurrencyName)
         {
             List<TransactionsConvertor> allTransactions = new List<TransactionsConvertor>();
 
@@ -96,7 +94,7 @@ namespace CurrencyTracker.Manager
             return allTransactions;
         }
 
-        public List<TransactionsConvertor> LoadLatestTransaction(string CurrencyName)
+        public static List<TransactionsConvertor> LoadLatestTransaction(string CurrencyName)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -104,7 +102,7 @@ namespace CurrencyTracker.Manager
                 return new List<TransactionsConvertor>();
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
 
             List<TransactionsConvertor> allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
 
@@ -140,7 +138,7 @@ namespace CurrencyTracker.Manager
             }
 
             List<TransactionsConvertor> transactionsInRange = new List<TransactionsConvertor>();
-            for (int i = startIndex; i <= endIndex; i++)
+            for (var i = startIndex; i <= endIndex; i++)
             {
                 transactionsInRange.Add(allTransactions[i]);
             }
@@ -265,7 +263,7 @@ namespace CurrencyTracker.Manager
 
                 if (seperateMergedCount > 0)
                 {
-                    currentTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {seperateMergedCount + 1} {Service.Lang.GetText("MergedSpecificHelp1")})";
+                    currentTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp", seperateMergedCount + 1)})";
                     seperateMergedCount = 0;
                 }
 
@@ -279,8 +277,8 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            string filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            transactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
         }
@@ -334,7 +332,7 @@ namespace CurrencyTracker.Manager
                         }
                         else
                         {
-                            finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp")} {selectedTransactions.Count} {Service.Lang.GetText("MergedSpecificHelp1")})";
+                            finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp", selectedTransactions.Count)})";
                         }
                     }
                     else
@@ -353,12 +351,12 @@ namespace CurrencyTracker.Manager
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return selectedTransactions.Count;
         }
 
-        public int ClearExceptionRecords(string selectedCurrencyName)
+        public static int ClearExceptionRecords(string selectedCurrencyName)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -393,7 +391,7 @@ namespace CurrencyTracker.Manager
                     allTransactions.Remove(record);
                 }
 
-                transactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+                Service.TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
                 return recordsToRemove.Count;
             }
@@ -403,7 +401,7 @@ namespace CurrencyTracker.Manager
             }
         }
 
-        public string ExportData(List<TransactionsConvertor> data, string fileName, string selectedCurrencyName, int exportType)
+        public static string ExportData(List<TransactionsConvertor> data, string fileName, string selectedCurrencyName, int exportType)
         {
             string fileExtension;
             string headers;

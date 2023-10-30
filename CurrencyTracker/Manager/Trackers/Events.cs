@@ -4,7 +4,6 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -37,12 +36,11 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (Service.ClientState.TerritoryType == 144)
             {
-                
             }
 
             if (TriggerChatTypes.Contains(typeValue))
             {
-                UpdateCurrenciesByChat();
+                UpdateCurrencies();
 
                 var eventInfo = Service.ClientState.GetType().GetEvent("TerritoryChanged");
                 if (eventInfo == null)
@@ -99,6 +97,7 @@ namespace CurrencyTracker.Manager.Trackers
         // 开始副本攻略时触发的事件 (同时也包含PVP)
         private void isDutyStarted(object? sender, ushort e)
         {
+            if (!C.TrackedInDuty) return;
             if (ContentNames.TryGetValue(Service.ClientState.TerritoryType, out _))
             {
                 DutyStarted = true;

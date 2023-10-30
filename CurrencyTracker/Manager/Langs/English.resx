@@ -121,19 +121,13 @@
     <value>Change Filter</value>
   </data>
   <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>Only display transactions</value>
-  </data>
-  <data name="ChangeFilterValueLabel" xml:space="preserve">
-    <value>in Change</value>
+    <value>Only display transactions {0} {1} in Change</value>
   </data>
   <data name="ClusterByTime" xml:space="preserve">
     <value>Cluster By Time</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>Display transactions in</value>
-  </data>
-  <data name="ClusterByTimeHelp2" xml:space="preserve">
-    <value>hour(s) interval</value>
+    <value>Display transactions in {0} hour(s) interval</value>
   </data>
   <data name="ClusterInterval" xml:space="preserve">
     <value>Hours</value>
@@ -155,7 +149,7 @@
 1. The 3 preset currencies cannot be deleted, you can only hide them.
 2. Not recommend to track not-currency items, there should be another plugin to do that.
 (If you insist, that's also ok)
-3. Deleting currencies will not delete the existing data files, if necessary, please delete them yourself.</value>
+3. Deleting currencies will not delete the existing data files, if necessary, please delete them by yourself.</value>
   </data>
   <data name="CustomCurrencyTracker" xml:space="preserve">
     <value>Custom Currency Tracker</value>
@@ -178,12 +172,6 @@
   <data name="Delete" xml:space="preserve">
     <value>Delete </value>
   </data>
-  <data name="Di" xml:space="preserve">
-    <value />
-  </data>
-  <data name="ExportCsv" xml:space="preserve">
-    <value>Export .CSV</value>
-  </data>
   <data name="ExportCsvMessage1" xml:space="preserve">
     <value>No transactions under the currently selected currency.</value>
   </data>
@@ -191,10 +179,10 @@
     <value>Time,Amount,Change,Location,Note</value>
   </data>
   <data name="ExportCsvMessage3" xml:space="preserve">
-    <value>A .csv file has been exported to: </value>
+    <value>A file has been exported to: </value>
   </data>
   <data name="ExportFileHelp1" xml:space="preserve">
-    <value>Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (excluding paging).</value>
+    <value>Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (exclude paging).</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>If left blank, the file name will be:</value>
@@ -211,9 +199,6 @@
   <data name="FirstPage" xml:space="preserve">
     <value>First</value>
   </data>
-  <data name="Gong" xml:space="preserve">
-    <value />
-  </data>
   <data name="Greater" xml:space="preserve">
     <value>Above</value>
   </data>
@@ -227,10 +212,7 @@
     <value>Please enter a threshold</value>
   </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
-    <value>Merged </value>
-  </data>
-  <data name="MergeTransactionsHelp2" xml:space="preserve">
-    <value> transactions.</value>
+    <value>Merged {0} transactions.</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
     <value>Merge transactions under the currently selected currency with the same location, adjacent to each other, and with a Change &lt; threshold.
@@ -257,41 +239,11 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
   <data name="MergeTransactionsLabel4" xml:space="preserve">
     <value>Manual Merge</value>
   </data>
-  <data name="MinimumRecordValue" xml:space="preserve">
-    <value>Min Value</value>
-  </data>
-  <data name="MinimumRecordValueHelp" xml:space="preserve">
-    <value>In Duty:
-Only make a new transaction when absolute Change is ≥</value>
-  </data>
-  <data name="MinimumRecordValueHelp1" xml:space="preserve">
-    <value>Out of Duty:
-Only make a new transaction when absolute Change is ≥</value>
-  </data>
-  <data name="MinimumRecordValueHelp2" xml:space="preserve">
-    <value>
-Note:
-1.May cause inaccurate location recording, based on the value you set.
-2.When leave a duty zone, a new transaction will be made regardless of whether current Change reaches the threshold.
-   So if you just want "One Duty, One Transaction", you could just set the In Duty value to a high one (like 100k for Gil etc.)</value>
-  </data>
-  <data name="MinimumRecordValueLabel" xml:space="preserve">
-    <value>In Duty:</value>
-  </data>
-  <data name="MinimumRecordValueLabel1" xml:space="preserve">
-    <value>Out of Duty:</value>
-  </data>
-  <data name="MinimumRecordValueLabel2" xml:space="preserve">
-    <value>Apply</value>
-  </data>
   <data name="NextPage" xml:space="preserve">
     <value>Next</value>
   </data>
   <data name="OpenDataFolder" xml:space="preserve">
     <value>Data Folder</value>
-  </data>
-  <data name="Page" xml:space="preserve">
-    <value />
   </data>
   <data name="PreviousPage" xml:space="preserve">
     <value>Previous</value>
@@ -346,9 +298,7 @@ It is recommended to configure Min Value simultaneously.</value>
   </data>
   <data name="ClearExTransactionsHelp1" xml:space="preserve">
     <value>Current judgment criteria:
-Transactions with Change equal to the Amount /with Change equal to 0
-
-</value>
+Transactions with Change equal to the Amount /with Change equal to 0</value>
   </data>
   <data name="ClearExTransactionsLabel" xml:space="preserve">
     <value>Clear Ex</value>
@@ -430,7 +380,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="Graphs" xml:space="preserve">
     <value>Graphs</value>
   </data>
-  <data name="Hide" xml:space="preserve">
+  <data name="HideCurrency" xml:space="preserve">
     <value>Hide
 (Double Right-Click)</value>
   </data>
@@ -451,10 +401,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
 (Double Right-Click)</value>
   </data>
   <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>Removed </value>
-  </data>
-  <data name="ClearExTransactionsHelp3" xml:space="preserve">
-    <value> exception transactions.</value>
+    <value>Removed {0} exception transactions.</value>
   </data>
   <data name="Manage" xml:space="preserve">
     <value>Manage</value>
@@ -475,10 +422,7 @@ Transactions with Change equal to the Amount /with Change equal to 0
     <value>No transactions currently selected.</value>
   </data>
   <data name="CopyTransactionsHelp" xml:space="preserve">
-    <value>Copied</value>
-  </data>
-  <data name="CopyTransactionsHelp1" xml:space="preserve">
-    <value>transactions to clipboard.</value>
+    <value>Copied {0} transactions to clipboard.</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
@@ -492,11 +436,11 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="EditHelp1" xml:space="preserve">
     <value>Please enter a location name.</value>
   </data>
-  <data name="EditHelp2" xml:space="preserve">
-    <value>Changed</value>
+  <data name="EditLocationHelp" xml:space="preserve">
+    <value>Changed {0} transactions' Location to</value>
   </data>
-  <data name="EditHelp3" xml:space="preserve">
-    <value>transactions' Location to</value>
+  <data name="EditNoteHelp" xml:space="preserve">
+    <value>Changed {0} transactions' Note to</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Copy</value>
@@ -537,20 +481,14 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="WeekDays" xml:space="preserve">
     <value>Sun, Mon, Tue, Wed, Thu, Fri, Sat</value>
   </data>
-  <data name="Current Settings" xml:space="preserve">
-    <value>Current Settings</value>
-  </data>
   <data name="TeleportTo" xml:space="preserve">
-    <value>Teleport to</value>
+    <value>Teleport to {0}</value>
   </data>
   <data name="TeleportWithinArea" xml:space="preserve">
-    <value>Teleport within Area</value>
+    <value>Teleport within area</value>
   </data>
   <data name="MergedSpecificHelp" xml:space="preserve">
-    <value>Merged from</value>
-  </data>
-  <data name="MergedSpecificHelp1" xml:space="preserve">
-    <value>transactions</value>
+    <value>Merged from {0} transactions</value>
   </data>
   <data name="Note" xml:space="preserve">
     <value>Note</value>
@@ -574,17 +512,11 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="ColumnsDisplayed" xml:space="preserve">
     <value>Displayed Columns</value>
   </data>
-  <data name="EditHelp4" xml:space="preserve">
-    <value>transactions' Note to</value>
-  </data>
   <data name="Order" xml:space="preserve">
     <value>Order</value>
   </data>
   <data name="TableAppearance" xml:space="preserve">
     <value>Table Appearance</value>
-  </data>
-  <data name="From" xml:space="preserve">
-    <value>From</value>
   </data>
   <data name="UnknownContent" xml:space="preserve">
     <value>Unknown Content</value>
@@ -592,8 +524,8 @@ Transactions with Change equal to the Amount /with Change equal to 0
   <data name="MiniCactpot" xml:space="preserve">
     <value>Mini Cactpot</value>
   </data>
-  <data name="TripleTriad" xml:space="preserve">
-    <value>Triple Triad</value>
+  <data name="TripleTriadWith" xml:space="preserve">
+    <value>Triple Triad with {0}</value>
   </data>
   <data name="Content" xml:space="preserve">
     <value>Content</value>
@@ -612,9 +544,6 @@ Transactions with Change equal to the Amount /with Change equal to 0
   </data>
   <data name="Guide" xml:space="preserve">
     <value>Guide</value>
-  </data>
-  <data name="Overworld" xml:space="preserve">
-    <value>Overworld</value>
   </data>
   <data name="RecordContentName" xml:space="preserve">
     <value>Record Content Name</value>
@@ -680,19 +609,13 @@ the Note of the merged transaction will be:
     <value>No Currency Found</value>
   </data>
   <data name="ExchangeWith" xml:space="preserve">
-    <value>Exchange with</value>
-  </data>
-  <data name="With" xml:space="preserve">
-    <value>with</value>
-  </data>
-  <data name="TeleportFrom" xml:space="preserve">
-    <value>Teleport from</value>
+    <value>Exchange with {0}</value>
   </data>
   <data name="General" xml:space="preserve">
     <value>General</value>
   </data>
   <data name="Quest" xml:space="preserve">
-    <value>Quest</value>
+    <value>Quest {0}</value>
   </data>
   <data name="RecordQuestName" xml:space="preserve">
     <value>Record Quest Name</value>
@@ -702,12 +625,21 @@ the Note of the merged transaction will be:
 If checked, the Note of specific transactions will be filled with the source of MGP you obtained.</value>
   </data>
   <data name="RecordTripleTriadHelp" xml:space="preserve">
-    <value>If checked, the Note of specific transactions will be filled with the target you have played with.</value>
+    <value>If checked, the Note of specific transactions will be filled with the game result.</value>
   </data>
   <data name="RecordTrade" xml:space="preserve">
     <value>Record Trade Target</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
-    <value>Trade with</value>
+    <value>Trade with {0}</value>
+  </data>
+  <data name="DeleteCurrency" xml:space="preserve">
+    <value>Delete (Double Right-Click)</value>
+  </data>
+  <data name="PageComponent" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirm</value>
   </data>
 </root>

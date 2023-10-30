@@ -12,15 +12,6 @@ namespace CurrencyTracker.Manager.Trackers
         private Configuration? C = Plugin.Instance.Configuration;
         private Plugin? P = Plugin.Instance;
 
-        private CurrencyInfo currencyInfo = new CurrencyInfo();
-        private Transactions transactions = new Transactions();
-
-        public static readonly string[] CurrencyType = new string[]
-        {
-            "Gil",
-            "NonLimitedTomestone", "LimitedTomestone"
-        };
-
         private static readonly ushort[] TriggerChatTypes = new ushort[]
         {
             57, 0, 2110, 2105, 62, 3006, 3001, 2238
@@ -34,21 +25,10 @@ namespace CurrencyTracker.Manager.Trackers
             27
         };
 
-        private static readonly string[] IgnoreChatContent = new string[]
-        {
-            "海雾村", "薰衣草苗圃", "高脚孤丘", "白银乡", "穹顶皓天",
-            "Mist", "Lavender Beds", "Goblet", "Shirogane", "Empyreum",
-            "ミスト・ヴィレッジ", "ラベンダーベッド", "ゴブレットビュート", "シロガネ", "エンピレアム",
-            "Dorf des Nebels","Lavendelbeete","Kelchkuppe","Shirogane","Empyreum",
-            "Brumée","Lavandière","La Coupe","Shirogane","Empyrée",
-        };
-
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        public static string NonLimitedTomestoneName = string.Empty;
-        public static string LimitedTomestoneName = string.Empty;
         private string currentTargetName = string.Empty;
 
         // ID - Name
@@ -71,12 +51,12 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.TrackMode == 1)
             {
-                InitializeChatTracking();
+                InitializeTracking();
                 Service.PluginLog.Debug("Currency Tracker Activated");
             }
         }
 
-        public void InitializeChatTracking()
+        public void InitializeTracking()
         {
             Dispose();
 
@@ -100,50 +80,30 @@ namespace CurrencyTracker.Manager.Trackers
             if (C.WaitExComplete) InitExchangeCompletes();
             if (C.RecordTripleTriad) InitTripleTriad();
 
-            UpdateCurrenciesByChat();
+            UpdateCurrencies();
         }
 
-        internal void UpdateCurrenciesByChat()
+        internal void UpdateCurrencies()
         {
-            if (!Service.ClientState.IsLoggedIn) return;
+            if (!Service.ClientState.IsLoggedIn || Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
 
-            if (!Plugin.Instance.Configuration.TrackedInDuty)
+            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
-                if (IsBoundByDuty()) return;
-            }
-
-            if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51])
-            {
-                return;
-            }
-
-            foreach (var currency in CurrencyType)
-            {
-                if (CurrencyInfo.presetCurrencies.TryGetValue(currency, out var currencyID))
-                {
-                    CheckCurrency(currencyID, false);
-                }
-            }
-            foreach (var currency in Plugin.Instance.Configuration.CustomCurrencyType)
-            {
-                if (Plugin.Instance.Configuration.CustomCurrencies.TryGetValue(currency, out var currencyID))
-                {
-                    CheckCurrency(currencyID, false);
-                }
+                CheckCurrency(currency, false);
             }
         }
 
         // 检查货币情况 Check the currency
         private void CheckCurrency(uint currencyID, bool ForceRecording, string currentLocationName = "-1", string currencyNote = "-1", long fCurrencyChange = 0)
         {
-            var currencyName = currencyInfo.CurrencyLocalName(currencyID);
+            var currencyName = C.PresetCurrencies.FirstOrDefault(x => x.Value == currencyID).Key ?? C.CustomCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
             if (currencyName.IsNullOrEmpty())
             {
                 Service.PluginLog.Error("Invalid Currency!");
                 return;
             }
 
-            var currencyAmount = currencyInfo.GetCurrencyAmount(currencyID);
+            var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
             if (currentLocationName == "-1" || currentLocationName == "")
             {
@@ -154,7 +114,7 @@ namespace CurrencyTracker.Manager.Trackers
                 currencyNote = string.Empty;
             }
 
-            var latestTransaction = transactions.LoadLatestSingleTransaction(currencyName);
+            var latestTransaction = Service.Transactions.LoadLatestSingleTransaction(currencyName);
 
             if (latestTransaction != null)
             {
@@ -163,7 +123,7 @@ namespace CurrencyTracker.Manager.Trackers
                 if (currencyChange == 0) return;
                 else if (Math.Abs(currencyChange) >= 0)
                 {
-                    transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
+                    Service.Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                 }
                 else return;
                 OnTransactionsUpdate(EventArgs.Empty);
@@ -171,7 +131,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
             else if (currencyAmount > 0)
             {
-                transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
+                Service.Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
                 OnTransactionsUpdate(EventArgs.Empty);
                 Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
             }
@@ -179,45 +139,37 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void DealWithCurrencies()
         {
-            if (CurrencyInfo.presetCurrencies.TryGetValue("NonLimitedTomestone", out var NonLimitedTomestoneID))
+            foreach (var currency in CurrencyInfo.PresetCurrencies)
             {
-                string? currencyName = currencyInfo.CurrencyLocalName(NonLimitedTomestoneID);
-                if (currencyName != "Unknown" && currencyName != null)
-                {
-                    NonLimitedTomestoneName = currencyName;
-                }
+                if (C.PresetCurrencies.ContainsValue(currency.Value)) continue;
+
+                var currencyName = CurrencyInfo.CurrencyLocalName(currency.Value);
+                if (currencyName.IsNullOrEmpty()) return;
+
+                C.PresetCurrencies.Add(currencyName, currency.Value);
+                C.Save();
             }
 
-            if (CurrencyInfo.presetCurrencies.TryGetValue("LimitedTomestone", out var LimitedTomestoneID))
-            {
-                string? currencyName = currencyInfo.CurrencyLocalName(LimitedTomestoneID);
-                if (currencyName != "Unknown" && currencyName != null)
-                {
-                    LimitedTomestoneName = currencyName;
-                }
-            }
-
-            if (Plugin.Instance.Configuration.FisrtOpen)
+            if (C.FisrtOpen)
             {
                 foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd)
                 {
-                    string? currencyName = currencyInfo.CurrencyLocalName(currencyID);
+                    var currencyName = CurrencyInfo.CurrencyLocalName(currencyID);
 
                     if (currencyName.IsNullOrEmpty()) continue;
 
-                    if (!Plugin.Instance.Configuration.CustomCurrencyType.Contains(currencyName) && !Plugin.Instance.Configuration.CustomCurrencies.ContainsKey(currencyName))
+                    if (!C.CustomCurrencies.ContainsValue(currencyID))
                     {
-                        Plugin.Instance.Configuration.CustomCurrencyType.Add(currencyName);
-                        Plugin.Instance.Configuration.CustomCurrencies.Add(currencyName, currencyID);
+                        C.CustomCurrencies.Add(currencyName, currencyID);
                     }
                 }
 
-                Plugin.Instance.Configuration.FisrtOpen = false;
-                Plugin.Instance.Configuration.Save();
+                C.FisrtOpen = false;
+                C.Save();
             }
         }
 
-        private void LoadConstantNames()
+        private static void LoadConstantNames()
         {
             TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
                 .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
