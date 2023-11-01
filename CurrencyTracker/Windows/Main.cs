@@ -4,6 +4,8 @@ using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -15,8 +17,8 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Transactions;
 using TinyPinyin;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -700,6 +702,62 @@ public partial class Main : Window, IDisposable
         }
     }
 
+    // 修改货币本地名称 Change Currency Name
+    private void RenameCurrency()
+    {
+        if (selectedCurrencyName.IsNullOrEmpty())
+        {
+            ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
+            Widgets.IconButton(FontAwesomeIcon.Pen, "None", "RenameCurrency");
+            ImGui.PopStyleVar();
+        }
+        else
+        {
+            if (Widgets.IconButton(FontAwesomeIcon.Pen, Service.Lang.GetText("Rename"), "RenameCurrency"))
+            {
+                ImGui.OpenPopup("CurrencyRename");
+                editedCurrencyName = selectedCurrencyName;
+            }
+        }
+
+        if (ImGui.BeginPopup("CurrencyRename", ImGuiWindowFlags.AlwaysAutoResize))
+        {
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Now")}:");
+            ImGui.SameLine();
+            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
+            ImGui.Image(CurrencyInfo.GetIcon(C.PresetCurrencies.Concat(C.CustomCurrencies).FirstOrDefault(x => x.Key == selectedCurrencyName).Value).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+            ImGui.SameLine();
+            ImGui.Text(selectedCurrencyName);
+
+            ImGui.SetNextItemWidth(200);
+            ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
+
+            if (ImGui.Button(Service.Lang.GetText("Confirm")))
+            {
+                if (editedCurrencyName.IsNullOrEmpty())
+                {
+                    Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp"));
+                    return;
+                }
+
+                CurrencyRenameHandler(editedCurrencyName);
+
+                ImGui.CloseCurrentPopup();
+            }
+            ImGui.SameLine();
+            if (ImGui.Button(Service.Lang.GetText("Reset")))
+            {
+                var currencyName = C.PresetCurrencies.ContainsKey(selectedCurrencyName) ? CurrencyInfo.CurrencyLocalName(C.PresetCurrencies[selectedCurrencyName]) : CurrencyInfo.CurrencyLocalName(C.CustomCurrencies[selectedCurrencyName]);
+                CurrencyRenameHandler(currencyName);
+
+                ImGui.CloseCurrentPopup();
+            }
+
+            ImGui.EndPopup();
+        }
+    }
+
     // 自定义货币追踪 Custom Currencies To Track
     private void CustomCurrencyTracker()
     {
@@ -1065,7 +1123,7 @@ public partial class Main : Window, IDisposable
     // 货币列表顶端工具栏 Listbox tools
     private void ListboxTools()
     {
-        ImGui.SetCursorPosX(25);
+        ImGui.SetCursorPosX(7);
         CustomCurrencyTracker();
 
         ImGui.SameLine();
@@ -1084,9 +1142,9 @@ public partial class Main : Window, IDisposable
                 Widgets.IconButton(FontAwesomeIcon.EyeSlash);
                 ImGui.PopStyleVar();
             }
-            else if (!CurrencyInfo.PresetCurrencies.Keys.Any(key => CurrencyInfo.CurrencyLocalName(CurrencyInfo.PresetCurrencies[key]) == selectedCurrencyName))
+            else if (!C.PresetCurrencies.Keys.Any(x => x == selectedCurrencyName))
             {
-                Widgets.IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete");
+                Widgets.IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete", new Vector2(39, 30));
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
                     if (string.IsNullOrEmpty(selectedCurrencyName))
@@ -1136,6 +1194,10 @@ public partial class Main : Window, IDisposable
             SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
             selectedOptionIndex++;
         }
+
+        ImGui.SameLine();
+
+        RenameCurrency();
 
         ImGui.SameLine();
 
@@ -1693,7 +1755,11 @@ public partial class Main : Window, IDisposable
                 var option = ordedOptions[i];
                 var isSelected = i == selectedOptionIndex;
 
-                if (ImGui.Selectable(option, isSelected))
+                var headerHoveredColor = ImGui.GetStyle().Colors[(int)ImGuiCol.HeaderHovered];
+                var textSelectedColor = ImGui.GetStyle().Colors[(int)ImGuiCol.Header];
+                ImGui.PushStyleColor(ImGuiCol.HeaderHovered, headerHoveredColor with { W = 0.2f });
+                ImGui.PushStyleColor(ImGuiCol.Header, textSelectedColor with { W = 0.2f });
+                if (ImGui.Selectable($"##{option}", isSelected))
                 {
                     selectedOptionIndex = i;
                     selectedCurrencyName = option;
@@ -1701,6 +1767,13 @@ public partial class Main : Window, IDisposable
                     currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                     lastTransactions = currentTypeTransactions;
                 }
+                ImGui.PopStyleColor(2);
+
+                ImGui.SameLine(3.0f);
+                ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
+                ImGui.Image(CurrencyInfo.GetIcon(C.PresetCurrencies.Concat(C.CustomCurrencies).FirstOrDefault(x => x.Key == option).Value).ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+                ImGui.SameLine();
+                ImGui.Text(option);
             }
 
             ImGui.EndChildFrame();

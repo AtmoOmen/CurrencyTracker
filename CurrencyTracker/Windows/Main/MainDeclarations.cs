@@ -8,7 +8,7 @@ namespace CurrencyTracker.Windows;
 public partial class Main
 {
     // 记录模式: 1为聊天记录模式 Record Mode: 1 for Chat Mode
-    private int recordMode = 0;
+    private int recordMode = 1;
 
     // 是否显示记录选项 If Show Record Options
     private bool showRecordOptions = true;
@@ -139,14 +139,16 @@ public partial class Main
     private bool isShowOrderColumn = true;
 
     // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
-    private System.Timers.Timer searchTimer = new System.Timers.Timer(100);
+    private readonly System.Timers.Timer searchTimer = new(100);
 
     // 是否为本回首次打开 Is First Time to Open Main Windown
     internal bool isFirstTime = true;
 
+    // 修改后货币名 Edited Currency Name
+    private string editedCurrencyName = string.Empty;
+
     // 临时 Temp
     private bool isRecordContentName;
-
     private bool isRecordTeleportDes;
     private bool isRecordTeleport;
     private bool isTrackinDuty;

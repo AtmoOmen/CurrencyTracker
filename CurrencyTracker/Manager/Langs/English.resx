@@ -642,4 +642,19 @@ If checked, the Note of specific transactions will be filled with the source of 
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
+  <data name="CurrencyRenameHelp" xml:space="preserve">
+    <value>Please enter a modified currency name.</value>
+  </data>
+  <data name="CurrencyRenameHelp1" xml:space="preserve">
+    <value>Another currency with the same name already exists.</value>
+  </data>
+  <data name="CurrencyRenameHelp2" xml:space="preserve">
+    <value>A data file with the same name already exists: {0}</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>Reset</value>
+  </data>
 </root>

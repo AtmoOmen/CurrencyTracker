@@ -40,7 +40,7 @@ namespace CurrencyTracker.Manager.Trackers
         public Tracker()
         {
             LoadConstantNames();
-            DealWithCurrencies();
+            InitCurrencies();
 
             // Timer Mode has been abandoned
             if (C.TrackMode == 0)
@@ -137,18 +137,23 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void DealWithCurrencies()
+        private void InitCurrencies()
         {
             foreach (var currency in CurrencyInfo.PresetCurrencies)
             {
-                if (C.PresetCurrencies.ContainsValue(currency.Value)) continue;
-
-                var currencyName = CurrencyInfo.CurrencyLocalName(currency.Value);
-                if (currencyName.IsNullOrEmpty()) return;
-
-                C.PresetCurrencies.Add(currencyName, currency.Value);
-                C.Save();
+                if (!C.PresetCurrencies.ContainsValue(currency.Value))
+                {
+                    var currencyName = CurrencyInfo.CurrencyLocalName(currency.Value);
+                    if (!currencyName.IsNullOrEmpty())
+                    {
+                        C.PresetCurrencies.Add(currencyName, currency.Value);
+                    }
+                }
             }
+
+            C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.ContainsValue(kv.Value))
+                                       .ToDictionary(kv => kv.Key, kv => kv.Value);
+            C.Save();
 
             if (C.FisrtOpen)
             {

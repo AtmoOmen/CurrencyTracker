@@ -1,7 +1,10 @@
+using Dalamud.Interface.Internal;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using KamiLib.Caching;
 using Lumina.Excel.GeneratedSheets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -63,6 +66,19 @@ public static class CurrencyInfo
             .Where(tomestone => tomestone.Tomestones.Row is 3)
             .First()
             .Item.Row;
+    }
+
+    public static IDalamudTextureWrap? GetIcon(uint currencyID)
+    {
+        if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
+        {
+            var iconFlags = ITextureProvider.IconFlags.HiRes;
+
+            return Service.TextureProvider.GetIcon(iconId, iconFlags);
+        }
+
+        Service.PluginLog.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
+        return null;
     }
 
     public static long GetRetainerAmount(uint currencyID)

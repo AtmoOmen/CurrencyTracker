@@ -639,4 +639,19 @@
   <data name="ExportFileCSVHeader" xml:space="preserve">
     <value>时间,货币数,收支,地点,备注</value>
   </data>
+  <data name="CurrencyRenameHelp" xml:space="preserve">
+    <value>请输入修改后的货币名称</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="CurrencyRenameHelp1" xml:space="preserve">
+    <value>已存在另一同名货币</value>
+  </data>
+  <data name="CurrencyRename2" xml:space="preserve">
+    <value>已存在同名数据文件: {0}</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>重命名</value>
+  </data>
 </root>

@@ -4,6 +4,7 @@ using Dalamud.Utility;
 using ImGuiNET;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -33,9 +34,7 @@ public partial class Main
     // 用于处理选项位置变化 Used to handle option's position change.
     private void SwapOptions(int index1, int index2)
     {
-        string temp = ordedOptions[index1];
-        ordedOptions[index1] = ordedOptions[index2];
-        ordedOptions[index2] = temp;
+        (ordedOptions[index2], ordedOptions[index1]) = (ordedOptions[index1], ordedOptions[index2]);
 
         Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
         Plugin.Instance.Configuration.Save();
@@ -306,6 +305,61 @@ public partial class Main
             }
             ImGui.EndTable();
         }
+    }
+
+    // 用于处理货币名变更 Used to handle currency rename
+    private void CurrencyRenameHandler(string editedCurrencyName)
+    {
+        var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
+
+        if (C.PresetCurrencies.Keys.Concat(C.CustomCurrencies.Keys).Contains(editedCurrencyName))
+        {
+            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+            return;
+        }
+
+        if (File.Exists(editedFilePath))
+        {
+            Service.Chat.PrintError($"{Service.Lang.GetText("CurrencyRenameHelp2", editedFilePath)}");
+            return;
+        }
+
+        if (C.PresetCurrencies.ContainsKey(selectedCurrencyName))
+        {
+            var currencyID = C.PresetCurrencies[selectedCurrencyName];
+
+            C.PresetCurrencies.Remove(selectedCurrencyName);
+            C.PresetCurrencies.Add(editedCurrencyName, currencyID);
+        }
+
+        if (C.CustomCurrencies.ContainsKey(selectedCurrencyName))
+        {
+            var currencyID = C.CustomCurrencies[selectedCurrencyName];
+
+            C.CustomCurrencies.Remove(selectedCurrencyName);
+            C.CustomCurrencies.Add(editedCurrencyName, currencyID);
+        }
+
+        if (C.OrdedOptions.Contains(selectedCurrencyName))
+        {
+            var index = C.OrdedOptions.IndexOf(selectedCurrencyName);
+
+            C.OrdedOptions[index] = editedCurrencyName;
+        }
+
+        C.Save();
+
+        if (File.Exists(Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt")))
+        {
+            File.Move(Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt"), editedFilePath);
+        }
+
+        selectedCurrencyName = editedCurrencyName;
+        options.Clear();
+        selectedStates.Clear();
+        selectedTransactions.Clear();
+
+        LoadOptions();
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added
