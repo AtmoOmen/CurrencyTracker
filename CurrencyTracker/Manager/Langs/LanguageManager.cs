@@ -18,6 +18,7 @@ namespace CurrencyTracker.Manager
         public static readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>
         {
             { "English", "English" },
+            { "Spanish", "Español" },
             { "ChineseSimplified", "简体中文" },
             { "ChineseTraditional", "繁體中文" },
         };

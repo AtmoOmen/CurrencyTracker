@@ -648,7 +648,7 @@
   <data name="CurrencyRenameHelp1" xml:space="preserve">
     <value>已存在另一同名货币</value>
   </data>
-  <data name="CurrencyRename2" xml:space="preserve">
+  <data name="CurrencyRenameHelp2" xml:space="preserve">
     <value>已存在同名数据文件: {0}</value>
   </data>
   <data name="Rename" xml:space="preserve">
