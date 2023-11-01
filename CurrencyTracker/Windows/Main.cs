@@ -730,7 +730,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGui.Text(selectedCurrencyName);
 
-            ImGui.SetNextItemWidth(200);
+            ImGui.SetNextItemWidth(ImGui.CalcTextSize(selectedCurrencyName).X + 85);
             ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
 
             if (ImGui.Button(Service.Lang.GetText("Confirm")))
