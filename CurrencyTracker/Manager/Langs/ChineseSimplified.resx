@@ -622,7 +622,7 @@
 如果选中此项, 相关记录的备注部分会被填入你所获得的金碟币来源</value>
   </data>
   <data name="RecordTripleTriadHelp" xml:space="preserve">
-    <value>如果选中此项, 相关记录的备注部分会被填入与你进行对局的结果</value>
+    <value>如果选中此项, 相关记录的备注部分会被填入对局的结果</value>
   </data>
   <data name="RecordTrade" xml:space="preserve">
     <value>记录交易对象</value>

@@ -79,25 +79,11 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <Compile Update="Manager\Langs\ChineseSimplified.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>ChineseSimplified.resx</DependentUpon>
-      </Compile>
-      <Compile Update="Manager\Langs\English.Designer.cs">
-        <DesignTime>True</DesignTime>
-        <AutoGen>True</AutoGen>
-        <DependentUpon>English.resx</DependentUpon>
-      </Compile>
-    </ItemGroup>
-    <ItemGroup>
       <EmbeddedResource Update="Manager\Langs\ChineseSimplified.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>ChineseSimplified.Designer.cs</LastGenOutput>
+        <Generator></Generator>
       </EmbeddedResource>
       <EmbeddedResource Update="Manager\Langs\English.resx">
-        <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>English.Designer.cs</LastGenOutput>
+        <Generator></Generator>
       </EmbeddedResource>
     </ItemGroup>
 

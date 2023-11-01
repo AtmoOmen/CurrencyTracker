@@ -126,12 +126,6 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
-            // 等待交易完成 Wait for trade to complete
-            if (isOnTrading)
-            {
-                TradeEndCheck();
-            }
-
             // 九宫幻卡 Triple Triad
             if (isTTOn)
             {

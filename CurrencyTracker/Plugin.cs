@@ -258,7 +258,7 @@ namespace CurrencyTracker
                     if (isChineseSimplified)
                     {
                         var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
-                        return normalizedCurrency.IndexOf(partialName, StringComparison.OrdinalIgnoreCase) >= 0 || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+                        return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
                     }
                     else
                     {

@@ -10,7 +10,7 @@ namespace CurrencyTracker.Manager
     // { "German", "Deutsch" },
     // { "French", "Français" },
     // { "ChineseSimplified", "简体中文" },
-    // { "ChineseTraditional", "简体中文" },
+    // { "ChineseTraditional", "繁體中文" },
     public class LanguageManager
     {
         private ResourceManager? resourceManager;
@@ -19,6 +19,7 @@ namespace CurrencyTracker.Manager
         {
             { "English", "English" },
             { "ChineseSimplified", "简体中文" },
+            { "ChineseTraditional", "繁體中文" },
         };
 
         public LanguageManager(string languageName)

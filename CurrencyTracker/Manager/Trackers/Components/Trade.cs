@@ -15,7 +15,8 @@ namespace CurrencyTracker.Manager.Trackers
             TradeTargetName = string.Empty;
             isOnTrading = false;
 
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "Trade", TradeEndCheck);
         }
 
         private void StartTrade(AddonEvent type, AddonArgs args)
@@ -34,20 +35,17 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void TradeEndCheck()
+        private void TradeEndCheck(AddonEvent type, AddonArgs args)
         {
-            var TGUI = Service.GameGui.GetAddonByName("Trade");
-
-            if (TGUI == nint.Zero && isOnTrading)
+            if (isOnTrading)
             {
-                isOnTrading = false;
-
                 foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
                 {
                     CheckCurrency(currency, true, "-1", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
                 }
 
                 currentTargetName = string.Empty;
+                isOnTrading = false;
 
                 Service.Chat.ChatMessage += OnChatMessage;
                 Service.PluginLog.Debug("Trade Ends");
@@ -59,7 +57,8 @@ namespace CurrencyTracker.Manager.Trackers
             TradeTargetName = string.Empty;
             isOnTrading = false;
 
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "Trade", TradeEndCheck);
         }
     }
 }

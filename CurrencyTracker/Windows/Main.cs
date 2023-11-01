@@ -723,7 +723,10 @@ public partial class Main : Window, IDisposable
                 var endIndex = Math.Min(startIndex + itemsPerPage, Tracker.ItemNames.Count);
 
                 ImGui.SetNextItemWidth(200f);
-                ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 50);
+                if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 50))
+                {
+                    currentItemPage = 0;
+                }
                 ImGui.SameLine();
                 if (Widgets.IconButton(FontAwesomeIcon.Backward))
                     currentItemPage = 0;
@@ -754,7 +757,7 @@ public partial class Main : Window, IDisposable
 
                     if (options.All(y => !itemName.Contains(y)) && (!filterNamesForCCT.Any(filter => itemName.Contains(filter))))
                     {
-                        if (string.IsNullOrWhiteSpace(searchFilter) || (isChineseSimplified ? pinyin.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) : itemName.IndexOf(searchFilter, StringComparison.OrdinalIgnoreCase) >= 0))
+                        if (string.IsNullOrWhiteSpace(searchFilter) || (isChineseSimplified ? pinyin.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) : itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)))
                         {
                             if (visibleItems >= startIndex && visibleItems < endIndex)
                             {
