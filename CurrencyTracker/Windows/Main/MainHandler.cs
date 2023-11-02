@@ -164,7 +164,7 @@ public partial class Main
     }
 
     // 调整文本长度用 Used to adjust the length of the text in header columns.
-    private string CalcNumSpaces()
+    private static string CalcNumSpaces()
     {
         var fontSize = ImGui.GetFontSize() / 2;
         var numSpaces = (int)(ImGui.GetColumnWidth() / fontSize);

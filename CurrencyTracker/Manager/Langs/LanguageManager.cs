@@ -9,6 +9,7 @@ namespace CurrencyTracker.Manager
     // { "English", "English" },
     // { "German", "Deutsch" },
     // { "French", "Français" },
+    // { "Spanish", "Español" },
     // { "ChineseSimplified", "简体中文" },
     // { "ChineseTraditional", "繁體中文" },
     public class LanguageManager

@@ -13,7 +13,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitExchangeCompletes()
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "GrandCompanySupplyReward", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
         }
 
         private void BeginExchange(AddonEvent type, AddonArgs args)
@@ -61,7 +61,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void UninitExchangeCompletes()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "GrandCompanySupplyReward", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
         }
     }
 }
