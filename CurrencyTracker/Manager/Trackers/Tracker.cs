@@ -14,7 +14,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private static readonly ushort[] TriggerChatTypes = new ushort[]
         {
-            57, 0, 2110, 2105, 62, 3006, 3001, 2238
+            57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
         };
 
         private static readonly ushort[] IgnoreChatTypes = new ushort[]
@@ -68,9 +68,6 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.ClientState.TerritoryChanged += OnZoneChange;
-
-            Service.Condition.ConditionChange -= OnConditionChanged;
-            Service.Condition.ConditionChange += OnConditionChanged;
 
             if (C.RecordTeleport) InitTeleportCosts();
             if (C.TrackedInDuty) InitDutyRewards();
@@ -202,7 +199,6 @@ namespace CurrencyTracker.Manager.Trackers
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.Chat.ChatMessage -= OnChatMessage;
             Service.Framework.Update -= OnFrameworkUpdate;
-            Service.Condition.ConditionChange -= OnConditionChanged;
         }
     }
 }

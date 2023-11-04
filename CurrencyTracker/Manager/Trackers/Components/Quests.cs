@@ -23,6 +23,12 @@ namespace CurrencyTracker.Manager.Trackers
             isQuestFinished = false;
             isQuestReadyFinish = false;
             QuestName = string.Empty;
+
+            if (Service.GameGui.GetAddonByName("JournalResult") != nint.Zero)
+            {
+                Quests(AddonEvent.PostSetup, null);
+            }
+
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", Quests);
         }
 
@@ -56,7 +62,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void Quests(AddonEvent type, AddonArgs args)
+        private void Quests(AddonEvent type, AddonArgs? args)
         {
             isQuestFinished = isQuestReadyFinish = false;
             QuestName = string.Empty;

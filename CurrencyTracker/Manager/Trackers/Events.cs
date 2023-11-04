@@ -22,6 +22,8 @@ namespace CurrencyTracker.Manager.Trackers
             var chatmessage = message.TextValue;
             var typeValue = (ushort)type;
 
+            if (!TriggerChatTypes.Contains(typeValue)) return;
+
             if (DutyStarted)
             {
                 DutyEndCheck(chatmessage);
@@ -34,19 +36,12 @@ namespace CurrencyTracker.Manager.Trackers
                 return;
             }
 
-            if (Service.ClientState.TerritoryType == 144)
-            {
-            }
+            UpdateCurrencies();
 
-            if (TriggerChatTypes.Contains(typeValue))
+            var eventInfo = Service.ClientState.GetType().GetEvent("TerritoryChanged");
+            if (eventInfo == null)
             {
-                UpdateCurrencies();
-
-                var eventInfo = Service.ClientState.GetType().GetEvent("TerritoryChanged");
-                if (eventInfo == null)
-                {
-                    Service.ClientState.TerritoryChanged += OnZoneChange;
-                }
+                Service.ClientState.TerritoryChanged += OnZoneChange;
             }
 
             /*
@@ -109,20 +104,6 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        // 角色 Condition 改变时触发的事件
-        private void OnConditionChanged(ConditionFlag flag, bool value)
-        {
-            /*
-            if (flag == ConditionFlag.OccupiedInQuestEvent && isQuestReadyFinish)
-            {
-                if (!value)
-                {
-                    isQuestFinished = true;
-                }
-            }
-            */
-        }
-
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
@@ -137,7 +118,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 if (isOnExchanging)
                 {
-                    IsOnExchange();
+                    IsOnExchange(framework.LastUpdate);
                 }
             }
         }
