@@ -38,12 +38,6 @@ namespace CurrencyTracker.Manager.Trackers
 
             UpdateCurrencies();
 
-            var eventInfo = Service.ClientState.GetType().GetEvent("TerritoryChanged");
-            if (eventInfo == null)
-            {
-                Service.ClientState.TerritoryChanged += OnZoneChange;
-            }
-
             /*
 
             if (Plugin.Instance.PluginInterface.IsDev)
@@ -64,7 +58,7 @@ namespace CurrencyTracker.Manager.Trackers
                 return;
             }
 
-            Service.Chat.ChatMessage -= OnChatMessage;
+            DebindChatEvent();
 
             currentLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
@@ -99,7 +93,7 @@ namespace CurrencyTracker.Manager.Trackers
                 dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
                 dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
 
-                Service.Chat.ChatMessage -= OnChatMessage;
+                DebindChatEvent();
                 Service.PluginLog.Debug("Duty Starts");
             }
         }

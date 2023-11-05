@@ -20,10 +20,10 @@ public partial class Main
         var areEqual = ordedOptions.All(options.Contains) && options.All(ordedOptions.Contains);
         if (!areEqual)
         {
-            List<string> additionalElements = options.Except(ordedOptions).ToList();
+            var additionalElements = options.Except(ordedOptions).ToList();
             ordedOptions.AddRange(additionalElements);
 
-            List<string> missingElements = ordedOptions.Except(options).ToList();
+            var missingElements = ordedOptions.Except(options).ToList();
             ordedOptions.RemoveAll(item => missingElements.Contains(item));
 
             Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
@@ -43,11 +43,11 @@ public partial class Main
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
     private List<TransactionsConvertor> ApplyChangeFilter(List<TransactionsConvertor> transactions)
     {
-        List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var filteredTransactions = new List<TransactionsConvertor>();
 
         foreach (var transaction in transactions)
         {
-            bool isTransactionValid = filterMode == 0 ?
+            var isTransactionValid = filterMode == 0 ?
                 transaction.Change > filterValue :
                 transaction.Change < filterValue;
 
@@ -62,7 +62,7 @@ public partial class Main
     // 按时间显示交易记录 Hide Unmatched Transactions By Time
     private List<TransactionsConvertor> ApplyDateTimeFilter(List<TransactionsConvertor> transactions)
     {
-        List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var filteredTransactions = new List<TransactionsConvertor>();
 
         foreach (var transaction in transactions)
         {
@@ -83,7 +83,7 @@ public partial class Main
             return transactions;
         }
 
-        List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var filteredTransactions = new List<TransactionsConvertor>();
         var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
 
         foreach (var transaction in transactions)
@@ -91,7 +91,7 @@ public partial class Main
             var normalizedLocation = transaction.LocationName.Normalize(NormalizationForm.FormKC);
             var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedLocation, "") : string.Empty;
 
-            if (normalizedLocation.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
+            if (normalizedLocation.Contains(query, StringComparison.OrdinalIgnoreCase) || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
@@ -116,7 +116,7 @@ public partial class Main
             var normalizedNote = transaction.Note.Normalize(NormalizationForm.FormKC);
             var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedNote, "") : string.Empty;
 
-            if (normalizedNote.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
+            if (normalizedNote.Contains(query, StringComparison.OrdinalIgnoreCase) || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
@@ -139,7 +139,7 @@ public partial class Main
         }
 
         var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        var mergeCount = Service.Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
+        var mergeCount = Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
 
         if (mergeCount > 0)
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
@@ -178,7 +178,7 @@ public partial class Main
     {
         if (isClusteredByTime && clusterHour > 0)
         {
-            TimeSpan interval = TimeSpan.FromHours(clusterHour);
+            var interval = TimeSpan.FromHours(clusterHour);
             currentTypeTransactions = Transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
         }
 
@@ -385,6 +385,7 @@ public partial class Main
             selectedTransactions[selectedCurrencyName].Clear();
         }
 
-        currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
+        Transactions.ReorderTransactions(selectedCurrencyName);
+        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyName));
     }
 }

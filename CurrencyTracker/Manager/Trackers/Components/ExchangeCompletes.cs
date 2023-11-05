@@ -31,7 +31,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (!isOnExchanging)
             {
                 isOnExchanging = true;
-                Service.Chat.ChatMessage -= OnChatMessage;
+                DebindChatEvent();
                 if (Service.TargetManager.Target != null)
                 {
                     currentTargetName = Service.TargetManager.Target.Name.TextValue;

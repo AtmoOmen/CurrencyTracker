@@ -255,9 +255,7 @@ Two-Way Merge: Transactions with Changes in positive and negative are calculated
     <value>Track in Duty</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>If unchecked, the plugin will pause recording any Change when you are in Duty until left, which will also result in recording inaccurate Location.
-
-It is recommended to configure Min Value simultaneously.</value>
+    <value>If unchecked, the plugin will pause recording any Change when you are in Duty until left, which will also result in recording inaccurate Location.</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>No matching transactions found.</value>

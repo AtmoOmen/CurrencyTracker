@@ -60,7 +60,7 @@ namespace CurrencyTracker.Manager.Trackers
         {
             Dispose();
 
-            Service.Chat.ChatMessage -= OnChatMessage;
+            DebindChatEvent();
             Service.Chat.ChatMessage += OnChatMessage;
 
             Service.Framework.Update -= OnFrameworkUpdate;
@@ -111,7 +111,7 @@ namespace CurrencyTracker.Manager.Trackers
                 currencyNote = string.Empty;
             }
 
-            var latestTransaction = Service.Transactions.LoadLatestSingleTransaction(currencyName);
+            var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyName);
 
             if (latestTransaction != null)
             {
@@ -120,7 +120,7 @@ namespace CurrencyTracker.Manager.Trackers
                 if (currencyChange == 0) return;
                 else if (Math.Abs(currencyChange) >= 0)
                 {
-                    Service.Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
+                    Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
                 }
                 else return;
                 OnTransactionsUpdate(EventArgs.Empty);
@@ -128,7 +128,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
             else if (currencyAmount > 0)
             {
-                Service.Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
+                Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
                 OnTransactionsUpdate(EventArgs.Empty);
                 Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
             }
@@ -186,6 +186,14 @@ namespace CurrencyTracker.Manager.Trackers
                     x => $"{x.Name}");
         }
 
+        private void DebindChatEvent()
+        {
+            for (var i = 0; i < 5;  i++)
+            {
+                Service.Chat.ChatMessage -= OnChatMessage;
+            }
+        }
+
         public void Dispose()
         {
             UninitTeleportCosts();
@@ -197,7 +205,7 @@ namespace CurrencyTracker.Manager.Trackers
             UninitQuests();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
-            Service.Chat.ChatMessage -= OnChatMessage;
+            DebindChatEvent();
             Service.Framework.Update -= OnFrameworkUpdate;
         }
     }

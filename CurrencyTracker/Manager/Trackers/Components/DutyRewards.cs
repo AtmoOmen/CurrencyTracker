@@ -53,7 +53,7 @@ namespace CurrencyTracker.Manager.Trackers
                 dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
                 dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
                 DutyStarted = true;
-                Service.Chat.ChatMessage -= OnChatMessage;
+                DebindChatEvent();
             }
 
             Service.DutyState.DutyStarted += isDutyStarted;
@@ -76,7 +76,6 @@ namespace CurrencyTracker.Manager.Trackers
                 DutyStarted = false;
                 dutyLocationName = string.Empty;
                 dutyContentName = string.Empty;
-                Service.Chat.ChatMessage -= OnChatMessage;
                 Service.Chat.ChatMessage += OnChatMessage;
 
                 Service.PluginLog.Debug("Currency Change Check Completes.");

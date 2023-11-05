@@ -169,9 +169,7 @@
     <value>记录副本内数据</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。
-
-推荐同时配置 最小记录值 功能。</value>
+    <value>如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
     <value>单页记录数:</value>
@@ -261,7 +259,7 @@
     <value>双向合并</value>
   </data>
   <data name="OneWayMerge" xml:space="preserve">
-    <value>单项合并</value>
+    <value>单向合并</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
     <value>手动合并</value>

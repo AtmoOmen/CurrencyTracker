@@ -57,7 +57,7 @@ public class TransactionsConvertor
     // 解析整个数据文件 Parse a specific data file
     public static List<TransactionsConvertor> FromFile(string filePath, Func<string, TransactionsConvertor> parseLine)
     {
-        List<TransactionsConvertor> transactions = new List<TransactionsConvertor>();
+        var transactions = new List<TransactionsConvertor>();
 
         try
         {
@@ -82,7 +82,7 @@ public class TransactionsConvertor
     }
 
     // 同步将单个交易记录追加入数据文件(正常情况) Append a transaction into the data file (Normal Circumstances)
-    public void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
+    public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
     {
         try
         {
@@ -103,7 +103,7 @@ public class TransactionsConvertor
     }
 
     // 同步将整个交易记录覆写进数据文件(异常数据处理) Overwrite the data file (Exception situations)
-    public void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
+    public static void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
         try
         {

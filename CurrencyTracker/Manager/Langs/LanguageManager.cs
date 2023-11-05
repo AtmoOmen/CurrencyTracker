@@ -1,5 +1,6 @@
 using Dalamud.Utility;
 using System.Collections.Generic;
+using System.Linq;
 using System.Resources;
 
 namespace CurrencyTracker.Manager
@@ -14,20 +15,20 @@ namespace CurrencyTracker.Manager
     // { "ChineseTraditional", "繁體中文" },
     public class LanguageManager
     {
-        private ResourceManager? resourceManager;
+        private readonly ResourceManager? resourceManager;
 
-        public static readonly Dictionary<string, string> LanguageNames = new Dictionary<string, string>
+        public static readonly List<TranslationInfo> LanguageNames = new()
         {
-            { "English", "English" },
-            { "Spanish", "Español" },
-            { "German", "Deutsch" },
-            { "ChineseSimplified", "简体中文" },
-            { "ChineseTraditional", "繁體中文" },
+            new TranslationInfo { Language = "English", DisplayName = "English", Translators = "AtmoOmen" },
+            new TranslationInfo { Language = "Spanish", DisplayName = "Español", Translators = "Risu"},
+            new TranslationInfo { Language = "German", DisplayName = "Deutsch", Translators = "vyrnius"},
+            new TranslationInfo { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = "AtmoOmen"},
+            new TranslationInfo { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = "Fluxus"}
         };
 
         public LanguageManager(string languageName)
         {
-            if (!LanguageNames.ContainsKey(languageName))
+            if (!LanguageNames.Any(x => x.Language == languageName))
             {
                 languageName = "English";
             }
@@ -35,20 +36,6 @@ namespace CurrencyTracker.Manager
             var resourceName = "CurrencyTracker.Manager.Langs." + languageName;
 
             resourceManager = new ResourceManager(resourceName, typeof(LanguageManager).Assembly);
-        }
-
-        public static List<string> AvailableLanguage()
-        {
-            var availablelangs = new List<string>();
-            foreach (var language in LanguageNames.Keys)
-            {
-                if (LanguageNames.ContainsKey(language))
-                {
-                    var languagename = LanguageNames[language];
-                    availablelangs.Add(languagename);
-                }
-            }
-            return availablelangs;
         }
 
         public string GetText(string key, params object[] args)
@@ -62,5 +49,12 @@ namespace CurrencyTracker.Manager
 
             return string.Format(format, args);
         }
+    }
+    
+    public class TranslationInfo
+    {
+        public string Language { get; set; } = null!;
+        public string DisplayName { get; set; } = null!;
+        public string Translators { get; set; } = null!;
     }
 }

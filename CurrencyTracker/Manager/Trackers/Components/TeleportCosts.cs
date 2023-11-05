@@ -37,7 +37,7 @@ namespace CurrencyTracker.Manager.Trackers
 
                             editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo", currentLocationName)})";
 
-                            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }
@@ -60,7 +60,7 @@ namespace CurrencyTracker.Manager.Trackers
 
                             editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo", currentLocationName)})";
 
-                            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }
@@ -72,7 +72,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void TeleportWithCost(int GilAmount)
         {
-            Service.Chat.ChatMessage -= OnChatMessage;
+            DebindChatEvent();
             teleportCost = GilAmount;
 
             // 传送网使用券 Aetheryte Ticket

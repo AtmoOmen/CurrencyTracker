@@ -44,7 +44,7 @@ namespace CurrencyTracker.Manager.Trackers
                         }
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;
@@ -75,7 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
                         }
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;
@@ -106,7 +106,7 @@ namespace CurrencyTracker.Manager.Trackers
                         }
                         editedTransactions.LastOrDefault().Note = $"({GameName})";
 
-                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
 
                         GameName = string.Empty;

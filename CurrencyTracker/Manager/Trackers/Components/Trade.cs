@@ -30,7 +30,7 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     TradeTargetName = Service.TargetManager.Target.Name.TextValue;
                 }
-                Service.Chat.ChatMessage -= OnChatMessage;
+                DebindChatEvent();
                 Service.PluginLog.Debug("Trade Starts");
             }
         }

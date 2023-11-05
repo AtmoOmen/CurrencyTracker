@@ -25,7 +25,7 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     currentTargetName = Service.TargetManager.Target.Name.TextValue;
                 }
-                Service.Chat.ChatMessage -= OnChatMessage;
+                DebindChatEvent();
                 Service.PluginLog.Debug("Triple Triad Starts");
             }
 
@@ -39,7 +39,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 currentTargetName = Service.TargetManager.Target.Name.TextValue;
             }
-            Service.Chat.ChatMessage -= OnChatMessage;
+            DebindChatEvent();
             Service.PluginLog.Debug("Triple Triad Starts");
         }
 

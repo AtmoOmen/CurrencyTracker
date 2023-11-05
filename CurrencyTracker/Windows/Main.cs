@@ -17,7 +17,6 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Transactions;
 using TinyPinyin;
 namespace CurrencyTracker.Windows;
 
@@ -1078,8 +1077,6 @@ public partial class Main : Window, IDisposable
     // 界面语言切换功能 Language Switch
     private void LanguageSwitch()
     {
-        var AvailableLangs = LanguageManager.AvailableLanguage();
-
         var lang = string.Empty;
 
         if (Widgets.IconButton(FontAwesomeIcon.Globe, "Languages"))
@@ -1089,23 +1086,12 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.BeginPopup("LanguagesList"))
         {
-            foreach (var langname in AvailableLangs)
+            foreach (var languageInfo in LanguageManager.LanguageNames)
             {
-                var langquery = from pair in LanguageManager.LanguageNames
-                                where pair.Value == langname
-                                select pair.Key;
-                var language = langquery.FirstOrDefault();
-                if (language.IsNullOrEmpty())
+                if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != playerLang)
                 {
-                    Service.Chat.PrintError(Service.Lang.GetText("UnknownLang"));
-                    return;
-                }
-                if (ImGui.Button(langname) && language != playerLang)
-                {
-                    Service.Lang = new LanguageManager(language);
-
-                    playerLang = language;
-
+                    Service.Lang = new LanguageManager(languageInfo.Language);
+                    playerLang = languageInfo.Language;
                     C.SelectedLanguage = playerLang;
                     C.Save();
 
@@ -1115,7 +1101,10 @@ public partial class Main : Window, IDisposable
                         HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
                     });
                 }
+
+                Widgets.TextTooltip($"By: {languageInfo.Translators}");
             }
+
             ImGui.EndPopup();
         }
     }
@@ -1368,7 +1357,7 @@ public partial class Main : Window, IDisposable
                     editedTransactions.Remove(foundTransaction);
                 }
 
-                Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
             }
             UpdateTransactions();
         }
@@ -1441,7 +1430,7 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                var mergeCount = Service.Transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent);
+                var mergeCount = Transactions.MergeSpecificTransactions(selectedCurrencyName, editedLocationName, selectedTransactions[selectedCurrencyName], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent);
                 Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
                 UpdateTransactions();
@@ -1509,7 +1498,7 @@ public partial class Main : Window, IDisposable
                     if (index != -1)
                     {
                         editedTransactions[index].LocationName = editedLocationName;
-                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
                     else
                     {
@@ -1566,7 +1555,7 @@ public partial class Main : Window, IDisposable
                     if (index != -1)
                     {
                         editedTransactions[index].Note = editedNoteContent;
-                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                     }
                     else
                     {
@@ -1764,7 +1753,7 @@ public partial class Main : Window, IDisposable
                     selectedOptionIndex = i;
                     selectedCurrencyName = option;
 
-                    currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyName));
                     lastTransactions = currentTypeTransactions;
                 }
                 ImGui.PopStyleColor(2);
@@ -1803,7 +1792,6 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
         {
-            currentTypeTransactions = ApplyFilters(currentTypeTransactions);
 
             TransactionsPagingTools();
 
@@ -2021,7 +2009,7 @@ public partial class Main : Window, IDisposable
                                     if (index != -1)
                                     {
                                         editedTransactions[index].LocationName = editedLocationName;
-                                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
                                     }
@@ -2079,7 +2067,7 @@ public partial class Main : Window, IDisposable
                                     if (index != -1)
                                     {
                                         editedTransactions[index].Note = editedNoteContent;
-                                        Service.TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                                         searchTimer.Stop();
                                         searchTimer.Start();
                                     }

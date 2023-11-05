@@ -10,8 +10,6 @@ namespace CurrencyTracker.Manager
 {
     public partial class Transactions
     {
-        private readonly List<TransactionsConvertor> temporarySingleTransactionList = new List<TransactionsConvertor>();
-
         public static List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
         {
             var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
@@ -128,7 +126,7 @@ namespace CurrencyTracker.Manager
             return latestTransactions;
         }
 
-        public List<TransactionsConvertor> LoadTransactionsInRange(string CurrencyName, int startIndex, int endIndex)
+        public static List<TransactionsConvertor> LoadTransactionsInRange(string CurrencyName, int startIndex, int endIndex)
         {
             List<TransactionsConvertor> allTransactions = LoadAllTransactions(CurrencyName);
 
@@ -146,7 +144,7 @@ namespace CurrencyTracker.Manager
             return transactionsInRange;
         }
 
-        public TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
+        public static TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -163,7 +161,24 @@ namespace CurrencyTracker.Manager
             return latestTransaction;
         }
 
-        public void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
+        public static void ReorderTransactions(string CurrencyName)
+        {
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Reorder Transactions: Player Data Folder Path Missed.");
+                return;
+            }
+
+            var allTransactions = LoadAllTransactions(CurrencyName);
+
+            allTransactions = allTransactions.OrderBy(x => x.TimeStamp).ToList();
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+
+            TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+        }
+
+        public static void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
         {
             var singleTransaction = new TransactionsConvertor
             {
@@ -175,7 +190,10 @@ namespace CurrencyTracker.Manager
                 Note = Note
             };
 
-            temporarySingleTransactionList.Add(singleTransaction);
+            var tempList = new List<TransactionsConvertor>
+            {
+                singleTransaction
+            };
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -184,11 +202,10 @@ namespace CurrencyTracker.Manager
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            singleTransaction.AppendTransactionToFile(filePath, temporarySingleTransactionList);
-            temporarySingleTransactionList.Clear();
+            TransactionsConvertor.AppendTransactionToFile(filePath, tempList);
         }
 
-        public void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
+        public static void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
         {
             var Transaction = new TransactionsConvertor
             {
@@ -199,7 +216,11 @@ namespace CurrencyTracker.Manager
                 LocationName = LocationName,
                 Note = Note
             };
-            temporarySingleTransactionList.Add(Transaction);
+
+            var tempList = new List<TransactionsConvertor>
+            {
+                Transaction
+            };
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -208,11 +229,11 @@ namespace CurrencyTracker.Manager
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            Transaction.WriteTransactionsToFile(filePath, temporarySingleTransactionList);
-            temporarySingleTransactionList.Clear();
+            TransactionsConvertor.WriteTransactionsToFile(filePath, tempList);
+            tempList.Clear();
         }
 
-        public int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
+        public static int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
         {
             var allTransactions = LoadAllTransactions(CurrencyName);
 
@@ -278,12 +299,12 @@ namespace CurrencyTracker.Manager
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
+            TransactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
         }
 
-        public int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
+        public static int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
         {
             var allTransactions = LoadAllTransactions(CurrencyName);
             var latestTime = DateTime.MinValue;
@@ -351,7 +372,7 @@ namespace CurrencyTracker.Manager
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            Service.TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+            TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return selectedTransactions.Count;
         }
@@ -391,7 +412,7 @@ namespace CurrencyTracker.Manager
                     allTransactions.Remove(record);
                 }
 
-                Service.TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+                TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
                 return recordsToRemove.Count;
             }
@@ -429,18 +450,18 @@ namespace CurrencyTracker.Manager
                 return "Fail";
             }
 
-            string playerDataFolder = Path.Combine(Plugin.Instance.PlayerDataFolder, "Exported");
+            var playerDataFolder = Path.Combine(Plugin.Instance.PlayerDataFolder, "Exported");
             Directory.CreateDirectory(playerDataFolder);
 
-            string nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
+            var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
 
             string finalFileName;
             if (string.IsNullOrWhiteSpace(fileName)) finalFileName = $"{selectedCurrencyName}_{nowTime}.{fileExtension}";
             else finalFileName = $"{fileName}_{selectedCurrencyName}_{nowTime}.{fileExtension}";
 
-            string filePath = Path.Combine(playerDataFolder, finalFileName);
+            var filePath = Path.Combine(playerDataFolder, finalFileName);
 
-            using (StreamWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
+            using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
             {
                 writer.WriteLine(headers);
 
@@ -448,12 +469,12 @@ namespace CurrencyTracker.Manager
                 {
                     if (exportType == 0) // .csv
                     {
-                        string line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName},{transaction.Note}";
+                        var line = $"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")},{transaction.Amount},{transaction.Change},{transaction.LocationName},{transaction.Note}";
                         writer.WriteLine(line);
                     }
                     else if (exportType == 1) // .md
                     {
-                        string line = $"| {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")} | {transaction.Amount} | {transaction.Change} | {transaction.LocationName} | {transaction.Note} |";
+                        var line = $"| {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")} | {transaction.Amount} | {transaction.Change} | {transaction.LocationName} | {transaction.Note} |";
                         writer.WriteLine(line);
                     }
                 }

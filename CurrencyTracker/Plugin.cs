@@ -234,7 +234,7 @@ namespace CurrencyTracker
             if (string.IsNullOrEmpty(playerLang))
             {
                 playerLang = Service.ClientState.ClientLanguage.ToString();
-                if (LanguageManager.LanguageNames.ContainsKey(playerLang))
+                if (LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
                 {
                     playerLang = "English";
                 }

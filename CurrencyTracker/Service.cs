@@ -29,6 +29,7 @@ public class Service
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;
     [PluginService] public static ITargetManager TargetManager { get; private set; } = null!;
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; } = null!;
+    [PluginService] public static IAddonEventManager AddonEventManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new();
     public static Tracker Tracker { get; set; } = null!;
