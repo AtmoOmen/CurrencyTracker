@@ -59,46 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="ChangeFilterEnabled" xml:space="preserve">
+    <value>收支筛选</value>
+  </data>
+  <data name="ChangeFilterLabel" xml:space="preserve">
+    <value>仅显示收支 {0} {1} 的记录</value>
+  </data>
+  <data name="ClusterByTime" xml:space="preserve">
+    <value>按时间聚类</value>
+  </data>
+  <data name="ClusterByTimeHelp1" xml:space="preserve">
+    <value>以 {0}小时 为间隔显示数据</value>
+  </data>
+  <data name="ClusterInterval" xml:space="preserve">
+    <value>小时</value>
+  </data>
   <data name="ConfigLabel" xml:space="preserve">
     <value>筛选排序选项</value>
   </data>
@@ -128,96 +143,6 @@
   </data>
   <data name="ConfigLabelHelp" xml:space="preserve">
     <value>点击以展开/收回</value>
-  </data>
-  <data name="ReverseSort" xml:space="preserve">
-    <value>倒序排序</value>
-  </data>
-  <data name="ClusterByTime" xml:space="preserve">
-    <value>按时间聚类</value>
-  </data>
-  <data name="ClusterInterval" xml:space="preserve">
-    <value>小时</value>
-  </data>
-  <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>以 {0}小时 为间隔显示数据</value>
-  </data>
-  <data name="ChangeFilterEnabled" xml:space="preserve">
-    <value>收支筛选</value>
-  </data>
-  <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>仅显示收支 {0} {1} 的记录</value>
-  </data>
-  <data name="Greater" xml:space="preserve">
-    <value>大于</value>
-  </data>
-  <data name="Less" xml:space="preserve">
-    <value>小于</value>
-  </data>
-  <data name="FilterByTime" xml:space="preserve">
-    <value>时间筛选</value>
-  </data>
-  <data name="Year" xml:space="preserve">
-    <value>年</value>
-  </data>
-  <data name="Month" xml:space="preserve">
-    <value>月</value>
-  </data>
-  <data name="Day" xml:space="preserve">
-    <value>日</value>
-  </data>
-  <data name="TrackInDuty" xml:space="preserve">
-    <value>记录副本内数据</value>
-  </data>
-  <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。</value>
-  </data>
-  <data name="TransactionsPerPage" xml:space="preserve">
-    <value>单页记录数:</value>
-  </data>
-  <data name="FileRenameLabel" xml:space="preserve">
-    <value>文件名: (按 Enter 键确认)</value>
-  </data>
-  <data name="FileRenameLabel2" xml:space="preserve">
-    <value>当前时间</value>
-  </data>
-  <data name="ExportFileHelp1" xml:space="preserve">
-    <value>注: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
-  </data>
-  <data name="FileRenameHelp1" xml:space="preserve">
-    <value>如果留空，文件名则为:</value>
-  </data>
-  <data name="ExportCsvMessage1" xml:space="preserve">
-    <value>当前货币下无收支记录</value>
-  </data>
-  <data name="ExportCsvMessage3" xml:space="preserve">
-    <value>已导出文件至: </value>
-  </data>
-  <data name="FirstPage" xml:space="preserve">
-    <value>首页</value>
-  </data>
-  <data name="LastPage" xml:space="preserve">
-    <value>尾页</value>
-  </data>
-  <data name="PreviousPage" xml:space="preserve">
-    <value>上一页</value>
-  </data>
-  <data name="NextPage" xml:space="preserve">
-    <value>下一页</value>
-  </data>
-  <data name="Time" xml:space="preserve">
-    <value>时间</value>
-  </data>
-  <data name="Amount" xml:space="preserve">
-    <value>货币数</value>
-  </data>
-  <data name="Change" xml:space="preserve">
-    <value>收支</value>
-  </data>
-  <data name="Location" xml:space="preserve">
-    <value>地点</value>
-  </data>
-  <data name="UnknownLocation" xml:space="preserve">
-    <value>未知区域</value>
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>注:
@@ -240,29 +165,47 @@
   <data name="CustomCurrencyHelp2" xml:space="preserve">
     <value>删除失败: 货币不存在</value>
   </data>
-  <data name="Add" xml:space="preserve">
-    <value>添加 </value>
+  <data name="Day" xml:space="preserve">
+    <value>日</value>
   </data>
   <data name="Delete" xml:space="preserve">
     <value>删除 </value>
   </data>
-  <data name="OpenDataFolder" xml:space="preserve">
-    <value>打开数据文件夹</value>
+  <data name="ExportCsvMessage1" xml:space="preserve">
+    <value>当前货币下无收支记录</value>
   </data>
-  <data name="MergeTransactionsLabel" xml:space="preserve">
-    <value>合并记录</value>
+  <data name="ExportFileCSVHeader" xml:space="preserve">
+    <value>时间,货币数,收支,地点,备注</value>
   </data>
-  <data name="Threshold" xml:space="preserve">
-    <value>临界值</value>
+  <data name="ExportCsvMessage3" xml:space="preserve">
+    <value>已导出文件至: </value>
   </data>
-  <data name="TwoWayMerge" xml:space="preserve">
-    <value>双向合并</value>
+  <data name="ExportFileHelp1" xml:space="preserve">
+    <value>注: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
   </data>
-  <data name="OneWayMerge" xml:space="preserve">
-    <value>单向合并</value>
+  <data name="FileRenameHelp1" xml:space="preserve">
+    <value>如果留空，文件名则为:</value>
   </data>
-  <data name="MergeTransactionsLabel4" xml:space="preserve">
-    <value>手动合并</value>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>文件名: (按 Enter 键确认)</value>
+  </data>
+  <data name="FileRenameLabel2" xml:space="preserve">
+    <value>当前时间</value>
+  </data>
+  <data name="FilterByTime" xml:space="preserve">
+    <value>时间筛选</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>首页</value>
+  </data>
+  <data name="Greater" xml:space="preserve">
+    <value>大于</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>尾页</value>
+  </data>
+  <data name="Less" xml:space="preserve">
+    <value>小于</value>
   </data>
   <data name="MergeTransactionsHelp" xml:space="preserve">
     <value>请输入临界值</value>
@@ -279,6 +222,41 @@
 双向合并：正负数改变量的记录一起计算相邻与合并
 </value>
   </data>
+  <data name="MergeTransactionsLabel" xml:space="preserve">
+    <value>合并记录</value>
+  </data>
+  <data name="Threshold" xml:space="preserve">
+    <value>临界值</value>
+  </data>
+  <data name="TwoWayMerge" xml:space="preserve">
+    <value>双向合并</value>
+  </data>
+  <data name="OneWayMerge" xml:space="preserve">
+    <value>单项合并</value>
+  </data>
+  <data name="MergeTransactionsLabel4" xml:space="preserve">
+    <value>手动合并</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>下一页</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>打开数据文件夹</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>上一页</value>
+  </data>
+  <data name="ReverseSort" xml:space="preserve">
+    <value>倒序排序</value>
+  </data>
+  <data name="TrackInDuty" xml:space="preserve">
+    <value>记录副本内数据</value>
+  </data>
+  <data name="TrackInDutyHelp" xml:space="preserve">
+    <value>如果未勾选本项，当你位于副本区域内时，插件将会暂停记录所有货币可能发生的任何变化，直至你离开副本，这也同时会导致地点记录不准确。
+
+推荐同时配置 最小记录值 功能。</value>
+  </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>未找到符合条件的记录。</value>
   </data>
@@ -288,8 +266,29 @@
   <data name="TransactionsHelp2" xml:space="preserve">
     <value>注: 操作无法回退，如有需要，请做好数据备份</value>
   </data>
-  <data name="ClearExTransactionsLabel" xml:space="preserve">
-    <value>清除异常记录</value>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>未知的货币类型</value>
+  </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>未知区域</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>货币数</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>收支</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>地点</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>单页记录数:</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加 </value>
   </data>
   <data name="ClearExTransactionsHelp" xml:space="preserve">
     <value>尝试清除当前选中货币下的所有异常记录
@@ -298,14 +297,25 @@
   <data name="ClearExTransactionsHelp1" xml:space="preserve">
     <value>当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录</value>
   </data>
-  <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>清除了 {0}  条异常记录</value>
+  <data name="ClearExTransactionsLabel" xml:space="preserve">
+    <value>清除异常记录</value>
   </data>
-  <data name="Confirm" xml:space="preserve">
-    <value>确认</value>
+  <data name="Month" xml:space="preserve">
+    <value>月</value>
   </data>
-  <data name="UnknownCurrency" xml:space="preserve">
-    <value>未知的货币类型</value>
+  <data name="Year" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="GraphHelpMessages" xml:space="preserve">
+    <value>说明帮助</value>
+  </data>
+  <data name="GraphHelpMessages1" xml:space="preserve">
+    <value>- 建议在主界面启用各类筛选器，减少记录数量
+- 可以通过点击图表的横轴或纵轴使图表界面自适应显示
+- 本界面仍处于测试阶段，如果遇到任何 BUG 或有对新功能的想法，请提交 ISSUE</value>
+  </data>
+  <data name="GraphLabel" xml:space="preserve">
+    <value>记录数量:</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>数量图表 </value>
@@ -322,21 +332,6 @@
   <data name="AmountGraph4" xml:space="preserve">
     <value>* 本图表主要反映时间变化下货币数量发生的变化</value>
   </data>
-  <data name="ChangeGraph" xml:space="preserve">
-    <value>收支图表 </value>
-  </data>
-  <data name="ChangeGraph1" xml:space="preserve">
-    <value>[时间 - 收支]</value>
-  </data>
-  <data name="ChangeGraph2" xml:space="preserve">
-    <value>* 本图表主要反映时间变化下货币收支量的变化</value>
-  </data>
-  <data name="ChangeRateToolTip" xml:space="preserve">
-    <value>(上升中)</value>
-  </data>
-  <data name="ChangeRateToolTip1" xml:space="preserve">
-    <value>(下降中)</value>
-  </data>
   <data name="DividedUnitThou" xml:space="preserve">
     <value>(单位: 千)</value>
   </data>
@@ -346,28 +341,20 @@
   <data name="DividedUnitBil" xml:space="preserve">
     <value>(单位: 十亿)</value>
   </data>
-  <data name="GraphHelpMessages" xml:space="preserve">
-    <value>说明帮助</value>
+  <data name="ChangeRateToolTip" xml:space="preserve">
+    <value>(上升中)</value>
   </data>
-  <data name="GraphHelpMessages1" xml:space="preserve">
-    <value>- 建议在主界面启用各类筛选器，减少记录数量
-- 可以通过点击图表的横轴或纵轴使图表界面自适应显示
-- 本界面仍处于测试阶段，如果遇到任何 BUG 或有对新功能的想法，请提交 ISSUE</value>
+  <data name="ChangeRateToolTip1" xml:space="preserve">
+    <value>(下降中)</value>
   </data>
-  <data name="GraphLabel" xml:space="preserve">
-    <value>记录数量:</value>
+  <data name="ChangeGraph" xml:space="preserve">
+    <value>收支图表 </value>
   </data>
-  <data name="Graphs" xml:space="preserve">
-    <value>图表</value>
+  <data name="ChangeGraph1" xml:space="preserve">
+    <value>[时间 - 收支]</value>
   </data>
-  <data name="LocationAmountGraph" xml:space="preserve">
-    <value>地点收支图表 </value>
-  </data>
-  <data name="LocationAmountGraph1" xml:space="preserve">
-    <value> [地点 - 收支]</value>
-  </data>
-  <data name="LocationAmountGraph2" xml:space="preserve">
-    <value>* 本图表主要反映该货币记录中各地点下所产生收支的总额</value>
+  <data name="ChangeGraph2" xml:space="preserve">
+    <value>* 本图表主要反映时间变化下货币收支量的变化</value>
   </data>
   <data name="LocationGraph" xml:space="preserve">
     <value>地点图表</value>
@@ -378,15 +365,20 @@
   <data name="LocationGraph2" xml:space="preserve">
     <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
   </data>
+  <data name="LocationAmountGraph" xml:space="preserve">
+    <value>地点收支图表 </value>
+  </data>
+  <data name="LocationAmountGraph1" xml:space="preserve">
+    <value> [地点 - 收支]</value>
+  </data>
+  <data name="LocationAmountGraph2" xml:space="preserve">
+    <value>* 本图表主要反映该货币记录中各地点下所产生收支的总额</value>
+  </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>图表</value>
+  </data>
   <data name="HideCurrency" xml:space="preserve">
     <value>隐藏 (双击右键)</value>
-  </data>
-  <data name="OrderChangeLabel" xml:space="preserve">
-    <value>当前位置:</value>
-  </data>
-  <data name="RestoreHidden" xml:space="preserve">
-    <value>还原
-(双击右键)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
     <value>所有隐藏货币均已还原</value>
@@ -397,26 +389,36 @@
   <data name="OrderChangeHelp2" xml:space="preserve">
     <value>种货币</value>
   </data>
+  <data name="OrderChangeLabel" xml:space="preserve">
+    <value>当前位置:</value>
+  </data>
+  <data name="RestoreHidden" xml:space="preserve">
+    <value>还原
+(双击右键)</value>
+  </data>
+  <data name="ClearExTransactionsHelp2" xml:space="preserve">
+    <value>清除了 {0}  条异常记录</value>
+  </data>
   <data name="Manage" xml:space="preserve">
     <value>管理</value>
-  </data>
-  <data name="CopiedToClipboard" xml:space="preserve">
-    <value>已复制到剪贴板</value>
-  </data>
-  <data name="Now" xml:space="preserve">
-    <value>当前</value>
   </data>
   <data name="Transactions" xml:space="preserve">
     <value>条记录</value>
   </data>
+  <data name="Now" xml:space="preserve">
+    <value>当前</value>
+  </data>
   <data name="Unselect" xml:space="preserve">
     <value>取消选中</value>
   </data>
-  <data name="CopyTransactionsHelp" xml:space="preserve">
-    <value>已复制 {0} 条记录至剪贴板</value>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>已复制到剪贴板</value>
   </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>当前未选中任何记录</value>
+  </data>
+  <data name="CopyTransactionsHelp" xml:space="preserve">
+    <value>已复制 {0} 条记录至剪贴板</value>
   </data>
   <data name="Edit" xml:space="preserve">
     <value>编辑</value>
@@ -527,8 +529,17 @@
   <data name="GoldSaucer" xml:space="preserve">
     <value>金碟</value>
   </data>
-  <data name="General" xml:space="preserve">
-    <value>一般</value>
+  <data name="HelpTranslate" xml:space="preserve">
+    <value>帮忙翻译</value>
+  </data>
+  <data name="HelpTranslateHelp" xml:space="preserve">
+    <value>诚挚感谢你的付出</value>
+  </data>
+  <data name="NeedHelp" xml:space="preserve">
+    <value>需要帮助</value>
+  </data>
+  <data name="Guide" xml:space="preserve">
+    <value>指南</value>
   </data>
   <data name="RecordContentName" xml:space="preserve">
     <value>记录副本名称</value>
@@ -558,27 +569,15 @@
   <data name="RecordTripleTriad" xml:space="preserve">
     <value>记录九宫幻卡结果</value>
   </data>
+  <data name="SuggestOrReport" xml:space="preserve">
+    <value>建议或反馈</value>
+  </data>
   <data name="WaitExchange" xml:space="preserve">
     <value>等待交易完成</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
     <value>如果选中此项，会等待交换/交易结束，再检查所有货币的增减情况
 包含 所有NPC商店、军队筹备、市场布告栏、雇员和部队箱</value>
-  </data>
-  <data name="HelpTranslate" xml:space="preserve">
-    <value>帮忙翻译</value>
-  </data>
-  <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>诚挚感谢你的付出</value>
-  </data>
-  <data name="NeedHelp" xml:space="preserve">
-    <value>需要帮助</value>
-  </data>
-  <data name="Guide" xml:space="preserve">
-    <value>指南</value>
-  </data>
-  <data name="SuggestOrReport" xml:space="preserve">
-    <value>建议或反馈</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>打开插件主界面</value>
@@ -609,6 +608,9 @@
   <data name="ExchangeWith" xml:space="preserve">
     <value>交易自 {0}</value>
   </data>
+  <data name="General" xml:space="preserve">
+    <value>一般</value>
+  </data>
   <data name="Quest" xml:space="preserve">
     <value>任务 {0}</value>
   </data>
@@ -634,14 +636,11 @@
   <data name="PageComponent" xml:space="preserve">
     <value>第 {0} 页 / 共 {1} 页</value>
   </data>
-  <data name="ExportFileCSVHeader" xml:space="preserve">
-    <value>时间,货币数,收支,地点,备注</value>
+  <data name="Confirm" xml:space="preserve">
+    <value>确认</value>
   </data>
   <data name="CurrencyRenameHelp" xml:space="preserve">
     <value>请输入修改后的货币名称</value>
-  </data>
-  <data name="Reset" xml:space="preserve">
-    <value>重置</value>
   </data>
   <data name="CurrencyRenameHelp1" xml:space="preserve">
     <value>已存在另一同名货币</value>
@@ -651,5 +650,29 @@
   </data>
   <data name="Rename" xml:space="preserve">
     <value>重命名</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="RecordFateName" xml:space="preserve">
+    <value>记录临危受命名称</value>
+  </data>
+  <data name="IslandFarm" xml:space="preserve">
+    <value>无人岛耕地</value>
+  </data>
+  <data name="IslandPasture" xml:space="preserve">
+    <value>无人岛牧场</value>
+  </data>
+  <data name="IslandWorkshop" xml:space="preserve">
+    <value>无人岛工房</value>
+  </data>
+  <data name="IslandSanctuary" xml:space="preserve">
+    <value>无人岛</value>
+  </data>
+  <data name="RecordIsland" xml:space="preserve">
+    <value>记录无人岛相关收支</value>
+  </data>
+  <data name="RecordIslandHelp" xml:space="preserve">
+    <value>包含工房、耕地、牧场、屯货仓库、开拓建造、开拓制作</value>
   </data>
 </root>

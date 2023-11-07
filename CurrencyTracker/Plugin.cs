@@ -234,11 +234,12 @@ namespace CurrencyTracker
             if (string.IsNullOrEmpty(playerLang))
             {
                 playerLang = Service.ClientState.ClientLanguage.ToString();
-                if (LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
+                if (!LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
                 {
                     playerLang = "English";
                 }
                 Configuration.SelectedLanguage = playerLang;
+                Configuration.Save();
             }
 
             Service.Lang = new LanguageManager(playerLang);

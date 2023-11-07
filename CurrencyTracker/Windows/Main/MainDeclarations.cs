@@ -149,6 +149,7 @@ public partial class Main
 
     // 临时 Temp
     private bool isRecordContentName;
+
     private bool isRecordTeleportDes;
     private bool isRecordTeleport;
     private bool isTrackinDuty;
@@ -157,6 +158,8 @@ public partial class Main
     private bool isRecordTripleTriad;
     private bool isRecordQuestName;
     private bool isRecordTrade;
+    private bool isRecordFate;
+    private bool isRecordIsland;
 
     internal Dictionary<string, List<bool>>? selectedStates = new();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new();

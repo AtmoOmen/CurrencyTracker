@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
@@ -80,6 +79,9 @@ namespace CurrencyTracker.Manager.Trackers
             // 传送费用相关计算
             TeleportCheck();
 
+            // 无人岛相关
+            IsInIslandCheck();
+
             Service.Chat.ChatMessage += OnChatMessage;
         }
 
@@ -101,6 +103,11 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
+            if (isInIsland)
+            {
+                IslandHandlers();
+            }
+
             // 九宫幻卡 Triple Triad
             if (isTTOn)
             {
@@ -112,7 +119,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 if (isOnExchanging)
                 {
-                    IsOnExchange(framework.LastUpdate);
+                    IsOnExchange();
                 }
             }
         }

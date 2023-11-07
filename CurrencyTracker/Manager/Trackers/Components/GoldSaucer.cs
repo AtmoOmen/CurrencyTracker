@@ -10,12 +10,8 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        // 当前正在玩的游戏 Currently Playing Minigame
-        private string GameName = string.Empty;
-
         internal void InitGoldSacuer()
         {
-            GameName = string.Empty;
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerMain);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MountainClimbingResult", MountainClimbing);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RideShootingResult", RideShooting);
@@ -30,13 +26,18 @@ namespace CurrencyTracker.Manager.Trackers
                 var textNode = GSR->GetTextNodeById(5);
                 if (textNode != null)
                 {
-                    GameName = textNode->NodeText.ToString();
+                    var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
                         var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
                         if (currencyName.IsNullOrEmpty()) return;
                         var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
                         var editedTransactions = Transactions.LoadAllTransactions(currencyName);
+
+                        if (editedTransactions.Count == 0 || editedTransactions == null)
+                        {
+                            return;
+                        }
 
                         if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 10)
                         {
@@ -46,8 +47,6 @@ namespace CurrencyTracker.Manager.Trackers
 
                         TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
-
-                        GameName = string.Empty;
                     }
                 }
             }
@@ -61,7 +60,7 @@ namespace CurrencyTracker.Manager.Trackers
                 var textNode = MCR->GetTextNodeById(3);
                 if (textNode != null)
                 {
-                    GameName = textNode->NodeText.ToString();
+                    var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
                         var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
@@ -77,8 +76,6 @@ namespace CurrencyTracker.Manager.Trackers
 
                         TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
-
-                        GameName = string.Empty;
                     }
                 }
             }
@@ -92,7 +89,7 @@ namespace CurrencyTracker.Manager.Trackers
                 var textNode = RSR->GetTextNodeById(20);
                 if (textNode != null)
                 {
-                    GameName = textNode->NodeText.ToString();
+                    var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
                         var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
@@ -108,8 +105,6 @@ namespace CurrencyTracker.Manager.Trackers
 
                         TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                         Plugin.Instance.Main.UpdateTransactions();
-
-                        GameName = string.Empty;
                     }
                 }
             }
@@ -117,8 +112,6 @@ namespace CurrencyTracker.Manager.Trackers
 
         internal void UninitGoldSacuer()
         {
-            GameName = string.Empty;
-
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerMain);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MountainClimbingResult", MountainClimbing);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RideShootingResult", RideShooting);

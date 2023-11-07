@@ -9,9 +9,8 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        private DateTime? lastUpdateTime;
         private bool isOnExchanging = false;
-        private static readonly string[] ExchangeUI = new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" };
+        private static readonly string[] ExchangeUI = new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop" };
 
         public void InitExchangeCompletes()
         {
@@ -23,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers
                     break;
                 }
             }
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, ExchangeUI , BeginExchange);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, ExchangeUI, BeginExchange);
         }
 
         private void BeginExchange(AddonEvent type, AddonArgs? args)
@@ -40,21 +39,8 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void IsOnExchange(DateTime lastUpdate)
+        private void IsOnExchange()
         {
-            if (lastUpdateTime == null)
-            {
-                lastUpdateTime = lastUpdate;
-            }
-            if ((lastUpdate - lastUpdateTime).Value.Seconds <= 0.5)
-            {
-                return;
-            }
-            else
-            {
-                lastUpdateTime = lastUpdate;
-            }
-
             var exchangeState = Service.Condition[ConditionFlag.OccupiedSummoningBell] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent];
 
             if (!exchangeState && isOnExchanging)
@@ -75,7 +61,6 @@ namespace CurrencyTracker.Manager.Trackers
                 }
 
                 currentTargetName = string.Empty;
-                lastUpdateTime = null;
 
                 Service.Chat.ChatMessage += OnChatMessage;
 

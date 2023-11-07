@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/11/7  | 1.3.1.4 | - Fixed an issue where the plugin might miscalculate the Change of one transaction due to too fast operation.<br/>- Fixed an issue where the plugin would load English localization text regardless of the client's language.<br/>- Added Record FATE Name feature.<br/>- Added Record (Island Sancutary)Related Rewards/Costs feature. |
 | 2023/11/5  | 1.3.1.3 | - Optimized performance.<br/>- Fixed an issue which could in certain situations result in the plugin not pausing recording as expected.<br/>- Modified the code logic of the multi-language module.<br/>- Changed the content of a displayed text. |
 | 2023/11/4  | 1.3.1.2 | - Optimised performance<br/>- Fixed an issue with incorrectly recording Wondrous Tails rewards |
 | 2023/11/1  | 1.3.1.1 | - Optimized the code logic for Record Trade Target feature.<br/>- Improved performance when searching for items in Custom Currency Tracker for reduced performance consumption.<br/>- Fixed an issue where, in Simplified Chinese, it was only possible to search for items in Custom Currency Tracker by entering Pinyin.<br/>- Added Icon Display to the currency listbox.<br/>- Added Rename currencies feature.<br/>- Added Traditional Chinese, Spanish and German localization text. |
@@ -41,6 +42,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年11月7日 | 1.3.1.4 | - 修复了一个可能因操作过快导致插件错误计算收支的问题<br/>- 修复了一个插件无视客户端语言默认加载英文本地化文本的问题<br/>- 新增了 记录临危受命名称 功能<br/>- 新增 记录无人岛相关收支 功能 |
 | 2023年11月5日 | 1.3.1.3 | - 优化了性能表现<br/>- 修复了一个在某些情况下可能导致插件未按预期暂停记录的问题<br/>- 修改了多语言模块的代码逻辑<br/>- 修改了一处显示文本的内容 |
 | 2023年11月4日 | 1.3.1.2 | - 优化了性能表现<br/>- 修复了一个错误记录 天书奇谈 奖励的问题 |
 | 2023年11月1日 | 1.3.1.1 | - 优化了 记录交易对象 功能的代码逻辑<br/>- 优化了 自定义货币追踪 中搜索物品时的性能消耗<br/>- 修复了 简体中文 下在 自定义货币追踪 中仅能通过输入拼音查找物品的问题<br/>- 货币列表新增图标显示功能<br/>- 新增货币重命名功能<br/>- 新增 繁体中文, 西班牙语 和 德语 本地化文本 |

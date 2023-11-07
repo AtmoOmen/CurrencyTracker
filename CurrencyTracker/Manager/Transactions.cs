@@ -66,7 +66,7 @@ namespace CurrencyTracker.Manager
 
         public static List<TransactionsConvertor> LoadAllTransactions(string CurrencyName)
         {
-            List<TransactionsConvertor> allTransactions = new List<TransactionsConvertor>();
+            var allTransactions = new List<TransactionsConvertor>();
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {

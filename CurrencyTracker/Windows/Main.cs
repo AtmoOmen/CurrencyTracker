@@ -5,7 +5,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -18,6 +17,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 using TinyPinyin;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -62,6 +62,8 @@ public partial class Main : Window, IDisposable
         isRecordTripleTriad = C.RecordTripleTriad;
         isRecordQuestName = C.RecordQuestName;
         isRecordTrade = C.RecordTrade;
+        isRecordFate = C.RecordFate;
+        isRecordIsland = C.RecordIsland;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -165,7 +167,6 @@ public partial class Main : Window, IDisposable
     private void FeaturesUnderTest()
     {
         /*
-
         ImGui.SameLine();
         if (!Service.ClientState.IsPvP)
         {
@@ -176,7 +177,6 @@ public partial class Main : Window, IDisposable
                 ImGui.Text($"副本名:{Tracker.ContentNames[Service.ClientState.TerritoryType]}");
             }
         }
-
         ImGui.SameLine();
         var Wards = new int[]
         {
@@ -352,6 +352,22 @@ public partial class Main : Window, IDisposable
                 }
             }
 
+            // 是否记录 FATE 名称 If Record FATE name
+            if (ImGui.Checkbox(Service.Lang.GetText("RecordFateName"), ref isRecordFate))
+            {
+                C.RecordFate = isRecordFate;
+                C.Save();
+                if (isRecordFate)
+                {
+                    Service.Tracker.UninitFateRewards();
+                    Service.Tracker.InitFateRewards();
+                }
+                else
+                {
+                    Service.Tracker.UninitFateRewards();
+                }
+            }
+
             // 金碟 Gold Saucer
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("GoldSaucer"));
             ImGui.SameLine();
@@ -393,6 +409,28 @@ public partial class Main : Window, IDisposable
             }
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordTripleTriadHelp"));
+
+            // 无人岛 Island Sancutary
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("IslandSanctuary"));
+            ImGui.Separator();
+
+            if (ImGui.Checkbox(Service.Lang.GetText("RecordIsland"), ref isRecordIsland))
+            {
+                C.RecordIsland = isRecordIsland;
+                C.Save();
+
+                if (isRecordIsland)
+                {
+                    Service.Tracker.UninitIslandRewards();
+                    Service.Tracker.InitIslandRewards();
+                }
+                else
+                {
+                    Service.Tracker.UninitIslandRewards();
+                }
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("RecordIslandHelp"));
 
             ImGui.EndPopup();
         }
@@ -1792,7 +1830,6 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
         {
-
             TransactionsPagingTools();
 
             var columnCount = 4 + Convert.ToInt32(isShowOrderColumn) + Convert.ToInt32(isShowLocationColumn) + Convert.ToInt32(isShowNoteColumn);

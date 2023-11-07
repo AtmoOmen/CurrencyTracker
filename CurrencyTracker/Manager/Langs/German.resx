@@ -59,46 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -252,7 +252,9 @@ Zwei-Wege-Zusammenführung: Transaktionen mit Differenzen ins positive und negat
     <value>Während Missionen aufzeichnen</value>
   </data>
   <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>Wenn diese Option nicht aktiviert ist, wird das Plugin die Aufzeichnung von Veränderungen bis zum Verlassen der Missionen pausieren, was auch zur Erfassung falscher Standorte führt.</value>
+    <value>Wenn diese Option nicht aktiviert ist, wird das Plugin die Aufzeichnung von Veränderungen bis zum Verlassen der Missionen pausieren, was auch zur Erfassung falscher Standorte führt.
+
+Es wird empfohlen, gleichzeitig auch den Min Value zu konfigurieren.</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>Keine passenden Transaktionen gefunden.</value>
@@ -651,5 +653,26 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Zurücksetzen</value>
+  </data>
+  <data name="RecordFateName" xml:space="preserve">
+    <value>Record FATE Name</value>
+  </data>
+  <data name="IslandFarm" xml:space="preserve">
+    <value>Island Farm</value>
+  </data>
+  <data name="IslandPasture" xml:space="preserve">
+    <value>Island Pasture</value>
+  </data>
+  <data name="IslandWorkshop" xml:space="preserve">
+    <value>Island Workshop</value>
+  </data>
+  <data name="IslandSanctuary" xml:space="preserve">
+    <value>Island Sanctuary</value>
+  </data>
+  <data name="RecordIsland" xml:space="preserve">
+    <value>Record Related Rewards/Costs</value>
+  </data>
+  <data name="RecordIslandHelp" xml:space="preserve">
+    <value>Include Workshop, Farm, Pasture, Ganary, Building and Crafting.</value>
   </data>
 </root>

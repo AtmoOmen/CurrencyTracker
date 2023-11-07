@@ -42,6 +42,8 @@ namespace CurrencyTracker
         public bool RecordTripleTriad { get; set; } = true;
         public bool RecordQuestName { get; set; } = true;
         public bool RecordTrade { get; set; } = true;
+        public bool RecordFate { get; set; } = true;
+        public bool RecordIsland { get; set; } = true;
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;

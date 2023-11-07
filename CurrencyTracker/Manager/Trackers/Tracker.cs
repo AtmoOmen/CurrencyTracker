@@ -76,6 +76,8 @@ namespace CurrencyTracker.Manager.Trackers
             if (C.RecordTrade) InitTrade();
             if (C.WaitExComplete) InitExchangeCompletes();
             if (C.RecordTripleTriad) InitTripleTriad();
+            if (C.RecordFate) InitFateRewards();
+            if (C.RecordIsland) IsInIslandCheck();
 
             UpdateCurrencies();
         }
@@ -188,7 +190,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void DebindChatEvent()
         {
-            for (var i = 0; i < 5;  i++)
+            for (var i = 0; i < 5; i++)
             {
                 Service.Chat.ChatMessage -= OnChatMessage;
             }
@@ -203,6 +205,8 @@ namespace CurrencyTracker.Manager.Trackers
             UninitExchangeCompletes();
             UninitTripleTriad();
             UninitQuests();
+            UninitFateRewards();
+            UninitIslandRewards();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             DebindChatEvent();

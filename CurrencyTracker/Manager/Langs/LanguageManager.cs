@@ -50,7 +50,7 @@ namespace CurrencyTracker.Manager
             return string.Format(format, args);
         }
     }
-    
+
     public class TranslationInfo
     {
         public string Language { get; set; } = null!;

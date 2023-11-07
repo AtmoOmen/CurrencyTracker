@@ -554,7 +554,7 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
 Not mean the plugin will not record specific transactions if unchecked.</value>
   </data>
   <data name="RecordMGPSource" xml:space="preserve">
-    <value>Record MGP Reward Source</value>
+    <value>Record MGP Rewards Source</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>Record Settings</value>
@@ -654,5 +654,26 @@ If checked, the Note of specific transactions will be filled with the source of 
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Reset</value>
+  </data>
+  <data name="RecordFateName" xml:space="preserve">
+    <value>Record FATE Name</value>
+  </data>
+  <data name="IslandFarm" xml:space="preserve">
+    <value>Island Farm</value>
+  </data>
+  <data name="IslandPasture" xml:space="preserve">
+    <value>Island Pasture</value>
+  </data>
+  <data name="IslandWorkshop" xml:space="preserve">
+    <value>Island Workshop</value>
+  </data>
+  <data name="IslandSanctuary" xml:space="preserve">
+    <value>Island Sanctuary</value>
+  </data>
+  <data name="RecordIsland" xml:space="preserve">
+    <value>Record Related Rewards/Costs</value>
+  </data>
+  <data name="RecordIslandHelp" xml:space="preserve">
+    <value>Include Workshop, Farm, Pasture, Ganary, Building and Crafting.</value>
   </data>
 </root>
