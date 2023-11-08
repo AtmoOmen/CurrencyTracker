@@ -419,7 +419,7 @@ public partial class Main : Window, IDisposable
                 C.RecordIsland = isRecordIsland;
                 C.Save();
 
-                if (isRecordIsland)
+                if (isRecordIsland && Service.ClientState.TerritoryType == 1055)
                 {
                     Service.Tracker.UninitIslandRewards();
                     Service.Tracker.InitIslandRewards();

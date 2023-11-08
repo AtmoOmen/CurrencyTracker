@@ -1,5 +1,6 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -43,6 +44,9 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MAMEnd(AddonEvent type, AddonArgs args)
         {
+            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+                return;
+
             foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
                 CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("IslandPasture")})");
@@ -57,6 +61,9 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MFMEnd(AddonEvent type, AddonArgs args)
         {
+            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+                return;
+
             foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
                 CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("IslandFarm")})");
@@ -72,6 +79,9 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MBEnd(AddonEvent type, AddonArgs args)
         {
+            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+                return;
+
             foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
                 CheckCurrency(currency, false, "-1", $"({windowTitle})");
@@ -89,6 +99,9 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MRNBEnd(AddonEvent type, AddonArgs args)
         {
+            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+                return;
+
             foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
                 CheckCurrency(currency, false, "-1", $"({windowTitle})");
@@ -106,6 +119,9 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MGHEnd(AddonEvent type, AddonArgs args)
         {
+            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+                return;
+
             foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
             {
                 CheckCurrency(currency, false, "-1", $"({windowTitle})");
