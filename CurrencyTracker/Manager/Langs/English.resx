@@ -676,4 +676,7 @@ If checked, the Note of specific transactions will be filled with the source of 
   <data name="RecordIslandHelp" xml:space="preserve">
     <value>Include Workshop, Farm, Pasture, Ganary, Building and Crafting.</value>
   </data>
+  <data name="Fate" xml:space="preserve">
+    <value>FATE</value>
+  </data>
 </root>

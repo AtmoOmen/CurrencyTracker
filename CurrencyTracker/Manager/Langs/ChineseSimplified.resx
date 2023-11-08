@@ -673,4 +673,7 @@
   <data name="RecordIslandHelp" xml:space="preserve">
     <value>包含工房、耕地、牧场、屯货仓库、开拓建造、开拓制作</value>
   </data>
+  <data name="Fate" xml:space="preserve">
+    <value>临危受命</value>
+  </data>
 </root>

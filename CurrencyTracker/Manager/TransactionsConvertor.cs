@@ -23,9 +23,9 @@ public class TransactionsConvertor
     // 解析文件中的一行数据 Parse a line of transactions in the data file
     public static TransactionsConvertor FromFileLine(string line)
     {
-        string[] parts = line.Split(";");
+        var parts = line.Split(";");
 
-        TransactionsConvertor transaction = new TransactionsConvertor
+        var transaction = new TransactionsConvertor
         {
             TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal),
             Amount = Convert.ToInt64(parts[1]),

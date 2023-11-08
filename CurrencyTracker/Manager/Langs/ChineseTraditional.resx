@@ -672,4 +672,7 @@
   <data name="RecordIslandHelp" xml:space="preserve">
     <value>Include Workshop, Farm, Pasture, Ganary, Building and Crafting.</value>
   </data>
+  <data name="Fate" xml:space="preserve">
+    <value>FATE</value>
+  </data>
 </root>

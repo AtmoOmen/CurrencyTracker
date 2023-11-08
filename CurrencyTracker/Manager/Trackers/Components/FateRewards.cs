@@ -41,7 +41,7 @@ namespace CurrencyTracker.Manager.Trackers
                             {
                                 continue;
                             }
-                            editedTransactions.LastOrDefault().Note = $"(Fate {FateName})";
+                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("Fate")} {FateName})";
 
                             TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                             Plugin.Instance.Main.UpdateTransactions();
