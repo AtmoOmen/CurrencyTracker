@@ -107,13 +107,16 @@ public class TransactionsConvertor
     {
         try
         {
-            if (!File.Exists(filePath) && transactions.Count > 0)
+            if (!File.Exists(filePath))
             {
-                File.WriteAllText(filePath, string.Empty);
-            }
-            else
-            {
-                return;
+                if (transactions.Count > 0)
+                {
+                    File.WriteAllText(filePath, string.Empty);
+                }
+                else
+                {
+                    return;
+                }
             }
 
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);

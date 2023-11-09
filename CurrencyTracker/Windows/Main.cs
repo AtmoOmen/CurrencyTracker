@@ -860,7 +860,6 @@ public partial class Main : Window, IDisposable
                     if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPage < (CCTItemNames.Count / itemsPerPage) - 1)
                     {
                         currentItemPage++;
-                        Service.PluginLog.Debug($"当前页{currentItemPage}");
                     }
                 }
 
