@@ -3,6 +3,7 @@ using Dalamud.Configuration;
 using Dalamud.Plugin;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace CurrencyTracker
@@ -28,7 +29,6 @@ namespace CurrencyTracker
         public bool ShowLocationColumn { get; set; } = true;
         public bool ShowNoteColumn { get; set; } = true;
         public bool ShowOrderColumn { get; set; } = true;
-
         // 备注选项 Note Settings
         public bool RecordContentName { get; set; } = true;
         public bool RecordTeleportDes { get; set; } = true;
@@ -44,6 +44,13 @@ namespace CurrencyTracker
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
+
+        public Dictionary<string, uint> AllCurrencies => MergeCurrencies();
+
+        private Dictionary<string, uint> MergeCurrencies()
+        {
+            return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Key, kv => kv.Value);
+        }
 
         public void Initialize(DalamudPluginInterface pluginInterface)
         {

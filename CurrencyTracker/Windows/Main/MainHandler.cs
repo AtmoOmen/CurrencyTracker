@@ -1,4 +1,5 @@
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Trackers;
 using Dalamud.Interface;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -122,6 +123,11 @@ public partial class Main
             }
         }
         return filteredTransactions;
+    }
+
+    private List<string> ApplyCCTFilter(string searchFilter)
+    {
+        return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
     private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)

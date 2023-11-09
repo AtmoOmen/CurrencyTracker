@@ -36,6 +36,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         // ID - Name
         public static Dictionary<uint, string> ItemNames = new();
+        public static HashSet<string> ItemNamesSet = new();
 
         public Tracker()
         {
@@ -186,6 +187,8 @@ namespace CurrencyTracker.Manager.Trackers
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.Name}");
+
+            ItemNamesSet = new HashSet<string>(ItemNames.Values);
         }
 
         private void DebindChatEvent()

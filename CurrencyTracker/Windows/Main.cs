@@ -15,8 +15,6 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
-using TinyPinyin;
 
 namespace CurrencyTracker.Windows;
 
@@ -815,53 +813,81 @@ public partial class Main : Window, IDisposable
             if (ImGui.BeginCombo("", Tracker.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
                 var startIndex = currentItemPage * itemsPerPage;
-                var endIndex = Math.Min(startIndex + itemsPerPage, Tracker.ItemNames.Count);
+                var endIndex = Math.Min(startIndex + itemsPerPage, CCTItemNames.Count);
 
                 ImGui.SetNextItemWidth(200f);
                 if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 50))
                 {
                     currentItemPage = 0;
+                    CCTItemNames = ApplyCCTFilter(searchFilter);
                 }
                 ImGui.SameLine();
-                if (Widgets.IconButton(FontAwesomeIcon.Backward))
+                if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "CCTFirstPage"))
                     currentItemPage = 0;
                 ImGui.SameLine();
                 if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentItemPage > 0)
                     currentItemPage--;
                 ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right))
-                    currentItemPage++;
+                if (CCTItemNames.Count > 0)
+                {
+                    if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentItemPage < (CCTItemNames.Count / itemsPerPage) - 1)
+                    {
+                        currentItemPage++;
+                    }
+                }
+                else
+                {
+                    ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right);
+                }
                 ImGui.SameLine();
+                if(CCTItemNames.Count > 0)
+                {
+                    if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage"))
+                    {
+                        currentItemPage = (CCTItemNames.Count / itemsPerPage) - 1;
+                    }
+                }
+                else
+                {
+                    Widgets.IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage");
+                }
 
-                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0) && currentItemPage > 0)
+                if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentItemPage > 0)
                     currentItemPage--;
 
-                if ((ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0))
-                    currentItemPage++;
+                if (CCTItemNames.Count > 0)
+                {
+                    if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPage < (CCTItemNames.Count / itemsPerPage) - 1)
+                    {
+                        currentItemPage++;
+                        Service.PluginLog.Debug($"当前页{currentItemPage}");
+                    }
+                }
 
                 ImGui.Separator();
 
                 var visibleItems = 0;
 
-                foreach (var x in Tracker.ItemNames)
+                var filterNamesForCCTSet = new HashSet<string>(filterNamesForCCT);
+
+                if (!searchFilter.IsNullOrEmpty() && CCTItemNames.Count > 0)
                 {
-                    var itemName = x.Value.Normalize(NormalizationForm.FormKC);
-
-                    var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
-                    var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(itemName, "") : string.Empty;
-
-                    if (options.All(y => !itemName.Contains(y)) && (!filterNamesForCCT.Any(filter => itemName.Contains(filter))))
+                    foreach (var itemName in CCTItemNames)
                     {
-                        if (string.IsNullOrWhiteSpace(searchFilter) || (isChineseSimplified ? pinyin.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) : itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)))
+                        var isCurrencyMatch = options.All(y => CurrencyInfo.CurrencyLocalName(C.AllCurrencies[y]) != itemName);
+                        var isFilteredNameMatch = !filterNamesForCCTSet.Any(filter => itemName.Contains(filter));
+
+                        if (isCurrencyMatch && isFilteredNameMatch)
                         {
                             if (visibleItems >= startIndex && visibleItems < endIndex)
                             {
-                                if (ImGui.Selectable(x.Value))
+                                var itemKeyPair = Tracker.ItemNames.FirstOrDefault(x => x.Value == itemName);
+                                if (ImGui.Selectable(itemName))
                                 {
-                                    customCurrency = x.Key;
+                                    customCurrency = itemKeyPair.Key;
                                 }
 
-                                if (ImGui.IsWindowAppearing() && customCurrency == x.Key)
+                                if (ImGui.IsWindowAppearing() && customCurrency == itemKeyPair.Key)
                                 {
                                     ImGui.SetScrollHereY();
                                 }
@@ -916,6 +942,7 @@ public partial class Main : Window, IDisposable
                 selectedCurrencyName = selected;
                 currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyName);
                 lastTransactions = currentTypeTransactions;
+                searchFilter = string.Empty;
 
                 customCurrency = 0;
 

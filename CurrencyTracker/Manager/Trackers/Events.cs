@@ -63,16 +63,14 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.TrackedInDuty)
             {
-                // 检查 PVP 对局是否结束 Check whether PVP ends
-                if (PVPNames.ContainsKey(TerritoryNames.FirstOrDefault(kvp => kvp.Value == previousLocationName).Key) && DutyStarted)
-                {
-                    DutyEndCheck("PVPEnds");
-                }
-
                 // 强制结束 Force to end
                 if (!IsBoundByDuty())
                 {
                     DutyEndCheck("任务结束了");
+                }
+                else
+                {
+                    DutyStartCheck();
                 }
             }
 
@@ -83,21 +81,6 @@ namespace CurrencyTracker.Manager.Trackers
             IsInIslandCheck();
 
             Service.Chat.ChatMessage += OnChatMessage;
-        }
-
-        // 开始副本攻略时触发的事件 (同时也包含PVP)
-        private void isDutyStarted(object? sender, ushort e)
-        {
-            if (!C.TrackedInDuty) return;
-            if (ContentNames.TryGetValue(Service.ClientState.TerritoryType, out _))
-            {
-                DutyStarted = true;
-                dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-                dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
-
-                DebindChatEvent();
-                Service.PluginLog.Debug("Duty Starts");
-            }
         }
 
         // 每一帧更新时触发的事件

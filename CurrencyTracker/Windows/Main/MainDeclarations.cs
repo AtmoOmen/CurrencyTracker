@@ -147,6 +147,9 @@ public partial class Main
     // 修改后货币名 Edited Currency Name
     private string editedCurrencyName = string.Empty;
 
+    // 自定义货币追踪物品名称 For Custom Currency Tracker
+    private List<string> CCTItemNames = new();
+
     // 临时 Temp
     private bool isRecordContentName;
 

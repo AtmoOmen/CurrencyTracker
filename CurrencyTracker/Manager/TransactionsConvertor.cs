@@ -66,8 +66,8 @@ public class TransactionsConvertor
                 return transactions;
             }
 
-            string[] lines = File.ReadAllLines(filePath);
-            foreach (string line in lines)
+            var lines = File.ReadAllLines(filePath);
+            foreach (var line in lines)
             {
                 TransactionsConvertor transaction = parseLine(line);
                 transactions.Add(transaction);
@@ -75,7 +75,7 @@ public class TransactionsConvertor
         }
         catch (Exception ex)
         {
-            Service.PluginLog.Debug($"Error parsing entire data file.: {ex.Message}");
+            Service.PluginLog.Error($"Error parsing entire data file.: {ex.Message}");
         }
 
         return transactions;
@@ -98,7 +98,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            Service.PluginLog.Debug($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
+            Service.PluginLog.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
@@ -107,23 +107,25 @@ public class TransactionsConvertor
     {
         try
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(filePath) && transactions.Count > 0)
             {
                 File.WriteAllText(filePath, string.Empty);
             }
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-            using (var writer = new StreamWriter(fileStream))
+            else
             {
-                foreach (var transaction in transactions)
-                {
-                    writer.WriteLine(transaction.ToFileLine());
-                }
+                return;
+            }
+
+            using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            using var writer = new StreamWriter(fileStream);
+            foreach (var transaction in transactions)
+            {
+                writer.WriteLine(transaction.ToFileLine());
             }
         }
         catch (IOException ex)
         {
-            Service.PluginLog.Debug($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
+            Service.PluginLog.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
 }

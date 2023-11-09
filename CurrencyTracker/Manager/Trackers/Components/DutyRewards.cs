@@ -1,4 +1,5 @@
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
@@ -20,8 +21,16 @@ namespace CurrencyTracker.Manager.Trackers
         // Terriory ID - ContentName
         public static Dictionary<uint, string> ContentNames = new();
 
-        // Terroiry ID - PVPNames
-        public static Dictionary<uint, string> PVPNames = new();
+        // 应被忽略的副本 Contents should be ignored
+        public static uint[] IgnoredContents = new uint[]
+        {
+            // 九宫幻卡相关 Triple Triad Related
+            579, 940, 941,
+            // 禁地优雷卡 Eureka
+            732, 763, 795, 827,
+            // 博兹雅 Bozja
+            920, 975
+        };
 
         private bool DutyStarted = false;
 
@@ -31,16 +40,8 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitDutyRewards()
         {
-            PVPNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                .Where(x => !string.IsNullOrEmpty(x.Name.ToString()) && (x.AcceptClassJobCategory.Row == 146) && x.PvP)
-                .GroupBy(x => x.TerritoryType.Row)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.First().Name.ToString()
-                );
-
             ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                .Where(x => !string.IsNullOrEmpty(x.Name.ToString()) && ((x.AcceptClassJobCategory.Row == 146 && x.PvP) || (x.AcceptClassJobCategory.Row == 108 || x.AcceptClassJobCategory.Row == 142) && !x.PvP))
+                .Where(x => !x.Name.ToString().IsNullOrEmpty() && !IgnoredContents.Any(y => y == x.TerritoryType.Row))
                 .GroupBy(x => x.TerritoryType.Row)
                 .ToDictionary(
                     group => group.Key,
@@ -50,13 +51,22 @@ namespace CurrencyTracker.Manager.Trackers
             // 上线就在副本里的情况 Player is already in Duty when logs in
             if (IsBoundByDuty())
             {
-                dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-                dutyContentName = ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var currentContent) ? currentContent : Service.Lang.GetText("UnknownContent");
-                DutyStarted = true;
-                DebindChatEvent();
+                DutyStartCheck();
             }
+        }
+        
+        private void DutyStartCheck()
+        {
+            if (!C.TrackedInDuty) return;
+            if (ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var DutyName))
+            {
+                DutyStarted = true;
+                dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+                dutyContentName = !DutyName.IsNullOrEmpty() ? DutyName : Service.Lang.GetText("UnknownContent");
 
-            Service.DutyState.DutyStarted += isDutyStarted;
+                DebindChatEvent();
+                Service.PluginLog.Debug($"Duty {DutyName} Starts");
+            }
         }
 
         private void DutyEndCheck(string ChatMessage)
@@ -65,7 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 return;
             }
-            if (DutyEndStrings.Any(ChatMessage.Contains) || ChatMessage == "PVPEnds")
+            if (DutyEndStrings.Any(ChatMessage.Contains))
             {
                 Service.PluginLog.Debug("Duty Ends, Currency Change Check Starts.");
                 foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
@@ -87,8 +97,6 @@ namespace CurrencyTracker.Manager.Trackers
             DutyStarted = false;
             dutyLocationName = string.Empty;
             dutyContentName = string.Empty;
-
-            Service.DutyState.DutyStarted -= isDutyStarted;
         }
     }
 }
