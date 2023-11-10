@@ -36,6 +36,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         // ID - Name
         public static Dictionary<uint, string> ItemNames = new();
+
         public static HashSet<string> ItemNamesSet = new();
 
         public Tracker()
@@ -87,19 +88,19 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (!Service.ClientState.IsLoggedIn || Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false);
+                CheckCurrency(currency.Value, false);
             }
         }
 
         // 检查货币情况 Check the currency
         private void CheckCurrency(uint currencyID, bool ForceRecording, string currentLocationName = "-1", string currencyNote = "-1", long fCurrencyChange = 0)
         {
-            var currencyName = C.PresetCurrencies.FirstOrDefault(x => x.Value == currencyID).Key ?? C.CustomCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
+            var currencyName = C.AllCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
             if (currencyName.IsNullOrEmpty())
             {
-                Service.PluginLog.Error("Invalid Currency!");
+                Service.PluginLog.Warning("Invalid Currency!");
                 return;
             }
 

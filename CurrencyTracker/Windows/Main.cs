@@ -840,7 +840,7 @@ public partial class Main : Window, IDisposable
                     ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right);
                 }
                 ImGui.SameLine();
-                if(CCTItemNames.Count > 0)
+                if (CCTItemNames.Count > 0)
                 {
                     if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage"))
                     {

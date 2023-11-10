@@ -50,9 +50,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (isQuestFinished && !QuestName.IsNullOrEmpty() && !Service.Condition[ConditionFlag.OccupiedInQuestEvent])
             {
                 Service.PluginLog.Debug("Quest Finished, Currency Change Check Starts.");
-                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+                foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency, true, "-1", $"({Service.Lang.GetText("Quest", QuestName)})");
+                    CheckCurrency(currency.Value, true, "-1", $"({Service.Lang.GetText("Quest", QuestName)})");
                 }
 
                 isQuestReadyFinish = false;

@@ -1,7 +1,6 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using System;
-using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -39,9 +38,9 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (isOnTrading)
             {
-                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+                foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency, true, "-1", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
+                    CheckCurrency(currency.Value, true, "-1", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
                 }
 
                 currentTargetName = string.Empty;

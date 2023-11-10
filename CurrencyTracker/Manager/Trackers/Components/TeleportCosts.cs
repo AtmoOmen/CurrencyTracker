@@ -1,6 +1,5 @@
 using Dalamud.Utility;
 using System;
-using System.IO;
 using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -32,12 +31,7 @@ namespace CurrencyTracker.Manager.Trackers
                         {
                             var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 7569).Key;
                             if (currencyName.IsNullOrEmpty()) return;
-                            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                            var editedTransactions = Transactions.LoadAllTransactions(currencyName);
-
-                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo", currentLocationName)})";
-
-                            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                            Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", currentLocationName)})");
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }
@@ -54,13 +48,9 @@ namespace CurrencyTracker.Manager.Trackers
                     {
                         if (C.RecordTeleportDes)
                         {
-                            var currencyName = CurrencyInfo.CurrencyLocalName(1);
-                            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-                            var editedTransactions = Transactions.LoadAllTransactions(currencyName);
-
-                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("TeleportTo", currentLocationName)})";
-
-                            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                            var currencyName = C.PresetCurrencies.FirstOrDefault(x => x.Value == 1).Key;
+                            if (currencyName.IsNullOrEmpty()) return;
+                            Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", currentLocationName)})");
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }
@@ -78,8 +68,6 @@ namespace CurrencyTracker.Manager.Trackers
             // 传送网使用券 Aetheryte Ticket
             if (GilAmount == -1)
             {
-                var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 7569).Key;
-                if (currencyName.IsNullOrEmpty()) return;
                 CheckCurrency(7569, true, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "-1", GilAmount);
             }
             // 金币 Gil

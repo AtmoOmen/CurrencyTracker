@@ -60,6 +60,61 @@ public partial class Main
         return filteredTransactions;
     }
 
+    // 按时间间隔聚类交易记录 Cluster Transactions By Interval
+    private static List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
+    {
+        var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
+
+        foreach (var transaction in transactions)
+        {
+            var clusterTime = transaction.TimeStamp.AddTicks(-(transaction.TimeStamp.Ticks % interval.Ticks));
+            if (!clusteredTransactions.TryGetValue(clusterTime, out var cluster))
+            {
+                cluster = new TransactionsConvertor
+                {
+                    TimeStamp = clusterTime,
+                    Amount = 0,
+                    Change = 0,
+                    LocationName = string.Empty
+                };
+                clusteredTransactions.Add(clusterTime, cluster);
+            }
+
+            if (!transaction.LocationName.IsNullOrEmpty() && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
+            {
+                if (string.IsNullOrWhiteSpace(cluster.LocationName))
+                {
+                    cluster.LocationName = transaction.LocationName;
+                }
+                else
+                {
+                    var locationNames = cluster.LocationName.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                    if (locationNames.Length < 3)
+                    {
+                        cluster.LocationName += $", {transaction.LocationName}";
+                    }
+                }
+            }
+
+            cluster.Change += transaction.Change;
+
+            if (cluster.TimeStamp <= transaction.TimeStamp)
+            {
+                cluster.Amount = transaction.Amount;
+            }
+        }
+
+        foreach (var cluster in clusteredTransactions.Values)
+        {
+            if (!cluster.LocationName.EndsWith("..."))
+            {
+                cluster.LocationName = cluster.LocationName.TrimEnd() + "...";
+            }
+        }
+
+        return clusteredTransactions.Values.ToList();
+    }
+
     // 按时间显示交易记录 Hide Unmatched Transactions By Time
     private List<TransactionsConvertor> ApplyDateTimeFilter(List<TransactionsConvertor> transactions)
     {
@@ -125,11 +180,13 @@ public partial class Main
         return filteredTransactions;
     }
 
-    private List<string> ApplyCCTFilter(string searchFilter)
+    // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
+    private static List<string> ApplyCCTFilter(string searchFilter)
     {
         return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
     }
 
+    // 延迟加载收支记录 Used to handle too-fast transactions loading
     private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
         UpdateTransactions();
@@ -185,7 +242,7 @@ public partial class Main
         if (isClusteredByTime && clusterHour > 0)
         {
             var interval = TimeSpan.FromHours(clusterHour);
-            currentTypeTransactions = Transactions.ClusterTransactionsByTime(currentTypeTransactions, interval);
+            currentTypeTransactions = ClusterTransactionsByTime(currentTypeTransactions, interval);
         }
 
         if (isChangeFilterEnabled)

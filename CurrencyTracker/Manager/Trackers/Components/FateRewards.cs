@@ -3,8 +3,6 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.IO;
-using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -26,34 +24,18 @@ namespace CurrencyTracker.Manager.Trackers
                     var FateName = textNode->NodeText.ToString();
                     if (!FateName.IsNullOrEmpty())
                     {
-                        foreach (var currency in C.PresetCurrencies.Keys.Concat(C.CustomCurrencies.Keys))
+                        foreach (var currency in C.AllCurrencies)
                         {
-                            if (currency.IsNullOrEmpty()) return;
-                            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currency}.txt");
-                            var editedTransactions = Transactions.LoadAllTransactions(currency);
+                            if (currency.Key.IsNullOrEmpty()) return;
 
-                            if (editedTransactions.Count == 0 || editedTransactions == null)
-                            {
-                                continue;
-                            }
+                            Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
 
-                            if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 10)
-                            {
-                                continue;
-                            }
-                            editedTransactions.LastOrDefault().Note = $"({Service.Lang.GetText("Fate")} {FateName})";
-
-                            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                         FateName = string.Empty;
                     }
                 }
             }
-        }
-
-        private void FateRewardsCheck(string FateName)
-        {
         }
 
         public void UninitFateRewards()

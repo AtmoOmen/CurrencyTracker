@@ -30,6 +30,7 @@ namespace CurrencyTracker.Manager.Trackers
                         var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
                         if (currencyName.IsNullOrEmpty()) return;
                         var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+
                         var editedTransactions = Transactions.LoadAllTransactions(currencyName);
 
                         if (editedTransactions.Count == 0 || editedTransactions == null)

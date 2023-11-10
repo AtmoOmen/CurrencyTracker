@@ -7,7 +7,6 @@ namespace CurrencyTracker.Manager;
 
 public class TransactionsConvertor
 {
-    public string CurrencyName { get; set; } = null!; // 货币类型 Currency Type
     public DateTime TimeStamp { get; set; } // 时间戳 TimeStamp
     public long Change { get; set; } // 变化量 Change
     public long Amount { get; set; } // 总金额 Currency Amount
@@ -29,27 +28,10 @@ public class TransactionsConvertor
         {
             TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal),
             Amount = Convert.ToInt64(parts[1]),
-            Change = Convert.ToInt64(parts[2])
+            Change = Convert.ToInt64(parts[2]),
+            LocationName = parts.Length > 3 ? parts[3] : Service.Lang.GetText("UnknownLocation"),
+            Note = parts.Length > 4 ? parts[4] : string.Empty
         };
-
-        // 支持老版本数据解析 Support parsing older versions' data files
-        if (parts.Length > 3)
-        {
-            transaction.LocationName = parts[3];
-        }
-        else
-        {
-            transaction.LocationName = Service.Lang.GetText("UnknownLocation");
-        }
-
-        if (parts.Length > 4)
-        {
-            transaction.Note = parts[4];
-        }
-        else
-        {
-            transaction.Note = string.Empty;
-        }
 
         return transaction;
     }

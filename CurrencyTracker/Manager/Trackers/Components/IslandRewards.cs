@@ -2,10 +2,8 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.Game.MJI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -47,9 +45,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
                 return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("IslandPasture")})");
+                CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandPasture")})");
             }
         }
 
@@ -64,9 +62,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
                 return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("IslandFarm")})");
+                CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandFarm")})");
             }
         }
 
@@ -82,9 +80,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
                 return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -102,9 +100,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
                 return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -122,9 +120,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
                 return;
 
-            foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+            foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -147,9 +145,9 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 isOnWorkshop = false;
 
-                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+                foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency, false, "-1", $"({Service.Lang.GetText("IslandWorkshop")})");
+                    CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandWorkshop")})");
                 }
 
                 Service.Chat.ChatMessage += OnChatMessage;
@@ -165,7 +163,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 InitIslandRewards();
             }
-            
+
             if (isInIsland && Service.ClientState.TerritoryType != 1055)
             {
                 UninitIslandRewards();

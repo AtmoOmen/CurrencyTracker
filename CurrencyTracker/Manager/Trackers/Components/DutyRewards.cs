@@ -54,7 +54,7 @@ namespace CurrencyTracker.Manager.Trackers
                 DutyStartCheck();
             }
         }
-        
+
         private void DutyStartCheck()
         {
             if (!C.TrackedInDuty) return;
@@ -78,9 +78,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (DutyEndStrings.Any(ChatMessage.Contains))
             {
                 Service.PluginLog.Debug("Duty Ends, Currency Change Check Starts.");
-                foreach (var currency in C.PresetCurrencies.Values.Concat(C.CustomCurrencies.Values))
+                foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
+                    CheckCurrency(currency.Value, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
                 }
 
                 DutyStarted = false;
