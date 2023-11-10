@@ -32,6 +32,9 @@ public partial class Main : Window, IDisposable
     {
         searchTimer.Elapsed -= SearchTimerElapsed;
         searchTimer.Stop();
+
+        searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
+        searchTimerCCT.Stop();
     }
 
     // 初始化 Initialize
@@ -68,6 +71,9 @@ public partial class Main : Window, IDisposable
 
         searchTimer.Elapsed += SearchTimerElapsed;
         searchTimer.AutoReset = false;
+
+        searchTimerCCT.Elapsed += SearchTimerCCTElapsed;
+        searchTimerCCT.AutoReset = false;
 
         LoadOptions();
     }
@@ -818,8 +824,8 @@ public partial class Main : Window, IDisposable
                 ImGui.SetNextItemWidth(200f);
                 if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 50))
                 {
-                    currentItemPage = 0;
-                    CCTItemNames = ApplyCCTFilter(searchFilter);
+                    searchTimerCCT.Stop();
+                    searchTimerCCT.Start();
                 }
                 ImGui.SameLine();
                 if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "CCTFirstPage"))
@@ -867,32 +873,24 @@ public partial class Main : Window, IDisposable
 
                 var visibleItems = 0;
 
-                var filterNamesForCCTSet = new HashSet<string>(filterNamesForCCT);
-
-                if (!searchFilter.IsNullOrEmpty() && CCTItemNames.Count > 0)
+                if (CCTItemNames.Count > 0)
                 {
                     foreach (var itemName in CCTItemNames)
                     {
-                        var isCurrencyMatch = options.All(y => CurrencyInfo.CurrencyLocalName(C.AllCurrencies[y]) != itemName);
-                        var isFilteredNameMatch = !filterNamesForCCTSet.Any(filter => itemName.Contains(filter));
-
-                        if (isCurrencyMatch && isFilteredNameMatch)
+                        if (visibleItems >= startIndex && visibleItems < endIndex)
                         {
-                            if (visibleItems >= startIndex && visibleItems < endIndex)
+                            var itemKeyPair = Tracker.ItemNames.FirstOrDefault(x => x.Value == itemName);
+                            if (ImGui.Selectable(itemName))
                             {
-                                var itemKeyPair = Tracker.ItemNames.FirstOrDefault(x => x.Value == itemName);
-                                if (ImGui.Selectable(itemName))
-                                {
-                                    customCurrency = itemKeyPair.Key;
-                                }
-
-                                if (ImGui.IsWindowAppearing() && customCurrency == itemKeyPair.Key)
-                                {
-                                    ImGui.SetScrollHereY();
-                                }
+                                customCurrency = itemKeyPair.Key;
                             }
-                            visibleItems++;
+
+                            if (ImGui.IsWindowAppearing() && customCurrency == itemKeyPair.Key)
+                            {
+                                ImGui.SetScrollHereY();
+                            }
                         }
+                        visibleItems++;
 
                         if (visibleItems >= endIndex)
                         {
@@ -902,6 +900,11 @@ public partial class Main : Window, IDisposable
                 }
 
                 ImGui.EndCombo();
+            }
+
+            if (ImGui.IsItemClicked() && searchFilter.IsNullOrEmpty())
+            {
+                CCTItemNames = InitCCTItems();
             }
 
             ImGui.SameLine();

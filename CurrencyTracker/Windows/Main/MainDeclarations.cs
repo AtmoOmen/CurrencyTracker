@@ -141,6 +141,9 @@ public partial class Main
     // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
     private readonly System.Timers.Timer searchTimer = new(100);
 
+    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
+    private readonly System.Timers.Timer searchTimerCCT = new(100);
+
     // 是否为本回首次打开 Is First Time to Open Main Windown
     internal bool isFirstTime = true;
 

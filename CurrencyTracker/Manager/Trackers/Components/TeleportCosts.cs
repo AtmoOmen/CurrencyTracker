@@ -22,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (currentLocationName != previousLocationName)
             {
-                if (C.RecordTeleport)
+                if (C.RecordTeleport && !isQuestReadyFinish)
                 {
                     // 传送网使用券 Aetheryte Ticket
                     if (teleportCost == -1)

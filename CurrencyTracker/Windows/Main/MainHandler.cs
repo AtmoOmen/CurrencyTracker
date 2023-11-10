@@ -180,10 +180,34 @@ public partial class Main
         return filteredTransactions;
     }
 
-    // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
-    private static List<string> ApplyCCTFilter(string searchFilter)
+    // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
+    private List<string> InitCCTItems()
     {
-        return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+        return Tracker.ItemNamesSet
+            .Where(itemName => options.All(option => !itemName.Contains(option)))
+            .Where(itemName => !filterNamesForCCT.Any(filter => itemName.Contains(filter))).ToList();
+    }
+
+    // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
+    private List<string> ApplyCCTFilter(string searchFilter)
+    {
+        if (CCTItemNames.Count > 0)
+        {
+            if (C.SelectedLanguage == "ChineseSimplified")
+            {
+                return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || PinyinHelper.GetPinyin(itemName, "").Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+            else
+            {
+                return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+        }
+        else
+        {
+            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
+                .Where(itemName => options.All(option => !itemName.Contains(option)))
+                .Where(itemName => !filterNamesForCCT.Any(filter => itemName.Contains(filter))).ToList();
+        }
     }
 
     // 延迟加载收支记录 Used to handle too-fast transactions loading
@@ -191,6 +215,21 @@ public partial class Main
     {
         UpdateTransactions();
     }
+
+    // 延迟加载搜索结果 Used to handle too-fast CCT items loading
+    private void SearchTimerCCTElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        if (!searchFilter.IsNullOrEmpty())
+        {
+            currentItemPage = 0;
+            CCTItemNames = ApplyCCTFilter(searchFilter);
+        }
+        else
+        {
+            CCTItemNames = InitCCTItems();
+        }
+    }
+
 
     // 合并交易记录用 Used to simplified merging transactions code
     private int MergeTransactions(bool oneWay)
