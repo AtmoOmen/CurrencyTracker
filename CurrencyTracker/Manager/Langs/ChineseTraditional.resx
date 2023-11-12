@@ -668,13 +668,14 @@
   </data>
   <data name="RecordIsland" xml:space="preserve">
     <value>記錄無人島相關收支</value>
-    <comment>Record (Island Sancutary) Related Rewards/Costs</comment>
   </data>
   <data name="RecordIslandHelp" xml:space="preserve">
     <value>包含工房、耕地、牧場、屯貨倉庫、開拓建造、開拓製作</value>
   </data>
   <data name="Fate" xml:space="preserve">
     <value>F.A.T.E</value>
-    <comment>F.A.T.E(Full Active Time Events)</comment>
+  </data>
+  <data name="SelectedTransactionsInfo" xml:space="preserve">
+    <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
   </data>
 </root>

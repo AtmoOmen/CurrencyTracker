@@ -15,7 +15,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 
 namespace CurrencyTracker.Windows;
@@ -935,7 +934,7 @@ public partial class Main : Window, IDisposable
                     Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
-                
+
                 C.CustomCurrencies.Add(selected, customCurrency);
                 C.Save();
                 options.Add(selected);
@@ -1692,7 +1691,6 @@ public partial class Main : Window, IDisposable
         if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51])
             return;
 
-
         if (isFirstTime)
         {
             Service.Tracker.UpdateCurrencies();
@@ -2033,7 +2031,6 @@ public partial class Main : Window, IDisposable
                 var transactions = selectedTransactions[selectedCurrencyName];
                 ImGui.TextColored(ImGuiColors.DalamudGrey, Service.Lang.GetText("SelectedTransactionsInfo", transactions.Count, transactions.Sum(x => x.Change), Math.Round(transactions.Average(x => x.Change), 2), transactions.Max(x => x.Change), transactions.Min(x => x.Change)));
             }
-
 
             ImGui.EndChildFrame();
         }

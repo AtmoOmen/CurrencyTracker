@@ -59,46 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -214,7 +214,7 @@
     <value>{0} Transaktionen zusammengeführt.</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
-    <value>Führe Transaktionen unter der derzeit ausgewählten Währung zusammen, wenn sie am gleichen Standort aufeinanderfolgen und wenn der Unterschied &lt; des Grenzwerts ist.
+    <value>Führe Transaktionen unter der derzeit ausgewählten Währung zusammen, wenn sie am gleichen Standort aufeinanderfolgen und wenn der Differenz &lt; des Grenzwerts ist.
 Nach dem Zusammenführen werden Zeit und Betrag des zusammengeführten Datensatzes aus dem neuesten Datensatz unter den zusammengeführten Datensätzen übernommen, während die Differenzen aufsummiert werden.
 Wenn der Grenzwert 0 beträgt, werden ALLE aufeinanderfolgenden Transaktionen unter der derzeit ausgewählten Währung mit demselben Standort zusammengeführt.
 
@@ -572,10 +572,10 @@ Wenn nicht ausgewählt, bedeutet das Plugin wird  keine bestimmten Transaktionen
     <value>Vorschlagen oder Melden</value>
   </data>
   <data name="WaitExchange" xml:space="preserve">
-    <value>Warte auf Abschluss des Austausches</value>
+    <value>Warte auf Abschluss des Austausches/Handels</value>
   </data>
   <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>Wenn aktiviert, wird es auf den Abschluss von Tausch/Käufen warten, bevor Währungsänderungen überprüft werden. Dazu gehören ALLE NPC Shops, Staatliche Gesellschaft Versorger, Marktbrett, Gehilfen und FG Truhe.</value>
+    <value>Wenn aktiviert, wird auf den Abschluss von Austäuschen/Käufen gewartet, bevor Währungsänderungen überprüft werden. Dazu gehören das Marktbrett, ALLE NPC Shops, Gehilfen, staatliche Gesellschaft, Gehilfen, und die Truhe der FG.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Öffne das Hauptfenster des Plugins</value>
@@ -604,7 +604,7 @@ wird der Hinweis bei den zusammengeführten Transaktionen sein:
     <value>Keine Währung gefunden.</value>
   </data>
   <data name="ExchangeWith" xml:space="preserve">
-    <value>Tausch mit {0}</value>
+    <value>Handel mit {0}</value>
   </data>
   <data name="General" xml:space="preserve">
     <value>Allgemein</value>
@@ -653,7 +653,7 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
     <value>Zurücksetzen</value>
   </data>
   <data name="RecordFateName" xml:space="preserve">
-    <value>Record FATE Name</value>
+    <value>FATE Namen aufzeichnen</value>
   </data>
   <data name="IslandFarm" xml:space="preserve">
     <value>Island Farm</value>
@@ -675,5 +675,8 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
   </data>
   <data name="Fate" xml:space="preserve">
     <value>FATE</value>
+  </data>
+  <data name="SelectedTransactionsInfo" xml:space="preserve">
+    <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
   </data>
 </root>

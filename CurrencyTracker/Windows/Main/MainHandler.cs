@@ -10,8 +10,6 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using TinyPinyin;
-using static FFXIVClientStructs.FFXIV.Client.UI.Misc.ConfigModule;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace CurrencyTracker.Windows;
 
