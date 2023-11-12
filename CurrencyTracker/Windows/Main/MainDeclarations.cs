@@ -153,6 +153,8 @@ public partial class Main
     // 自定义货币追踪物品名称 For Custom Currency Tracker
     private List<string> CCTItemNames = new();
 
+    private uint CCTItemCounts = 0;
+
     // 临时 Temp
     private bool isRecordContentName;
 
@@ -171,7 +173,6 @@ public partial class Main
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<string> options = new();
     internal List<string>? ordedOptions = new();
-    internal List<string>? hiddenOptions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
     internal List<TransactionsConvertor> lastTransactions = new();
     internal long[]? LinePlotData;

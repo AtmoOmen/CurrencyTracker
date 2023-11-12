@@ -79,12 +79,13 @@ namespace CurrencyTracker.Windows
         public static void TextCentered(string text)
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
-            Text(text);
+            ImGui.TextUnformatted(text);
         }
 
-        public static void Text(string s)
+        public static bool SelectableCentered(string text, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None)
         {
-            ImGui.TextUnformatted(s);
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
+            return ImGui.Selectable(text, selected, flags);
         }
 
         public static unsafe ImFontPtr GetFont(float size)

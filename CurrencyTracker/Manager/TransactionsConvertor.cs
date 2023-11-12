@@ -1,3 +1,4 @@
+using Dalamud.Utility;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -41,17 +42,17 @@ public class TransactionsConvertor
     {
         var transactions = new List<TransactionsConvertor>();
 
+        if (!File.Exists(filePath))
+        {
+            return transactions;
+        }
+
         try
         {
-            if (!File.Exists(filePath))
-            {
-                return transactions;
-            }
-
-            var lines = File.ReadAllLines(filePath);
+            var lines = File.ReadLines(filePath);
             foreach (var line in lines)
             {
-                TransactionsConvertor transaction = parseLine(line);
+                var transaction = parseLine(line);
                 transactions.Add(transaction);
             }
         }

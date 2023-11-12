@@ -10,6 +10,8 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using TinyPinyin;
+using static FFXIVClientStructs.FFXIV.Client.UI.Misc.ConfigModule;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace CurrencyTracker.Windows;
 
@@ -183,9 +185,11 @@ public partial class Main
     // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
     private List<string> InitCCTItems()
     {
-        return Tracker.ItemNamesSet
-            .Where(itemName => options.All(option => !itemName.Contains(option)))
-            .Where(itemName => !filterNamesForCCT.Any(filter => itemName.Contains(filter))).ToList();
+        var items = Tracker.ItemNamesSet
+            .Where(itemName => C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && options.All(option => !itemName.Contains(option)) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+            .ToList();
+        CCTItemCounts = (uint)items.Count;
+        return items;
     }
 
     // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
@@ -193,20 +197,12 @@ public partial class Main
     {
         if (CCTItemNames.Count > 0)
         {
-            if (C.SelectedLanguage == "ChineseSimplified")
-            {
-                return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || PinyinHelper.GetPinyin(itemName, "").Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-            else
-            {
-                return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
+            return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilter, StringComparison.OrdinalIgnoreCase))).ToList();
         }
         else
         {
-            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
-                .Where(itemName => options.All(option => !itemName.Contains(option)))
-                .Where(itemName => !filterNamesForCCT.Any(filter => itemName.Contains(filter))).ToList();
+            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && options.All(option => !itemName.Contains(option)) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+                .ToList();
         }
     }
 
@@ -229,7 +225,6 @@ public partial class Main
             CCTItemNames = InitCCTItems();
         }
     }
-
 
     // 合并交易记录用 Used to simplified merging transactions code
     private int MergeTransactions(bool oneWay)
@@ -307,105 +302,116 @@ public partial class Main
     // 日期筛选器 Date Picker
     private void CreateDatePicker(ref DateTime currentDate, bool enableStartDate)
     {
-        ImGui.Separator();
-
-        if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "LastYear") && enableStartDate)
+        if (ImGui.BeginChildFrame(4, new Vector2(320, 215), ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar))
         {
-            currentDate = currentDate.AddYears(-1);
-            searchTimer.Stop();
-            searchTimer.Start();
-        }
+            ImGui.Separator();
 
-        ImGui.SameLine();
+            ImGui.SetCursorPosX((ImGui.GetWindowWidth()) / 8);
 
-        if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left) && enableStartDate)
-        {
-            currentDate = currentDate.AddMonths(-1);
-            searchTimer.Stop();
-            searchTimer.Start();
-        }
-
-        ImGui.SameLine();
-        ImGui.Text($"{currentDate.Year}.{string.Format("{0:MM}", currentDate)}");
-        ImGui.SameLine();
-
-        if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right))
-        {
-            currentDate = currentDate.AddMonths(1);
-            searchTimer.Stop();
-            searchTimer.Start();
-        }
-
-        ImGui.SameLine();
-
-        if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "NextYear") && enableStartDate)
-        {
-            currentDate = currentDate.AddYears(1);
-            searchTimer.Stop();
-            searchTimer.Start();
-        }
-
-        if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
-        {
-            var weekDaysData = Service.Lang.GetText("WeekDays");
-            var weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var day in weekDays)
+            // 上一年 Last Year
+            if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "LastYear"))
             {
-                ImGui.TableNextColumn();
-                ImGui.Text(day);
+                currentDate = currentDate.AddYears(-1);
+                searchTimer.Stop();
+                searchTimer.Start();
             }
 
-            ImGui.TableNextRow(ImGuiTableRowFlags.None);
+            ImGui.SameLine();
 
-            var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-            var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
-
-            var daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
-
-            for (var i = 0; i < firstDayOfWeek; i++)
+            // 上一月 Last Month
+            if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left))
             {
-                ImGui.TableNextColumn();
-                ImGui.Text("");
+                currentDate = currentDate.AddMonths(-1);
+                searchTimer.Stop();
+                searchTimer.Start();
             }
 
-            for (var day = 1; day <= daysInMonth; day++)
+            ImGui.SameLine();
+            ImGui.Text($"{currentDate.Year}.{string.Format("{0:MM}", currentDate)}");
+            ImGui.SameLine();
+
+            // 下一月 Next Month
+            if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right))
             {
-                ImGui.TableNextColumn();
-                if (currentDate.Day == day)
+                currentDate = currentDate.AddMonths(1);
+                searchTimer.Stop();
+                searchTimer.Start();
+            }
+
+            ImGui.SameLine();
+
+            // 下一年 Next Year
+            if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "NextYear"))
+            {
+                currentDate = currentDate.AddYears(1);
+                searchTimer.Stop();
+                searchTimer.Start();
+            }
+
+            if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
+            {
+                // 表头 Header Column
+                var weekDaysData = Service.Lang.GetText("WeekDays");
+                var weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var day in weekDays)
                 {
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
-                    if (ImGui.Selectable(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
-                    {
-                        currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
-                    }
-                    ImGui.PopStyleColor();
+                    ImGui.TableNextColumn();
+                    Widgets.TextCentered(day);
                 }
-                else
+
+                ImGui.TableNextRow(ImGuiTableRowFlags.None);
+
+                var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
+                var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
+
+                var daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
+
+                // 不存在于该月的日期 Date not exsited in this month
+                for (var i = 0; i < firstDayOfWeek; i++)
                 {
-                    if (enableStartDate && (currentDate.Year == filterEndDate.Year && currentDate.Month == filterEndDate.Month && day >= filterEndDate.Day) || currentDate.Year > filterEndDate.Year || currentDate.Month > filterEndDate.Month)
+                    ImGui.TableNextColumn();
+                    Widgets.TextCentered("");
+                }
+
+                // 日期绘制 Draw Dates
+                for (var day = 1; day <= daysInMonth; day++)
+                {
+                    ImGui.TableNextColumn();
+                    var currentDay = new DateTime(currentDate.Year, currentDate.Month, day);
+                    if (currentDate.Day == day)
                     {
-                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                        ImGui.Text(day.ToString());
-                        ImGui.PopStyleColor();
-                    }
-                    else if (!enableStartDate && (currentDate.Year == filterStartDate.Year && currentDate.Month == filterStartDate.Month && day <= filterStartDate.Day) || currentDate.Year < filterStartDate.Year || currentDate.Month < filterStartDate.Month)
-                    {
-                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                        ImGui.Text(day.ToString());
+                        // 选中的日期 Selected Date
+                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
+                        if (Widgets.SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                        {
+                            currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                        }
                         ImGui.PopStyleColor();
                     }
                     else
                     {
-                        if (ImGui.Selectable(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                        // 其余不可选中的日期 Date that cannot be selected
+                        if ((enableStartDate && currentDay >= filterEndDate) || (!enableStartDate && currentDay <= filterStartDate))
                         {
-                            currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
-                            searchTimer.Stop();
-                            searchTimer.Start();
+                            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
+                            Widgets.TextCentered(day.ToString());
+                            ImGui.PopStyleColor();
+                        }
+                        else
+                        {
+                            // 可选中的日期 Selectable Date
+                            if (Widgets.SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                            {
+                                currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
+                                searchTimer.Stop();
+                                searchTimer.Start();
+                            }
                         }
                     }
                 }
+                ImGui.EndTable();
             }
-            ImGui.EndTable();
+            ImGui.EndChildFrame();
         }
     }
 

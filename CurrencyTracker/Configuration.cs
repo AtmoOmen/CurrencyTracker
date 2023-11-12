@@ -1,10 +1,12 @@
 using CurrencyTracker.Manager;
 using Dalamud.Configuration;
 using Dalamud.Plugin;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace CurrencyTracker
 {
@@ -15,9 +17,10 @@ namespace CurrencyTracker
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
+        [Newtonsoft.Json.JsonIgnore]
         public Dictionary<string, uint> PresetCurrencies { get; set; } = new();
+        [Newtonsoft.Json.JsonIgnore]
         public List<string> OrdedOptions { get; set; } = new List<string>();
-        public List<string> HiddenOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
         public int TrackMode { get; set; } = 1;
@@ -47,6 +50,7 @@ namespace CurrencyTracker
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
 
+        [Newtonsoft.Json.JsonIgnore]
         public Dictionary<string, uint> AllCurrencies => MergeCurrencies();
 
         private Dictionary<string, uint> MergeCurrencies()

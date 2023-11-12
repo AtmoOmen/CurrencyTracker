@@ -105,6 +105,12 @@ namespace CurrencyTracker.Manager.Trackers
                     IsOnExchange();
                 }
             }
+
+            if (isQuestReadyFinish)
+            {
+                QuestEndCheck("完成了任务");
+                return;
+            }
         }
     }
 }

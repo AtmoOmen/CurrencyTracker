@@ -11,7 +11,7 @@ namespace CurrencyTracker.Manager
     public partial class Transactions
     {
         // 加载全部记录 Load All Transactions
-        public static List<TransactionsConvertor> LoadAllTransactions(string CurrencyName)
+        public static List<TransactionsConvertor> LoadAllTransactions(string currencyName)
         {
             var allTransactions = new List<TransactionsConvertor>();
 
@@ -20,15 +20,15 @@ namespace CurrencyTracker.Manager
                 Service.PluginLog.Warning("Fail to Load All Transactions: Player Data Folder Path Missed.");
                 return allTransactions;
             }
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
+
+            if (!File.Exists(filePath))
+            {
+                return allTransactions;
+            }
 
             try
             {
-                if (!File.Exists(filePath))
-                {
-                    return allTransactions;
-                }
-
                 allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
             }
             catch (Exception ex)

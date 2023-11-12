@@ -679,4 +679,7 @@ If checked, the Note of specific transactions will be filled with the source of 
   <data name="Fate" xml:space="preserve">
     <value>FATE</value>
   </data>
+  <data name="SelectedTransactionsInfo" xml:space="preserve">
+    <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
+  </data>
 </root>
