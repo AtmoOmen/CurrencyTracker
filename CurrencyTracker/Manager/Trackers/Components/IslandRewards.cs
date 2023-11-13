@@ -47,7 +47,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandPasture")})");
+                CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandPasture")})");
             }
         }
 
@@ -64,7 +64,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandFarm")})");
+                CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandFarm")})");
             }
         }
 
@@ -82,7 +82,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, "", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -102,7 +102,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, "", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -122,7 +122,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false, "-1", $"({windowTitle})");
+                CheckCurrency(currency.Value, "", $"({windowTitle})");
             }
 
             Service.Chat.ChatMessage += OnChatMessage;
@@ -147,7 +147,7 @@ namespace CurrencyTracker.Manager.Trackers
 
                 foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("IslandWorkshop")})");
+                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandWorkshop")})");
                 }
 
                 Service.Chat.ChatMessage += OnChatMessage;
@@ -191,9 +191,6 @@ namespace CurrencyTracker.Manager.Trackers
             var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
             var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
-
-            if (windowTitle.IsNullOrEmpty()) Service.PluginLog.Warning("Fail to get the window title.");
-            else Service.PluginLog.Debug($"Successfully get the window title: {windowTitle}");
 
             return windowTitle;
         }

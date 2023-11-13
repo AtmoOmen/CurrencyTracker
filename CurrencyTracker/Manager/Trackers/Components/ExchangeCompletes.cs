@@ -8,6 +8,7 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
+        private string currentTargetName = string.Empty;
         private bool isOnExchanging = false;
         private static readonly string[] ExchangeUI = new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop" };
 
@@ -50,7 +51,7 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     foreach (var currency in C.AllCurrencies)
                     {
-                        CheckCurrency(currency.Value, false, "-1", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
+                        CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
                     }
                 }
                 else

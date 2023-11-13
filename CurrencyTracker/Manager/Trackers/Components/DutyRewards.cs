@@ -80,7 +80,7 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.PluginLog.Debug("Duty Ends, Currency Change Check Starts.");
                 foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency.Value, true, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "-1");
+                    CheckCurrency(currency.Value, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "");
                 }
 
                 DutyStarted = false;

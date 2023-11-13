@@ -29,20 +29,10 @@ public partial class Main : Window, IDisposable
         Initialize(plugin);
     }
 
-    public void Dispose()
-    {
-        searchTimer.Elapsed -= SearchTimerElapsed;
-        searchTimer.Stop();
-
-        searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
-        searchTimerCCT.Stop();
-    }
-
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
         isReversed = C.ReverseSort;
-        recordMode = C.TrackMode;
         transactionsPerPage = C.RecordsPerPage;
         ordedOptions = C.OrdedOptions;
         isChangeColoring = C.ChangeTextColoring;
@@ -87,21 +77,21 @@ public partial class Main : Window, IDisposable
         {
             if (!addedOptions.Contains(currency.Key))
             {
-                options.Add(currency.Key);
                 addedOptions.Add(currency.Key);
                 selectedStates.Add(currency.Key, new List<bool>());
                 selectedTransactions.Add(currency.Key, new List<TransactionsConvertor>());
             }
         }
 
-        if (ordedOptions == null)
+        if (C.OrdedOptions.Count == 0 || C.OrdedOptions == null)
         {
-            ordedOptions = options;
+            ordedOptions = C.AllCurrencies.Keys.ToList();
             C.OrdedOptions = ordedOptions;
             C.Save();
         }
         else
         {
+            ordedOptions = C.OrdedOptions;
             ReloadOrderedOptions();
         }
 
@@ -303,11 +293,14 @@ public partial class Main : Window, IDisposable
                 if (isRecordTeleport)
                 {
                     Service.Tracker.UninitTeleportCosts();
+                    Service.Tracker.UninitWarpCosts();
                     Service.Tracker.InitTeleportCosts();
+                    Service.Tracker.InitWarpCosts();
                 }
                 else
                 {
                     Service.Tracker.UninitTeleportCosts();
+                    Service.Tracker.UninitWarpCosts();
                 }
             }
             ImGui.SameLine();
@@ -937,16 +930,11 @@ public partial class Main : Window, IDisposable
 
                 C.CustomCurrencies.Add(selected, customCurrency);
                 C.Save();
-                options.Add(selected);
                 selectedStates.Add(selected, new List<bool>());
                 selectedTransactions.Add(selected, new List<TransactionsConvertor>());
                 ReloadOrderedOptions();
 
-                if (recordMode == 1)
-                {
-                    Service.Tracker.InitializeTracking();
-                    Service.Tracker.OnTransactionsUpdate(EventArgs.Empty);
-                }
+                Service.Tracker.UpdateCurrencies();
 
                 selectedOptionIndex = ordedOptions.Count - 1;
                 selectedCurrencyName = selected;
@@ -1202,6 +1190,7 @@ public partial class Main : Window, IDisposable
         {
             if (!selectedCurrencyName.IsNullOrEmpty() && !C.PresetCurrencies.ContainsKey(selectedCurrencyName))
             {
+                // 删除货币 Delete Currency
                 Widgets.IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete");
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
@@ -1210,14 +1199,13 @@ public partial class Main : Window, IDisposable
                         Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                         return;
                     }
-                    if (!options.Contains(selectedCurrencyName))
+                    if (!C.AllCurrencies.ContainsKey(selectedCurrencyName))
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp2"));
                         return;
                     }
                     C.CustomCurrencies.Remove(selectedCurrencyName);
                     C.Save();
-                    options.Remove(selectedCurrencyName);
                     selectedStates.Remove(selectedCurrencyName);
                     selectedTransactions.Remove(selectedCurrencyName);
                     ReloadOrderedOptions();
@@ -2034,5 +2022,14 @@ public partial class Main : Window, IDisposable
 
             ImGui.EndChildFrame();
         }
+    }
+
+    public void Dispose()
+    {
+        searchTimer.Elapsed -= SearchTimerElapsed;
+        searchTimer.Stop();
+
+        searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
+        searchTimerCCT.Stop();
     }
 }

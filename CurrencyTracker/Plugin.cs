@@ -176,14 +176,13 @@ namespace CurrencyTracker
 
         internal void OnCommand(string command, string args)
         {
-            var currencyName = string.Empty;
-            if (string.IsNullOrEmpty(args))
+            if (args.IsNullOrEmpty())
             {
                 Main.IsOpen = !Main.IsOpen;
             }
             else
             {
-                var matchingCurrencies = FindMatchingCurrencies(Main.options, args);
+                var matchingCurrencies = FindMatchingCurrencies(Configuration.AllCurrencies.Keys.ToList(), args);
                 if (matchingCurrencies.Count > 1)
                 {
                     Service.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
@@ -191,38 +190,35 @@ namespace CurrencyTracker
                     {
                         Service.Chat.PrintError(currency);
                     }
-                    return;
                 }
                 else if (matchingCurrencies.Count == 0)
                 {
                     Service.Chat.PrintError(Service.Lang.GetText("CommandHelp3"));
-                    return;
                 }
                 else
                 {
-                    currencyName = matchingCurrencies.FirstOrDefault();
-                }
-
-                if (!Main.IsOpen)
-                {
-                    Main.selectedCurrencyName = currencyName;
-                    Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                    Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
-                    Main.lastTransactions = Main.currentTypeTransactions;
-                    Main.IsOpen = true;
-                }
-                else
-                {
-                    if (currencyName == Main.selectedCurrencyName)
+                    var currencyName = matchingCurrencies.FirstOrDefault();
+                    if (!Main.IsOpen)
                     {
-                        Main.IsOpen = !Main.IsOpen;
+                        Main.selectedCurrencyName = currencyName;
+                        Main.selectedOptionIndex = Main.ordedOptions.IndexOf(currencyName);
+                        Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(Main.selectedCurrencyName));
+                        Main.lastTransactions = Main.currentTypeTransactions;
+                        Main.IsOpen = true;
                     }
                     else
                     {
-                        Main.selectedCurrencyName = currencyName;
-                        Main.selectedOptionIndex = Main.options.IndexOf(currencyName);
-                        Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
-                        Main.lastTransactions = Main.currentTypeTransactions;
+                        if (currencyName == Main.selectedCurrencyName)
+                        {
+                            Main.IsOpen = !Main.IsOpen;
+                        }
+                        else
+                        {
+                            Main.selectedCurrencyName = currencyName;
+                            Main.selectedOptionIndex = Main.ordedOptions.IndexOf(currencyName);
+                            Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(Main.selectedCurrencyName));
+                            Main.lastTransactions = Main.currentTypeTransactions;
+                        }
                     }
                 }
             }
@@ -248,25 +244,24 @@ namespace CurrencyTracker
         private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
         {
             var isChineseSimplified = Configuration.SelectedLanguage == "ChineseSimplified";
-
             partialName = partialName.Normalize(NormalizationForm.FormKC);
 
             return currencyList
-                .Where(currency =>
-                {
-                    var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
-
-                    if (isChineseSimplified)
-                    {
-                        var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
-                        return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
-                    }
-                    else
-                    {
-                        return normalizedCurrency.IndexOf(partialName, StringComparison.OrdinalIgnoreCase) >= 0;
-                    }
-                })
+                .Where(currency => MatchesCurrency(currency, partialName, isChineseSimplified))
                 .ToList();
+        }
+
+        private bool MatchesCurrency(string currency, string partialName, bool isChineseSimplified)
+        {
+            var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
+
+            if (isChineseSimplified)
+            {
+                var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
+                return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
         }
 
         private void DrawUI()

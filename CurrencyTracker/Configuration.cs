@@ -19,12 +19,9 @@ namespace CurrencyTracker
         [Newtonsoft.Json.JsonIgnore]
         public Dictionary<string, uint> PresetCurrencies { get; set; } = new();
 
-        [Newtonsoft.Json.JsonIgnore]
         public List<string> OrdedOptions { get; set; } = new List<string>();
-
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
-        public int TrackMode { get; set; } = 1;
         public int RecordsPerPage { get; set; } = 20;
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);

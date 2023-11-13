@@ -601,7 +601,7 @@ the Note of the merged transaction will be:
     <value>Unknown Language</value>
   </data>
   <data name="CommandHelp2" xml:space="preserve">
-    <value>Mutiple Currencies Found</value>
+    <value>Multi currencies found</value>
   </data>
   <data name="CommandHelp3" xml:space="preserve">
     <value>No Currency Found</value>

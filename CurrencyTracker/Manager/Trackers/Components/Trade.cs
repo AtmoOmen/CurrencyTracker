@@ -40,7 +40,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency.Value, true, "-1", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
+                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("TradeWith", TradeTargetName)})");
                 }
 
                 currentTargetName = string.Empty;

@@ -22,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (currentLocationName != previousLocationName)
             {
-                if (C.RecordTeleport && !isQuestReadyFinish)
+                if (C.RecordTeleport)
                 {
                     // 传送网使用券 Aetheryte Ticket
                     if (teleportCost == -1)
@@ -35,16 +35,8 @@ namespace CurrencyTracker.Manager.Trackers
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }
-                    // 无花费 No Costs
-                    else if (teleportCost == 0)
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            CheckCurrency(1, false, previousLocationName, $"({Service.Lang.GetText("TeleportTo", currentLocationName)})");
-                        }
-                    }
                     // 金币 Gil
-                    else
+                    else if (teleportCost > 0)
                     {
                         if (C.RecordTeleportDes)
                         {
@@ -68,12 +60,12 @@ namespace CurrencyTracker.Manager.Trackers
             // 传送网使用券 Aetheryte Ticket
             if (GilAmount == -1)
             {
-                CheckCurrency(7569, true, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "-1", GilAmount);
+                CheckCurrency(7569, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
             }
             // 金币 Gil
             else if (GilAmount > 0)
             {
-                CheckCurrency(1, true, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "-1", -GilAmount);
+                CheckCurrency(1, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
             }
 
             Service.Chat.ChatMessage += OnChatMessage;

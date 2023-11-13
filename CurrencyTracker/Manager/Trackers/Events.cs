@@ -75,6 +75,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             // 传送费用相关计算
+            WarpTPEndCheck();
             TeleportCheck();
 
             // 无人岛相关
@@ -86,6 +87,11 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
+            if (isReadyWarpTP)
+            {
+                WarpTPCheck();
+            }
+
             if (isInIsland)
             {
                 IslandHandlers();
@@ -109,7 +115,14 @@ namespace CurrencyTracker.Manager.Trackers
             if (isQuestReadyFinish)
             {
                 QuestEndCheck("完成了任务");
-                return;
+            }
+        }
+
+        private void DebindChatEvent()
+        {
+            for (var i = 0; i < 5; i++)
+            {
+                Service.Chat.ChatMessage -= OnChatMessage;
             }
         }
     }

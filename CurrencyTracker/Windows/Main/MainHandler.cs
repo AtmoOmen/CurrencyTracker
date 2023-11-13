@@ -15,20 +15,21 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    // 用于处理选项顺序 Used to handle options' positions.
+    // 用于处理选项增减 Used to handle options changes.
     private void ReloadOrderedOptions()
     {
-        var areEqual = ordedOptions.All(options.Contains) && options.All(ordedOptions.Contains);
-        if (!areEqual)
+        var orderedOptionsSet = new HashSet<string>(C.OrdedOptions);
+        var allCurrenciesSet = new HashSet<string>(C.AllCurrencies.Keys);
+
+        if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
-            var additionalElements = options.Except(ordedOptions).ToList();
-            ordedOptions.AddRange(additionalElements);
+            orderedOptionsSet.UnionWith(allCurrenciesSet);
+            orderedOptionsSet.IntersectWith(allCurrenciesSet);
 
-            var missingElements = ordedOptions.Except(options).ToList();
-            ordedOptions.RemoveAll(item => missingElements.Contains(item));
+            ordedOptions = orderedOptionsSet.ToList();
 
-            Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
-            Plugin.Instance.Configuration.Save();
+            C.OrdedOptions = ordedOptions;
+            C.Save();
         }
     }
 
@@ -37,8 +38,8 @@ public partial class Main
     {
         (ordedOptions[index2], ordedOptions[index1]) = (ordedOptions[index1], ordedOptions[index2]);
 
-        Plugin.Instance.Configuration.OrdedOptions = ordedOptions;
-        Plugin.Instance.Configuration.Save();
+        C.OrdedOptions = ordedOptions;
+        C.Save();
     }
 
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
@@ -184,7 +185,7 @@ public partial class Main
     private List<string> InitCCTItems()
     {
         var items = Tracker.ItemNamesSet
-            .Where(itemName => C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && options.All(option => !itemName.Contains(option)) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+            .Where(itemName => C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
             .ToList();
         CCTItemCounts = (uint)items.Count;
         return items;
@@ -199,7 +200,7 @@ public partial class Main
         }
         else
         {
-            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && options.All(option => !itemName.Contains(option)) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
                 .ToList();
         }
     }
@@ -269,7 +270,7 @@ public partial class Main
     }
 
     // 应用筛选器 Apply Filters
-    private List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
+    internal List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
     {
         if (isClusteredByTime && clusterHour > 0)
         {
@@ -461,7 +462,6 @@ public partial class Main
         }
 
         selectedCurrencyName = editedCurrencyName;
-        options.Clear();
         selectedStates.Clear();
         selectedTransactions.Clear();
 

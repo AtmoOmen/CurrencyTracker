@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/11/13 | 1.3.1.6 | - Code cleanup<br/>- Improve performance<br/>- Now Using Warps will also be seen as a Teleport. |
 | 2023/11/9  | 1.3.1.5 | - Fixed the issue where some currencies were accidentally filtered out in Custom Currency Tracker interface.<br/>- Fixed the issue of high performance consumption in the current Custom Currency Tracker interface.<br/>- Modified the code logic of the content-related tracking function. |
 | 2023/11/7  | 1.3.1.4 | - Fixed an issue where the plugin might miscalculate the Change of one transaction due to too fast operation.<br/>- Fixed an issue where the plugin would load English localization text regardless of the client's language.<br/>- Added Record FATE Name feature.<br/>- Added Record (Island Sancutary)Related Rewards/Costs feature. |
 | 2023/11/5  | 1.3.1.3 | - Optimized performance.<br/>- Fixed an issue which could in certain situations result in the plugin not pausing recording as expected.<br/>- Modified the code logic of the multi-language module.<br/>- Changed the content of a displayed text. |
@@ -43,6 +44,7 @@
 
 | 日期          | 版本号      | 更新日志                   |
 |---------------|-------------|----------------------------|
+| 2023年11月13日 | 1.3.1.6 | - 代码清理<br/>- 性能改善<br/>- 现在使用 NPC 传送时也会被正常记为传送了 |
 | 2023年11月9日 | 1.3.1.5 | - 修复了部分货币在自定义货币追踪面板中被意外过滤的问题<br/>- 修复了当前 自定义货币追踪 界面性能消耗过高的问题<br/>- 修改了副本相关内容追踪功能的逻辑 |
 | 2023年11月7日 | 1.3.1.4 | - 修复了一个可能因操作过快导致插件错误计算收支的问题<br/>- 修复了一个插件无视客户端语言默认加载英文本地化文本的问题<br/>- 新增了 记录临危受命名称 功能<br/>- 新增 记录无人岛相关收支 功能 |
 | 2023年11月5日 | 1.3.1.3 | - 优化了性能表现<br/>- 修复了一个在某些情况下可能导致插件未按预期暂停记录的问题<br/>- 修改了多语言模块的代码逻辑<br/>- 修改了一处显示文本的内容 |

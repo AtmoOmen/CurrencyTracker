@@ -52,7 +52,7 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.PluginLog.Debug("Quest Finished, Currency Change Check Starts.");
                 foreach (var currency in C.AllCurrencies)
                 {
-                    CheckCurrency(currency.Value, true, "-1", $"({Service.Lang.GetText("Quest", QuestName)})");
+                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("Quest", QuestName)})");
                 }
 
                 isQuestReadyFinish = false;

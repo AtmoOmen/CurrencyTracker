@@ -7,9 +7,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    // 记录模式: 1为聊天记录模式 Record Mode: 1 for Chat Mode
-    private int recordMode = 1;
-
     // 是否显示记录选项 If Show Record Options
     private bool showRecordOptions = true;
 
@@ -171,7 +168,6 @@ public partial class Main
 
     internal Dictionary<string, List<bool>>? selectedStates = new();
     internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new();
-    internal List<string> options = new();
     internal List<string>? ordedOptions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
     internal List<TransactionsConvertor> lastTransactions = new();

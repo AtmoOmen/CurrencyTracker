@@ -75,7 +75,10 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 isTTOn = false;
 
-                CheckCurrency(29, false, "-1", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", currentTargetName)})");
+                foreach (var currency in C.AllCurrencies)
+                {
+                    CheckCurrency(currency.Value, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", currentTargetName)})");
+                }
 
                 currentTargetName = string.Empty;
                 ttResultText = string.Empty;

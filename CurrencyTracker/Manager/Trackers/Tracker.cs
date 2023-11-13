@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
 using System;
@@ -9,69 +8,52 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        private Configuration? C = Plugin.Instance.Configuration;
-        private Plugin? P = Plugin.Instance;
+        private enum RecordChangeType
+        {
+            All,
+            Positive,
+            Negative
+        }
 
         private static readonly ushort[] TriggerChatTypes = new ushort[]
         {
             57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
         };
 
-        private static readonly ushort[] IgnoreChatTypes = new ushort[]
-        {
-            // 战斗相关 Related to Battle
-            2091, 2218, 2857, 2729, 2224, 2222, 2859, 2219, 2221, 4139, 4398, 4270, 4397, 4269, 4400, 4777, 10283, 10537, 10409, 18475, 19113, 4783, 10544, 10929, 19632, 4399, 2223, 2225, 4401, 18734, 12331, 4783, 12331, 12585, 12591, 18605, 10922, 18733, 10928, 4778, 13098, 4922, 10410, 9001, 8235, 8752, 9007, 8236, 8746, 8750, 13104, 13102, 12713, 12719, 6959, 2874, 2831, 8749,
-            // 新人频道 Novice Network
-            27
-        };
+        private static Dictionary<uint, string> _territoryNames = new();
+        private static Dictionary<uint, string> _itemNames = new();
+        private static HashSet<string> _itemNamesSet = new();
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        private string currentTargetName = string.Empty;
-
-        // ID - Name
-        public static Dictionary<uint, string> TerritoryNames = new();
-
-        // ID - Name
-        public static Dictionary<uint, string> ItemNames = new();
-
-        public static HashSet<string> ItemNamesSet = new();
+        private Configuration? C = Plugin.Instance.Configuration;
+        private Plugin? P = Plugin.Instance;
 
         public Tracker()
         {
             LoadConstantNames();
             InitCurrencies();
 
-            // Timer Mode has been abandoned
-            if (C.TrackMode == 0)
-            {
-                Plugin.Instance.Configuration.TrackMode = 1;
-                Plugin.Instance.Configuration.Save();
-            }
-
-            if (C.TrackMode == 1)
-            {
-                InitializeTracking();
-                Service.PluginLog.Debug("Currency Tracker Activated");
-            }
+            InitializeTracking();
+            Service.PluginLog.Debug("Currency Tracker Activated");
         }
 
         public void InitializeTracking()
         {
             Dispose();
-
             DebindChatEvent();
+
             Service.Chat.ChatMessage += OnChatMessage;
-
-            Service.Framework.Update -= OnFrameworkUpdate;
             Service.Framework.Update += OnFrameworkUpdate;
-
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
             Service.ClientState.TerritoryChanged += OnZoneChange;
 
-            if (C.RecordTeleport) InitTeleportCosts();
+            if (C.RecordTeleport)
+            {
+                InitTeleportCosts();
+                InitWarpCosts();
+            }
             if (C.TrackedInDuty) InitDutyRewards();
             if (C.RecordQuestName) InitQuests();
             if (C.RecordMGPSource) InitGoldSacuer();
@@ -86,56 +68,48 @@ namespace CurrencyTracker.Manager.Trackers
 
         internal void UpdateCurrencies()
         {
-            if (!Service.ClientState.IsLoggedIn || Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51]) return;
+            if (!Service.ClientState.IsLoggedIn || BetweenAreas()) return;
 
             foreach (var currency in C.AllCurrencies)
             {
-                CheckCurrency(currency.Value, false);
+                CheckCurrency(currency.Value);
             }
         }
 
         // 检查货币情况 Check the currency
-        private void CheckCurrency(uint currencyID, bool ForceRecording, string currentLocationName = "-1", string currencyNote = "-1", long fCurrencyChange = 0)
+        private bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All)
         {
             var currencyName = C.AllCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
-            if (currencyName.IsNullOrEmpty())
-            {
-                Service.PluginLog.Warning("Invalid Currency!");
-                return;
-            }
+            if (currencyName.IsNullOrEmpty()) return false;
 
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
-            if (currentLocationName == "-1" || currentLocationName == "")
-            {
-                currentLocationName = TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-            }
-            if (currencyNote == "-1" || currencyNote == "")
-            {
-                currencyNote = string.Empty;
-            }
+            locationName = locationName.IsNullOrEmpty()
+                ? TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation")
+                : locationName;
 
             var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyName);
 
             if (latestTransaction != null)
             {
-                var currencyChange = fCurrencyChange != 0 ? fCurrencyChange : currencyAmount - latestTransaction.Amount;
+                var currencyChange = currencyAmount - latestTransaction.Amount;
 
-                if (currencyChange == 0) return;
-                else if (Math.Abs(currencyChange) >= 0)
+                if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
                 {
-                    Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, currentLocationName, currencyNote);
+                    Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, locationName, noteContent);
+                    OnTransactionsUpdate(EventArgs.Empty);
+                    Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                    return true;
                 }
-                else return;
-                OnTransactionsUpdate(EventArgs.Empty);
-                Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
             }
-            else if (currencyAmount > 0)
+            else if (currencyAmount > 0 && (recordChangeType == RecordChangeType.All || recordChangeType == RecordChangeType.Positive))
             {
-                Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, currentLocationName, currencyNote);
+                Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, locationName, noteContent);
                 OnTransactionsUpdate(EventArgs.Empty);
-                Service.PluginLog.Debug($"{currencyName} has changed, update the transactions data.");
+                Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                return true;
             }
+            return false;
         }
 
         private void InitCurrencies()
@@ -177,26 +151,42 @@ namespace CurrencyTracker.Manager.Trackers
 
         private static void LoadConstantNames()
         {
-            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
+            _territoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
                 .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.PlaceName?.Value?.Name}");
 
-            ItemNames = Service.DataManager.GetExcelSheet<Item>()
+            _itemNames = Service.DataManager.GetExcelSheet<Item>()
                 .Where(x => !string.IsNullOrEmpty(x.Name?.ToString()))
                 .ToDictionary(
                     x => x.RowId,
                     x => $"{x.Name}");
 
-            ItemNamesSet = new HashSet<string>(ItemNames.Values);
+            _itemNamesSet = new HashSet<string>(_itemNames.Values);
         }
 
-        private void DebindChatEvent()
+        public static HashSet<string> ItemNamesSet
         {
-            for (var i = 0; i < 5; i++)
+            get
             {
-                Service.Chat.ChatMessage -= OnChatMessage;
+                return _itemNamesSet;
+            }
+        }
+
+        public static Dictionary<uint, string> ItemNames
+        {
+            get
+            {
+                return _itemNames;
+            }
+        }
+
+        public static Dictionary<uint, string> TerritoryNames
+        {
+            get
+            {
+                return _territoryNames;
             }
         }
 
@@ -211,6 +201,7 @@ namespace CurrencyTracker.Manager.Trackers
             UninitQuests();
             UninitFateRewards();
             UninitIslandRewards();
+            UninitWarpCosts();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             DebindChatEvent();
