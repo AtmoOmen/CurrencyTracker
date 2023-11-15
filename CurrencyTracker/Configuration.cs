@@ -15,10 +15,7 @@ namespace CurrencyTracker
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
-
-        [Newtonsoft.Json.JsonIgnore]
         public Dictionary<string, uint> PresetCurrencies { get; set; } = new();
-
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;

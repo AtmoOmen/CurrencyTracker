@@ -8,42 +8,38 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        // 是否正在玩九宫幻卡 Is Playing Triple Triad
         private bool isTTOn = false;
-
-        // 九宫幻卡结果 Triple Triad Result
         private string ttResultText = string.Empty;
+        private string ttRivalName = string.Empty;
 
         public void InitTripleTriad()
         {
-            // 一启用插件就在玩九宫幻卡的情况
             var TTGui = Service.GameGui.GetAddonByName("TripleTriad");
             if (TTGui != nint.Zero)
             {
-                isTTOn = true;
-                if (Service.TargetManager.Target != null)
-                {
-                    currentTargetName = Service.TargetManager.Target.Name.TextValue;
-                }
-                DebindChatEvent();
-                Service.PluginLog.Debug("Triple Triad Starts");
+                StartTripleTriad();
             }
 
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "TripleTriad", TripleTriadCheck);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", TripleTriadCheck);
         }
 
         private void TripleTriadCheck(AddonEvent type, AddonArgs args)
         {
+            StartTripleTriad();
+        }
+
+        private unsafe void StartTripleTriad()
+        {
             isTTOn = true;
-            if (Service.TargetManager.Target != null)
+            var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
+            if (TTGui != null)
             {
-                currentTargetName = Service.TargetManager.Target.Name.TextValue;
+                ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ToString();
             }
             DebindChatEvent();
             Service.PluginLog.Debug("Triple Triad Starts");
         }
 
-        // 九宫幻卡 Triple Triad
         private void TripleTriad()
         {
             if (!C.RecordTripleTriad) return;
@@ -70,30 +66,35 @@ namespace CurrencyTracker.Manager.Trackers
                 }
             }
 
-            // 九宫幻卡结束 Triple Triad Ends
             if ((TTRGui == nint.Zero && TTGui == nint.Zero && isTTOn) || (TTRGui != nint.Zero && TTGui == nint.Zero && isTTOn))
             {
-                isTTOn = false;
-
-                foreach (var currency in C.AllCurrencies)
-                {
-                    CheckCurrency(currency.Value, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", currentTargetName)})");
-                }
-
-                currentTargetName = string.Empty;
-                ttResultText = string.Empty;
-
-                Service.Chat.ChatMessage += OnChatMessage;
-                Service.PluginLog.Debug("Triple Triad Ends");
+                EndTripleTriad();
             }
+        }
+
+        private void EndTripleTriad()
+        {
+            isTTOn = false;
+
+            foreach (var currency in C.AllCurrencies)
+            {
+                CheckCurrency(currency.Value, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})");
+            }
+
+            ttRivalName = string.Empty;
+            ttResultText = string.Empty;
+
+            Service.Chat.ChatMessage += OnChatMessage;
+            Service.PluginLog.Debug("Triple Triad Ends");
         }
 
         public void UninitTripleTriad()
         {
             isTTOn = false;
             ttResultText = string.Empty;
+            ttRivalName = string.Empty;
 
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "TripleTriad", TripleTriadCheck);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriad", TripleTriadCheck);
         }
     }
 }

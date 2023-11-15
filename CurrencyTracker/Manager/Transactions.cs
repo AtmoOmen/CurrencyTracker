@@ -29,7 +29,7 @@ namespace CurrencyTracker.Manager
 
             try
             {
-                allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+                allTransactions = TransactionsConvertor.FromFile(filePath);
             }
             catch (Exception ex)
             {
@@ -48,9 +48,9 @@ namespace CurrencyTracker.Manager
                 return new List<TransactionsConvertor>();
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
 
-            var allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+            var allTransactions = TransactionsConvertor.FromFile(filePath);
 
             var latestTransactions = new List<TransactionsConvertor>();
 
@@ -77,20 +77,41 @@ namespace CurrencyTracker.Manager
         // 加载最新一条记录 Load Latest Transaction
         public static TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
         {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            if (string.IsNullOrEmpty(Plugin.Instance.PlayerDataFolder))
             {
                 Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
                 return new TransactionsConvertor();
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            if (string.IsNullOrEmpty(CurrencyName))
+            {
+                Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Currency Name is empty.");
+                return new TransactionsConvertor();
+            }
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
 
             if (!File.Exists(filePath))
             {
                 return new TransactionsConvertor();
             }
 
-            var lastLine = File.ReadLines(filePath).Last();
+            string? lastLine = null;
+            using (var stream = File.OpenRead(filePath))
+            {
+                stream.Position = Math.Max(0, stream.Length - 512);
+                using var reader = new StreamReader(stream);
+                string? line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    lastLine = line;
+                }
+            }
+
+            if (lastLine == null)
+            {
+                return new TransactionsConvertor();
+            }
 
             var latestTransaction = TransactionsConvertor.FromFileLine(lastLine);
 
@@ -256,6 +277,12 @@ namespace CurrencyTracker.Manager
         // 按照临界值合并记录 Merge Transactions By Threshold
         public static int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
         {
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                return 0;
+            }
+
             var allTransactions = LoadAllTransactions(CurrencyName);
 
             if (allTransactions.Count <= 1)
@@ -264,36 +291,30 @@ namespace CurrencyTracker.Manager
             }
 
             var mergedTransactions = new List<TransactionsConvertor>();
-            var currentIndex = 0;
             var mergedCount = 0;
-            var seperateMergedCount = 0;
 
-            while (currentIndex < allTransactions.Count)
+            for (int i = 0; i < allTransactions.Count;)
             {
-                var currentTransaction = allTransactions[currentIndex];
-                var nextIndex = currentIndex + 1;
+                var currentTransaction = allTransactions[i];
+                var seperateMergedCount = 0;
 
-                while (nextIndex < allTransactions.Count &&
-                    currentTransaction.LocationName == allTransactions[nextIndex].LocationName &&
-                    Math.Abs(allTransactions[nextIndex].Change) < threshold)
+                while (++i < allTransactions.Count &&
+                    currentTransaction.LocationName == allTransactions[i].LocationName &&
+                    Math.Abs(allTransactions[i].Change) < threshold)
                 {
-                    var nextTransaction = allTransactions[nextIndex];
+                    var nextTransaction = allTransactions[i];
 
                     if (!isOneWayMerge || (isOneWayMerge &&
                         (currentTransaction.Change >= 0 && nextTransaction.Change >= 0) ||
                         (currentTransaction.Change < 0 && nextTransaction.Change < 0)))
                     {
-                        if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
+                        if (nextTransaction.TimeStamp > currentTransaction.TimeStamp)
                         {
                             currentTransaction.Amount = nextTransaction.Amount;
+                            currentTransaction.TimeStamp = nextTransaction.TimeStamp;
                         }
                         currentTransaction.Change += nextTransaction.Change;
-                        if (allTransactions[nextIndex].TimeStamp > currentTransaction.TimeStamp)
-                        {
-                            currentTransaction.TimeStamp = allTransactions[nextIndex].TimeStamp;
-                        }
 
-                        nextIndex++;
                         mergedCount += 2;
                         seperateMergedCount++;
                     }
@@ -306,17 +327,9 @@ namespace CurrencyTracker.Manager
                 if (seperateMergedCount > 0)
                 {
                     currentTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp", seperateMergedCount + 1)})";
-                    seperateMergedCount = 0;
                 }
 
                 mergedTransactions.Add(currentTransaction);
-                currentIndex = nextIndex;
-            }
-
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
-            {
-                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
-                return 0;
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
@@ -328,16 +341,23 @@ namespace CurrencyTracker.Manager
         // 合并特定的记录 Merge Specific Transactions
         public static int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
         {
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                return 0;
+            }
+
             var allTransactions = LoadAllTransactions(CurrencyName);
-            var latestTime = DateTime.MinValue;
-            long overallChange = 0;
-            long finalAmount = 0;
-            var currentIndex = 0;
 
             if (allTransactions.Count <= 1)
             {
                 return 0;
             }
+
+            var latestTime = DateTime.MinValue;
+            long overallChange = 0;
+            long finalAmount = 0;
+            var mergedCount = 0;
 
             foreach (var transaction in selectedTransactions)
             {
@@ -355,48 +375,25 @@ namespace CurrencyTracker.Manager
                 }
 
                 overallChange += foundTransaction.Change;
-
-                if (currentIndex != selectedTransactions.Count - 1)
-                {
-                    allTransactions.Remove(foundTransaction);
-                }
-                else if (currentIndex == selectedTransactions.Count - 1)
-                {
-                    var finalTransaction = allTransactions.FirstOrDefault(t => Widgets.IsTransactionEqual(t, transaction));
-                    if (finalTransaction != null)
-                    {
-                        finalTransaction.TimeStamp = latestTime;
-                        finalTransaction.Change = overallChange;
-                        finalTransaction.LocationName = LocationName;
-                        finalTransaction.Amount = finalAmount;
-                        if (NoteContent != "-1")
-                        {
-                            finalTransaction.Note = NoteContent;
-                        }
-                        else
-                        {
-                            finalTransaction.Note = $"({Service.Lang.GetText("MergedSpecificHelp", selectedTransactions.Count)})";
-                        }
-                    }
-                    else
-                    {
-                        Service.Chat.PrintError("Fail to Edit");
-                    }
-                }
-
-                currentIndex++;
+                allTransactions.Remove(foundTransaction);
+                mergedCount++;
             }
 
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            var finalTransaction = new TransactionsConvertor
             {
-                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
-                return 0;
-            }
+                TimeStamp = latestTime,
+                Change = overallChange,
+                LocationName = LocationName,
+                Amount = finalAmount,
+                Note = NoteContent != "-1" ? NoteContent : $"({Service.Lang.GetText("MergedSpecificHelp", mergedCount)})"
+            };
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            allTransactions.Add(finalTransaction);
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
-            return selectedTransactions.Count;
+            return mergedCount;
         }
 
         // 清除异常记录 Clear Exceptional Records
@@ -410,7 +407,7 @@ namespace CurrencyTracker.Manager
 
             var filePath = Path.Join(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
 
-            var allTransactions = TransactionsConvertor.FromFile(filePath, TransactionsConvertor.FromFileLine);
+            var allTransactions = TransactionsConvertor.FromFile(filePath);
 
             var initialCount = allTransactions.Count;
             var index = 0;

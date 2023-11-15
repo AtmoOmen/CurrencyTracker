@@ -37,7 +37,7 @@ public class TransactionsConvertor
     }
 
     // 解析整个数据文件 Parse a specific data file
-    public static List<TransactionsConvertor> FromFile(string filePath, Func<string, TransactionsConvertor> parseLine)
+    public static List<TransactionsConvertor> FromFile(string filePath)
     {
         var transactions = new List<TransactionsConvertor>();
 
@@ -48,10 +48,11 @@ public class TransactionsConvertor
 
         try
         {
-            var lines = File.ReadLines(filePath);
-            foreach (var line in lines)
+            using var sr = new StreamReader(filePath);
+            string? line;
+            while ((line = sr.ReadLine()) != null)
             {
-                var transaction = parseLine(line);
+                var transaction = FromFileLine(line);
                 transactions.Add(transaction);
             }
         }
