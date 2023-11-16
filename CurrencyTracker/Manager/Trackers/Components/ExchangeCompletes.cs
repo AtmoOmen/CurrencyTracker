@@ -1,8 +1,7 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Utility;
 using System;
+using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -10,67 +9,48 @@ namespace CurrencyTracker.Manager.Trackers
     {
         private string currentTargetName = string.Empty;
         private bool isOnExchanging = false;
-        private static readonly string[] ExchangeUI = new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop" };
+        private static readonly string[] ExchangeUI = ["InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop"];
 
         public void InitExchangeCompletes()
         {
-            foreach (var exchange in ExchangeUI)
+            if (!isOnExchanging && ExchangeUI.Any(exchange => Service.GameGui.GetAddonByName(exchange) != nint.Zero))
             {
-                if (Service.GameGui.GetAddonByName(exchange) != nint.Zero)
-                {
-                    BeginExchange(AddonEvent.PostSetup, null);
-                    break;
-                }
+                BeginExchange(AddonEvent.PostSetup, null);
             }
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, ExchangeUI, BeginExchange);
         }
 
         private void BeginExchange(AddonEvent type, AddonArgs? args)
         {
-            if (!isOnExchanging)
-            {
-                isOnExchanging = true;
-                DebindChatEvent();
-                if (Service.TargetManager.Target != null)
-                {
-                    currentTargetName = Service.TargetManager.Target.Name.TextValue;
-                }
-                Service.PluginLog.Debug("Exchange Starts");
-            }
+            if (isOnExchanging) return;
+
+            isOnExchanging = true;
+            DebindChatEvent();
+            currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
+            Service.PluginLog.Debug("Exchange Starts");
         }
 
         private void IsOnExchange()
         {
-            var exchangeState = Service.Condition[ConditionFlag.OccupiedSummoningBell] || Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent];
-
-            if (!exchangeState && isOnExchanging)
+            if (!Flags.OccupiedInEvent() && isOnExchanging)
             {
                 isOnExchanging = false;
 
-                if (!currentTargetName.IsNullOrEmpty())
+                foreach (var currency in C.AllCurrencies)
                 {
-                    foreach (var currency in C.AllCurrencies)
-                    {
-                        CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
-                    }
-                }
-                else
-                {
-                    Service.PluginLog.Warning("Failed to get exchange target.");
-                    UpdateCurrencies();
+                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
                 }
 
                 currentTargetName = string.Empty;
 
                 Service.Chat.ChatMessage += OnChatMessage;
-
                 Service.PluginLog.Debug("Exchange Completes");
             }
         }
 
         public void UninitExchangeCompletes()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, new[] { "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList" }, BeginExchange);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, ExchangeUI, BeginExchange);
         }
     }
 }

@@ -274,11 +274,14 @@ public partial class Main : Window, IDisposable
                 if (isWaitExComplete)
                 {
                     Service.Tracker.UninitExchangeCompletes();
+                    Service.Tracker.UninitRepairCosts();
                     Service.Tracker.InitExchangeCompletes();
+                    Service.Tracker.InitRepairCosts();
                 }
                 else
                 {
                     Service.Tracker.UninitExchangeCompletes();
+                    Service.Tracker.UninitRepairCosts();
                 }
             }
             ImGui.SameLine();

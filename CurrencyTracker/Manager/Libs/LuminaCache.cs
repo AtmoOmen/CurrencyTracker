@@ -1,11 +1,10 @@
-using CurrencyTracker;
 using Dalamud;
 using Lumina.Excel;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace KamiLib.Caching;
+namespace CurrencyTracker.Manager;
 
 // From KamiLib, used to extract some res
 public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow

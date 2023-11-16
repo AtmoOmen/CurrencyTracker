@@ -1,8 +1,5 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -42,7 +39,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MAMEnd(AddonEvent type, AddonArgs args)
         {
-            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+            if (Flags.OccupiedInEvent())
                 return;
 
             foreach (var currency in C.AllCurrencies)
@@ -59,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private void MFMEnd(AddonEvent type, AddonArgs args)
         {
-            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+            if (Flags.OccupiedInEvent())
                 return;
 
             foreach (var currency in C.AllCurrencies)
@@ -71,13 +68,13 @@ namespace CurrencyTracker.Manager.Trackers
         // 无人岛建造 Island Building
         private unsafe void MBStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetIslandWindowTitle(args, 25, new uint[] { 3, 4 });
+            windowTitle = GetWindowTitle(args, 25);
             DebindChatEvent();
         }
 
         private void MBEnd(AddonEvent type, AddonArgs args)
         {
-            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+            if (Flags.OccupiedInEvent())
                 return;
 
             foreach (var currency in C.AllCurrencies)
@@ -91,13 +88,13 @@ namespace CurrencyTracker.Manager.Trackers
         // 无人岛制作
         private unsafe void MRNBStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetIslandWindowTitle(args, 37, new uint[] { 3, 4 });
+            windowTitle = GetWindowTitle(args, 37);
             DebindChatEvent();
         }
 
         private void MRNBEnd(AddonEvent type, AddonArgs args)
         {
-            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+            if (Flags.OccupiedInEvent())
                 return;
 
             foreach (var currency in C.AllCurrencies)
@@ -111,13 +108,13 @@ namespace CurrencyTracker.Manager.Trackers
         // 无人岛屯货仓库
         private unsafe void MGHStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetIslandWindowTitle(args, 73, new uint[] { 3, 4 });
+            windowTitle = GetWindowTitle(args, 73);
             DebindChatEvent();
         }
 
         private void MGHEnd(AddonEvent type, AddonArgs args)
         {
-            if (Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent])
+            if (Flags.OccupiedInEvent())
                 return;
 
             foreach (var currency in C.AllCurrencies)
@@ -173,26 +170,6 @@ namespace CurrencyTracker.Manager.Trackers
         private void IslandHandlers()
         {
             WorkshopHandler();
-        }
-
-        private unsafe string GetIslandWindowTitle(AddonArgs args, uint windowNodeID, uint[] textNodeIDs)
-        {
-            var UI = (AtkUnitBase*)args.Addon;
-
-            if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
-                return string.Empty;
-
-            var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
-            if (windowNode == null)
-                return string.Empty;
-
-            // 国服和韩服特别处理逻辑 For CN and KR Client
-            var textNode3 = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
-            var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
-
-            var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
-
-            return windowTitle;
         }
 
         public void UninitIslandRewards()

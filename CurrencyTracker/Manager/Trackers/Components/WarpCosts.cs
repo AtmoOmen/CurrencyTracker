@@ -19,11 +19,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool warpTPBetweenAreas;
         private bool warpTPInAreas;
 
-        public static bool BetweenAreas()
-        {
-            return Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51];
-        }
-
         public void InitWarpCosts()
         {
             GilCostsWarpTerriories = Service.DataManager.GetExcelSheet<Warp>()

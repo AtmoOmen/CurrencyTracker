@@ -1,4 +1,6 @@
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
@@ -15,14 +17,14 @@ namespace CurrencyTracker.Manager.Trackers
             Negative
         }
 
-        private static readonly ushort[] TriggerChatTypes = new ushort[]
-        {
+        private static readonly ushort[] TriggerChatTypes =
+        [
             57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
-        };
+        ];
 
-        private static Dictionary<uint, string> _territoryNames = new();
-        private static Dictionary<uint, string> _itemNames = new();
-        private static HashSet<string> _itemNamesSet = new();
+        private static Dictionary<uint, string> _territoryNames = [];
+        private static Dictionary<uint, string> _itemNames = [];
+        private static HashSet<string> _itemNamesSet = [];
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
@@ -58,7 +60,11 @@ namespace CurrencyTracker.Manager.Trackers
             if (C.RecordQuestName) InitQuests();
             if (C.RecordMGPSource) InitGoldSacuer();
             if (C.RecordTrade) InitTrade();
-            if (C.WaitExComplete) InitExchangeCompletes();
+            if (C.WaitExComplete) 
+            {
+                InitExchangeCompletes();
+                InitRepairCosts();
+            }
             if (C.RecordTripleTriad) InitTripleTriad();
             if (C.RecordFate) InitFateRewards();
             if (C.RecordIsland) IsInIslandCheck();
@@ -66,9 +72,9 @@ namespace CurrencyTracker.Manager.Trackers
             UpdateCurrencies();
         }
 
-        internal void UpdateCurrencies()
+        public void UpdateCurrencies()
         {
-            if (!Service.ClientState.IsLoggedIn || BetweenAreas()) return;
+            if (!Service.ClientState.IsLoggedIn || Flags.BetweenAreas()) return;
 
             foreach (var currency in C.AllCurrencies)
             {
@@ -166,6 +172,28 @@ namespace CurrencyTracker.Manager.Trackers
             _itemNamesSet = new HashSet<string>(_itemNames.Values);
         }
 
+        private unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
+        {
+            textNodeIDs ??= [3, 4];
+
+            var UI = (AtkUnitBase*)args.Addon;
+
+            if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
+                return string.Empty;
+
+            var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
+            if (windowNode == null)
+                return string.Empty;
+
+            // 国服和韩服特别处理逻辑 For CN and KR Client
+            var textNode3 = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
+            var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
+
+            var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
+
+            return windowTitle;
+        }
+
         public static HashSet<string> ItemNamesSet
         {
             get
@@ -202,6 +230,7 @@ namespace CurrencyTracker.Manager.Trackers
             UninitFateRewards();
             UninitIslandRewards();
             UninitWarpCosts();
+            UninitRepairCosts();
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             DebindChatEvent();

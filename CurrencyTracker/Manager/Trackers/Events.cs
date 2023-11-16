@@ -74,6 +74,11 @@ namespace CurrencyTracker.Manager.Trackers
                 }
             }
 
+            if (C.WaitExComplete)
+            {
+                if (isOnExchanging) isOnExchanging = false;
+            }
+
             // 传送费用相关计算
             WarpTPEndCheck();
             TeleportCheck();
@@ -103,18 +108,15 @@ namespace CurrencyTracker.Manager.Trackers
                 TripleTriad();
             }
 
-            // 等待交换完成 Wait for exchange to complete
-            if (C.WaitExComplete)
-            {
-                if (isOnExchanging)
-                {
-                    IsOnExchange();
-                }
-            }
-
             if (isQuestReadyFinish)
             {
                 QuestEndCheck("完成了任务");
+            }
+
+            // 等待交换完成 Wait for exchange to complete
+            if (isOnExchanging)
+            {
+                IsOnExchange();
             }
         }
 

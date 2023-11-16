@@ -1,4 +1,3 @@
-using CurrencyTracker.Manager;
 using Dalamud.Interface;
 using ImGuiNET;
 using System;
@@ -7,7 +6,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace CurrencyTracker.Windows
+namespace CurrencyTracker.Manager
 {
     public static class Widgets
     {
