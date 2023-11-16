@@ -174,7 +174,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
         {
-            textNodeIDs ??= [3, 4];
+            textNodeIDs ??= new uint[] { 3, 4 };
 
             var UI = (AtkUnitBase*)args.Addon;
 
