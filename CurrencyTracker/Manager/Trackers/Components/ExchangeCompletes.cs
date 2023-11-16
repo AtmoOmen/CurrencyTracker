@@ -9,7 +9,10 @@ namespace CurrencyTracker.Manager.Trackers
     {
         private string currentTargetName = string.Empty;
         private bool isOnExchanging = false;
-        private static readonly string[] ExchangeUI = ["InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop"];
+        private static readonly string[] ExchangeUI = new string[]
+        {
+            "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "GrandCompanySupplyList", "GrandCompanyExchange", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "RetainerList", "MJIDisposeShop"
+        };
 
         public void InitExchangeCompletes()
         {

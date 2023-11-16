@@ -17,14 +17,14 @@ namespace CurrencyTracker.Manager.Trackers
             Negative
         }
 
-        private static readonly ushort[] TriggerChatTypes =
-        [
+        private static readonly ushort[] TriggerChatTypes = new ushort[]
+        {
             57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
-        ];
+        };
 
-        private static Dictionary<uint, string> _territoryNames = [];
-        private static Dictionary<uint, string> _itemNames = [];
-        private static HashSet<string> _itemNamesSet = [];
+        private static Dictionary<uint, string> _territoryNames = new();
+        private static Dictionary<uint, string> _itemNames = new();
+        private static HashSet<string> _itemNamesSet = new();
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 

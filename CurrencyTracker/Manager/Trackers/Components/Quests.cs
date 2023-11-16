@@ -12,10 +12,12 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isQuestFinished;
         private string questName = string.Empty;
 
-        private static readonly string[] QuestEndStrings = [
-        "クエスト", "をコンプリートした", "完成了任务","Vous avez rempli", "Auftrag", "abgeschlossen" ,"complete" ];
+        private static readonly string[] QuestEndStrings = new string[]
+        {
+            "クエスト", "をコンプリートした", "完成了任务","Vous avez rempli", "Auftrag", "abgeschlossen" ,"complete"
+        };
 
-        internal void InitQuests()
+    internal void InitQuests()
         {
             ResetQuestState();
 
