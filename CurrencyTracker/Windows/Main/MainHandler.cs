@@ -134,59 +134,85 @@ public partial class Main
     // 按地点名显示交易记录 Hide Unmatched Transactions By Location
     private List<TransactionsConvertor> ApplyLocationFilter(List<TransactionsConvertor> transactions, string query)
     {
-        query = query.Normalize(NormalizationForm.FormKC);
-        if (query.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(query))
         {
             return transactions;
         }
 
-        var filteredTransactions = new List<TransactionsConvertor>();
+        var queries = query.Split(',')
+                           .Select(q => q.Trim().Normalize(NormalizationForm.FormKC))
+                           .Where(q => !string.IsNullOrEmpty(q))
+                           .ToList();
         var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+        var filteredTransactions = new List<TransactionsConvertor>();
 
         foreach (var transaction in transactions)
         {
             var normalizedLocation = transaction.LocationName.Normalize(NormalizationForm.FormKC);
-            var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedLocation, "") : string.Empty;
 
-            if (normalizedLocation.Contains(query, StringComparison.OrdinalIgnoreCase) || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
+            if (queries.Any(q => normalizedLocation.Contains(q, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
+            else if (isChineseSimplified)
+            {
+                var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
+                if (queries.Any(q => pinyin.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                {
+                    filteredTransactions.Add(transaction);
+                }
+            }
         }
+
         return filteredTransactions;
     }
+
 
     // 按备注显示交易记录 Hide Unmatched Transactions By Note
     private List<TransactionsConvertor> ApplyNoteFilter(List<TransactionsConvertor> transactions, string query)
     {
-        query = query.Normalize(NormalizationForm.FormKC);
-        if (query.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(query))
         {
             return transactions;
         }
 
-        List<TransactionsConvertor> filteredTransactions = new List<TransactionsConvertor>();
+        var queries = query.Split(',')
+                           .Select(q => q.Trim().Normalize(NormalizationForm.FormKC))
+                           .Where(q => !string.IsNullOrEmpty(q))
+                           .ToList();
         var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+        var filteredTransactions = new List<TransactionsConvertor>();
 
         foreach (var transaction in transactions)
         {
             var normalizedNote = transaction.Note.Normalize(NormalizationForm.FormKC);
-            var pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(normalizedNote, "") : string.Empty;
 
-            if (normalizedNote.Contains(query, StringComparison.OrdinalIgnoreCase) || (isChineseSimplified && pinyin.Contains(query, StringComparison.OrdinalIgnoreCase)))
+            if (queries.Any(q => normalizedNote.Contains(q, StringComparison.OrdinalIgnoreCase)))
             {
                 filteredTransactions.Add(transaction);
             }
+            else if (isChineseSimplified)
+            {
+                var pinyin = PinyinHelper.GetPinyin(normalizedNote, "");
+                if (queries.Any(q => pinyin.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                {
+                    filteredTransactions.Add(transaction);
+                }
+            }
         }
+
         return filteredTransactions;
     }
 
     // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
     private List<string> InitCCTItems()
     {
-        var items = Tracker.ItemNamesSet
-            .Where(itemName => C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+        var itemNamesSet = new HashSet<string>(Tracker.ItemNamesSet, StringComparer.OrdinalIgnoreCase);
+
+        var items = itemNamesSet
+            .Where(itemName => !C.AllCurrencies.Values.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
             .ToList();
+
         CCTItemCounts = (uint)items.Count;
         return items;
     }

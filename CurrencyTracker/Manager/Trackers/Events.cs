@@ -92,11 +92,13 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
+            // NPC 传送 Warp Teleport
             if (isReadyWarpTP)
             {
                 WarpTPCheck();
             }
 
+            // 无人岛工房 Island Workshop
             if (isInIsland)
             {
                 IslandHandlers();
@@ -108,15 +110,16 @@ namespace CurrencyTracker.Manager.Trackers
                 TripleTriad();
             }
 
+            // 强制任务完成 Force Quest to End
             if (isQuestReadyFinish)
             {
                 QuestEndCheck("完成了任务");
             }
 
-            // 等待交换完成 Wait for exchange to complete
-            if (isOnExchanging)
+            // 交换检测 Detect Exchange Completion
+            if (isOnSpecialExchanging)
             {
-                IsOnExchange();
+                EndSpecialExchange();
             }
         }
 

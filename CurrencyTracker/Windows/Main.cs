@@ -274,14 +274,14 @@ public partial class Main : Window, IDisposable
                 if (isWaitExComplete)
                 {
                     Service.Tracker.UninitExchangeCompletes();
-                    Service.Tracker.UninitRepairCosts();
+                    Service.Tracker.UninitSpecialExchange();
                     Service.Tracker.InitExchangeCompletes();
-                    Service.Tracker.InitRepairCosts();
+                    Service.Tracker.InitSpecialExchange();
                 }
                 else
                 {
                     Service.Tracker.UninitExchangeCompletes();
-                    Service.Tracker.UninitRepairCosts();
+                    Service.Tracker.UninitSpecialExchange();
                 }
             }
             ImGui.SameLine();
@@ -2031,8 +2031,10 @@ public partial class Main : Window, IDisposable
     {
         searchTimer.Elapsed -= SearchTimerElapsed;
         searchTimer.Stop();
+        searchTimer.Dispose();
 
         searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
         searchTimerCCT.Stop();
+        searchTimerCCT.Dispose();
     }
 }
