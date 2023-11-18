@@ -15,7 +15,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private static readonly string[] ExchangeUI = new string[]
         {
-            "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback"
+            "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "TripleTriadCoinExchange", "FreeCompanyChest", "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback"
         };
 
         // Addon Name - Window Node ID
@@ -27,10 +27,22 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitExchangeCompletes()
         {
-            if (!isOnExchanging && ExchangeUI.Any(exchange => Service.GameGui.GetAddonByName(exchange) != nint.Zero))
+            var allExchangeUI = new List<IEnumerable<string>> { ExchangeUI, ExchangeWindowUI.Keys };
+            foreach (var exchangeUI in allExchangeUI)
             {
+                var foundExchange = exchangeUI.FirstOrDefault(exchange => Service.GameGui.GetAddonByName(exchange) != nint.Zero);
+                if (foundExchange == null) continue;
+
                 EndExchangeHandler();
-                BeginExchange(AddonEvent.PostSetup, null);
+                if (exchangeUI == ExchangeUI)
+                {
+                    BeginExchangeHandler();
+                }
+                else
+                {
+                    BeginExchangeWindowHandler(Service.GameGui.GetAddonByName(foundExchange), foundExchange);
+                }
+                break;
             }
 
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, ExchangeUI, BeginExchange);
@@ -38,6 +50,7 @@ namespace CurrencyTracker.Manager.Trackers
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, ExchangeWindowUI.Keys, BeginExchange);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, ExchangeWindowUI.Keys, EndExchange);
         }
+
 
         private void BeginExchange(AddonEvent type, AddonArgs? args)
         {
@@ -69,7 +82,29 @@ namespace CurrencyTracker.Manager.Trackers
         {
             isOnExchanging = true;
             DebindChatEvent();
-            exchangeWindowName = GetWindowTitle(args, ExchangeWindowUI[args.AddonName]) ?? string.Empty;
+            if (args.AddonName == "PvpReward")
+            {
+                exchangeWindowName = GetWindowTitle(args, ExchangeWindowUI[args.AddonName], new uint[] { 4, 5 }) ?? string.Empty;
+            }
+            else
+            {
+                exchangeWindowName = GetWindowTitle(args, ExchangeWindowUI[args.AddonName]) ?? string.Empty;
+            }
+            Service.PluginLog.Debug("Exchange Starts");
+        }
+
+        private void BeginExchangeWindowHandler(nint addon, string addonName)
+        {
+            isOnExchanging = true;
+            DebindChatEvent();
+            if (addonName == "PvpReward")
+            {
+                exchangeWindowName = GetWindowTitle(addon, ExchangeWindowUI[addonName], new uint[] { 4, 5 }) ?? string.Empty;
+            }
+            else
+            {
+                exchangeWindowName = GetWindowTitle(addon, ExchangeWindowUI[addonName]) ?? string.Empty;
+            }
             Service.PluginLog.Debug("Exchange Starts");
         }
 
@@ -85,23 +120,10 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private void EndExchangeWindowHandler()
-        {
-            isOnExchanging = false;
-
-            foreach (var currency in C.AllCurrencies)
-            {
-                CheckCurrency(currency.Value, "", $"({exchangeWindowName})");
-            }
-
-            exchangeWindowName = string.Empty;
-
-            Service.Chat.ChatMessage += OnChatMessage;
-            Service.PluginLog.Debug("Exchange Completes");
-        }
-
         private void EndExchangeHandler()
         {
+            if (!isOnExchanging) return;
+
             isOnExchanging = false;
 
             foreach (var currency in C.AllCurrencies)
@@ -110,6 +132,23 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             currentTargetName = string.Empty;
+
+            Service.Chat.ChatMessage += OnChatMessage;
+            Service.PluginLog.Debug("Exchange Completes");
+        }
+
+        private void EndExchangeWindowHandler()
+        {
+            if (!isOnExchanging) return;
+
+            isOnExchanging = false;
+
+            foreach (var currency in C.AllCurrencies)
+            {
+                CheckCurrency(currency.Value, "", $"({exchangeWindowName})");
+            }
+
+            exchangeWindowName = string.Empty;
 
             Service.Chat.ChatMessage += OnChatMessage;
             Service.PluginLog.Debug("Exchange Completes");
