@@ -1,23 +1,17 @@
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
-using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
         private bool isQuestReadyFinish;
-        private bool isQuestFinished;
         private string questName = string.Empty;
 
-        private static readonly string[] QuestEndStrings = new string[]
-        {
-            "クエスト", "をコンプリートした", "完成了任务","Vous avez rempli", "Auftrag", "abgeschlossen" ,"complete"
-        };
-
-    internal void InitQuests()
+        internal void InitQuests()
         {
             ResetQuestState();
 
@@ -29,62 +23,54 @@ namespace CurrencyTracker.Manager.Trackers
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", Quests);
         }
 
-        private void QuestEndCheck(string message)
+        private unsafe void Quests(AddonEvent type, AddonArgs? args)
         {
-            if (!isQuestReadyFinish || Flags.OccupiedInEvent())
-            {
-                return;
-            }
+            ResetQuestState();
+            var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
 
-            if (isQuestReadyFinish && QuestEndStrings.Any(message.Contains))
+            if (JR != null && JR->RootNode != null && JR->RootNode->ChildNode != null && JR->UldManager.NodeList != null && !isQuestReadyFinish)
             {
-                isQuestFinished = true;
-                return;
-            }
+                questName = JR->GetTextNodeById(30)->NodeText.ToString();
+                var buttonNode = JR->GetNodeById(37);
 
-            if (isQuestFinished)
-            {
-                Service.PluginLog.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
-                foreach (var currency in C.AllCurrencies)
-                {
-                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("Quest", questName)})");
-                }
+                if (questName.IsNullOrEmpty() || buttonNode == null) return;
 
-                ResetQuestState();
-                Service.PluginLog.Debug("Currency Change Check Completes.");
+                isQuestReadyFinish = true;
+                DebindChatEvent();
+
+                Service.PluginLog.Debug($"Quest {questName} Ready to Finish!");
             }
         }
 
-        private void Quests(AddonEvent type, AddonArgs? args)
+        private void QuestEndCheck()
         {
-            ResetQuestState();
-            unsafe
+            if (!isQuestReadyFinish || Flags.OccupiedInEvent()) return;
+
+            isQuestReadyFinish = false;
+
+            Service.PluginLog.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
+
+            foreach (var currency in C.AllCurrencies)
             {
-                var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
-
-                if (JR != null && JR->RootNode != null && JR->RootNode->ChildNode != null && JR->UldManager.NodeList != null && !isQuestReadyFinish)
-                {
-                    questName = JR->GetTextNodeById(30)->NodeText.ToString();
-
-                    if (!string.IsNullOrEmpty(questName))
-                    {
-                        Service.PluginLog.Debug($"Quest {questName} Ready to Finish!");
-                    }
-                    isQuestReadyFinish = true;
-                }
+                CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("Quest", questName)})");
             }
+
+            ResetQuestState();
+            Service.Chat.ChatMessage += OnChatMessage;
+
+            Service.PluginLog.Debug("Currency Change Check Completes.");
+        }
+
+        private void ResetQuestState()
+        {
+            isQuestReadyFinish = false;
+            questName = string.Empty;
         }
 
         public void UninitQuests()
         {
             ResetQuestState();
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", Quests);
-        }
-
-        private void ResetQuestState()
-        {
-            isQuestFinished = isQuestReadyFinish = false;
-            questName = string.Empty;
         }
     }
 }

@@ -13,7 +13,5 @@ namespace CurrencyTracker.Manager
         {
             return Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51];
         }
-
-
     }
 }

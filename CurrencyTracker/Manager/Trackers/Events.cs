@@ -3,12 +3,16 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
+        private readonly Stopwatch FrameStopwatch = new();
+        private readonly double FrameInterval = 0.1;
+
         // (人为触发)发现货币发生改变时触发的事件
         public virtual void OnTransactionsUpdate(EventArgs e)
         {
@@ -26,12 +30,6 @@ namespace CurrencyTracker.Manager.Trackers
             if (DutyStarted)
             {
                 DutyEndCheck(chatmessage);
-                return;
-            }
-
-            if (isQuestReadyFinish)
-            {
-                QuestEndCheck(chatmessage);
                 return;
             }
 
@@ -92,34 +90,44 @@ namespace CurrencyTracker.Manager.Trackers
         // 每一帧更新时触发的事件
         private void OnFrameworkUpdate(IFramework framework)
         {
-            // NPC 传送 Warp Teleport
-            if (isReadyWarpTP)
+            if (!FrameStopwatch.IsRunning)
             {
-                WarpTPCheck();
+                FrameStopwatch.Start();
             }
 
-            // 无人岛工房 Island Workshop
-            if (isInIsland)
+            if (FrameStopwatch.Elapsed.TotalSeconds > FrameInterval)
             {
-                IslandHandlers();
-            }
+                // NPC 传送 Warp Teleport
+                if (isReadyWarpTP)
+                {
+                    WarpTPCheck();
+                }
 
-            // 九宫幻卡 Triple Triad
-            if (isTTOn)
-            {
-                TripleTriad();
-            }
+                // 无人岛工房 Island Workshop
+                if (isInIsland)
+                {
+                    IslandHandlers();
+                }
 
-            // 强制任务完成 Force Quest to End
-            if (isQuestReadyFinish)
-            {
-                QuestEndCheck("完成了任务");
-            }
+                // 九宫幻卡 Triple Triad
+                if (isTTOn)
+                {
+                    TripleTriad();
+                }
 
-            // 交换检测 Detect Exchange Completion
-            if (isOnSpecialExchanging)
-            {
-                EndSpecialExchange();
+                // 强制任务完成 Force Quest to End
+                if (isQuestReadyFinish)
+                {
+                    QuestEndCheck();
+                }
+
+                // 交换检测 Detect Exchange Completion
+                if (isOnSpecialExchanging)
+                {
+                    EndSpecialExchange();
+                }
+
+                FrameStopwatch.Restart();
             }
         }
 

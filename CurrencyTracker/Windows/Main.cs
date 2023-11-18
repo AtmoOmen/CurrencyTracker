@@ -1662,6 +1662,11 @@ public partial class Main : Window, IDisposable
                     lastTransactions = currentTypeTransactions;
                 }
 
+                if (ImGui.IsItemHovered() && ImGui.IsMouseDown(ImGuiMouseButton.Right))
+                {
+                    ImGui.SetTooltip(option);
+                }
+
                 ImGui.SameLine(3.0f);
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
                 ImGui.Image(CurrencyInfo.GetIcon(C.AllCurrencies.FirstOrDefault(x => x.Key == option).Value).ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));

@@ -11,7 +11,8 @@
         "Money",
         "Currency",
         "Tracker",
-        "Transaction"
+        "Transaction",
+        "Tomestone"
     ],
     "ImageUrls": [
         "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/Assets/img1.png",

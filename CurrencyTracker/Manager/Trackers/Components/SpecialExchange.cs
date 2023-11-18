@@ -15,7 +15,8 @@ namespace CurrencyTracker.Manager.Trackers
         {
             { "RetainerList", 28 },
             { "GrandCompanySupplyList", 27 },
-            { "WeeklyBingoResult", 99 }
+            { "WeeklyBingoResult", 99 },
+            { "ReconstructionBox", 31 }
         };
 
         public void InitSpecialExchange()

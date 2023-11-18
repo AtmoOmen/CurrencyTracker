@@ -15,13 +15,14 @@ namespace CurrencyTracker.Manager.Trackers
 
         private static readonly string[] ExchangeUI = new string[]
         {
-            "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "MJIDisposeShop", "GrandCompanyExchange"
+            "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "ShopExchangeItemDialog", "TripleTriadCoinExchange", "FreeCompanyChest", "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback"
         };
 
         // Addon Name - Window Node ID
         private static readonly Dictionary<string, uint> ExchangeWindowUI = new()
         {
             { "Repair", 38 },
+            { "PvpReward", 125 }
         };
 
         public void InitExchangeCompletes()

@@ -257,6 +257,8 @@ namespace CurrencyTracker.Manager.Trackers
             Service.ClientState.TerritoryChanged -= OnZoneChange;
             DebindChatEvent();
             Service.Framework.Update -= OnFrameworkUpdate;
+
+            FrameStopwatch.Stop();
         }
     }
 }
