@@ -24,13 +24,17 @@ namespace CurrencyTracker
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ExportDataFileType { get; set; } = 0;
+        public bool ShowTimeColumn { get; set; } = true;
+        public bool ShowAmountColumn { get; set; } = true;
+        public bool ShowChangeColumn { get; set; } = true;
         public bool ShowLocationColumn { get; set; } = true;
         public bool ShowNoteColumn { get; set; } = true;
         public bool ShowOrderColumn { get; set; } = true;
+        public bool ShowCheckboxColumn { get; set; } = true;
+        public int ChildWidthOffset { get; set; } = 0;
 
         // 备注选项 Note Settings
         public bool RecordContentName { get; set; } = true;
-
         public bool RecordTeleportDes { get; set; } = true;
         public bool WaitExComplete { get; set; } = true;
         public bool RecordTeleport { get; set; } = true;

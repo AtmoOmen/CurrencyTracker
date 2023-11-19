@@ -2,6 +2,7 @@ using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
+using Dalamud.Game.ClientState.Conditions;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -22,16 +23,8 @@ namespace CurrencyTracker.Manager.Trackers
         // 收到新聊天信息时触发的事件
         private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
-            var chatmessage = message.TextValue;
-            var typeValue = (ushort)type;
-
-            if (!TriggerChatTypes.Contains(typeValue)) return;
-
-            if (DutyStarted)
-            {
-                DutyEndCheck(chatmessage);
-                return;
-            }
+            if (Service.Condition[ConditionFlag.InCombat]) return;
+            if (!TriggerChatTypes.Contains((ushort)type)) return;
 
             UpdateCurrencies();
 
@@ -41,6 +34,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 if (!IgnoreChatTypes.Contains(typeValue))
                 {
+                    var chatmessage = message.TextValue;
                     Service.PluginLog.Debug($"[{typeValue}]{chatmessage}");
                 }
             }
@@ -61,14 +55,13 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (C.TrackedInDuty)
             {
-                // 强制结束 Force to end
-                if (!IsBoundByDuty())
+                if (Flags.IsBoundByDuty())
                 {
-                    DutyEndCheck("任务结束了");
+                    CheckDutyStart();
                 }
-                else
+                else if (isDutyStarted)
                 {
-                    DutyStartCheck();
+                    CheckDutyEnd();
                 }
             }
 
@@ -84,7 +77,10 @@ namespace CurrencyTracker.Manager.Trackers
             // 无人岛相关
             IsInIslandCheck();
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            if (!isDutyStarted)
+            {
+                Service.Chat.ChatMessage += OnChatMessage;
+            }
         }
 
         // 每一帧更新时触发的事件

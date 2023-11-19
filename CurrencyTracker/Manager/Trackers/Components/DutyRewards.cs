@@ -1,4 +1,3 @@
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
 using System;
@@ -9,33 +8,22 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        public static bool IsBoundByDuty()
+        // Territory ID - ContentName
+        private static Dictionary<uint, string> ContentNames = new();
+
+        // Contents that should be ignored
+        private static readonly uint[] IgnoredContents =
         {
-            return Service.Condition[ConditionFlag.BoundByDuty] ||
-                   Service.Condition[ConditionFlag.BoundByDuty56] ||
-                   Service.Condition[ConditionFlag.BoundByDuty95];
-        }
-
-        private static readonly string[] DutyEndStrings = new[] { "任务结束了", "has ended", "の攻略を終了した", "wurde beendet", "prend fin" };
-
-        // Terriory ID - ContentName
-        public static Dictionary<uint, string> ContentNames = new();
-
-        // 应被忽略的副本 Contents should be ignored
-        public static uint[] IgnoredContents = new uint[]
-        {
-            // 九宫幻卡相关 Triple Triad Related
+            // Triple Triad Related
             579, 940, 941,
-            // 禁地优雷卡 Eureka
+            // Eureka
             732, 763, 795, 827,
-            // 博兹雅 Bozja
+            // Bozja
             920, 975
         };
 
-        private bool DutyStarted = false;
-
+        private bool isDutyStarted;
         private string dutyLocationName = string.Empty;
-
         private string dutyContentName = string.Empty;
 
         public void InitDutyRewards()
@@ -49,52 +37,50 @@ namespace CurrencyTracker.Manager.Trackers
                 );
 
             // 上线就在副本里的情况 Player is already in Duty when logs in
-            if (IsBoundByDuty())
+            if (Flags.IsBoundByDuty())
             {
-                DutyStartCheck();
+                CheckDutyStart();
             }
         }
 
-        private void DutyStartCheck()
+        private void CheckDutyStart()
         {
-            if (!C.TrackedInDuty) return;
-            if (ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var DutyName))
-            {
-                DutyStarted = true;
-                dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-                dutyContentName = !DutyName.IsNullOrEmpty() ? DutyName : Service.Lang.GetText("UnknownContent");
+            if (isDutyStarted) return;
 
+            if (ContentNames.TryGetValue(Service.ClientState.TerritoryType, out var dutyName))
+            {
                 DebindChatEvent();
-                Service.PluginLog.Debug($"Duty {DutyName} Starts");
+
+                isDutyStarted = true;
+                dutyLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+                dutyContentName = !dutyName.IsNullOrEmpty() ? dutyName : Service.Lang.GetText("UnknownContent");
+
+                Service.PluginLog.Debug($"Duty {dutyName} Starts");
             }
         }
 
-        private void DutyEndCheck(string ChatMessage)
+        private void CheckDutyEnd()
         {
-            if (!DutyStarted)
-            {
-                return;
-            }
-            if (DutyEndStrings.Any(ChatMessage.Contains))
-            {
-                Service.PluginLog.Debug("Duty Ends, Currency Change Check Starts.");
-                foreach (var currency in C.AllCurrencies)
-                {
-                    CheckCurrency(currency.Value, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "");
-                }
+            if (!isDutyStarted) return;
 
-                DutyStarted = false;
-                dutyLocationName = string.Empty;
-                dutyContentName = string.Empty;
-                Service.Chat.ChatMessage += OnChatMessage;
+            Service.PluginLog.Debug($"Duty {dutyContentName} Ends, Currency Change Check Starts.");
 
-                Service.PluginLog.Debug("Currency Change Check Completes.");
+            foreach (var currency in C.AllCurrencies)
+            {
+                CheckCurrency(currency.Value, dutyLocationName, C.RecordContentName ? $"({dutyContentName})" : "");
             }
+
+            isDutyStarted = false;
+            dutyLocationName = string.Empty;
+            dutyContentName = string.Empty;
+
+            Service.Chat.ChatMessage += OnChatMessage;
+            Service.PluginLog.Debug("Currency Change Check Completes.");
         }
 
         public void UninitDutyRewards()
         {
-            DutyStarted = false;
+            isDutyStarted = false;
             dutyLocationName = string.Empty;
             dutyContentName = string.Empty;
         }

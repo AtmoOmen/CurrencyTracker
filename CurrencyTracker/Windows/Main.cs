@@ -39,9 +39,14 @@ public partial class Main : Window, IDisposable
         positiveChangeColor = C.PositiveChangeColor;
         negativeChangeColor = C.NegativeChangeColor;
         exportDataFileType = C.ExportDataFileType;
+        isShowTimeColumn = C.ShowTimeColumn;
+        isShowAmountColumn = C.ShowAmountColumn;
+        isShowChangeColumn = C.ShowChangeColumn;
         isShowLocationColumn = C.ShowLocationColumn;
         isShowNoteColumn = C.ShowNoteColumn;
         isShowOrderColumn = C.ShowOrderColumn;
+        isShowCheckboxColumn = C.ShowCheckboxColumn;
+        childWidthOffset = C.ChildWidthOffset;
 
         // 临时 Temp
         isRecordContentName = C.RecordContentName;
@@ -78,8 +83,8 @@ public partial class Main : Window, IDisposable
             if (!addedOptions.Contains(currency.Key))
             {
                 addedOptions.Add(currency.Key);
-                selectedStates.Add(currency.Key, new List<bool>());
-                selectedTransactions.Add(currency.Key, new List<TransactionsConvertor>());
+                selectedStates.Add(currency.Key, new());
+                selectedTransactions.Add(currency.Key, new());
             }
         }
 
@@ -95,7 +100,10 @@ public partial class Main : Window, IDisposable
             ReloadOrderedOptions();
         }
 
-        CCTItemNames = InitCCTItems();
+        if (CCTItemNames.Count == 0 || CCTItemNames == null)
+        {
+            CCTItemNames = InitCCTItems();
+        }
     }
 
     public override void Draw()
@@ -469,9 +477,9 @@ public partial class Main : Window, IDisposable
             }
             if (C.SelectedLanguage == "ChineseSimplified")
             {
-                ImGui.TextColored(ImGuiColors.DalamudYellow, "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
-                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问\n" +
-                    "(如果你是国服用户, 请注意, 你的问题/建议可能已在更新的版本中已被修复/采纳)");
+                ImGui.TextColored(ImGuiColors.DalamudYellow, "(如果你是国服玩家)\n" +
+                    "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
+                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问\n");
                 if (ImGui.Button("QQ频道【艾欧泽亚泛獭保护协会】"))
                 {
                     Widgets.OpenUrl("https://pd.qq.com/s/fttirpnql");
@@ -599,7 +607,7 @@ public partial class Main : Window, IDisposable
         }
         if (ImGui.BeginPopup("LocationSearch"))
         {
-            ImGui.SetNextItemWidth(200);
+            ImGui.SetNextItemWidth(250);
             if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
                 if (!searchLocationName.IsNullOrEmpty())
@@ -629,7 +637,7 @@ public partial class Main : Window, IDisposable
         }
         if (ImGui.BeginPopup("NoteSearch"))
         {
-            ImGui.SetNextItemWidth(200);
+            ImGui.SetNextItemWidth(250);
             if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
             {
                 if (!searchNoteContent.IsNullOrEmpty())
@@ -1585,31 +1593,33 @@ public partial class Main : Window, IDisposable
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
 
-            if (ImGui.Checkbox($"{Service.Lang.GetText("Order")}##DisplayOrderColumn", ref isShowOrderColumn))
-            {
-                C.ShowOrderColumn = isShowOrderColumn;
-                C.Save();
-            }
-
+            ColumnDisplayCheckbox(value => C.ShowTimeColumn = value, ref isShowTimeColumn, "Time");
             ImGui.SameLine();
-
-            if (ImGui.Checkbox($"{Service.Lang.GetText("Location")}##DisplayLocationColumn", ref isShowLocationColumn))
-            {
-                C.ShowLocationColumn = isShowLocationColumn;
-                C.Save();
-            }
-
+            ColumnDisplayCheckbox(value => C.ShowAmountColumn = value, ref isShowAmountColumn, "Amount");
             ImGui.SameLine();
+            ColumnDisplayCheckbox(value => C.ShowChangeColumn = value, ref isShowChangeColumn, "Change");
+            ColumnDisplayCheckbox(value => C.ShowOrderColumn = value, ref isShowOrderColumn, "Order");
+            ImGui.SameLine();
+            ColumnDisplayCheckbox(value => C.ShowLocationColumn = value, ref isShowLocationColumn, "Location");
+            ImGui.SameLine();
+            ColumnDisplayCheckbox(value => C.ShowNoteColumn = value, ref isShowNoteColumn, "Note");
+            ImGui.SameLine();
+            ColumnDisplayCheckbox(value => C.ShowCheckboxColumn = value, ref isShowCheckboxColumn, "Checkbox");
 
-            if (ImGui.Checkbox($"{Service.Lang.GetText("Note")}##DisplayNoteColumn", ref isShowNoteColumn))
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ChildframeWidthOffset")}:");
+            ImGui.SetNextItemWidth(150);
+            ImGui.SameLine();
+            if (ImGui.InputInt("##ChildframesWidthOffset", ref childWidthOffset, 10))
             {
-                C.ShowNoteColumn = isShowNoteColumn;
+                C.ChildWidthOffset = childWidthOffset;
                 C.Save();
             }
 
+            ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("TransactionsPerPage"));
             ImGui.SetNextItemWidth(150);
-
+            ImGui.SameLine();
             if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
             {
                 transactionsPerPage = Math.Max(transactionsPerPage, 1);
@@ -1639,7 +1649,7 @@ public partial class Main : Window, IDisposable
     // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
     private void CurrenciesList()
     {
-        var childScale = new Vector2(243, ChildframeHeightAdjust());
+        var childScale = new Vector2(243 + childWidthOffset, ChildframeHeightAdjust());
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar))
         {
             ListboxTools();
@@ -1662,7 +1672,7 @@ public partial class Main : Window, IDisposable
                     lastTransactions = currentTypeTransactions;
                 }
 
-                if (ImGui.IsItemHovered() && ImGui.IsMouseDown(ImGuiMouseButton.Right))
+                if (ImGui.IsItemHovered() && ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                 {
                     ImGui.SetTooltip(option);
                 }
@@ -1694,7 +1704,7 @@ public partial class Main : Window, IDisposable
         }
 
         var childFrameHeight = ChildframeHeightAdjust();
-        var childScale = new Vector2(ImGui.GetWindowWidth() - 100, childFrameHeight);
+        var childScale = new Vector2(ImGui.GetWindowWidth() - 100 - childWidthOffset, childFrameHeight);
 
         ImGui.SameLine();
 
@@ -1702,17 +1712,20 @@ public partial class Main : Window, IDisposable
         {
             TransactionsPagingTools();
 
-            var columnCount = 4 + Convert.ToInt32(isShowOrderColumn) + Convert.ToInt32(isShowLocationColumn) + Convert.ToInt32(isShowNoteColumn);
+            var columns = new bool[] { isShowCheckboxColumn, isShowTimeColumn, isShowAmountColumn, isShowChangeColumn, isShowOrderColumn, isShowLocationColumn, isShowNoteColumn };
+            var columnCount = columns.Count(c => c);
+
+            if (columnCount == 0) return;
 
             if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
             {
                 if (isShowOrderColumn) ImGui.TableSetupColumn("Order", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10, 0);
-                ImGui.TableSetupColumn("Time", ImGuiTableColumnFlags.None, 150, 0);
-                ImGui.TableSetupColumn("Amount", ImGuiTableColumnFlags.None, 130, 0);
-                ImGui.TableSetupColumn("Change", ImGuiTableColumnFlags.None, 100, 0);
+                if (isShowTimeColumn) ImGui.TableSetupColumn("Time", ImGuiTableColumnFlags.None, 150, 0);
+                if (isShowAmountColumn) ImGui.TableSetupColumn("Amount", ImGuiTableColumnFlags.None, 130, 0);
+                if (isShowChangeColumn) ImGui.TableSetupColumn("Change", ImGuiTableColumnFlags.None, 100, 0);
                 if (isShowLocationColumn) ImGui.TableSetupColumn("Location", ImGuiTableColumnFlags.None, 150, 0);
                 if (isShowNoteColumn) ImGui.TableSetupColumn("Note", ImGuiTableColumnFlags.None, 160, 0);
-                ImGui.TableSetupColumn("Selected", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 30, 0);
+                if (isShowCheckboxColumn) ImGui.TableSetupColumn("Selected", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize, 30, 0);
 
                 ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
 
@@ -1722,17 +1735,25 @@ public partial class Main : Window, IDisposable
                     ReverseSort();
                 }
 
-                ImGui.TableNextColumn();
+                if (isShowTimeColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable($" {Service.Lang.GetText("Time")}{CalcNumSpaces()}");
+                    TimeFunctions();
+                }
+                
+                if (isShowAmountColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ImGui.Text($" {Service.Lang.GetText("Amount")}{CalcNumSpaces()}");
+                }
 
-                ImGui.Selectable($" {Service.Lang.GetText("Time")}{CalcNumSpaces()}");
-                TimeFunctions();
-
-                ImGui.TableNextColumn();
-                ImGui.Text($" {Service.Lang.GetText("Amount")}{CalcNumSpaces()}");
-
-                ImGui.TableNextColumn();
-                ImGui.Selectable($" {Service.Lang.GetText("Change")}{CalcNumSpaces()}");
-                ChangeFunctions();
+                if (isShowChangeColumn)
+                {
+                    ImGui.TableNextColumn();
+                    ImGui.Selectable($" {Service.Lang.GetText("Change")}{CalcNumSpaces()}");
+                    ChangeFunctions();
+                }
 
                 if (isShowLocationColumn)
                 {
@@ -1748,10 +1769,13 @@ public partial class Main : Window, IDisposable
                     NoteFunctions();
                 }
 
-                ImGui.TableNextColumn();
-                if (Widgets.IconButton(FontAwesomeIcon.EllipsisH))
+                if (isShowCheckboxColumn)
                 {
-                    ImGui.OpenPopup("TableTools");
+                    ImGui.TableNextColumn();
+                    if (Widgets.IconButton(FontAwesomeIcon.EllipsisH))
+                    {
+                        ImGui.OpenPopup("TableTools");
+                    }
                 }
 
                 ImGui.TableNextRow();
@@ -1785,99 +1809,108 @@ public partial class Main : Window, IDisposable
                         }
 
                         // 时间 Time
-                        ImGui.TableNextColumn();
-                        if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.IsMouseDown(ImGuiMouseButton.Right))
+                        if (isShowTimeColumn)
                         {
-                            ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", selected, ImGuiSelectableFlags.SpanAllColumns);
-                            if (ImGui.IsItemHovered())
+                            ImGui.TableNextColumn();
+                            if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.IsMouseDown(ImGuiMouseButton.Right))
                             {
-                                selectedStates[selectedCurrencyName][i] = selected = true;
-
-                                if (selected)
+                                ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", selected, ImGuiSelectableFlags.SpanAllColumns);
+                                if (ImGui.IsItemHovered())
                                 {
-                                    var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+                                    selectedStates[selectedCurrencyName][i] = selected = true;
 
-                                    if (!exists)
+                                    if (selected)
                                     {
-                                        selectedTransactions[selectedCurrencyName].Add(transaction);
+                                        var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+
+                                        if (!exists)
+                                        {
+                                            selectedTransactions[selectedCurrencyName].Add(transaction);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
                                     }
                                 }
-                                else
-                                {
-                                    selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
-                                }
                             }
-                        }
-                        else if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
-                        {
-                            if (ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", ref selected, ImGuiSelectableFlags.SpanAllColumns))
+                            else if (ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
                             {
-                                selectedStates[selectedCurrencyName][i] = selected;
-
-                                if (selected)
+                                if (ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}", ref selected, ImGuiSelectableFlags.SpanAllColumns))
                                 {
-                                    var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+                                    selectedStates[selectedCurrencyName][i] = selected;
 
-                                    if (!exists)
+                                    if (selected)
                                     {
-                                        selectedTransactions[selectedCurrencyName].Add(transaction);
+                                        var exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+
+                                        if (!exists)
+                                        {
+                                            selectedTransactions[selectedCurrencyName].Add(transaction);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
                                     }
                                 }
-                                else
-                                {
-                                    selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}");
-                        }
-
-                        if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
-                        {
-                            ImGui.SetClipboardText(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
-                            Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
-                        }
-
-                        // 货币数 Amount
-                        ImGui.TableNextColumn();
-                        ImGui.Selectable($"{transaction.Amount.ToString("#,##0")}##_{i}");
-
-                        if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
-                        {
-                            ImGui.SetClipboardText(transaction.Amount.ToString("#,##0"));
-                            Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {transaction.Amount.ToString("#,##0")}");
-                        }
-
-                        // 收支 Change
-                        ImGui.TableNextColumn();
-                        if (isChangeColoring)
-                        {
-                            if (transaction.Change > 0)
-                            {
-                                ImGui.PushStyleColor(ImGuiCol.Text, positiveChangeColor);
-                            }
-                            else if (transaction.Change == 0)
-                            {
-                                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
                             }
                             else
                             {
-                                ImGui.PushStyleColor(ImGuiCol.Text, negativeChangeColor);
+                                ImGui.Selectable($"{transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}##_{i}");
                             }
-                            ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
-                            ImGui.PopStyleColor();
-                        }
-                        else
-                        {
-                            ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+
+                            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                            {
+                                ImGui.SetClipboardText(transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
+                                Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss")}");
+                            }
                         }
 
-                        if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                        // 货币数 Amount
+                        if (isShowAmountColumn)
                         {
-                            ImGui.SetClipboardText(transaction.Change.ToString("+ #,##0;- #,##0;0"));
-                            Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")} : {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
+                            ImGui.TableNextColumn();
+                            ImGui.Selectable($"{transaction.Amount.ToString("#,##0")}##_{i}");
+
+                            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                            {
+                                ImGui.SetClipboardText(transaction.Amount.ToString("#,##0"));
+                                Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {transaction.Amount.ToString("#,##0")}");
+                            }
+                        }
+
+                        // 收支 Change
+                        if (isShowChangeColumn)
+                        {
+                            ImGui.TableNextColumn();
+                            if (isChangeColoring)
+                            {
+                                if (transaction.Change > 0)
+                                {
+                                    ImGui.PushStyleColor(ImGuiCol.Text, positiveChangeColor);
+                                }
+                                else if (transaction.Change == 0)
+                                {
+                                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
+                                }
+                                else
+                                {
+                                    ImGui.PushStyleColor(ImGuiCol.Text, negativeChangeColor);
+                                }
+                                ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                                ImGui.PopStyleColor();
+                            }
+                            else
+                            {
+                                ImGui.Selectable(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                            }
+
+                            if (ImGui.IsItemHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                            {
+                                ImGui.SetClipboardText(transaction.Change.ToString("+ #,##0;- #,##0;0"));
+                                Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")} : {transaction.Change.ToString("+ #,##0;- #,##0;0")}");
+                            }
                         }
 
                         // 地名 Location
@@ -1989,33 +2022,39 @@ public partial class Main : Window, IDisposable
                         }
 
                         // 勾选框 Checkboxes
-                        ImGui.TableNextColumn();
-                        if (ImGui.Checkbox($"##select_{i}", ref selected))
+                        if (isShowCheckboxColumn)
                         {
-                            selectedStates[selectedCurrencyName][i] = selected;
-
-                            if (selected)
+                            ImGui.TableNextColumn();
+                            if (ImGui.Checkbox($"##select_{i}", ref selected))
                             {
-                                bool exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+                                selectedStates[selectedCurrencyName][i] = selected;
 
-                                if (!exists)
+                                if (selected)
                                 {
-                                    selectedTransactions[selectedCurrencyName].Add(transaction);
+                                    bool exists = selectedTransactions[selectedCurrencyName].Any(t => Widgets.IsTransactionEqual(t, transaction));
+
+                                    if (!exists)
+                                    {
+                                        selectedTransactions[selectedCurrencyName].Add(transaction);
+                                    }
                                 }
-                            }
-                            else
-                            {
-                                selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
+                                else
+                                {
+                                    selectedTransactions[selectedCurrencyName].RemoveAll(t => Widgets.IsTransactionEqual(t, transaction));
+                                }
                             }
                         }
 
                         ImGui.TableNextRow();
                     }
 
-                    if (ImGui.BeginPopup("TableTools"))
+                    if (isShowCheckboxColumn)
                     {
-                        TableTools();
-                        ImGui.EndPopup();
+                        if (ImGui.BeginPopup("TableTools"))
+                        {
+                            TableTools();
+                            ImGui.EndPopup();
+                        }
                     }
                 }
 

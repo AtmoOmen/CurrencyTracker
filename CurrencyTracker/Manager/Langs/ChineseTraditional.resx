@@ -678,4 +678,10 @@
   <data name="SelectedTransactionsInfo" xml:space="preserve">
     <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
   </data>
+  <data name="Checkbox" xml:space="preserve">
+    <value>Checkbox</value>
+  </data>
+  <data name="ChildframeWidthOffset" xml:space="preserve">
+    <value>Width Offset</value>
+  </data>
 </root>

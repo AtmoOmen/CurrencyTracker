@@ -440,58 +440,60 @@ public partial class Main
         }
     }
 
+    // 显示列勾选框 Displayed Column Checkbox
+    private void ColumnDisplayCheckbox(Action<bool> setDisplayColumn, ref bool isShowColumn, string text)
+    {
+        if (ImGui.Checkbox($"{Service.Lang.GetText(text)}##Display{text}Column", ref isShowColumn))
+        {
+            setDisplayColumn(isShowColumn);
+            C.Save();
+        }
+    }
+
     // 用于处理货币名变更 Used to handle currency rename
     private void CurrencyRenameHandler(string editedCurrencyName)
     {
         var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
 
-        if (C.PresetCurrencies.Keys.Concat(C.CustomCurrencies.Keys).Contains(editedCurrencyName))
+        if (C.AllCurrencies.ContainsKey(editedCurrencyName) || File.Exists(editedFilePath))
         {
             Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
 
-        if (File.Exists(editedFilePath))
-        {
-            Service.Chat.PrintError($"{Service.Lang.GetText("CurrencyRenameHelp2", editedFilePath)}");
-            return;
-        }
 
-        if (C.PresetCurrencies.ContainsKey(selectedCurrencyName))
+        if (C.PresetCurrencies.TryGetValue(selectedCurrencyName, out var value))
         {
-            var currencyID = C.PresetCurrencies[selectedCurrencyName];
-
             C.PresetCurrencies.Remove(selectedCurrencyName);
-            C.PresetCurrencies.Add(editedCurrencyName, currencyID);
+            C.PresetCurrencies.Add(editedCurrencyName, value);
         }
 
-        if (C.CustomCurrencies.ContainsKey(selectedCurrencyName))
+        if (C.CustomCurrencies.TryGetValue(selectedCurrencyName, out var value2))
         {
-            var currencyID = C.CustomCurrencies[selectedCurrencyName];
-
             C.CustomCurrencies.Remove(selectedCurrencyName);
-            C.CustomCurrencies.Add(editedCurrencyName, currencyID);
+            C.CustomCurrencies.Add(editedCurrencyName, value2);
         }
 
-        if (C.OrdedOptions.Contains(selectedCurrencyName))
-        {
-            var index = C.OrdedOptions.IndexOf(selectedCurrencyName);
+        selectedStates.Remove(selectedCurrencyName);
+        selectedStates.Add(editedCurrencyName, new());
+        selectedTransactions.Remove(selectedCurrencyName);
+        selectedTransactions.Add(editedCurrencyName, new());
 
+        var index = C.OrdedOptions.IndexOf(selectedCurrencyName);
+        if (index != -1)
+        {
             C.OrdedOptions[index] = editedCurrencyName;
         }
 
         C.Save();
 
-        if (File.Exists(Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt")))
+        var selectedFilePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+        if (File.Exists(selectedFilePath))
         {
-            File.Move(Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt"), editedFilePath);
+            File.Move(selectedFilePath, editedFilePath);
         }
 
         selectedCurrencyName = editedCurrencyName;
-        selectedStates.Clear();
-        selectedTransactions.Clear();
-
-        LoadOptions();
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added

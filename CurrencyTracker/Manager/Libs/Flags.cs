@@ -13,5 +13,12 @@ namespace CurrencyTracker.Manager
         {
             return Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51];
         }
+
+        public static bool IsBoundByDuty()
+        {
+            return Service.Condition[ConditionFlag.BoundByDuty] ||
+                   Service.Condition[ConditionFlag.BoundByDuty56] ||
+                   Service.Condition[ConditionFlag.BoundByDuty95];
+        }
     }
 }

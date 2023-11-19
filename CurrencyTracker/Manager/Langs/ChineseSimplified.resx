@@ -681,4 +681,10 @@
   <data name="SelectedTransactionsInfo" xml:space="preserve">
     <value>计数: {0} 总和:{1} 平均值: {2} 最大值: {3} 最小值: {4} (收支)</value>
   </data>
+  <data name="Checkbox" xml:space="preserve">
+    <value>勾选框</value>
+  </data>
+  <data name="ChildframeWidthOffset" xml:space="preserve">
+    <value>宽度偏移量</value>
+  </data>
 </root>

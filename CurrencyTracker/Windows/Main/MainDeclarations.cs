@@ -126,14 +126,14 @@ public partial class Main
     // 编辑的备注内容 Edited Note Content
     private string editedNoteContent = string.Empty;
 
-    // 是否显示表格地点列 Whether Show Location Column
+    // 是否显示表格指定列 Whether Show Specific Column
+    private bool isShowTimeColumn = true;
+    private bool isShowAmountColumn = true;
+    private bool isShowChangeColumn = true;
     private bool isShowLocationColumn = true;
-
-    // 是否显示表格备注列 Whether Show Note Column
     private bool isShowNoteColumn = true;
-
-    // 是否显示序号列 Where Show Order Column
     private bool isShowOrderColumn = true;
+    private bool isShowCheckboxColumn = true;
 
     // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
     private readonly System.Timers.Timer searchTimer = new(100);
@@ -151,6 +151,9 @@ public partial class Main
     private List<string> CCTItemNames = new();
 
     private uint CCTItemCounts = 0;
+
+    // 子窗口宽度偏移量 Childframes Width Offset
+    private int childWidthOffset = 0;
 
     // 临时 Temp
     private bool isRecordContentName;
