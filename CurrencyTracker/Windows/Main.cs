@@ -1612,6 +1612,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             if (ImGui.InputInt("##ChildframesWidthOffset", ref childWidthOffset, 10))
             {
+                childWidthOffset = Math.Max(-240, childWidthOffset);
                 C.ChildWidthOffset = childWidthOffset;
                 C.Save();
             }
