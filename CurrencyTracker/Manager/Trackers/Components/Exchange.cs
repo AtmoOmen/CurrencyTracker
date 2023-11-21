@@ -1,7 +1,6 @@
 using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -135,7 +134,7 @@ namespace CurrencyTracker.Manager.Trackers
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
                 Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
-            }); 
+            });
 
             currentTargetName = string.Empty;
 

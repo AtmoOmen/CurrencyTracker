@@ -12,7 +12,7 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnWorkshop = false;
         private string windowTitle = string.Empty;
 
-        public IslandSanctuary() 
+        public IslandSanctuary()
         {
             Init();
         }
@@ -73,9 +73,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency => 
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandPasture")})"); 
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandPasture")})");
             });
         }
 
@@ -90,9 +90,9 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency => 
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandFarm")})"); 
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandFarm")})");
             });
         }
 

@@ -2,7 +2,6 @@ using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnExchang = false;
         private string windowName = string.Empty;
 
-        public SpecialExchange() 
+        public SpecialExchange()
         {
             Init();
         }
@@ -96,7 +95,6 @@ namespace CurrencyTracker.Manager.Trackers
             Service.Tracker.ChatHandler.isBlocked = false;
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.PluginLog.Debug("Exchange Completes");
-
         }
 
         public void Uninit()

@@ -4,7 +4,6 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
 using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -14,7 +13,7 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isReadyFinish = false;
         private string questName = string.Empty;
 
-        public QuestRewards() 
+        public QuestRewards()
         {
             Init();
         }

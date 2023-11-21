@@ -1,7 +1,6 @@
 using CurrencyTracker.Manager.Libs;
 using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,7 +26,7 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isDutyStarted;
         private string contentName = string.Empty;
 
-        public DutyRewards() 
+        public DutyRewards()
         {
             Init();
         }
@@ -88,14 +87,12 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.Tracker.CheckCurrency(currency.Key, TerrioryHandler.PreviousLocationName, Plugin.Instance.Configuration.RecordContentName ? $"({contentName})" : "");
             });
 
-
             isDutyStarted = false;
             contentName = string.Empty;
 
             Service.Tracker.ChatHandler.isBlocked = false;
             Service.PluginLog.Debug("Currency Change Check Completes.");
         }
-
 
         public void Uninit()
         {

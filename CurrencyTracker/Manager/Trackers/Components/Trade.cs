@@ -2,7 +2,6 @@ using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
-using System;
 using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -12,7 +11,7 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnTrade = false;
         private string tradeTargetName = string.Empty;
 
-        public Trade() 
+        public Trade()
         {
             Init();
         }

@@ -1,5 +1,7 @@
+using CurrencyTracker.Manager.Trackers;
 using Dalamud.Hooking;
 using System;
+using System.Linq;
 
 namespace CurrencyTracker.Manager;
 
@@ -21,7 +23,7 @@ internal class HookManager
         actorControlSelfHook.Enable();
     }
 
-    private void ActorControlSelf(uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, UInt64 targetId, byte param7)
+    private void ActorControlSelf(uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, ulong targetId, byte param7)
     {
         actorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, targetId, param7);
 
@@ -35,14 +37,15 @@ internal class HookManager
 
         try
         {
+            var instance = ComponentManager.Components.OfType<TeleportCosts>().FirstOrDefault();
             switch (param1)
             {
                 case 4590:
-                    Service.Tracker.ComponentManager.TeleportCosts.TeleportWithCost((int)param2);
+                    instance.TeleportWithCost((int)param2);
                     break;
 
                 case 4591:
-                    Service.Tracker.ComponentManager.TeleportCosts.TeleportWithCost(-1);
+                    instance.TeleportWithCost(-1);
                     break;
             }
         }

@@ -16,6 +16,7 @@ namespace CurrencyTracker
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
         private Dictionary<uint, string> presetCurrencies = new();
+
         public Dictionary<uint, string> PresetCurrencies
         {
             set
@@ -30,6 +31,7 @@ namespace CurrencyTracker
         }
 
         private Dictionary<uint, string> customCurrencies = new();
+
         public Dictionary<uint, string> CustomCurrencies
         {
             set
@@ -42,6 +44,7 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
+
         public List<string> OrdedOptions { get; set; } = new List<string>();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
@@ -61,6 +64,7 @@ namespace CurrencyTracker
 
         // 备注选项 Note Settings
         public bool RecordContentName { get; set; } = true;
+
         public bool RecordTeleportDes { get; set; } = true;
         public bool WaitExComplete { get; set; } = true;
         public bool RecordTeleport { get; set; } = true;
@@ -71,6 +75,7 @@ namespace CurrencyTracker
         public bool RecordTrade { get; set; } = true;
         public bool RecordFate { get; set; } = true;
         public bool RecordIsland { get; set; } = true;
+
         [Newtonsoft.Json.JsonIgnore]
         public List<CurrencyIcon> AllCurrencyIcons
         {
@@ -83,6 +88,7 @@ namespace CurrencyTracker
                 return allCurrencyIcons;
             }
         }
+
         [Newtonsoft.Json.JsonIgnore]
         public Dictionary<uint, string> AllCurrencies
         {
@@ -95,6 +101,7 @@ namespace CurrencyTracker
                 return allCurrencies;
             }
         }
+
         [Newtonsoft.Json.JsonIgnore]
         public Dictionary<string, uint> AllCurrenciesRe
         {
@@ -113,6 +120,7 @@ namespace CurrencyTracker
 
         [Newtonsoft.Json.JsonIgnore]
         private List<CurrencyIcon>? allCurrencyIcons;
+
         private Dictionary<uint, string>? allCurrencies;
         private Dictionary<string, uint>? allCurrenciesRe;
         private bool isUpdated;

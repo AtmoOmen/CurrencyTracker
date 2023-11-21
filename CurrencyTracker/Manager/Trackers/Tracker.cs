@@ -29,15 +29,12 @@ namespace CurrencyTracker.Manager.Trackers
         private static HashSet<string> _itemNamesSet = new();
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
+
         public event CurrencyChangedHandler? OnCurrencyChanged;
-
-
 
         public ChatHandler ChatHandler = null!;
         public TerrioryHandler TerrioryHandler = null!;
         public ComponentManager ComponentManager = null!;
-
-
 
         private Configuration? C = Plugin.Instance.Configuration;
         private Plugin? P = Plugin.Instance;
@@ -181,10 +178,10 @@ namespace CurrencyTracker.Manager.Trackers
                 return string.Empty;
 
             // 国服和韩服特别处理逻辑 For CN and KR Client
-            var textNode3 = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
-            var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
+            var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
+            var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
-            var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
+            var windowTitle = !smallTitle.IsNullOrEmpty() ? smallTitle : bigTitle;
 
             return windowTitle;
         }
@@ -238,7 +235,6 @@ namespace CurrencyTracker.Manager.Trackers
         public void Dispose()
         {
             ComponentManager.Uninit();
-
         }
     }
 }

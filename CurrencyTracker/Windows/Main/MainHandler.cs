@@ -167,7 +167,6 @@ public partial class Main
         return filteredTransactions;
     }
 
-
     // 按备注显示交易记录 Hide Unmatched Transactions By Note
     private List<TransactionsConvertor> ApplyNoteFilter(List<TransactionsConvertor> transactions, string query)
     {
@@ -460,7 +459,7 @@ public partial class Main
             Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
-        
+
         if (C.PresetCurrencies.ContainsValue(selectedCurrencyName))
         {
             var currencyID = C.AllCurrenciesRe[selectedCurrencyName];

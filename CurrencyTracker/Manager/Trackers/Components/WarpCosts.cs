@@ -1,12 +1,10 @@
 using CurrencyTracker.Manager.Libs;
-using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
@@ -20,13 +18,16 @@ namespace CurrencyTracker.Manager.Trackers
     {
         // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
         private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
+
         // 包含金币传送点的区域 Terriories that Have a Gil-Cost Warp
         private List<uint> ValidGilWarpTerriories = new();
 
         // 是否准备进行 NPC 传送 Is Ready to Have a Warp Teleportation
         private bool isReadyWarpTP;
+
         // 区域间 NPC 传送 Warp Teleportation Between Areas
         private bool warpTPBetweenAreas;
+
         // 区域内 NPC 传送 Warp Teleportation Within Areas
         private bool warpTPInAreas;
 
@@ -109,7 +110,7 @@ namespace CurrencyTracker.Manager.Trackers
         public void Uninit()
         {
             ValidGilWarpTerriories.Clear();
-            ResetStates() ;
+            ResetStates();
         }
     }
 }

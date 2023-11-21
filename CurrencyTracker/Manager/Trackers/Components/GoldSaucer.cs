@@ -3,13 +3,12 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
     public class GoldSaucer : ITrackerComponent
     {
-        public GoldSaucer() 
+        public GoldSaucer()
         {
             Init();
         }

@@ -128,6 +128,7 @@ public partial class Main
 
     // 是否显示表格指定列 Whether Show Specific Column
     private bool isShowTimeColumn = true;
+
     private bool isShowAmountColumn = true;
     private bool isShowChangeColumn = true;
     private bool isShowLocationColumn = true;

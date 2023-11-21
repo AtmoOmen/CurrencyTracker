@@ -1,6 +1,4 @@
 using CurrencyTracker.Manager.Libs;
-using Dalamud.Utility;
-using System.Linq;
 using static CurrencyTracker.Manager.Trackers.Tracker;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -9,7 +7,7 @@ namespace CurrencyTracker.Manager.Trackers
     {
         private int teleportCost = 0;
 
-        public TeleportCosts() 
+        public TeleportCosts()
         {
             Init();
         }
@@ -73,7 +71,6 @@ namespace CurrencyTracker.Manager.Trackers
         {
             teleportCost = 0;
             Service.ClientState.TerritoryChanged -= TeleportBetweenAreas;
-
         }
     }
 }

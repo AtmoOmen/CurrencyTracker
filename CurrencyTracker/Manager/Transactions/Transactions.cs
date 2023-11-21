@@ -1,4 +1,3 @@
-using CurrencyTracker.Windows;
 using Dalamud.Utility;
 using System;
 using System.Collections.Generic;

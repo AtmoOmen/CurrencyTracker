@@ -1746,7 +1746,7 @@ public partial class Main : Window, IDisposable
                     ImGui.Selectable($" {Service.Lang.GetText("Time")}{CalcNumSpaces()}");
                     TimeFunctions();
                 }
-                
+
                 if (isShowAmountColumn)
                 {
                     ImGui.TableNextColumn();

@@ -1,42 +1,29 @@
 using CurrencyTracker.Manager.Libs;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
     public class ComponentManager
     {
-        public DutyRewards DutyRewards = null!;
-        public Exchange Exchange = null!;
-        public FateRewards FateRewards = null!;
-        public GoldSaucer GoldSaucer = null!;
-        public IslandSanctuary IslandSanctuary = null!;
-        public QuestRewards QuestRewards = null!;
-        public SpecialExchange SpecialExchange = null!;
-        public TeleportCosts TeleportCosts = null!;
-        public Trade Trade = null!;
-        public TripleTriad TripleTriad = null!;
-        public WarpCosts WarpCosts = null!;
+        public static List<ITrackerComponent> Components = new();
 
-        private static List<ITrackerComponent> Components = null!;
-
-        public ComponentManager() 
+        public ComponentManager()
         {
-            DutyRewards = new();
-            Exchange = new();
-            FateRewards = new();
-            GoldSaucer = new();
-            IslandSanctuary = new();
-            QuestRewards = new();
-            SpecialExchange = new();
-            TeleportCosts = new();
-            Trade = new();
-            TripleTriad = new();
-            WarpCosts = new();
+            var types = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(t => t.GetInterfaces().Contains(typeof(ITrackerComponent)) && t.GetConstructor(Type.EmptyTypes) != null);
 
-            Components = new()
+            foreach (var type in types)
             {
-                DutyRewards, Exchange, FateRewards, GoldSaucer, IslandSanctuary, QuestRewards, SpecialExchange, TeleportCosts, Trade, TripleTriad, WarpCosts
-            };
+                var instance = Activator.CreateInstance(type);
+                if (instance is ITrackerComponent component)
+                {
+                    Components.Add(component);
+                }
+            }
+
         }
 
         public void Init()

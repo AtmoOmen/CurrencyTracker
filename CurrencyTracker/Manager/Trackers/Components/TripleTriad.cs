@@ -3,7 +3,6 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
 using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
@@ -14,7 +13,7 @@ namespace CurrencyTracker.Manager.Trackers
         private string ttRivalName = string.Empty;
         private string ttResultText = string.Empty;
 
-        public TripleTriad() 
+        public TripleTriad()
         {
             Init();
         }
