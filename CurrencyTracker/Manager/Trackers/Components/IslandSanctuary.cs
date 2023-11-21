@@ -1,18 +1,31 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using System;
+using Dalamud.Plugin.Services;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class IslandSanctuary : ITrackerComponent
     {
         private bool isInIsland = false;
         private bool isOnWorkshop = false;
         private string windowTitle = string.Empty;
 
-        public void InitIslandRewards()
+        public IslandSanctuary() 
         {
-            isInIsland = true;
+            Init();
+        }
+
+        public void Init()
+        {
+            if (TerrioryHandler.CurrentLocationID == 1055)
+            {
+                isInIsland = true;
+                Service.Framework.Update += OnFrameworkUpdate;
+            }
+
+            Service.ClientState.TerritoryChanged += OnZoneChanged;
 
             // 囤货仓库 Gathering House
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIGatheringHouse", MGHStart);
@@ -31,10 +44,28 @@ namespace CurrencyTracker.Manager.Trackers
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIAnimalManagement", MAMEnd);
         }
 
+        private void OnZoneChanged(ushort obj)
+        {
+            if (!isInIsland && TerrioryHandler.CurrentLocationID == 1055)
+            {
+                Service.Framework.Update += OnFrameworkUpdate;
+            }
+
+            if (isInIsland && TerrioryHandler.CurrentLocationID != 1055)
+            {
+                Service.Framework.Update -= OnFrameworkUpdate;
+            }
+        }
+
+        private void OnFrameworkUpdate(IFramework framework)
+        {
+            WorkshopHandler();
+        }
+
         // 无人岛牧场
         private void MAMStart(AddonEvent type, AddonArgs args)
         {
-            DebindChatEvent();
+            Service.Tracker.ChatHandler.isBlocked = true;
         }
 
         private void MAMEnd(AddonEvent type, AddonArgs args)
@@ -42,16 +73,16 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency => 
             {
-                CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandPasture")})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandPasture")})"); 
+            });
         }
 
         // 无人岛耕地
         private void MFMStart(AddonEvent type, AddonArgs args)
         {
-            DebindChatEvent();
+            Service.Tracker.ChatHandler.isBlocked = true;
         }
 
         private void MFMEnd(AddonEvent type, AddonArgs args)
@@ -59,17 +90,17 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency => 
             {
-                CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandFarm")})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandFarm")})"); 
+            });
         }
 
         // 无人岛建造 Island Building
         private unsafe void MBStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetWindowTitle(args, 25);
-            DebindChatEvent();
+            windowTitle = Service.Tracker.GetWindowTitle(args, 25);
+            Service.Tracker.ChatHandler.isBlocked = true;
         }
 
         private void MBEnd(AddonEvent type, AddonArgs args)
@@ -77,19 +108,19 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Value, "", $"({windowTitle})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({windowTitle})");
+            });
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            Service.Tracker.ChatHandler.isBlocked = false;
         }
 
         // 无人岛制作
         private unsafe void MRNBStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetWindowTitle(args, 37);
-            DebindChatEvent();
+            windowTitle = Service.Tracker.GetWindowTitle(args, 37);
+            Service.Tracker.ChatHandler.isBlocked = true;
         }
 
         private void MRNBEnd(AddonEvent type, AddonArgs args)
@@ -97,19 +128,19 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Value, "", $"({windowTitle})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({windowTitle})");
+            });
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            Service.Tracker.ChatHandler.isBlocked = false;
         }
 
         // 无人岛屯货仓库
         private unsafe void MGHStart(AddonEvent type, AddonArgs args)
         {
-            windowTitle = GetWindowTitle(args, 73);
-            DebindChatEvent();
+            windowTitle = Service.Tracker.GetWindowTitle(args, 73);
+            Service.Tracker.ChatHandler.isBlocked = true;
         }
 
         private void MGHEnd(AddonEvent type, AddonArgs args)
@@ -117,12 +148,12 @@ namespace CurrencyTracker.Manager.Trackers
             if (Flags.OccupiedInEvent())
                 return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Value, "", $"({windowTitle})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({windowTitle})");
+            });
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            Service.Tracker.ChatHandler.isBlocked = false;
         }
 
         // 无人岛工房
@@ -131,7 +162,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (Service.TargetManager.Target != null && Service.TargetManager.Target.DataId == 1043078 && !isOnWorkshop)
             {
                 isOnWorkshop = true;
-                DebindChatEvent();
+                Service.Tracker.ChatHandler.isBlocked = true;
             }
 
             if (Service.TargetManager.PreviousTarget != null && Service.TargetManager.PreviousTarget.DataId == 1043078 && isOnWorkshop)
@@ -142,37 +173,16 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 isOnWorkshop = false;
 
-                foreach (var currency in C.AllCurrencies)
+                Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                 {
-                    CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandWorkshop")})");
-                }
+                    Service.Tracker.CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("IslandWorkshop")})");
+                });
 
-                Service.Chat.ChatMessage += OnChatMessage;
+                Service.Tracker.ChatHandler.isBlocked = false;
             }
         }
 
-        public void IsInIslandCheck()
-        {
-            if (!C.RecordIsland)
-                return;
-
-            if (Service.ClientState.TerritoryType == 1055)
-            {
-                InitIslandRewards();
-            }
-
-            if (isInIsland && Service.ClientState.TerritoryType != 1055)
-            {
-                UninitIslandRewards();
-            }
-        }
-
-        private void IslandHandlers()
-        {
-            WorkshopHandler();
-        }
-
-        public void UninitIslandRewards()
+        public void Uninit()
         {
             isInIsland = false;
             isOnWorkshop = false;
@@ -186,6 +196,9 @@ namespace CurrencyTracker.Manager.Trackers
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIBuilding", MBEnd);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MJIFarmManagement", MFMStart);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIFarmManagement", MFMEnd);
+
+            Service.Framework.Update -= OnFrameworkUpdate;
+            Service.ClientState.TerritoryChanged -= OnZoneChanged;
         }
     }
 }

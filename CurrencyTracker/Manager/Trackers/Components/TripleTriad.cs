@@ -1,100 +1,96 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class TripleTriad : ITrackerComponent
     {
         private bool isTTOn = false;
-        private string ttResultText = string.Empty;
         private string ttRivalName = string.Empty;
+        private string ttResultText = string.Empty;
 
-        public void InitTripleTriad()
+        public TripleTriad() 
+        {
+            Init();
+        }
+
+        public void Init()
         {
             var TTGui = Service.GameGui.GetAddonByName("TripleTriad");
             if (TTGui != nint.Zero)
             {
-                StartTripleTriad();
+                StartTripleTriadHandler();
             }
 
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", TripleTriadCheck);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
         }
 
-        private void TripleTriadCheck(AddonEvent type, AddonArgs args)
+        private void StartTripleTriad(AddonEvent type, AddonArgs args)
         {
-            StartTripleTriad();
+            StartTripleTriadHandler();
         }
 
-        private unsafe void StartTripleTriad()
+        private unsafe void StartTripleTriadHandler()
         {
             isTTOn = true;
+            Service.Tracker.ChatHandler.isBlocked = true;
+
             var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
             if (TTGui != null)
             {
-                ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ToString();
+                ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ToString() ?? string.Empty;
             }
-            DebindChatEvent();
             Service.PluginLog.Debug("Triple Triad Starts");
         }
 
-        private void TripleTriad()
+        private void EndTripleTriad(AddonEvent type, AddonArgs args)
         {
-            if (!C.RecordTripleTriad) return;
+            if (!isTTOn) return;
 
-            var TTGui = Service.GameGui.GetAddonByName("TripleTriad");
-            var TTRGui = Service.GameGui.GetAddonByName("TripleTriadResult");
-
-            if (TTRGui != nint.Zero)
-            {
-                unsafe
-                {
-                    var TTR = (AtkUnitBase*)TTRGui;
-                    if (TTR != null && TTR->RootNode != null && TTR->RootNode->ChildNode != null && TTR->UldManager.NodeList != null && ttResultText.IsNullOrEmpty())
-                    {
-                        var draw = (TTR->GetTextNodeById(5))->AtkResNode.NodeFlags.HasFlag(NodeFlags.Visible);
-                        var lose = (TTR->GetTextNodeById(4))->AtkResNode.IsVisible;
-                        var win = (TTR->GetTextNodeById(3))->AtkResNode.IsVisible;
-
-                        ttResultText = draw ? TTR->GetTextNodeById(5)->NodeText.ToString() :
-                                     lose ? TTR->GetTextNodeById(4)->NodeText.ToString() :
-                                     win ? TTR->GetTextNodeById(3)->NodeText.ToString() : "";
-                        Service.PluginLog.Debug(ttResultText);
-                    }
-                }
-            }
-
-            if ((TTRGui == nint.Zero && TTGui == nint.Zero && isTTOn) || (TTRGui != nint.Zero && TTGui == nint.Zero && isTTOn))
-            {
-                EndTripleTriad();
-            }
+            EndTripleTriadHandler();
         }
 
-        private void EndTripleTriad()
+        private unsafe void EndTripleTriadHandler()
         {
             isTTOn = false;
 
-            foreach (var currency in C.AllCurrencies)
+            var TTRGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriadResult");
+
+            if (TTRGui != null)
             {
-                CheckCurrency(currency.Value, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})");
+                var draw = (TTRGui->GetTextNodeById(5))->AtkResNode.NodeFlags.HasFlag(NodeFlags.Visible);
+                var lose = (TTRGui->GetTextNodeById(4))->AtkResNode.IsVisible;
+                var win = (TTRGui->GetTextNodeById(3))->AtkResNode.IsVisible;
+
+                ttResultText = draw ? TTRGui->GetTextNodeById(5)->NodeText.ToString() :
+                             lose ? TTRGui->GetTextNodeById(4)->NodeText.ToString() :
+                             win ? TTRGui->GetTextNodeById(3)->NodeText.ToString() : "";
+                Service.PluginLog.Debug(ttResultText);
             }
 
-            ttRivalName = string.Empty;
-            ttResultText = string.Empty;
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
+            {
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})");
+            });
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            ttRivalName = ttResultText = string.Empty;
+
             Service.PluginLog.Debug("Triple Triad Ends");
         }
 
-        public void UninitTripleTriad()
+        public void Uninit()
         {
             isTTOn = false;
-            ttResultText = string.Empty;
-            ttRivalName = string.Empty;
+            ttRivalName = ttResultText = string.Empty;
 
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriad", TripleTriadCheck);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
         }
     }
 }

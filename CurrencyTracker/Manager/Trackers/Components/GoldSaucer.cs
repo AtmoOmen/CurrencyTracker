@@ -1,22 +1,30 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using System;
-using System.IO;
 using System.Linq;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class GoldSaucer : ITrackerComponent
     {
-        internal void InitGoldSacuer()
+        public GoldSaucer() 
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerMain);
+            Init();
         }
 
-        // 金碟内主要处理逻辑 Main handle logic in Gold Saucer
-        private unsafe void GoldSaucerMain(AddonEvent eventtype, AddonArgs args)
+        public void Init()
+        {
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", BeginGoldSaucer);
+        }
+
+        private void BeginGoldSaucer(AddonEvent type, AddonArgs args)
+        {
+            BeginGoldSaucerHandler(args);
+        }
+
+        private unsafe void BeginGoldSaucerHandler(AddonArgs args)
         {
             var GSR = (AtkUnitBase*)args.Addon;
             if (GSR != null && GSR->RootNode != null && GSR->RootNode->ChildNode != null && GSR->UldManager.NodeList != null)
@@ -27,33 +35,18 @@ namespace CurrencyTracker.Manager.Trackers
                     var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
+                        var currencyName = Plugin.Instance.Configuration.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
                         if (currencyName.IsNullOrEmpty()) return;
-                        var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
-
-                        var editedTransactions = Transactions.LoadAllTransactions(currencyName);
-
-                        if (editedTransactions.Count == 0 || editedTransactions == null)
-                        {
-                            return;
-                        }
-
-                        if ((DateTime.Now - editedTransactions.LastOrDefault().TimeStamp).TotalSeconds > 10)
-                        {
-                            return;
-                        }
-                        editedTransactions.LastOrDefault().Note = $"({GameName})";
-
-                        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+                        Transactions.EditLatestTransaction(currencyName, "None", $"({GameName})");
                         Plugin.Instance.Main.UpdateTransactions();
                     }
                 }
             }
         }
 
-        internal void UninitGoldSacuer()
+        public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerMain);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", BeginGoldSaucer);
         }
     }
 }

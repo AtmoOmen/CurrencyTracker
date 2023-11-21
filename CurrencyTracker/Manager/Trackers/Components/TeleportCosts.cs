@@ -1,81 +1,77 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Utility;
-using System;
 using System.Linq;
+using static CurrencyTracker.Manager.Trackers.Tracker;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class TeleportCosts : ITrackerComponent
     {
-        public int teleportCost = 0;
+        private int teleportCost = 0;
 
-        public string previousLocationName = string.Empty;
-
-        public string currentLocationName = string.Empty;
-
-        public void InitTeleportCosts()
+        public TeleportCosts() 
         {
-            previousLocationName = currentLocationName = TerritoryNames.TryGetValue(Service.ClientState.TerritoryType, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-            teleportCost = 0;
+            Init();
         }
 
-        private void TeleportCheck()
+        public void Init()
         {
-            if (currentLocationName != previousLocationName)
+            teleportCost = 0;
+            Service.ClientState.TerritoryChanged += TeleportBetweenAreas;
+        }
+
+        public void TeleportBetweenAreas(ushort obj)
+        {
+            if (teleportCost == 0) return;
+
+            if (TerrioryHandler.CurrentLocationName != TerrioryHandler.PreviousLocationName)
             {
-                if (C.RecordTeleport)
+                // 传送网使用券 Aetheryte Ticket
+                if (teleportCost == -1)
                 {
-                    // 传送网使用券 Aetheryte Ticket
-                    if (teleportCost == -1)
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            var currencyName = C.CustomCurrencies.FirstOrDefault(x => x.Value == 7569).Key;
-                            if (currencyName.IsNullOrEmpty()) return;
-                            Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", currentLocationName)})");
-                            Plugin.Instance.Main.UpdateTransactions();
-                        }
-                    }
-                    // 金币 Gil
-                    else if (teleportCost > 0)
-                    {
-                        if (C.RecordTeleportDes)
-                        {
-                            var currencyName = C.PresetCurrencies.FirstOrDefault(x => x.Value == 1).Key;
-                            if (currencyName.IsNullOrEmpty()) return;
-                            Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", currentLocationName)})");
-                            Plugin.Instance.Main.UpdateTransactions();
-                        }
-                    }
+                    var currencyName = Plugin.Instance.Configuration.CustomCurrencies.FirstOrDefault(x => x.Value == 7569).Key;
+                    if (currencyName.IsNullOrEmpty()) return;
+                    Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
+                    Plugin.Instance.Main.UpdateTransactions();
                 }
+                // 金币 Gil
+                else if (teleportCost > 0)
+                {
+                    var currencyName = Plugin.Instance.Configuration.PresetCurrencies.FirstOrDefault(x => x.Value == 1).Key;
+                    if (currencyName.IsNullOrEmpty()) return;
+                    Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
+                    Plugin.Instance.Main.UpdateTransactions();
+                }
+
                 teleportCost = 0;
-                previousLocationName = currentLocationName;
             }
         }
 
         public void TeleportWithCost(int GilAmount)
         {
-            DebindChatEvent();
+            Service.Tracker.ChatHandler.isBlocked = true;
+
             teleportCost = GilAmount;
 
             // 传送网使用券 Aetheryte Ticket
             if (GilAmount == -1)
             {
-                CheckCurrency(7569, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
+                Service.Tracker.CheckCurrency(7569, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative);
             }
             // 金币 Gil
             else if (GilAmount > 0)
             {
-                CheckCurrency(1, previousLocationName, C.RecordTeleportDes ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
+                Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative);
             }
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            Service.Tracker.ChatHandler.isBlocked = false;
         }
 
-        public void UninitTeleportCosts()
+        public void Uninit()
         {
-            previousLocationName = string.Empty;
-            currentLocationName = string.Empty;
             teleportCost = 0;
+            Service.ClientState.TerritoryChanged -= TeleportBetweenAreas;
+
         }
     }
 }

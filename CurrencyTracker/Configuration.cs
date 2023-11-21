@@ -13,7 +13,7 @@ namespace CurrencyTracker
     {
         public int Version { get; set; } = 0;
         public bool FisrtOpen { get; set; } = true;
-        public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new List<CharacterInfo>();
+        public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
         public Dictionary<string, uint> CustomCurrencies { get; set; } = new();
         public Dictionary<string, uint> PresetCurrencies { get; set; } = new();
         public List<string> OrdedOptions { get; set; } = new List<string>();

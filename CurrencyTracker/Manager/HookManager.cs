@@ -38,11 +38,11 @@ internal class HookManager
             switch (param1)
             {
                 case 4590:
-                    Service.Tracker.TeleportWithCost((int)param2);
+                    Service.Tracker.ComponentManager.TeleportCosts.TeleportWithCost((int)param2);
                     break;
 
                 case 4591:
-                    Service.Tracker.TeleportWithCost(-1);
+                    Service.Tracker.ComponentManager.TeleportCosts.TeleportWithCost(-1);
                     break;
             }
         }

@@ -6,7 +6,7 @@ namespace CurrencyTracker.Manager
     {
         public static bool OccupiedInEvent()
         {
-            return Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Service.Condition[ConditionFlag.OccupiedSummoningBell];
+            return Service.Condition[ConditionFlag.OccupiedInQuestEvent] || Service.Condition[ConditionFlag.OccupiedInEvent] || Service.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Service.Condition[ConditionFlag.OccupiedSummoningBell] || Service.Condition[ConditionFlag.TradeOpen];
         }
 
         public static bool BetweenAreas()

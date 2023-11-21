@@ -1,17 +1,18 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Plugin.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class SpecialExchange : ITrackerComponent
     {
-        private bool isOnSpecialExchanging = false;
-
         // Addon Name - Window Node ID
-        private Dictionary<string, uint> SpecialExchangeUI = new()
+        private static readonly Dictionary<string, uint> UI = new()
         {
             { "RetainerList", 28 },
             { "GrandCompanySupplyList", 27 },
@@ -19,76 +20,92 @@ namespace CurrencyTracker.Manager.Trackers
             { "ReconstructionBox", 31 }
         };
 
-        public void InitSpecialExchange()
+        private bool isOnExchang = false;
+        private string windowName = string.Empty;
+
+        public SpecialExchange() 
         {
-            if (!isOnSpecialExchanging)
+            Init();
+        }
+
+        public void Init()
+        {
+            if (!isOnExchang)
             {
-                var exchange = SpecialExchangeUI.Keys.FirstOrDefault(ex => Service.GameGui.GetAddonByName(ex) != nint.Zero);
+                var exchange = UI.Keys.FirstOrDefault(ex => Service.GameGui.GetAddonByName(ex) != nint.Zero);
                 if (exchange != null)
                 {
-                    EndSpecialExchangeHandler();
-                    BeginSpecialExchangeHandler(Service.GameGui.GetAddonByName(exchange), exchange);
+                    BeginExchangeHandler(Service.GameGui.GetAddonByName(exchange), exchange);
                 }
             }
 
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, SpecialExchangeUI.Keys, BeginSpecialExchange);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
         }
 
-        private void BeginSpecialExchange(AddonEvent type, AddonArgs args)
+        private void BeginExchange(AddonEvent type, AddonArgs args)
         {
-            if (isOnSpecialExchanging)
-            {
-                return;
-            }
+            if (isOnExchang) return;
 
-            BeginSpecialExchangeHandler(args);
+            BeginExchangeHandler(args);
         }
 
-        private void BeginSpecialExchangeHandler(AddonArgs args)
+        private void BeginExchangeHandler(AddonArgs args)
         {
-            isOnSpecialExchanging = true;
-            DebindChatEvent();
-            exchangeWindowName = GetWindowTitle(args, SpecialExchangeUI[args.AddonName]) ?? string.Empty;
+            Service.Tracker.ChatHandler.isBlocked = true;
+            isOnExchang = true;
+            windowName = Service.Tracker.GetWindowTitle(args, UI[args.AddonName]) ?? string.Empty;
+
+            Service.Framework.Update += OnFrameworkUpdate;
             Service.PluginLog.Debug("Exchange Starts");
         }
 
-        private void BeginSpecialExchangeHandler(nint addon, string addonName)
+        private void BeginExchangeHandler(nint addon, string addonName)
         {
-            isOnSpecialExchanging = true;
-            DebindChatEvent();
-            exchangeWindowName = GetWindowTitle(addon, SpecialExchangeUI[addonName]) ?? string.Empty;
+            Service.Tracker.ChatHandler.isBlocked = true;
+            isOnExchang = true;
+            windowName = Service.Tracker.GetWindowTitle(addon, UI[addonName]) ?? string.Empty;
+
+            Service.Framework.Update += OnFrameworkUpdate;
             Service.PluginLog.Debug("Exchange Starts");
         }
 
-        private void EndSpecialExchange()
+        private void OnFrameworkUpdate(IFramework framework)
         {
-            if (Flags.OccupiedInEvent())
+            if (!isOnExchang)
             {
+                Service.Framework.Update -= OnFrameworkUpdate;
                 return;
             }
 
-            EndSpecialExchangeHandler();
+            if (Flags.OccupiedInEvent()) return;
+
+            EndExchangeHandler();
         }
 
-        private void EndSpecialExchangeHandler()
+        private void EndExchangeHandler()
         {
-            isOnSpecialExchanging = false;
+            isOnExchang = false;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Value, "", $"({exchangeWindowName})");
-            }
+                Service.Tracker.CheckCurrency(currency.Value, "", $"({windowName})");
+            });
 
-            exchangeWindowName = string.Empty;
+            windowName = string.Empty;
 
-            Service.Chat.ChatMessage += OnChatMessage;
+            Service.Tracker.ChatHandler.isBlocked = false;
+            Service.Framework.Update -= OnFrameworkUpdate;
             Service.PluginLog.Debug("Exchange Completes");
 
         }
 
-        public void UninitSpecialExchange()
+        public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, SpecialExchangeUI.Keys, BeginSpecialExchange);
+            isOnExchang = false;
+            windowName = string.Empty;
+
+            Service.Framework.Update -= OnFrameworkUpdate;
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
         }
     }
 }

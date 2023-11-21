@@ -27,6 +27,7 @@ namespace CurrencyTracker
         */
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
+
         internal const string CommandName = "/ct";
         private HookManager hookManager;
 

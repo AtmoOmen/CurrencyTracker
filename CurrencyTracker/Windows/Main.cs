@@ -123,7 +123,6 @@ public partial class Main : Window, IDisposable
         if (showRecordOptions)
         {
             TempRecordSettings();
-            ImGui.SameLine();
             MergeTransactions();
             ImGui.SameLine();
             ClearExceptions();
@@ -226,6 +225,7 @@ public partial class Main : Window, IDisposable
     // (临时)记录设置 (Temp)Record Settings
     private void TempRecordSettings()
     {
+        /*
         if (ImGui.Button(Service.Lang.GetText("RecordSettings") + "[DEV]"))
         {
             ImGui.OpenPopup("RecordSettings");
@@ -444,6 +444,7 @@ public partial class Main : Window, IDisposable
 
             ImGui.EndPopup();
         }
+        */
     }
 
     // 帮助页面 Help Pages

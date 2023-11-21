@@ -37,12 +37,9 @@ namespace CurrencyTracker.Windows
 
                         if (isRecordTeleport)
                         {
-                            Service.Tracker.UninitTeleportCosts();
-                            Service.Tracker.InitTeleportCosts();
                         }
                         else
                         {
-                            Service.Tracker.UninitTeleportCosts();
                         }
                     }
 

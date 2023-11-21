@@ -1,27 +1,38 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static CurrencyTracker.Manager.Trackers.Tracker;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    // 与 TeleportCosts / TerrioryHandler / ChatHandler 联动
+    public class WarpCosts : ITrackerComponent
     {
-        private static readonly string[] ValidWarpText = { "Gils", "金币", "ギル", "Gil" };
-        private List<uint> GilCostsWarpTerriories = new();
+        // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
+        private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
+        // 包含金币传送点的区域 Terriories that Have a Gil-Cost Warp
+        private List<uint> ValidGilWarpTerriories = new();
+
+        // 是否准备进行 NPC 传送 Is Ready to Have a Warp Teleportation
         private bool isReadyWarpTP;
+        // 区域间 NPC 传送 Warp Teleportation Between Areas
         private bool warpTPBetweenAreas;
+        // 区域内 NPC 传送 Warp Teleportation Within Areas
         private bool warpTPInAreas;
 
-        public void InitWarpCosts()
+        public void Init()
         {
-            GilCostsWarpTerriories = Service.DataManager.GetExcelSheet<Warp>()
+            ValidGilWarpTerriories = Service.DataManager.GetExcelSheet<Warp>()
                 .Where(x => Service.DataManager.GetExcelSheet<WarpCondition>()
                 .Any(y => y.Gil != 0 && x.WarpCondition.Value.RowId == y.RowId))
                 .Select(x => x.TerritoryType.Value.RowId)
@@ -32,34 +43,33 @@ namespace CurrencyTracker.Manager.Trackers
 
         private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
         {
-            if (!GilCostsWarpTerriories.Any(x => Service.ClientState.TerritoryType == x))
+            if (!ValidGilWarpTerriories.Any(x => Service.ClientState.TerritoryType == x))
             {
                 return;
             }
 
             var SYN = args.Addon;
-
             if (SYN == nint.Zero) return;
 
             var text = ((AddonSelectYesno*)SYN)->PromptText->NodeText.ToString();
-            var buttonNode = ((AtkUnitBase*)SYN)->GetNodeById(8);
-            if (string.IsNullOrEmpty(text) || buttonNode == null) return;
+            if (text.IsNullOrEmpty()) return;
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
             {
-                Service.PluginLog.Debug(text);
-                Service.AddonEventManager.AddEvent(SYN, (nint)buttonNode, AddonEventType.ButtonClick, WarpConfirmationCheck);
+                isReadyWarpTP = true;
+                Service.Tracker.ChatHandler.isBlocked = true;
+
+                Service.Framework.Update += OnFrameworkUpdate;
             }
         }
 
-        private void WarpConfirmationCheck(AddonEventType atkEventType, nint atkUnitBase, nint atkResNode)
+        private void OnFrameworkUpdate(IFramework framework)
         {
-            isReadyWarpTP = true;
-        }
-
-        private void WarpTPCheck()
-        {
-            if (!isReadyWarpTP) return;
+            if (!isReadyWarpTP)
+            {
+                Service.Framework.Update -= OnFrameworkUpdate;
+                return;
+            }
 
             if (Service.Condition[ConditionFlag.BetweenAreas] && Service.Condition[ConditionFlag.BetweenAreas51])
             {
@@ -70,33 +80,36 @@ namespace CurrencyTracker.Manager.Trackers
                 warpTPInAreas = true;
             }
 
-            if (!warpTPInAreas) return;
+            if (Flags.BetweenAreas() || Flags.OccupiedInEvent()) return;
 
-            if (CheckCurrency(1, currentLocationName, $"({Service.Lang.GetText("TeleportWithinArea", currentLocationName)})", RecordChangeType.Negative))
+            if (warpTPBetweenAreas)
             {
-                ResetWarpFlags();
+                if (Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})", RecordChangeType.Negative))
+                {
+                    ResetStates();
+                    Service.Tracker.ChatHandler.isBlocked = false;
+                }
+            }
+            else if (warpTPInAreas)
+            {
+                if (Service.Tracker.CheckCurrency(1, TerrioryHandler.CurrentLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative))
+                {
+                    ResetStates();
+                    Service.Tracker.ChatHandler.isBlocked = false;
+                }
             }
         }
 
-        private void WarpTPEndCheck()
-        {
-            if (!warpTPBetweenAreas) return;
-
-            if (CheckCurrency(1, previousLocationName, $"({Service.Lang.GetText("TeleportTo", currentLocationName)})", RecordChangeType.Negative))
-            {
-                ResetWarpFlags();
-            }
-        }
-
-        private void ResetWarpFlags()
+        private void ResetStates()
         {
             isReadyWarpTP = warpTPBetweenAreas = warpTPInAreas = false;
+            Service.Framework.Update -= OnFrameworkUpdate;
         }
 
-        public void UninitWarpCosts()
+        public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
-            ResetWarpFlags();
+            ValidGilWarpTerriories.Clear();
+            ResetStates() ;
         }
     }
 }

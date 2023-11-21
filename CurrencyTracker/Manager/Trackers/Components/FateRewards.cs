@@ -1,19 +1,31 @@
+using CurrencyTracker.Manager.Libs;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class FateRewards : ITrackerComponent
     {
-        public void InitFateRewards()
+        public FateRewards()
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
+            Init();
         }
 
-        private unsafe void FateHandler(AddonEvent type, AddonArgs args)
+        public void Init()
+        {
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", BeginFate);
+        }
+
+        private void BeginFate(AddonEvent type, AddonArgs args)
+        {
+            BeginFateHandler(args);
+        }
+
+        private unsafe void BeginFateHandler(AddonArgs args)
         {
             var FR = (AtkUnitBase*)args.Addon;
             if (FR != null && FR->RootNode != null && FR->RootNode->ChildNode != null && FR->UldManager.NodeList != null)
@@ -24,23 +36,20 @@ namespace CurrencyTracker.Manager.Trackers
                     var FateName = textNode->NodeText.ToString();
                     if (!FateName.IsNullOrEmpty())
                     {
-                        foreach (var currency in C.AllCurrencies)
+                        Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                         {
-                            if (currency.Key.IsNullOrEmpty()) return;
-
                             Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
+                        });
 
-                            Plugin.Instance.Main.UpdateTransactions();
-                        }
                         FateName = string.Empty;
                     }
                 }
             }
         }
 
-        public void UninitFateRewards()
+        public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", BeginFate);
         }
     }
 }

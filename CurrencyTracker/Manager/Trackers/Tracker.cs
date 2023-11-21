@@ -1,3 +1,4 @@
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -10,7 +11,7 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable
     {
-        private enum RecordChangeType
+        public enum RecordChangeType
         {
             All,
             Positive,
@@ -27,8 +28,15 @@ namespace CurrencyTracker.Manager.Trackers
         private static HashSet<string> _itemNamesSet = new();
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
-
         public event CurrencyChangedHandler? OnCurrencyChanged;
+
+
+
+        public ChatHandler ChatHandler = null!;
+        public TerrioryHandler TerrioryHandler = null!;
+        public ComponentManager ComponentManager = null!;
+
+
 
         private Configuration? C = Plugin.Instance.Configuration;
         private Plugin? P = Plugin.Instance;
@@ -44,32 +52,19 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void InitializeTracking()
         {
-            Dispose();
-            DebindChatEvent();
+            ChatHandler = new();
+            TerrioryHandler = new();
 
-            Service.Chat.ChatMessage += OnChatMessage;
-            Service.Framework.Update += OnFrameworkUpdate;
-            Service.ClientState.TerritoryChanged += OnZoneChange;
-
-            if (C.RecordTeleport)
-            {
-                InitTeleportCosts();
-                InitWarpCosts();
-            }
-            if (C.TrackedInDuty) InitDutyRewards();
-            if (C.RecordQuestName) InitQuests();
-            if (C.RecordMGPSource) InitGoldSacuer();
-            if (C.RecordTrade) InitTrade();
-            if (C.WaitExComplete) 
-            {
-                InitExchangeCompletes();
-                InitSpecialExchange();
-            }
-            if (C.RecordTripleTriad) InitTripleTriad();
-            if (C.RecordFate) InitFateRewards();
-            if (C.RecordIsland) IsInIslandCheck();
+            ComponentManager = new ComponentManager();
+            ComponentManager.Init();
 
             UpdateCurrencies();
+        }
+
+        // (人为触发)发现货币发生改变时触发的事件
+        public virtual void OnTransactionsUpdate(EventArgs e)
+        {
+            OnCurrencyChanged?.Invoke(this, e);
         }
 
         public void UpdateCurrencies()
@@ -83,7 +78,7 @@ namespace CurrencyTracker.Manager.Trackers
         }
 
         // 检查货币情况 Check the currency
-        private bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All)
+        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All)
         {
             var currencyName = C.AllCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
             if (currencyName.IsNullOrEmpty()) return false;
@@ -172,7 +167,7 @@ namespace CurrencyTracker.Manager.Trackers
             _itemNamesSet = new HashSet<string>(_itemNames.Values);
         }
 
-        private unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
+        public unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
         {
             textNodeIDs ??= new uint[] { 3, 4 };
 
@@ -194,7 +189,7 @@ namespace CurrencyTracker.Manager.Trackers
             return windowTitle;
         }
 
-        private unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
+        public unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
         {
             textNodeIDs ??= new uint[] { 3, 4 };
 
@@ -242,23 +237,8 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void Dispose()
         {
-            UninitTeleportCosts();
-            UninitDutyRewards();
-            UninitGoldSacuer();
-            UninitTrade();
-            UninitExchangeCompletes();
-            UninitTripleTriad();
-            UninitQuests();
-            UninitFateRewards();
-            UninitIslandRewards();
-            UninitWarpCosts();
-            UninitSpecialExchange();
+            ComponentManager.Uninit();
 
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
-            DebindChatEvent();
-            Service.Framework.Update -= OnFrameworkUpdate;
-
-            FrameStopwatch.Stop();
         }
     }
 }
