@@ -100,9 +100,9 @@ namespace CurrencyTracker
             CurrentCharacter = GetCurrentCharacter();
             GetCurrentCharcterDataFolder();
 
-            if (WindowSystem.Windows.Contains(Main) && !Main.selectedCurrencyName.IsNullOrEmpty())
+            if (WindowSystem.Windows.Contains(Main) && Main.selectedCurrencyID != 0)
             {
-                Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyName);
+                Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyID);
                 Main.lastTransactions = Main.currentTypeTransactions;
             }
 
@@ -205,25 +205,26 @@ namespace CurrencyTracker
                 else
                 {
                     var currencyName = matchingCurrencies.FirstOrDefault();
+                    var currencyID = Configuration.AllCurrencies.FirstOrDefault(x => x.Value == currencyName).Key;
                     if (!Main.IsOpen)
                     {
-                        Main.selectedCurrencyName = currencyName;
-                        Main.selectedOptionIndex = Main.ordedOptions.IndexOf(currencyName);
-                        Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(Main.selectedCurrencyName));
+                        Main.selectedCurrencyID = currencyID;
+                        Main.selectedOptionIndex = Configuration.OrderedOptions.IndexOf(currencyID);
+                        Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(currencyID));
                         Main.lastTransactions = Main.currentTypeTransactions;
                         Main.IsOpen = true;
                     }
                     else
                     {
-                        if (currencyName == Main.selectedCurrencyName)
+                        if (currencyID == Main.selectedCurrencyID)
                         {
                             Main.IsOpen = !Main.IsOpen;
                         }
                         else
                         {
-                            Main.selectedCurrencyName = currencyName;
-                            Main.selectedOptionIndex = Main.ordedOptions.IndexOf(currencyName);
-                            Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(Main.selectedCurrencyName));
+                            Main.selectedCurrencyID = currencyID;
+                            Main.selectedOptionIndex = Configuration.OrderedOptions.IndexOf(currencyID);
+                            Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(currencyID));
                             Main.lastTransactions = Main.currentTypeTransactions;
                         }
                     }

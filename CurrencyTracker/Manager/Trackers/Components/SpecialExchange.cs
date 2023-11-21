@@ -22,11 +22,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnExchang = false;
         private string windowName = string.Empty;
 
-        public SpecialExchange()
-        {
-            Init();
-        }
-
         public void Init()
         {
             if (!isOnExchang)

@@ -26,7 +26,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         }
 
-        public void Init()
+        public static void Init()
         {
             foreach (var component in Components)
             {
@@ -34,7 +34,27 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        public void Uninit()
+        public static void Load<T>() where T : ITrackerComponent, new()
+        {
+            if (!Components.OfType<T>().Any())
+            {
+                var component = new T();
+                component.Init();
+                Components.Add(component);
+            }
+        }
+
+        public static void Unload<T>() where T : ITrackerComponent
+        {
+            var component = Components.OfType<T>().FirstOrDefault();
+            if (component != null)
+            {
+                component.Uninit();
+                Components.Remove(component);
+            }
+        }
+
+        public static void Uninit()
         {
             foreach (var component in Components)
             {

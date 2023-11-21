@@ -18,17 +18,16 @@ public partial class Main
     // 用于处理选项增减 Used to handle options changes.
     private void ReloadOrderedOptions()
     {
-        var orderedOptionsSet = new HashSet<string>(C.OrdedOptions);
-        var allCurrenciesSet = new HashSet<string>(C.AllCurrencies.Values);
+        var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
+        var allCurrenciesSet = new HashSet<uint>(C.AllCurrencies.Keys);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
             orderedOptionsSet.UnionWith(allCurrenciesSet);
             orderedOptionsSet.IntersectWith(allCurrenciesSet);
 
-            ordedOptions = orderedOptionsSet.ToList();
 
-            C.OrdedOptions = ordedOptions;
+            C.OrderedOptions = orderedOptionsSet.ToList();
             C.Save();
         }
     }
@@ -36,9 +35,7 @@ public partial class Main
     // 用于处理选项位置变化 Used to handle option's position change.
     private void SwapOptions(int index1, int index2)
     {
-        (ordedOptions[index2], ordedOptions[index1]) = (ordedOptions[index1], ordedOptions[index2]);
-
-        C.OrdedOptions = ordedOptions;
+        (C.OrderedOptions[index2], C.OrderedOptions[index1]) = (C.OrderedOptions[index1], C.OrderedOptions[index2]);
         C.Save();
     }
 
@@ -253,14 +250,14 @@ public partial class Main
     // 合并交易记录用 Used to simplified merging transactions code
     private int MergeTransactions(bool oneWay)
     {
-        if (string.IsNullOrEmpty(selectedCurrencyName))
+        if (!C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
         {
             Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
             return 0;
         }
 
         var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        var mergeCount = Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyName, threshold, oneWay);
+        var mergeCount = Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyID, threshold, oneWay);
 
         if (mergeCount > 0)
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
@@ -452,76 +449,70 @@ public partial class Main
     // 用于处理货币名变更 Used to handle currency rename
     private void CurrencyRenameHandler(string editedCurrencyName)
     {
-        var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
-
-        if (C.AllCurrencies.ContainsValue(editedCurrencyName) || File.Exists(editedFilePath))
+        if (C.AllCurrencies.ContainsValue(editedCurrencyName))
         {
             Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
 
-        if (C.PresetCurrencies.ContainsValue(selectedCurrencyName))
-        {
-            var currencyID = C.AllCurrenciesRe[selectedCurrencyName];
+        var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
 
-            C.PresetCurrencies.Remove(currencyID);
-            C.PresetCurrencies.Add(currencyID, editedCurrencyName);
+        if (File.Exists(editedFilePath))
+        {
+            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+            return;
         }
 
-        if (C.CustomCurrencies.ContainsValue(selectedCurrencyName))
-        {
-            var currencyID = C.AllCurrenciesRe[selectedCurrencyName];
+        var currencyName = string.Empty;
 
-            C.CustomCurrencies.Remove(currencyID);
-            C.CustomCurrencies.Add(currencyID, editedCurrencyName);
+        // 预设货币 Is Preset Currency
+        if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
+        {
+            C.PresetCurrencies[selectedCurrencyID] = editedCurrencyName;
+            C.isUpdated = true;
         }
-
-        selectedStates.Remove(selectedCurrencyName);
-        selectedStates.Add(editedCurrencyName, new());
-        selectedTransactions.Remove(selectedCurrencyName);
-        selectedTransactions.Add(editedCurrencyName, new());
-
-        var index = C.OrdedOptions.IndexOf(selectedCurrencyName);
-        if (index != -1)
+        else if (C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
         {
-            C.OrdedOptions[index] = editedCurrencyName;
+            C.CustomCurrencies[selectedCurrencyID] = editedCurrencyName;
+            C.isUpdated = true;
         }
 
         C.Save();
 
-        var selectedFilePath = Path.Combine(P.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+        var selectedFilePath = Path.Combine(P.PlayerDataFolder, $"{currencyName}.txt");
+
         if (File.Exists(selectedFilePath))
         {
             File.Move(selectedFilePath, editedFilePath);
         }
 
-        selectedCurrencyName = editedCurrencyName;
+        UpdateTransactions();
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added
     public void UpdateTransactionsEvent(object sender, EventArgs e)
     {
-        if (selectedCurrencyName != null)
-        {
-            UpdateTransactions();
-        }
+        UpdateTransactions();
     }
 
     // 用于在筛选时更新记录 Used to update transactions
     public void UpdateTransactions(int ifClearSelectedStates = 1)
     {
-        if (currentTypeTransactions == null || selectedCurrencyName.IsNullOrEmpty())
+        if (currentTypeTransactions == null || selectedCurrencyID == 0)
         {
             return;
         }
 
         if (ifClearSelectedStates == 1)
         {
-            selectedStates[selectedCurrencyName].Clear();
-            selectedTransactions[selectedCurrencyName].Clear();
+            selectedStates[selectedCurrencyID].Clear();
+            selectedTransactions[selectedCurrencyID].Clear();
         }
 
-        Transactions.ReorderTransactions(selectedCurrencyName);
-        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyName));
+        if (C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
+        {
+            Transactions.ReorderTransactions(selectedCurrencyID);
+            currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
+        }
     }
 }

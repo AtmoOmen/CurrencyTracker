@@ -7,11 +7,6 @@ namespace CurrencyTracker.Manager.Trackers
     {
         private int teleportCost = 0;
 
-        public TeleportCosts()
-        {
-            Init();
-        }
-
         public void Init()
         {
             teleportCost = 0;
@@ -27,18 +22,18 @@ namespace CurrencyTracker.Manager.Trackers
                 // 传送网使用券 Aetheryte Ticket
                 if (teleportCost == -1)
                 {
-                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(7569, out var currencyName))
+                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(7569, out var _))
                     {
-                        Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
+                        Transactions.EditLatestTransaction(7569, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
                         Plugin.Instance.Main.UpdateTransactions();
                     }
                 }
                 // 金币 Gil
                 else if (teleportCost > 0)
                 {
-                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(1, out var currencyName))
+                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(1, out var _))
                     {
-                        Transactions.EditLatestTransaction(currencyName, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
+                        Transactions.EditLatestTransaction(1, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
                         Plugin.Instance.Main.UpdateTransactions();
                     }
                 }

@@ -16,7 +16,6 @@ namespace CurrencyTracker
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
         private Dictionary<uint, string> presetCurrencies = new();
-
         public Dictionary<uint, string> PresetCurrencies
         {
             set
@@ -29,9 +28,7 @@ namespace CurrencyTracker
                 return presetCurrencies;
             }
         }
-
         private Dictionary<uint, string> customCurrencies = new();
-
         public Dictionary<uint, string> CustomCurrencies
         {
             set
@@ -44,8 +41,7 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
-
-        public List<string> OrdedOptions { get; set; } = new List<string>();
+        public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
         public int RecordsPerPage { get; set; } = 20;
@@ -64,7 +60,6 @@ namespace CurrencyTracker
 
         // 备注选项 Note Settings
         public bool RecordContentName { get; set; } = true;
-
         public bool RecordTeleportDes { get; set; } = true;
         public bool WaitExComplete { get; set; } = true;
         public bool RecordTeleport { get; set; } = true;
@@ -81,7 +76,7 @@ namespace CurrencyTracker
         {
             get
             {
-                if (allCurrencyIcons == null || allCurrencyIcons.Count != PresetCurrencies.Count + CustomCurrencies.Count)
+                if (allCurrencyIcons == null || isUpdated)
                 {
                     allCurrencyIcons = GetAllCurrencyIcons();
                 }
@@ -102,19 +97,6 @@ namespace CurrencyTracker
             }
         }
 
-        [Newtonsoft.Json.JsonIgnore]
-        public Dictionary<string, uint> AllCurrenciesRe
-        {
-            get
-            {
-                if (allCurrencies == null || isUpdated)
-                {
-                    allCurrenciesRe = GetAllCurrenciesRe();
-                }
-                return allCurrenciesRe;
-            }
-        }
-
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
 
@@ -122,41 +104,42 @@ namespace CurrencyTracker
         private List<CurrencyIcon>? allCurrencyIcons;
 
         private Dictionary<uint, string>? allCurrencies;
-        private Dictionary<string, uint>? allCurrenciesRe;
-        private bool isUpdated;
+        public bool isUpdated;
 
         private List<CurrencyIcon> GetAllCurrencyIcons()
         {
             List<CurrencyIcon> allCurrencies = new();
-            Parallel.ForEach(PresetCurrencies, currency =>
-            {
-                allCurrencies.Add(new CurrencyIcon
-                {
-                    CurrencyID = currency.Key,
-                    CurrencyName = currency.Value,
-                });
-            });
 
-            Parallel.ForEach(CustomCurrencies, currency =>
+            foreach (var currency in PresetCurrencies)
             {
                 allCurrencies.Add(new CurrencyIcon
                 {
                     CurrencyID = currency.Key,
                     CurrencyName = currency.Value,
                 });
-            });
+            }
+
+            foreach (var currency in CustomCurrencies)
+            {
+                allCurrencies.Add(new CurrencyIcon
+                {
+                    CurrencyID = currency.Key,
+                    CurrencyName = currency.Value,
+                });
+            }
+
+            isUpdated = false;
+
+            Service.PluginLog.Debug("重新获取全部货币图标成功");
 
             return allCurrencies;
         }
 
         private Dictionary<uint, string> GetAllCurrencies()
         {
+            Service.PluginLog.Debug("重新获取全部货币数据成功");
+            isUpdated = false;
             return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Key, kv => kv.Value);
-        }
-
-        private Dictionary<string, uint> GetAllCurrenciesRe()
-        {
-            return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Value, kv => kv.Key);
         }
 
         public void Initialize(DalamudPluginInterface pluginInterface)

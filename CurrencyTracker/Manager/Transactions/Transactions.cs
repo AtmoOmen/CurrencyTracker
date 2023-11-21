@@ -10,7 +10,7 @@ namespace CurrencyTracker.Manager
     public partial class Transactions
     {
         // 加载全部记录 Load All Transactions
-        public static List<TransactionsConvertor> LoadAllTransactions(string currencyName)
+        public static List<TransactionsConvertor> LoadAllTransactions(uint currencyID)
         {
             var allTransactions = new List<TransactionsConvertor>();
 
@@ -19,6 +19,13 @@ namespace CurrencyTracker.Manager
                 Service.PluginLog.Warning("Fail to Load All Transactions: Player Data Folder Path Missed.");
                 return allTransactions;
             }
+
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return allTransactions;
+            }
+
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
@@ -39,15 +46,21 @@ namespace CurrencyTracker.Manager
         }
 
         // 以列表形式加载最新一条记录 Load Latest Transaction in the Form of List
-        public static List<TransactionsConvertor> LoadLatestTransaction(string CurrencyName)
+        public static List<TransactionsConvertor> LoadLatestTransaction(uint currencyID)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
                 Service.PluginLog.Warning("Fail to Load Lastest Transaction: Player Data Folder Path Missed.");
-                return new List<TransactionsConvertor>();
+                return new();
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return new();
+            }
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
 
             var allTransactions = TransactionsConvertor.FromFile(filePath);
 
@@ -74,25 +87,25 @@ namespace CurrencyTracker.Manager
         }
 
         // 加载最新一条记录 Load Latest Transaction
-        public static TransactionsConvertor LoadLatestSingleTransaction(string CurrencyName)
+        public static TransactionsConvertor LoadLatestSingleTransaction(uint currencyID)
         {
-            if (string.IsNullOrEmpty(Plugin.Instance.PlayerDataFolder))
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
                 Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
-                return new TransactionsConvertor();
+                return new();
             }
 
-            if (string.IsNullOrEmpty(CurrencyName))
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Currency Name is empty.");
-                return new TransactionsConvertor();
+                Service.PluginLog.Error("Currency Missed");
+                return new();
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
             {
-                return new TransactionsConvertor();
+                return new();
             }
 
             string? lastLine = null;
@@ -109,7 +122,7 @@ namespace CurrencyTracker.Manager
 
             if (lastLine == null)
             {
-                return new TransactionsConvertor();
+                return new();
             }
 
             var latestTransaction = TransactionsConvertor.FromFileLine(lastLine);
@@ -118,16 +131,16 @@ namespace CurrencyTracker.Manager
         }
 
         // 加载指定范围内的记录 Load Transactions in Specific Range
-        public static List<TransactionsConvertor> LoadTransactionsInRange(string CurrencyName, int startIndex, int endIndex)
+        public static List<TransactionsConvertor> LoadTransactionsInRange(uint currencyID, int startIndex, int endIndex)
         {
-            List<TransactionsConvertor> allTransactions = LoadAllTransactions(CurrencyName);
+            var allTransactions = LoadAllTransactions(currencyID);
 
             if (startIndex < 0 || startIndex >= allTransactions.Count || endIndex < 0 || endIndex >= allTransactions.Count)
             {
                 throw new ArgumentException("Invalid index range.");
             }
 
-            List<TransactionsConvertor> transactionsInRange = new List<TransactionsConvertor>();
+            var transactionsInRange = new List<TransactionsConvertor>();
             for (var i = startIndex; i <= endIndex; i++)
             {
                 transactionsInRange.Add(allTransactions[i]);
@@ -137,7 +150,7 @@ namespace CurrencyTracker.Manager
         }
 
         // 删除最新一条记录 Delete Latest Transaction
-        public static uint DeleteLatestTransaction(string CurrencyName)
+        public static uint DeleteLatestTransaction(uint currencyID)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -145,7 +158,13 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return 0;
+            }
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
             {
@@ -164,7 +183,7 @@ namespace CurrencyTracker.Manager
         }
 
         // 编辑最新一条记录 Edit Latest Transaction
-        public static void EditLatestTransaction(string CurrencyName, string LocationName = "None", string Note = "None", bool forceEdit = false)
+        public static void EditLatestTransaction(uint currencyID, string LocationName = "None", string Note = "None", bool forceEdit = false)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -172,12 +191,18 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.ContainsValue(CurrencyName))
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return;
+            }
+
+            if (!Plugin.Instance.Configuration.AllCurrencies.ContainsValue(currencyName))
             {
                 return;
             }
 
-            var editedTransaction = LoadLatestSingleTransaction(CurrencyName);
+            var editedTransaction = LoadLatestSingleTransaction(currencyID);
 
             if (editedTransaction == null)
             {
@@ -192,20 +217,32 @@ namespace CurrencyTracker.Manager
                 }
             }
 
-            if (DeleteLatestTransaction(CurrencyName) == 0)
+            if (DeleteLatestTransaction(currencyID) == 0)
             {
                 return;
             }
 
-            AppendTransaction(editedTransaction.TimeStamp, CurrencyName, editedTransaction.Amount, editedTransaction.Change, (LocationName == "None") ? editedTransaction.LocationName : LocationName, (Note == "None") ? editedTransaction.Note : Note);
+            AppendTransaction(currencyID, editedTransaction.TimeStamp, editedTransaction.Amount, editedTransaction.Change, (LocationName == "None") ? editedTransaction.LocationName : LocationName, (Note == "None") ? editedTransaction.Note : Note);
         }
 
         // 在数据末尾追加最新一条记录 Append One Transaction
-        public static void AppendTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
+        public static void AppendTransaction(uint currencyID, DateTime TimeStamp, long Amount, long Change, string LocationName, string Note)
         {
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
+                return;
+            }
+
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return;
+            }
+
             var singleTransaction = new TransactionsConvertor
             {
-                TimeStamp = Timestamp,
+                TimeStamp = TimeStamp,
                 Amount = Amount,
                 Change = Change,
                 LocationName = LocationName,
@@ -217,22 +254,28 @@ namespace CurrencyTracker.Manager
                 singleTransaction
             };
 
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+            TransactionsConvertor.AppendTransactionToFile(filePath, tempList);
+        }
+
+        // 新建一条数据记录 Create One New Transaction
+        public static void AddTransaction(uint currencyID, DateTime TimeStamp, long Amount, long Change, string LocationName, string Note)
+        {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
                 Service.PluginLog.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
                 return;
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
-            TransactionsConvertor.AppendTransactionToFile(filePath, tempList);
-        }
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return;
+            }
 
-        // 新建一条数据记录 Create One New Transaction
-        public static void AddTransaction(DateTime Timestamp, string CurrencyName, long Amount, long Change, string LocationName, string Note)
-        {
             var Transaction = new TransactionsConvertor
             {
-                TimeStamp = Timestamp,
+                TimeStamp = TimeStamp,
                 Amount = Amount,
                 Change = Change,
                 LocationName = LocationName,
@@ -244,19 +287,13 @@ namespace CurrencyTracker.Manager
                 Transaction
             };
 
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
-            {
-                Service.PluginLog.Warning("Fail to Add Transaction: Player Data Folder Path Missed.");
-                return;
-            }
-
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
             TransactionsConvertor.WriteTransactionsToFile(filePath, tempList);
             tempList.Clear();
         }
 
         // 根据时间重新排序文件内记录 Sort Transactions in File by Time
-        public static void ReorderTransactions(string CurrencyName)
+        public static void ReorderTransactions(uint currencyID)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -264,17 +301,23 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            var allTransactions = LoadAllTransactions(CurrencyName);
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return;
+            }
+
+            var allTransactions = LoadAllTransactions(currencyID);
 
             allTransactions = allTransactions.OrderBy(x => x.TimeStamp).ToList();
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
 
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
         }
 
         // 按照临界值合并记录 Merge Transactions By Threshold
-        public static int MergeTransactionsByLocationAndThreshold(string CurrencyName, long threshold, bool isOneWayMerge)
+        public static int MergeTransactionsByLocationAndThreshold(uint currencyID, long threshold, bool isOneWayMerge)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -282,7 +325,13 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            var allTransactions = LoadAllTransactions(CurrencyName);
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return 0;
+            }
+
+            var allTransactions = LoadAllTransactions(currencyID);
 
             if (allTransactions.Count <= 1)
             {
@@ -292,7 +341,7 @@ namespace CurrencyTracker.Manager
             var mergedTransactions = new List<TransactionsConvertor>();
             var mergedCount = 0;
 
-            for (int i = 0; i < allTransactions.Count;)
+            for (var i = 0; i < allTransactions.Count;)
             {
                 var currentTransaction = allTransactions[i];
                 var seperateMergedCount = 0;
@@ -331,14 +380,14 @@ namespace CurrencyTracker.Manager
                 mergedTransactions.Add(currentTransaction);
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
             TransactionsConvertor.WriteTransactionsToFile(filePath, mergedTransactions);
 
             return mergedCount;
         }
 
         // 合并特定的记录 Merge Specific Transactions
-        public static int MergeSpecificTransactions(string CurrencyName, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
+        public static int MergeSpecificTransactions(uint currencyID, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1")
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -346,7 +395,13 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            var allTransactions = LoadAllTransactions(CurrencyName);
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return 0;
+            }
+
+            var allTransactions = LoadAllTransactions(currencyID);
 
             if (allTransactions.Count <= 1)
             {
@@ -389,14 +444,14 @@ namespace CurrencyTracker.Manager
 
             allTransactions.Add(finalTransaction);
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{CurrencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return mergedCount;
         }
 
         // 清除异常记录 Clear Exceptional Records
-        public static int ClearExceptionRecords(string selectedCurrencyName)
+        public static int ClearExceptionRecords(uint currencyID)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -404,7 +459,13 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            var filePath = Path.Join(Plugin.Instance.PlayerDataFolder, $"{selectedCurrencyName}.txt");
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return 0;
+            }
+
+            var filePath = Path.Join(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
 
             var allTransactions = TransactionsConvertor.FromFile(filePath);
 
@@ -426,8 +487,14 @@ namespace CurrencyTracker.Manager
         }
 
         // 导出数据 Export Transactions Data
-        public static string ExportData(List<TransactionsConvertor> data, string fileName, string selectedCurrencyName, int exportType)
+        public static string ExportData(List<TransactionsConvertor> data, string fileName, uint currencyID, int exportType)
         {
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return string.Empty;
+            }
+
             string fileExtension;
             string headers;
             string lineTemplate;
@@ -441,7 +508,7 @@ namespace CurrencyTracker.Manager
             else if (exportType == 1)
             {
                 fileExtension = "md";
-                headers = $"{Service.Lang.GetText("ExportFileMDHeader")} {selectedCurrencyName}\n\n" +
+                headers = $"{Service.Lang.GetText("ExportFileMDHeader")} {currencyName}\n\n" +
                           $"{Service.Lang.GetText("ExportFileMDHeader1")}";
                 lineTemplate = "| {0} | {1} | {2} | {3} | {4} |";
             }
@@ -466,8 +533,8 @@ namespace CurrencyTracker.Manager
             var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
 
             string finalFileName = string.IsNullOrWhiteSpace(fileName)
-                ? $"{selectedCurrencyName}_{nowTime}.{fileExtension}"
-                : $"{fileName}_{selectedCurrencyName}_{nowTime}.{fileExtension}";
+                ? $"{currencyName}_{nowTime}.{fileExtension}"
+                : $"{fileName}_{currencyName}_{nowTime}.{fileExtension}";
 
             var filePath = Path.Combine(playerDataFolder, finalFileName);
 

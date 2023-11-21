@@ -7,6 +7,9 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
+    // 当前选中的货币ID Currently-Selected Currency ID
+    public uint selectedCurrencyID = 0;
+
     // 是否显示记录选项 If Show Record Options
     private bool showRecordOptions = true;
 
@@ -63,9 +66,6 @@ public partial class Main
 
     // 选择的语言 Selected Language
     internal string playerLang = string.Empty;
-
-    // 当前选中的货币名称 Currently Selected Currency Name
-    internal string? selectedCurrencyName;
 
     // 搜索框值 Search Filter
     private static string searchFilter = string.Empty;
@@ -170,9 +170,8 @@ public partial class Main
     private bool isRecordFate;
     private bool isRecordIsland;
 
-    internal Dictionary<string, List<bool>>? selectedStates = new();
-    internal Dictionary<string, List<TransactionsConvertor>>? selectedTransactions = new();
-    internal List<string>? ordedOptions = new();
+    internal Dictionary<uint, List<bool>>? selectedStates = new();
+    internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
     internal List<TransactionsConvertor> lastTransactions = new();
     internal long[]? LinePlotData;

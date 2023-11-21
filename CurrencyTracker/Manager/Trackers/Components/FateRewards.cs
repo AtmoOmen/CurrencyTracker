@@ -9,11 +9,6 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class FateRewards : ITrackerComponent
     {
-        public FateRewards()
-        {
-            Init();
-        }
-
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", BeginFate);
@@ -37,7 +32,7 @@ namespace CurrencyTracker.Manager.Trackers
                     {
                         Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                         {
-                            Transactions.EditLatestTransaction(currency.Value, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
+                            Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
                         });
 
                         FateName = string.Empty;

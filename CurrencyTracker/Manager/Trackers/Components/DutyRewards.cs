@@ -26,11 +26,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isDutyStarted;
         private string contentName = string.Empty;
 
-        public DutyRewards()
-        {
-            Init();
-        }
-
         public void Init()
         {
             ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()

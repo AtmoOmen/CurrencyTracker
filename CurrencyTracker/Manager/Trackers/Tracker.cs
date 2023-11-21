@@ -86,7 +86,7 @@ namespace CurrencyTracker.Manager.Trackers
                 ? TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation")
                 : locationName;
 
-            var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyName);
+            var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyID);
 
             if (latestTransaction != null)
             {
@@ -94,7 +94,7 @@ namespace CurrencyTracker.Manager.Trackers
 
                 if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
                 {
-                    Transactions.AppendTransaction(DateTime.Now, currencyName, currencyAmount, currencyChange, locationName, noteContent);
+                    Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent);
                     OnTransactionsUpdate(EventArgs.Empty);
                     Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
                     return true;
@@ -102,7 +102,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
             else if (currencyAmount > 0 && (recordChangeType == RecordChangeType.All || recordChangeType == RecordChangeType.Positive))
             {
-                Transactions.AddTransaction(DateTime.Now, currencyName, currencyAmount, currencyAmount, locationName, noteContent);
+                Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent);
                 OnTransactionsUpdate(EventArgs.Empty);
                 Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
                 return true;

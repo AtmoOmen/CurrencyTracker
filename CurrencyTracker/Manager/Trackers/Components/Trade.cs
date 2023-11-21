@@ -11,11 +11,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnTrade = false;
         private string tradeTargetName = string.Empty;
 
-        public Trade()
-        {
-            Init();
-        }
-
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Trade", StartTrade);

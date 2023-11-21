@@ -13,11 +13,6 @@ namespace CurrencyTracker.Manager.Trackers
         private string ttRivalName = string.Empty;
         private string ttResultText = string.Empty;
 
-        public TripleTriad()
-        {
-            Init();
-        }
-
         public void Init()
         {
             var TTGui = Service.GameGui.GetAddonByName("TripleTriad");

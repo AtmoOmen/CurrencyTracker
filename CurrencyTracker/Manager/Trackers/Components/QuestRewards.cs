@@ -13,11 +13,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isReadyFinish = false;
         private string questName = string.Empty;
 
-        public QuestRewards()
-        {
-            Init();
-        }
-
         public void Init()
         {
             if (Service.GameGui.GetAddonByName("JournalResult") != nint.Zero)

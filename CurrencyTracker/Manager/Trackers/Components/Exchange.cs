@@ -25,11 +25,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnExchange = false;
         private string windowName = string.Empty;
 
-        public Exchange()
-        {
-            Init();
-        }
-
         public void Init()
         {
             var allUI = new List<IEnumerable<string>> { UI, WindowUI.Keys };

@@ -12,11 +12,6 @@ namespace CurrencyTracker.Manager.Trackers
         private bool isOnWorkshop = false;
         private string windowTitle = string.Empty;
 
-        public IslandSanctuary()
-        {
-            Init();
-        }
-
         public void Init()
         {
             if (TerrioryHandler.CurrentLocationID == 1055)

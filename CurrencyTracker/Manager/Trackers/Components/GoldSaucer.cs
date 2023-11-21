@@ -8,11 +8,6 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class GoldSaucer : ITrackerComponent
     {
-        public GoldSaucer()
-        {
-            Init();
-        }
-
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", BeginGoldSaucer);
@@ -34,9 +29,9 @@ namespace CurrencyTracker.Manager.Trackers
                     var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(29, out var currencyName))
+                        if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(29, out var _))
                         {
-                            Transactions.EditLatestTransaction(currencyName, "None", $"({GameName})");
+                            Transactions.EditLatestTransaction(29, "None", $"({GameName})");
                             Plugin.Instance.Main.UpdateTransactions();
                         }
                     }

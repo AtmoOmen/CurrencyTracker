@@ -13,7 +13,7 @@ namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    private readonly Main main = Plugin.Instance.Main;
+    private readonly Main Main = Plugin.Instance.Main;
     private List<TransactionsConvertor>? currentTypeTransactions = new List<TransactionsConvertor>();
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
@@ -31,10 +31,10 @@ public class Graph : Window, IDisposable
 
     private void Initialize()
     {
-        if (main.selectedCurrencyName == null)
+        if (Main.selectedCurrencyID == 0)
             return;
 
-        if (main.currentTypeTransactions == null)
+        if (Main.currentTypeTransactions == null)
         {
             if (Plugin.Instance.Graph.IsOpen)
                 Plugin.Instance.Graph.IsOpen = false;
@@ -51,15 +51,15 @@ public class Graph : Window, IDisposable
 
         ImGui.Text($"{Service.Lang.GetText("Now")}:");
         ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, main.selectedCurrencyName);
+        ImGui.TextColored(ImGuiColors.DalamudOrange, Plugin.Instance.Configuration.AllCurrencies[Main.selectedCurrencyID]);
         ImGui.SameLine();
         ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, main.currentTypeTransactions.Count.ToString());
+        ImGui.TextColored(ImGuiColors.DalamudOrange, Main.currentTypeTransactions.Count.ToString());
         ImGui.SameLine();
         HelpMessages();
 
-        currentTypeTransactions = main.currentTypeTransactions;
+        currentTypeTransactions = Main.currentTypeTransactions;
 
         if (currentTypeTransactions != null)
         {
