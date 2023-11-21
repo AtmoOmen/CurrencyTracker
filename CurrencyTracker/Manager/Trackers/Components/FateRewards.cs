@@ -38,7 +38,7 @@ namespace CurrencyTracker.Manager.Trackers
                     {
                         Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                         {
-                            Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
+                            Transactions.EditLatestTransaction(currency.Value, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
                         });
 
                         FateName = string.Empty;

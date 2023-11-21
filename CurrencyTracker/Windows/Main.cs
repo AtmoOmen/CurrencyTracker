@@ -80,17 +80,17 @@ public partial class Main : Window, IDisposable
 
         foreach (var currency in C.AllCurrencies)
         {
-            if (!addedOptions.Contains(currency.Key))
+            if (!addedOptions.Contains(currency.Value))
             {
-                addedOptions.Add(currency.Key);
-                selectedStates.Add(currency.Key, new());
-                selectedTransactions.Add(currency.Key, new());
+                addedOptions.Add(currency.Value);
+                selectedStates.Add(currency.Value, new());
+                selectedTransactions.Add(currency.Value, new());
             }
         }
 
         if (C.OrdedOptions.Count == 0 || C.OrdedOptions == null)
         {
-            ordedOptions = C.AllCurrencies.Keys.ToList();
+            ordedOptions = C.AllCurrencies.Values.ToList();
             C.OrdedOptions = ordedOptions;
             C.Save();
         }
@@ -774,7 +774,7 @@ public partial class Main : Window, IDisposable
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Now")}:");
             ImGui.SameLine();
             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
-            ImGui.Image(CurrencyInfo.GetIcon(C.PresetCurrencies.Concat(C.CustomCurrencies).FirstOrDefault(x => x.Key == selectedCurrencyName).Value).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+            ImGui.Image(CurrencyInfo.GetIcon(C.AllCurrencies.FirstOrDefault(x => x.Value == selectedCurrencyName).Key).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
             ImGui.SameLine();
             ImGui.Text(selectedCurrencyName);
 
@@ -796,7 +796,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             if (ImGui.Button(Service.Lang.GetText("Reset")))
             {
-                var currencyName = C.PresetCurrencies.ContainsKey(selectedCurrencyName) ? CurrencyInfo.CurrencyLocalName(C.PresetCurrencies[selectedCurrencyName]) : CurrencyInfo.CurrencyLocalName(C.CustomCurrencies[selectedCurrencyName]);
+                var currencyName = CurrencyInfo.CurrencyLocalName(C.AllCurrencies.FirstOrDefault(x => x.Value == selectedCurrencyName).Key);
                 CurrencyRenameHandler(currencyName);
 
                 ImGui.CloseCurrentPopup();
@@ -823,7 +823,7 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGui.SetNextItemWidth(210);
 
-            if (ImGui.BeginCombo("", Tracker.ItemNames.TryGetValue(customCurrency, out var selected) ? selected : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+            if (ImGui.BeginCombo("", Tracker.ItemNames.TryGetValue(customCurrencyID, out var selected) ? selected : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
                 var startIndex = currentItemPage * itemsPerPage;
                 var endIndex = Math.Min(startIndex + itemsPerPage, CCTItemNames.Count);
@@ -889,10 +889,10 @@ public partial class Main : Window, IDisposable
                             var itemKeyPair = Tracker.ItemNames.FirstOrDefault(x => x.Value == itemName);
                             if (ImGui.Selectable(itemName))
                             {
-                                customCurrency = itemKeyPair.Key;
+                                customCurrencyID = itemKeyPair.Key;
                             }
 
-                            if (ImGui.IsWindowAppearing() && customCurrency == itemKeyPair.Key)
+                            if (ImGui.IsWindowAppearing() && customCurrencyID == itemKeyPair.Key)
                             {
                                 ImGui.SetScrollHereY();
                             }
@@ -934,16 +934,16 @@ public partial class Main : Window, IDisposable
                     return;
                 }
 
-                if (C.AllCurrencies.ContainsKey(selected) || C.AllCurrencies.ContainsValue(customCurrency))
+                if (C.AllCurrencies.ContainsValue(selected) || C.AllCurrencies.ContainsKey(customCurrencyID))
                 {
                     Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 
-                C.CustomCurrencies.Add(selected, customCurrency);
+                C.CustomCurrencies.Add(customCurrencyID, selected);
                 C.Save();
-                selectedStates.Add(selected, new List<bool>());
-                selectedTransactions.Add(selected, new List<TransactionsConvertor>());
+                selectedStates.Add(selected, new());
+                selectedTransactions.Add(selected, new());
                 ReloadOrderedOptions();
 
                 Service.Tracker.UpdateCurrencies();
@@ -954,7 +954,7 @@ public partial class Main : Window, IDisposable
                 lastTransactions = currentTypeTransactions;
                 searchFilter = string.Empty;
 
-                customCurrency = 0;
+                customCurrencyID = 0;
 
                 ImGui.CloseCurrentPopup();
             }
@@ -1200,23 +1200,23 @@ public partial class Main : Window, IDisposable
 
         ImGui.SameLine();
         {
-            if (!selectedCurrencyName.IsNullOrEmpty() && !C.PresetCurrencies.ContainsKey(selectedCurrencyName))
+            if (!selectedCurrencyName.IsNullOrEmpty() && !C.PresetCurrencies.ContainsValue(selectedCurrencyName))
             {
                 // 删除货币 Delete Currency
                 Widgets.IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete");
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
-                    if (string.IsNullOrEmpty(selectedCurrencyName))
+                    if (selectedCurrencyName.IsNullOrEmpty())
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                         return;
                     }
-                    if (!C.AllCurrencies.ContainsKey(selectedCurrencyName))
+                    if (!C.AllCurrencies.ContainsValue(selectedCurrencyName))
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp2"));
                         return;
                     }
-                    C.CustomCurrencies.Remove(selectedCurrencyName);
+                    C.CustomCurrencies.Remove(C.AllCurrenciesRe[selectedCurrencyName]);
                     C.Save();
                     selectedStates.Remove(selectedCurrencyName);
                     selectedTransactions.Remove(selectedCurrencyName);
@@ -1666,6 +1666,9 @@ public partial class Main : Window, IDisposable
             for (var i = 0; i < ordedOptions.Count; i++)
             {
                 var option = ordedOptions[i];
+
+                if (option.IsNullOrEmpty()) continue;
+
                 if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
                 {
                     selectedOptionIndex = i;
@@ -1681,7 +1684,7 @@ public partial class Main : Window, IDisposable
 
                 ImGui.SameLine(3.0f);
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
-                ImGui.Image(CurrencyInfo.GetIcon(C.AllCurrencies.FirstOrDefault(x => x.Key == option).Value).ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+                ImGui.Image(C.AllCurrencyIcons.FirstOrDefault(x => x.CurrencyName == option).Icon.ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
                 ImGui.SameLine();
                 ImGui.Text(option);
             }

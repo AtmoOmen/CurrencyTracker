@@ -22,11 +22,11 @@ public static class CurrencyInfo
     };
 
     // 存储一般货币的ID的字典（这里的string非货币名）
-    public static readonly Dictionary<string, uint> PresetCurrencies = new()
+    public static readonly Dictionary<uint, string> PresetCurrencies = new()
     {
-        { "Gil", 1 },
-        { "NonLimitedTomestone", GetNonLimitedTomestoneId() },
-        { "LimitedTomestone", GetLimitedTomestoneId() }
+        { 1, "Gil" },
+        { GetNonLimitedTomestoneId(), "NonLimitedTomestone"},
+        { GetLimitedTomestoneId(), "LimitedTomestone"}
     };
 
     // 传入货币ID后，获取货币于当前语言环境的名称
@@ -116,5 +116,29 @@ public static class CurrencyInfo
 
             return SomeGil;
         }
+    }
+}
+
+public class CurrencyIcon
+{
+    public uint CurrencyID { get; set; }
+    public string CurrencyName { get; set; } = null!;
+    private IDalamudTextureWrap? icon;
+
+    public IDalamudTextureWrap? Icon
+    {
+        get
+        {
+            if (icon == null)
+            {
+                GetIcon();
+            }
+            return icon;
+        }
+    }
+
+    private void GetIcon()
+    {
+        icon = CurrencyInfo.GetIcon(CurrencyID);
     }
 }

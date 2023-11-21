@@ -85,7 +85,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Value, TerrioryHandler.PreviousLocationName, Plugin.Instance.Configuration.RecordContentName ? $"({contentName})" : "");
+                Service.Tracker.CheckCurrency(currency.Key, TerrioryHandler.PreviousLocationName, Plugin.Instance.Configuration.RecordContentName ? $"({contentName})" : "");
             });
 
 

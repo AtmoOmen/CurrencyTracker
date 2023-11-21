@@ -41,7 +41,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Value);
+                Service.Tracker.CheckCurrency(currency.Key);
             });
         }
 

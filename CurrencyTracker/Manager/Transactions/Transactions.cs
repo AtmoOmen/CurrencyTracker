@@ -173,7 +173,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(CurrencyName, out _))
+            if (!Plugin.Instance.Configuration.AllCurrencies.ContainsValue(CurrencyName))
             {
                 return;
             }

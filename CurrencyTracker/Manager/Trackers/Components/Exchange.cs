@@ -134,7 +134,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})");
             }); 
 
             currentTargetName = string.Empty;
@@ -151,7 +151,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Value, "", $"({windowName})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowName})");
             });
 
             windowName = string.Empty;

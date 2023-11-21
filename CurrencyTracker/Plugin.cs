@@ -5,6 +5,8 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Utility;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,6 +41,10 @@ namespace CurrencyTracker
             Instance = this;
             PluginInterface = pluginInterface;
 
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory()), "CurrencyTracker.json")))
+            {
+                ParseOldConfiguration(Path.Combine(Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory()), "CurrencyTracker.json"));
+            }
             Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             Configuration.Initialize(PluginInterface);
 
@@ -183,7 +189,7 @@ namespace CurrencyTracker
             }
             else
             {
-                var matchingCurrencies = FindMatchingCurrencies(Configuration.AllCurrencies.Keys.ToList(), args);
+                var matchingCurrencies = FindMatchingCurrencies(Configuration.AllCurrencies.Values.ToList(), args);
                 if (matchingCurrencies.Count > 1)
                 {
                     Service.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
@@ -252,7 +258,7 @@ namespace CurrencyTracker
                 .ToList();
         }
 
-        private bool MatchesCurrency(string currency, string partialName, bool isChineseSimplified)
+        private static bool MatchesCurrency(string currency, string partialName, bool isChineseSimplified)
         {
             var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
 
@@ -263,6 +269,57 @@ namespace CurrencyTracker
             }
 
             return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        public static void ParseOldConfiguration(string jsonFilePath)
+        {
+            if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath))
+            {
+                return;
+            }
+
+            var json = File.ReadAllText(jsonFilePath);
+            var jsonObj = JObject.Parse(json);
+
+            Dictionary<string, string>[] dicts = new Dictionary<string, string>[]
+            {
+                jsonObj["CustomCurrencies"]?.ToObject<Dictionary<string, string>>(),
+                jsonObj["PresetCurrencies"]?.ToObject<Dictionary<string, string>>()
+            };
+
+            foreach (var originalDict in dicts)
+            {
+                if (originalDict == null)
+                {
+                    continue;
+                }
+
+                var swappedDict = new JObject();
+
+                foreach (var entry in originalDict)
+                {
+                    if (uint.TryParse(entry.Key, out var _))
+                    {
+                        swappedDict.Add(entry.Key, JToken.FromObject(entry.Value));
+                    }
+                    else
+                    {
+                        swappedDict.Add(entry.Value, JToken.FromObject(entry.Key));
+                    }
+                }
+
+                if (originalDict == dicts[0])
+                {
+                    jsonObj["CustomCurrencies"] = swappedDict;
+                }
+                else
+                {
+                    jsonObj["PresetCurrencies"] = swappedDict;
+                }
+            }
+
+            var outputJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+            File.WriteAllText(jsonFilePath, outputJson);
         }
 
         private void DrawUI()

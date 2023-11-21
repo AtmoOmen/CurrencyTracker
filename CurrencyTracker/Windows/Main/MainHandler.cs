@@ -19,7 +19,7 @@ public partial class Main
     private void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<string>(C.OrdedOptions);
-        var allCurrenciesSet = new HashSet<string>(C.AllCurrencies.Keys);
+        var allCurrenciesSet = new HashSet<string>(C.AllCurrencies.Values);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
@@ -210,7 +210,7 @@ public partial class Main
         var itemNamesSet = new HashSet<string>(Tracker.ItemNamesSet, StringComparer.OrdinalIgnoreCase);
 
         var items = itemNamesSet
-            .Where(itemName => !C.AllCurrencies.Values.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
+            .Where(itemName => !C.AllCurrencies.Keys.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
             .ToList();
 
         CCTItemCounts = (uint)items.Count;
@@ -226,7 +226,7 @@ public partial class Main
         }
         else
         {
-            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Values.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
                 .ToList();
         }
     }
@@ -455,23 +455,26 @@ public partial class Main
     {
         var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
 
-        if (C.AllCurrencies.ContainsKey(editedCurrencyName) || File.Exists(editedFilePath))
+        if (C.AllCurrencies.ContainsValue(editedCurrencyName) || File.Exists(editedFilePath))
         {
             Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
-
-
-        if (C.PresetCurrencies.TryGetValue(selectedCurrencyName, out var value))
+        
+        if (C.PresetCurrencies.ContainsValue(selectedCurrencyName))
         {
-            C.PresetCurrencies.Remove(selectedCurrencyName);
-            C.PresetCurrencies.Add(editedCurrencyName, value);
+            var currencyID = C.AllCurrenciesRe[selectedCurrencyName];
+
+            C.PresetCurrencies.Remove(currencyID);
+            C.PresetCurrencies.Add(currencyID, editedCurrencyName);
         }
 
-        if (C.CustomCurrencies.TryGetValue(selectedCurrencyName, out var value2))
+        if (C.CustomCurrencies.ContainsValue(selectedCurrencyName))
         {
-            C.CustomCurrencies.Remove(selectedCurrencyName);
-            C.CustomCurrencies.Add(editedCurrencyName, value2);
+            var currencyID = C.AllCurrenciesRe[selectedCurrencyName];
+
+            C.CustomCurrencies.Remove(currencyID);
+            C.CustomCurrencies.Add(currencyID, editedCurrencyName);
         }
 
         selectedStates.Remove(selectedCurrencyName);

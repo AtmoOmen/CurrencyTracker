@@ -35,10 +35,11 @@ namespace CurrencyTracker.Manager.Trackers
                     var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        var currencyName = Plugin.Instance.Configuration.CustomCurrencies.FirstOrDefault(x => x.Value == 29).Key;
-                        if (currencyName.IsNullOrEmpty()) return;
-                        Transactions.EditLatestTransaction(currencyName, "None", $"({GameName})");
-                        Plugin.Instance.Main.UpdateTransactions();
+                        if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(29, out var currencyName))
+                        {
+                            Transactions.EditLatestTransaction(currencyName, "None", $"({GameName})");
+                            Plugin.Instance.Main.UpdateTransactions();
+                        }
                     }
                 }
             }

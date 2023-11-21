@@ -6,6 +6,7 @@ using Lumina.Excel.GeneratedSheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -71,17 +72,16 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (!Service.ClientState.IsLoggedIn || Flags.BetweenAreas()) return;
 
-            foreach (var currency in C.AllCurrencies)
+            Parallel.ForEach(C.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Value);
-            }
+                CheckCurrency(currency.Key);
+            });
         }
 
         // 检查货币情况 Check the currency
         public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All)
         {
-            var currencyName = C.AllCurrencies.FirstOrDefault(x => x.Value == currencyID).Key;
-            if (currencyName.IsNullOrEmpty()) return false;
+            if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
 
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID);
             uint locationKey = Service.ClientState.TerritoryType;
@@ -117,17 +117,17 @@ namespace CurrencyTracker.Manager.Trackers
         {
             foreach (var currency in CurrencyInfo.PresetCurrencies)
             {
-                if (!C.PresetCurrencies.ContainsValue(currency.Value))
+                if (!C.PresetCurrencies.ContainsKey(currency.Key))
                 {
-                    var currencyName = CurrencyInfo.CurrencyLocalName(currency.Value);
+                    var currencyName = CurrencyInfo.CurrencyLocalName(currency.Key);
                     if (!currencyName.IsNullOrEmpty())
                     {
-                        C.PresetCurrencies.Add(currencyName, currency.Value);
+                        C.PresetCurrencies.Add(currency.Key, currencyName);
                     }
                 }
             }
 
-            C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.ContainsValue(kv.Value))
+            C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.ContainsKey(kv.Key))
                                        .ToDictionary(kv => kv.Key, kv => kv.Value);
             C.Save();
 
@@ -139,9 +139,9 @@ namespace CurrencyTracker.Manager.Trackers
 
                     if (currencyName.IsNullOrEmpty()) continue;
 
-                    if (!C.CustomCurrencies.ContainsValue(currencyID))
+                    if (!C.CustomCurrencies.ContainsKey(currencyID))
                     {
-                        C.CustomCurrencies.Add(currencyName, currencyID);
+                        C.CustomCurrencies.Add(currencyID, currencyName);
                     }
                 }
 

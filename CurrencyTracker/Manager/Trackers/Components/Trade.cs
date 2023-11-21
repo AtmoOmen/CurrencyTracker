@@ -61,7 +61,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Value, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})");
             });
 
             tradeTargetName = string.Empty;

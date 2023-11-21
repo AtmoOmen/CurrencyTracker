@@ -53,7 +53,7 @@ public partial class Main
     private int currentPage;
 
     // 自定义追踪物品ID Custom Tracked Currency ID
-    private uint customCurrency = uint.MaxValue;
+    private uint customCurrencyID = uint.MaxValue;
 
     // CSV文件名 CSV File Name
     private string fileName = string.Empty;

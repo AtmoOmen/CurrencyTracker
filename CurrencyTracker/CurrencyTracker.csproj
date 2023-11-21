@@ -30,11 +30,11 @@
   </PropertyGroup>
  
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-     <NoWarn>1701;1702;CS0414;CS8602;CS8604;CS8603;IDE1006;IDE0300</NoWarn>
+     <NoWarn>1701;1702;CS0414;CS8601;CS8602;CS8604;CS8603;IDE1006;IDE0300</NoWarn>
    </PropertyGroup>
  
    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-     <NoWarn>1701;1702;CS0414;CS8602;CS8604;CS8603;IDE1006;IDE0300</NoWarn>
+     <NoWarn>1701;1702;CS0414;CS8601;CS8602;CS8604;CS8603;IDE1006;IDE0300</NoWarn>
    </PropertyGroup>
  
    <ItemGroup>
