@@ -1,4 +1,5 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
@@ -11,11 +12,19 @@ using System.Collections.Generic;
 using System.Linq;
 using static CurrencyTracker.Manager.Trackers.Tracker;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     // 与 TeleportCosts / TerrioryHandler / ChatHandler 联动
     public class WarpCosts : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
         private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
 
@@ -40,6 +49,8 @@ namespace CurrencyTracker.Manager.Trackers
                 .ToList();
 
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
+
+            _initialized = true;
         }
 
         private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
@@ -58,7 +69,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
             {
                 isReadyWarpTP = true;
-                Service.Tracker.ChatHandler.isBlocked = true;
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
 
                 Service.Framework.Update += OnFrameworkUpdate;
             }
@@ -88,7 +99,7 @@ namespace CurrencyTracker.Manager.Trackers
                 if (Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})", RecordChangeType.Negative))
                 {
                     ResetStates();
-                    Service.Tracker.ChatHandler.isBlocked = false;
+                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
                 }
             }
             else if (warpTPInAreas)
@@ -96,7 +107,7 @@ namespace CurrencyTracker.Manager.Trackers
                 if (Service.Tracker.CheckCurrency(1, TerrioryHandler.CurrentLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative))
                 {
                     ResetStates();
-                    Service.Tracker.ChatHandler.isBlocked = false;
+                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
                 }
             }
         }
@@ -111,6 +122,8 @@ namespace CurrencyTracker.Manager.Trackers
         {
             ValidGilWarpTerriories.Clear();
             ResetStates();
+
+            _initialized = false;
         }
     }
 }

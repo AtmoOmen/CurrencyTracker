@@ -183,7 +183,7 @@ namespace CurrencyTracker.Manager
         }
 
         // 编辑最新一条记录 Edit Latest Transaction
-        public static void EditLatestTransaction(uint currencyID, string LocationName = "None", string Note = "None", bool forceEdit = false)
+        public static void EditLatestTransaction(uint currencyID, string LocationName = "None", string Note = "None", bool forceEdit = false, uint timeout = 10)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -209,9 +209,14 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
+            if (!editedTransaction.Note.IsNullOrEmpty())
+            {
+                return;
+            }
+
             if (!forceEdit)
             {
-                if ((DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > 10)
+                if ((DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout)
                 {
                     return;
                 }

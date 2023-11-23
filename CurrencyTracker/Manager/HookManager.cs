@@ -1,3 +1,4 @@
+using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Hooking;
 using System;
@@ -29,11 +30,6 @@ internal class HookManager
 
         if (eventId != 517)
             return;
-
-        if (!C.RecordTeleport)
-        {
-            return;
-        }
 
         try
         {

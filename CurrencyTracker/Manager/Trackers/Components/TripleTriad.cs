@@ -1,14 +1,24 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class TripleTriad : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         private bool isTTOn = false;
         private string ttRivalName = string.Empty;
         private string ttResultText = string.Empty;
@@ -23,6 +33,8 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
+
+            _initialized = true;
         }
 
         private void StartTripleTriad(AddonEvent type, AddonArgs args)
@@ -33,7 +45,7 @@ namespace CurrencyTracker.Manager.Trackers
         private unsafe void StartTripleTriadHandler()
         {
             isTTOn = true;
-            Service.Tracker.ChatHandler.isBlocked = true;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
 
             var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
             if (TTGui != null)
@@ -85,6 +97,8 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
+
+            _initialized = false;
         }
     }
 }

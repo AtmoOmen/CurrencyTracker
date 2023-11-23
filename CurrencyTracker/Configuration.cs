@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Threading.Tasks;
 
 namespace CurrencyTracker
 {
@@ -15,7 +14,6 @@ namespace CurrencyTracker
         public int Version { get; set; } = 0;
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
-        private Dictionary<uint, string> presetCurrencies = new();
         public Dictionary<uint, string> PresetCurrencies
         {
             set
@@ -28,7 +26,6 @@ namespace CurrencyTracker
                 return presetCurrencies;
             }
         }
-        private Dictionary<uint, string> customCurrencies = new();
         public Dictionary<uint, string> CustomCurrencies
         {
             set
@@ -49,27 +46,17 @@ namespace CurrencyTracker
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ExportDataFileType { get; set; } = 0;
-        public bool ShowTimeColumn { get; set; } = true;
-        public bool ShowAmountColumn { get; set; } = true;
-        public bool ShowChangeColumn { get; set; } = true;
-        public bool ShowLocationColumn { get; set; } = true;
-        public bool ShowNoteColumn { get; set; } = true;
-        public bool ShowOrderColumn { get; set; } = true;
-        public bool ShowCheckboxColumn { get; set; } = true;
+        public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
+        {
+            { "ShowTimeColumn", true },
+            { "ShowAmountColumn", true },
+            { "ShowChangeColumn", true },
+            { "ShowLocationColumn", true },
+            { "ShowNoteColumn", true },
+            { "ShowOrderColumn", true },
+            { "ShowCheckboxColumn", true }
+        };
         public int ChildWidthOffset { get; set; } = 0;
-
-        // 备注选项 Note Settings
-        public bool RecordContentName { get; set; } = true;
-        public bool RecordTeleportDes { get; set; } = true;
-        public bool WaitExComplete { get; set; } = true;
-        public bool RecordTeleport { get; set; } = true;
-        public bool TrackedInDuty { get; set; } = true;
-        public bool RecordMGPSource { get; set; } = true;
-        public bool RecordTripleTriad { get; set; } = true;
-        public bool RecordQuestName { get; set; } = true;
-        public bool RecordTrade { get; set; } = true;
-        public bool RecordFate { get; set; } = true;
-        public bool RecordIsland { get; set; } = true;
 
         [Newtonsoft.Json.JsonIgnore]
         public List<CurrencyIcon> AllCurrencyIcons
@@ -78,7 +65,7 @@ namespace CurrencyTracker
             {
                 if (allCurrencyIcons == null || isUpdated)
                 {
-                    allCurrencyIcons = GetAllCurrencyIcons();
+                    GetAllCurrencyIcons();
                 }
                 return allCurrencyIcons;
             }
@@ -92,6 +79,7 @@ namespace CurrencyTracker
                 if (allCurrencies == null || isUpdated)
                 {
                     allCurrencies = GetAllCurrencies();
+                    GetAllCurrencyIcons();
                 }
                 return allCurrencies;
             }
@@ -100,44 +88,33 @@ namespace CurrencyTracker
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
 
-        [Newtonsoft.Json.JsonIgnore]
-        private List<CurrencyIcon>? allCurrencyIcons;
-
-        private Dictionary<uint, string>? allCurrencies;
+        private List<CurrencyIcon>? allCurrencyIcons = new();
+        private Dictionary<uint, string>? allCurrencies = new();
+        private Dictionary<uint, string> presetCurrencies = new();
+        private Dictionary<uint, string> customCurrencies = new();
         public bool isUpdated;
 
-        private List<CurrencyIcon> GetAllCurrencyIcons()
+        public void GetAllCurrencyIcons()
         {
-            List<CurrencyIcon> allCurrencies = new();
+            allCurrencyIcons.Clear();
 
-            foreach (var currency in PresetCurrencies)
+            foreach (var currency in allCurrencies)
             {
-                allCurrencies.Add(new CurrencyIcon
+                allCurrencyIcons.Add(new CurrencyIcon
                 {
                     CurrencyID = currency.Key,
-                    CurrencyName = currency.Value,
-                });
-            }
-
-            foreach (var currency in CustomCurrencies)
-            {
-                allCurrencies.Add(new CurrencyIcon
-                {
-                    CurrencyID = currency.Key,
-                    CurrencyName = currency.Value,
+                    Icon = CurrencyInfo.GetIcon(currency.Key)
                 });
             }
 
             isUpdated = false;
 
-            Service.PluginLog.Debug("重新获取全部货币图标成功");
-
-            return allCurrencies;
+            Service.PluginLog.Debug("Successfully reacquire all currency icons");
         }
 
         private Dictionary<uint, string> GetAllCurrencies()
         {
-            Service.PluginLog.Debug("重新获取全部货币数据成功");
+            Service.PluginLog.Debug("Successfully reacquire all currencies");
             isUpdated = false;
             return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Key, kv => kv.Value);
         }

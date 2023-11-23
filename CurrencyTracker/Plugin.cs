@@ -87,14 +87,14 @@ namespace CurrencyTracker
         private void HandleLogout()
         {
             Main.isFirstTime = false;
-            Service.Tracker.Dispose();
+            Service.Tracker.UninitializeTracking();
         }
 
         private void HandleLogin()
         {
             if (Configuration.CurrentActiveCharacter == null)
             {
-                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
+                Configuration.CurrentActiveCharacter = new();
             }
 
             CurrentCharacter = GetCurrentCharacter();
@@ -124,7 +124,7 @@ namespace CurrencyTracker
 
             if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
             {
-                throw new InvalidOperationException("Can't Load Current Character Info");
+                throw new InvalidOperationException("Can't load current character info");
             }
 
             if (Configuration.CurrentActiveCharacter == null)
@@ -138,7 +138,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                Service.PluginLog.Debug("Activation character in configuration matches current character");
+                Service.PluginLog.Debug("Successfully load current character info.");
             }
             else
             {
@@ -153,7 +153,7 @@ namespace CurrencyTracker
             if (!Directory.Exists(dataFolderName))
             {
                 Directory.CreateDirectory(dataFolderName);
-                Service.PluginLog.Debug("Successfully Create Directory");
+                Service.PluginLog.Debug("Successfully create character info directory.");
             }
 
             PlayerDataFolder = dataFolderName;
@@ -174,7 +174,7 @@ namespace CurrencyTracker
                 if (!Directory.Exists(dataFolderName))
                 {
                     Directory.CreateDirectory(dataFolderName);
-                    Service.PluginLog.Debug("Successfully Create Directory");
+                    Service.PluginLog.Debug("Successfully create character info directory.");
                 }
 
                 PlayerDataFolder = dataFolderName;

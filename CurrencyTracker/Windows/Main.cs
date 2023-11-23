@@ -1,5 +1,6 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Interface;
@@ -7,6 +8,7 @@ using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
+using Dalamud.Memory;
 using Dalamud.Utility;
 using ImGuiNET;
 using System;
@@ -38,27 +40,7 @@ public partial class Main : Window, IDisposable
         positiveChangeColor = C.PositiveChangeColor;
         negativeChangeColor = C.NegativeChangeColor;
         exportDataFileType = C.ExportDataFileType;
-        isShowTimeColumn = C.ShowTimeColumn;
-        isShowAmountColumn = C.ShowAmountColumn;
-        isShowChangeColumn = C.ShowChangeColumn;
-        isShowLocationColumn = C.ShowLocationColumn;
-        isShowNoteColumn = C.ShowNoteColumn;
-        isShowOrderColumn = C.ShowOrderColumn;
-        isShowCheckboxColumn = C.ShowCheckboxColumn;
         childWidthOffset = C.ChildWidthOffset;
-
-        // 临时 Temp
-        isRecordContentName = C.RecordContentName;
-        isRecordTeleportDes = C.RecordTeleportDes;
-        isRecordTeleport = C.RecordTeleport;
-        isTrackinDuty = C.TrackedInDuty;
-        isWaitExComplete = C.WaitExComplete;
-        isRecordMGPSource = C.RecordMGPSource;
-        isRecordTripleTriad = C.RecordTripleTriad;
-        isRecordQuestName = C.RecordQuestName;
-        isRecordTrade = C.RecordTrade;
-        isRecordFate = C.RecordFate;
-        isRecordIsland = C.RecordIsland;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -122,7 +104,7 @@ public partial class Main : Window, IDisposable
             TempRecordSettings();
             MergeTransactionUI();
             ImGui.SameLine();
-            ClearExceptions();
+            ClearExceptionUI();
         }
 
         if (!showRecordOptions && !showOthers) ImGui.SameLine();
@@ -139,7 +121,7 @@ public partial class Main : Window, IDisposable
         }
         if (showOthers)
         {
-            ExportData();
+            ExportDataUI();
             ImGui.SameLine();
             OpenDataFolder();
             ImGui.SameLine();
@@ -166,9 +148,10 @@ public partial class Main : Window, IDisposable
     // 测试用功能区 Some features still under testing
     private void FeaturesUnderTest()
     {
+        ImGui.Text($"测试:{(ConditionHandler.InFate ? "真" : "假")}");
     }
 
-    // 按临界值合并记录 Merge Transactions By Threshold
+    // 按临界值合并记录界面 Merge Transactions By Threshold
     private void MergeTransactionUI()
     {
         if (ImGui.Button(Service.Lang.GetText("MergeTransactionsLabel")))
@@ -211,8 +194,8 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 清除异常记录 Clear Exceptional Transactions
-    private void ClearExceptionalUI()
+    // 清除异常记录界面 Clear Exceptional Transactions
+    private void ClearExceptionUI()
     {
         if (ImGui.Button(Service.Lang.GetText("ClearExTransactionsLabel")))
         {
@@ -243,6 +226,168 @@ public partial class Main : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}\n{Service.Lang.GetText("TransactionsHelp2")}");
             ImGui.EndPopup();
+        }
+    }
+
+    // 导出数据界面 Export Transactions
+    private void ExportDataUI()
+    {
+        if (ImGui.Button(Service.Lang.GetText("Export")))
+        {
+            ImGui.OpenPopup(str_id: "ExportFileRename");
+        }
+
+        if (ImGui.BeginPopup("ExportFileRename"))
+        {
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
+            ImGui.SameLine();
+
+            if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
+            {
+                C.ExportDataFileType = exportDataFileType;
+                C.Save();
+            }
+            ImGui.SameLine();
+            if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
+            {
+                C.ExportDataFileType = exportDataFileType;
+                C.Save();
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp"));
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel"));
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp1"));
+            ImGui.SetNextItemWidth(200);
+            if (ImGui.InputText($"_{C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
+            {
+                if (selectedCurrencyID == 0)
+                {
+                    Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
+                    return;
+                }
+                if (currentTypeTransactions == null || currentTypeTransactions.Count == 0)
+                {
+                    Service.Chat.PrintError(Service.Lang.GetText("ExportCsvMessage1"));
+                    return;
+                }
+                var filePath = Transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyID, exportDataFileType);
+                Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
+            }
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.SetTooltip($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
+            }
+            ImGui.EndPopup();
+        }
+    }
+
+    // 打开数据文件夹 Open Folder Containing Data Files
+    private void OpenDataFolder()
+    {
+        if (ImGui.Button(Service.Lang.GetText("OpenDataFolder")))
+        {
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" \"{P.PlayerDataFolder}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = P.PlayerDataFolder
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = P.PlayerDataFolder
+                    });
+                }
+                else
+                {
+                    Service.PluginLog.Error("Unsupported OS");
+                }
+            }
+            catch (Exception ex)
+            {
+                Service.PluginLog.Error($"Error :{ex.Message}");
+            }
+        }
+    }
+
+    // 帮助页面 Help Pages
+    private void HelpPages()
+    {
+        if (Widgets.IconButton(FontAwesomeIcon.Question, $"{Service.Lang.GetText("NeedHelp")}?", "NeedHelp"))
+        {
+            ImGui.OpenPopup("NeedHelp");
+        }
+
+        if (ImGui.BeginPopup("NeedHelp"))
+        {
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Guide")}:");
+            ImGui.Separator();
+            if (ImGui.Button($"{Service.Lang.GetText("OperationGuide")} (GitHub)"))
+            {
+                Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/wiki/Operations");
+            }
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("SuggestOrReport")}?");
+            ImGui.Separator();
+            ImGui.Text("GitHub - AtmoOmen, Discord - AtmoOmen#0");
+            if (ImGui.Button("GitHub Issue"))
+            {
+                Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/issues");
+            }
+            ImGui.SameLine();
+            if (ImGui.Button("Discord Thread"))
+            {
+                Widgets.OpenUrl("https://discord.com/channels/581875019861328007/1019646133305344090/threads/1163039624957010021");
+            }
+            if (C.SelectedLanguage == "ChineseSimplified")
+            {
+                ImGui.TextColored(ImGuiColors.DalamudYellow, "如果你是国服玩家\n" +
+                    "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
+                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问\n");
+                if (ImGui.Button("QQ频道【艾欧泽亚泛獭保护协会】"))
+                {
+                    Widgets.OpenUrl("https://pd.qq.com/s/fttirpnql");
+                }
+            }
+
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("HelpTranslate")}!");
+            ImGui.Separator();
+            if (ImGui.Button($"Crowdin"))
+            {
+                Widgets.OpenUrl("https://crowdin.com/project/dalamud-currencytracker");
+            }
+            ImGui.SameLine();
+            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");
+
+            ImGui.EndPopup();
+        }
+    }
+
+    // 打开插件 GitHub 页面 Open Plugin GitHub Page
+    private static void OpenGitHubPage()
+    {
+        if (ImGui.Button("GitHub"))
+        {
+            Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker");
         }
     }
 
@@ -469,59 +614,6 @@ public partial class Main : Window, IDisposable
             ImGui.EndPopup();
         }
         */
-    }
-
-    // 帮助页面 Help Pages
-    private void HelpPages()
-    {
-        if (Widgets.IconButton(FontAwesomeIcon.Question, $"{Service.Lang.GetText("NeedHelp")}?", "NeedHelp"))
-        {
-            ImGui.OpenPopup("NeedHelp");
-        }
-
-        if (ImGui.BeginPopup("NeedHelp"))
-        {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Guide")}:");
-            ImGui.Separator();
-            if (ImGui.Button($"{Service.Lang.GetText("OperationGuide")} (GitHub)"))
-            {
-                Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/wiki/Operations");
-            }
-
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("SuggestOrReport")}?");
-            ImGui.Separator();
-            ImGui.Text("GitHub - AtmoOmen, Discord - AtmoOmen#0");
-            if (ImGui.Button("GitHub Issue"))
-            {
-                Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker/issues");
-            }
-            ImGui.SameLine();
-            if (ImGui.Button("Discord Thread"))
-            {
-                Widgets.OpenUrl("https://discord.com/channels/581875019861328007/1019646133305344090/threads/1163039624957010021");
-            }
-            if (C.SelectedLanguage == "ChineseSimplified")
-            {
-                ImGui.TextColored(ImGuiColors.DalamudYellow, "(如果你是国服玩家)\n" +
-                    "请加入下面的 QQ 频道，在 XIVLauncher/Dalamud 分栏下\n" +
-                    "选择 插件问答帮助 频道，然后 @AtmoOmen 向我提问\n");
-                if (ImGui.Button("QQ频道【艾欧泽亚泛獭保护协会】"))
-                {
-                    Widgets.OpenUrl("https://pd.qq.com/s/fttirpnql");
-                }
-            }
-
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("HelpTranslate")}!");
-            ImGui.Separator();
-            if (ImGui.Button($"Crowdin"))
-            {
-                Widgets.OpenUrl("https://crowdin.com/project/dalamud-currencytracker");
-            }
-            ImGui.SameLine();
-            ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");
-
-            ImGui.EndPopup();
-        }
     }
 
     // 倒序排序 Reverse Sort
@@ -992,115 +1084,6 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    // 导出数据为.CSV文件 Export Transactions To a .csv File
-    private void ExportData()
-    {
-        if (ImGui.Button(Service.Lang.GetText("Export")))
-        {
-            ImGui.OpenPopup(str_id: "ExportFileRename");
-        }
-
-        if (ImGui.BeginPopup("ExportFileRename"))
-        {
-            ImGui.AlignTextToFramePadding();
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
-            ImGui.SameLine();
-
-            if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
-            {
-                C.ExportDataFileType = exportDataFileType;
-                C.Save();
-            }
-            ImGui.SameLine();
-            if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
-            {
-                C.ExportDataFileType = exportDataFileType;
-                C.Save();
-            }
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp"));
-
-            ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel"));
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp1"));
-            ImGui.SetNextItemWidth(200);
-            if (ImGui.InputText($"_{C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
-            {
-                if (selectedCurrencyID == 0)
-                {
-                    Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                    return;
-                }
-                if (currentTypeTransactions == null || currentTypeTransactions.Count == 0)
-                {
-                    Service.Chat.PrintError(Service.Lang.GetText("ExportCsvMessage1"));
-                    return;
-                }
-                var filePath = Transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyID, exportDataFileType);
-                Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
-            }
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
-            }
-            ImGui.EndPopup();
-        }
-    }
-
-    // 打开数据文件夹 Open Folder Containing Data Files
-    private void OpenDataFolder()
-    {
-        if (ImGui.Button(Service.Lang.GetText("OpenDataFolder")))
-        {
-            try
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "cmd",
-                        Arguments = $"/c start \"\" \"{P.PlayerDataFolder}\"",
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "xdg-open",
-                        Arguments = P.PlayerDataFolder
-                    });
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = "open",
-                        Arguments = P.PlayerDataFolder
-                    });
-                }
-                else
-                {
-                    Service.PluginLog.Error("Unsupported OS");
-                }
-            }
-            catch (Exception ex)
-            {
-                Service.PluginLog.Error($"Error :{ex.Message}");
-            }
-        }
-    }
-
-    // 打开插件 GitHub 页面 Open Plugin GitHub Page
-    private static void OpenGitHubPage()
-    {
-        if (ImGui.Button("GitHub"))
-        {
-            Widgets.OpenUrl("https://github.com/AtmoOmen/CurrencyTracker");
-        }
-    }
-
     // 界面语言切换功能 Language Switch
     private void LanguageSwitch()
     {
@@ -1547,18 +1530,18 @@ public partial class Main : Window, IDisposable
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
 
-            ColumnDisplayCheckbox(value => C.ShowTimeColumn = value, ref isShowTimeColumn, "Time");
+            ColumnDisplayCheckbox("ShowTimeColumn", "Time");
             ImGui.SameLine();
-            ColumnDisplayCheckbox(value => C.ShowAmountColumn = value, ref isShowAmountColumn, "Amount");
+            ColumnDisplayCheckbox("ShowAmountColumn", "Amount");
             ImGui.SameLine();
-            ColumnDisplayCheckbox(value => C.ShowChangeColumn = value, ref isShowChangeColumn, "Change");
-            ColumnDisplayCheckbox(value => C.ShowOrderColumn = value, ref isShowOrderColumn, "Order");
+            ColumnDisplayCheckbox("ShowChangeColumn", "Change");
+            ColumnDisplayCheckbox("ShowOrderColumn", "Order");
             ImGui.SameLine();
-            ColumnDisplayCheckbox(value => C.ShowLocationColumn = value, ref isShowLocationColumn, "Location");
+            ColumnDisplayCheckbox("ShowLocationColumn", "Location");
             ImGui.SameLine();
-            ColumnDisplayCheckbox(value => C.ShowNoteColumn = value, ref isShowNoteColumn, "Note");
+            ColumnDisplayCheckbox("ShowNoteColumn", "Note");
             ImGui.SameLine();
-            ColumnDisplayCheckbox(value => C.ShowCheckboxColumn = value, ref isShowCheckboxColumn, "Checkbox");
+            ColumnDisplayCheckbox("ShowCheckboxColumn", "Checkbox");
 
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ChildframeWidthOffset")}:");
@@ -1637,7 +1620,15 @@ public partial class Main : Window, IDisposable
 
                 ImGui.SameLine(3.0f);
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
-                ImGui.Image(C.AllCurrencyIcons.FirstOrDefault(x => x.CurrencyID == option).Icon.ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+                var currencyIcon = C.AllCurrencyIcons.FirstOrDefault(x => x.CurrencyID == option);
+                if (currencyIcon != null && currencyIcon.Icon != null)
+                {
+                    ImGui.Image(currencyIcon.Icon.ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+                }
+                else
+                {
+                    C.GetAllCurrencyIcons();
+                }
                 ImGui.SameLine();
                 ImGui.Text(C.AllCurrencies[option]);
             }

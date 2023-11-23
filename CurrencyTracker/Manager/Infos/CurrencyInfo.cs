@@ -122,7 +122,6 @@ public static class CurrencyInfo
 public class CurrencyIcon
 {
     public uint CurrencyID { get; set; }
-    public string CurrencyName { get; set; } = null!;
     private IDalamudTextureWrap? icon;
 
     public IDalamudTextureWrap? Icon
@@ -135,6 +134,7 @@ public class CurrencyIcon
             }
             return icon;
         }
+        set { icon = value; }
     }
 
     private void GetIcon()

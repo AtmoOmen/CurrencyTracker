@@ -156,20 +156,6 @@ public partial class Main
     // 子窗口宽度偏移量 Childframes Width Offset
     private int childWidthOffset = 0;
 
-    // 临时 Temp
-    private bool isRecordContentName;
-
-    private bool isRecordTeleportDes;
-    private bool isRecordTeleport;
-    private bool isTrackinDuty;
-    private bool isWaitExComplete;
-    private bool isRecordMGPSource;
-    private bool isRecordTripleTriad;
-    private bool isRecordQuestName;
-    private bool isRecordTrade;
-    private bool isRecordFate;
-    private bool isRecordIsland;
-
     internal Dictionary<uint, List<bool>>? selectedStates = new();
     internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();

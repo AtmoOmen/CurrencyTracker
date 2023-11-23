@@ -26,7 +26,6 @@ public partial class Main
             orderedOptionsSet.UnionWith(allCurrenciesSet);
             orderedOptionsSet.IntersectWith(allCurrenciesSet);
 
-
             C.OrderedOptions = orderedOptionsSet.ToList();
             C.Save();
         }
@@ -437,14 +436,16 @@ public partial class Main
     }
 
     // 显示列勾选框 Displayed Column Checkbox
-    private void ColumnDisplayCheckbox(Action<bool> setDisplayColumn, ref bool isShowColumn, string text)
+    private void ColumnDisplayCheckbox(string boolName, string text)
     {
+        var isShowColumn = C.ColumnVisibility[boolName];
         if (ImGui.Checkbox($"{Service.Lang.GetText(text)}##Display{text}Column", ref isShowColumn))
         {
-            setDisplayColumn(isShowColumn);
+            C.ColumnVisibility[boolName] = isShowColumn;
             C.Save();
         }
     }
+
 
     // 用于处理货币名变更 Used to handle currency rename
     private void CurrencyRenameHandler(string editedCurrencyName)

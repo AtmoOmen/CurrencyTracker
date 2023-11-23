@@ -1,8 +1,8 @@
 using CurrencyTracker.Manager.Libs;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 
 namespace CurrencyTracker.Manager.Trackers
 {
@@ -23,14 +23,21 @@ namespace CurrencyTracker.Manager.Trackers
                     Components.Add(component);
                 }
             }
-
         }
 
         public static void Init()
         {
             foreach (var component in Components)
             {
-                component.Init();
+                if (!component.Initialized)
+                {
+                    component.Init();
+                    Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                }
+                else
+                {
+                    Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                }
             }
         }
 
@@ -39,8 +46,17 @@ namespace CurrencyTracker.Manager.Trackers
             if (!Components.OfType<T>().Any())
             {
                 var component = new T();
-                component.Init();
-                Components.Add(component);
+
+                if (!component.Initialized)
+                {
+                    component.Init();
+                    Components.Add(component);
+                    Service.PluginLog.Debug($"Loaded {typeof(T).Name} module");
+                }
+                else
+                {
+                    Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                }
             }
         }
 
@@ -52,6 +68,7 @@ namespace CurrencyTracker.Manager.Trackers
                 component.Uninit();
                 Components.Remove(component);
             }
+            Service.PluginLog.Debug($"Unloaded {typeof(T).Name} module");
         }
 
         public static void Uninit()
@@ -59,6 +76,7 @@ namespace CurrencyTracker.Manager.Trackers
             foreach (var component in Components)
             {
                 component.Uninit();
+                Service.PluginLog.Debug($"Unloaded {component.GetType().Name} module");
             }
         }
     }

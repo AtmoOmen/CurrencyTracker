@@ -9,6 +9,12 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
 {
     public class ChatHandler : ITrackerHandler
     {
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         public bool isBlocked
         {
             get { return _isBlocked; }
@@ -20,18 +26,14 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006
         };
 
-        private bool _isBlocked;
-
-        public ChatHandler()
-        {
-            Init();
-        }
+        private bool _isBlocked = false;
+        private bool _initialized = false;
 
         public void Init()
         {
-            _isBlocked = false;
-
             Service.Chat.ChatMessage += OnChatMessage;
+
+            _initialized = true;
         }
 
         private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -48,6 +50,8 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
         public void Uninit()
         {
             Service.Chat.ChatMessage -= OnChatMessage;
+
+            _initialized = false;
         }
     }
 }

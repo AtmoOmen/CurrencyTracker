@@ -1,14 +1,23 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Utility;
 using Lumina.Excel.GeneratedSheets;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class DutyRewards : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         // Territory ID - ContentName
         private static Dictionary<uint, string> ContentNames = new();
 
@@ -42,6 +51,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
+            _initialized = true;
         }
 
         private void CheckDutyStart()
@@ -50,7 +60,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             if (ContentNames.TryGetValue(TerrioryHandler.CurrentLocationID, out var dutyName))
             {
-                Service.Tracker.ChatHandler.isBlocked = true;
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
 
                 isDutyStarted = true;
                 contentName = !dutyName.IsNullOrEmpty() ? dutyName : Service.Lang.GetText("UnknownContent");
@@ -79,13 +89,13 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, TerrioryHandler.PreviousLocationName, Plugin.Instance.Configuration.RecordContentName ? $"({contentName})" : "");
+                Service.Tracker.CheckCurrency(currency.Key, TerrioryHandler.PreviousLocationName, $"({contentName})");
             });
 
             isDutyStarted = false;
             contentName = string.Empty;
 
-            Service.Tracker.ChatHandler.isBlocked = false;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.PluginLog.Debug("Currency Change Check Completes.");
         }
 
@@ -95,6 +105,7 @@ namespace CurrencyTracker.Manager.Trackers
             contentName = string.Empty;
 
             Service.ClientState.TerritoryChanged -= OnZoneChange;
+            _initialized = false;
         }
     }
 }

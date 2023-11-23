@@ -4,6 +4,12 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class TerrioryHandler : ITrackerHandler
     {
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         public bool isBlocked
         {
             get { return _isBlocked; }
@@ -34,24 +40,21 @@ namespace CurrencyTracker.Manager.Trackers
             set { _previousLocationID = value; }
         }
 
-        private bool _isBlocked;
+        private bool _initialized = false;
+        private bool _isBlocked = false;
         private static string _currentLocationName = string.Empty;
         private static uint _currentLocationID = 0;
         private static string _previousLocationName = string.Empty;
         private static uint _previousLocationID = 0;
 
-        public TerrioryHandler()
-        {
-            Init();
-        }
-
         public void Init()
         {
-            _isBlocked = false;
             PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
             PreviousLocationName = CurrentLocationName = Tracker.TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
+
+            _initialized = true;
         }
 
         private void OnZoneChange(ushort obj)
@@ -71,6 +74,8 @@ namespace CurrencyTracker.Manager.Trackers
 
             PreviousLocationID = CurrentLocationID = 0;
             PreviousLocationName = CurrentLocationName = string.Empty;
+
+            _initialized = false;
         }
     }
 }

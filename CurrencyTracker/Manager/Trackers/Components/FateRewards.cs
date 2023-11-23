@@ -5,13 +5,22 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class FateRewards : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", BeginFate);
+            _initialized = true;
         }
 
         private void BeginFate(AddonEvent type, AddonArgs args)
@@ -28,15 +37,12 @@ namespace CurrencyTracker.Manager.Trackers
                 if (textNode != null)
                 {
                     var FateName = textNode->NodeText.ToString();
-                    if (!FateName.IsNullOrEmpty())
+                    Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                     {
-                        Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-                        {
-                            Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
-                        });
+                        Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
+                    });
 
-                        FateName = string.Empty;
-                    }
+                    FateName = string.Empty;
                 }
             }
         }
@@ -44,6 +50,7 @@ namespace CurrencyTracker.Manager.Trackers
         public void Uninit()
         {
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", BeginFate);
+            _initialized = false;
         }
     }
 }

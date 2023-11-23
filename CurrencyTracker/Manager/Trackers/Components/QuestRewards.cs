@@ -1,15 +1,25 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class QuestRewards : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         private bool isReadyFinish = false;
         private string questName = string.Empty;
 
@@ -21,6 +31,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", BeginQuest);
+            _initialized = true;
         }
 
         private void BeginQuest(AddonEvent type, AddonArgs? args)
@@ -44,7 +55,7 @@ namespace CurrencyTracker.Manager.Trackers
 
                 isReadyFinish = true;
 
-                Service.Tracker.ChatHandler.isBlocked = true;
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                 Service.Framework.Update += OnFrameworkUpdate;
 
                 Service.PluginLog.Debug($"Quest {questName} Ready to Finish!");
@@ -79,7 +90,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             ResetQuestState();
             Service.Framework.Update -= OnFrameworkUpdate;
-            Service.Tracker.ChatHandler.isBlocked = false;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
 
             Service.PluginLog.Debug("Currency Change Check Completes.");
         }
@@ -94,6 +105,8 @@ namespace CurrencyTracker.Manager.Trackers
         {
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", BeginQuest);
+
+            _initialized = false;
         }
     }
 }

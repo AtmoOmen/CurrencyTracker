@@ -1,16 +1,28 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
+using System.Linq;
 using static CurrencyTracker.Manager.Trackers.Tracker;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class TeleportCosts : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         private int teleportCost = 0;
 
         public void Init()
         {
             teleportCost = 0;
             Service.ClientState.TerritoryChanged += TeleportBetweenAreas;
+
+            _initialized = true;
         }
 
         public void TeleportBetweenAreas(ushort obj)
@@ -44,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void TeleportWithCost(int GilAmount)
         {
-            Service.Tracker.ChatHandler.isBlocked = true;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
 
             teleportCost = GilAmount;
 
@@ -59,13 +71,14 @@ namespace CurrencyTracker.Manager.Trackers
                 Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative);
             }
 
-            Service.Tracker.ChatHandler.isBlocked = false;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
         }
 
         public void Uninit()
         {
             teleportCost = 0;
             Service.ClientState.TerritoryChanged -= TeleportBetweenAreas;
+            _initialized = false;
         }
     }
 }

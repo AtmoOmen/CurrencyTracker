@@ -4,13 +4,22 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class GoldSaucer : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", BeginGoldSaucer);
+            _initialized = true;
         }
 
         private void BeginGoldSaucer(AddonEvent type, AddonArgs args)
@@ -42,6 +51,7 @@ namespace CurrencyTracker.Manager.Trackers
         public void Uninit()
         {
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", BeginGoldSaucer);
+            _initialized = false;
         }
     }
 }

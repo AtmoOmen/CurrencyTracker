@@ -5,5 +5,7 @@ namespace CurrencyTracker.Manager.Libs
         void Init();
 
         void Uninit();
+
+        bool Initialized { get; set; }
     }
 }

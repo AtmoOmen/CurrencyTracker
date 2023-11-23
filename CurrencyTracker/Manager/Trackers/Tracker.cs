@@ -32,8 +32,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
-        public ChatHandler ChatHandler = null!;
-        public TerrioryHandler TerrioryHandler = null!;
+        public HandlerManager HandlerManager = null!;
         public ComponentManager ComponentManager = null!;
 
         private Configuration? C = Plugin.Instance.Configuration;
@@ -44,19 +43,30 @@ namespace CurrencyTracker.Manager.Trackers
             LoadConstantNames();
             InitCurrencies();
 
-            InitializeTracking();
-            Service.PluginLog.Debug("Currency Tracker Activated");
+            HandlerManager ??= new HandlerManager();
+            ComponentManager ??= new ComponentManager();
+
+            if (Service.ClientState.IsLoggedIn)
+            {
+                InitializeTracking();
+            }
         }
 
         public void InitializeTracking()
         {
-            ChatHandler = new();
-            TerrioryHandler = new();
-
-            ComponentManager = new ComponentManager();
+            HandlerManager.Init();
             ComponentManager.Init();
 
             UpdateCurrencies();
+            Service.PluginLog.Debug("Currency Tracker Activated");
+        }
+
+        public void UninitializeTracking()
+        {
+            HandlerManager.Uninit();
+            ComponentManager.Uninit();
+
+            Service.PluginLog.Debug("Currency Tracker Deactivated");
         }
 
         // (人为触发)发现货币发生改变时触发的事件
@@ -234,7 +244,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public void Dispose()
         {
-            ComponentManager.Uninit();
+            UninitializeTracking();
         }
     }
 }

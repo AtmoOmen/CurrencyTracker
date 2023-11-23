@@ -1,19 +1,30 @@
 using CurrencyTracker.Manager.Libs;
+using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class Trade : ITrackerComponent
     {
+        private bool _initialized = false;
+
+        public bool Initialized
+        {
+            get { return _initialized; }
+            set { _initialized = value; }
+        }
+
         private bool isOnTrade = false;
         private string tradeTargetName = string.Empty;
 
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+            _initialized = true;
         }
 
         private void StartTrade(AddonEvent type, AddonArgs args)
@@ -30,7 +41,7 @@ namespace CurrencyTracker.Manager.Trackers
                     tradeTargetName = Service.TargetManager.Target.Name.TextValue;
                 }
 
-                Service.Tracker.ChatHandler.isBlocked = true;
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                 Service.Framework.Update += OnFrameworkUpdate;
                 Service.PluginLog.Debug("Trade Starts");
             }
@@ -60,7 +71,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             tradeTargetName = string.Empty;
 
-            Service.Tracker.ChatHandler.isBlocked = false;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.PluginLog.Debug("Trade Ends");
         }
@@ -72,6 +83,8 @@ namespace CurrencyTracker.Manager.Trackers
 
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+
+            _initialized = false;
         }
     }
 }

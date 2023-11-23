@@ -1,10 +1,6 @@
-using Dalamud.Interface.Components;
-using Dalamud.Interface.Windowing;
-using ImGuiNET;
-using System;
-
 namespace CurrencyTracker.Windows
 {
+    /*
     public class RecordSettings : Window, IDisposable
     {
         private Configuration? C = Plugin.Instance.Configuration;
@@ -109,4 +105,5 @@ namespace CurrencyTracker.Windows
         {
         }
     }
+    */
 }
