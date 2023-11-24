@@ -1,13 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Plugin.Services;
-using Dalamud.Utility;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class SpecialExchange : ITrackerComponent

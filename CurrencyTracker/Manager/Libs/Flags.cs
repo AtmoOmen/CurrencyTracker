@@ -1,5 +1,3 @@
-using Dalamud.Game.ClientState.Conditions;
-
 namespace CurrencyTracker.Manager
 {
     public static class Flags

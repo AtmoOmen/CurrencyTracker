@@ -1,9 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class GoldSaucer : ITrackerComponent

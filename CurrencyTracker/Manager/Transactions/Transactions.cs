@@ -1,10 +1,3 @@
-using Dalamud.Utility;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-
 namespace CurrencyTracker.Manager
 {
     public partial class Transactions

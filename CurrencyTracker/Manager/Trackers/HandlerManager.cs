@@ -1,9 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 namespace CurrencyTracker.Manager.Trackers
 {
     public class HandlerManager

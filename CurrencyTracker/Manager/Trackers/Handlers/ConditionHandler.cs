@@ -1,8 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using Dalamud.Memory;
-using Dalamud.Plugin.Services;
-using System;
-
 namespace CurrencyTracker.Manager.Trackers.Handlers
 {
     public class ConditionHandler : ITrackerHandler
@@ -36,8 +31,6 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
 
         private void OnFrameworkUpdate(IFramework framework)
         {
-            InFate = MemoryHelper.Read<bool>(FateAddress);
-            InCE = MemoryHelper.Read<bool>(CEAddress);
         }
 
         public void Uninit()

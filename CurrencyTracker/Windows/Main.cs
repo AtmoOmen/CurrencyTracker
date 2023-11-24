@@ -1,24 +1,3 @@
-using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.Command;
-using Dalamud.Interface;
-using Dalamud.Interface.Colors;
-using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility;
-using Dalamud.Interface.Windowing;
-using Dalamud.Memory;
-using Dalamud.Utility;
-using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.InteropServices;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable

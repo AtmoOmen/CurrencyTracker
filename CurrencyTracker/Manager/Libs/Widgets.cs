@@ -1,11 +1,3 @@
-using Dalamud.Interface;
-using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Numerics;
-using System.Runtime.InteropServices;
-
 namespace CurrencyTracker.Manager
 {
     public static class Widgets

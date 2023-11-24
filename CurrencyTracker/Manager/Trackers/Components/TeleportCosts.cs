@@ -1,8 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using System.Linq;
-using static CurrencyTracker.Manager.Trackers.Tracker;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class TeleportCosts : ITrackerComponent

@@ -1,17 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Game.Addon.Lifecycle;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Plugin.Services;
-using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.UI;
-using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using static CurrencyTracker.Manager.Trackers.Tracker;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     // 与 TeleportCosts / TerrioryHandler / ChatHandler 联动

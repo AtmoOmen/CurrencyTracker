@@ -1,5 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-
 namespace CurrencyTracker.Manager.Trackers
 {
     public class TerrioryHandler : ITrackerHandler

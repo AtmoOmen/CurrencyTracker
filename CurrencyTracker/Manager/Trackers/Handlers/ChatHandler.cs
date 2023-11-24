@@ -1,10 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace CurrencyTracker.Manager.Trackers.Handlers
 {
     public class ChatHandler : ITrackerHandler

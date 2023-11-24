@@ -1,11 +1,3 @@
-using CurrencyTracker.Manager;
-using Dalamud.Configuration;
-using Dalamud.Plugin;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-
 namespace CurrencyTracker
 {
     [Serializable]
@@ -14,6 +6,7 @@ namespace CurrencyTracker
         public int Version { get; set; } = 0;
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
+
         public Dictionary<uint, string> PresetCurrencies
         {
             set
@@ -26,6 +19,7 @@ namespace CurrencyTracker
                 return presetCurrencies;
             }
         }
+
         public Dictionary<uint, string> CustomCurrencies
         {
             set
@@ -38,6 +32,7 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
+
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
@@ -46,6 +41,7 @@ namespace CurrencyTracker
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ExportDataFileType { get; set; } = 0;
+
         public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
         {
             { "ShowTimeColumn", true },
@@ -56,6 +52,23 @@ namespace CurrencyTracker
             { "ShowOrderColumn", true },
             { "ShowCheckboxColumn", true }
         };
+
+        public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
+        {
+            { "DutyRewards", true},
+            { "Exchange", true},
+            { "FateRewards", true},
+            { "GoldSaucer", true},
+            { "IslandSanctuary", true},
+            { "MobDrops", true},
+            { "QuestRewards", true},
+            { "SpecialExchange", true},
+            { "TeleportCosts", true},
+            { "Trade", true},
+            { "TripleTriad", true},
+            { "WarpCosts", true},
+        };
+
         public int ChildWidthOffset { get; set; } = 0;
 
         [Newtonsoft.Json.JsonIgnore]

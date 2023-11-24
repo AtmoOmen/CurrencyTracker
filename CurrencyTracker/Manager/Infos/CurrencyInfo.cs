@@ -1,11 +1,3 @@
-using Dalamud.Interface.Internal;
-using Dalamud.Plugin.Services;
-using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace CurrencyTracker.Manager;
 
 public static class CurrencyInfo

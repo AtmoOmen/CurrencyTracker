@@ -1,13 +1,3 @@
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Utility;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace CurrencyTracker.Manager.Trackers
 {
     public partial class Tracker : IDisposable

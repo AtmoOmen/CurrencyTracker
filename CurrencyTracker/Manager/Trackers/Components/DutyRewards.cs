@@ -1,11 +1,3 @@
-using CurrencyTracker.Manager.Libs;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Utility;
-using Lumina.Excel.GeneratedSheets;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class DutyRewards : ITrackerComponent

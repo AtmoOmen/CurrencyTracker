@@ -1,19 +1,3 @@
-using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Windows;
-using Dalamud.Game.Command;
-using Dalamud.Interface.Windowing;
-using Dalamud.Plugin;
-using Dalamud.Utility;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using TinyPinyin;
-
 namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin

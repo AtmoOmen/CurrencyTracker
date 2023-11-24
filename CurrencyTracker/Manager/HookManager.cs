@@ -1,9 +1,3 @@
-using CurrencyTracker.Manager.Trackers.Components;
-using CurrencyTracker.Manager.Trackers;
-using Dalamud.Hooking;
-using System;
-using System.Linq;
-
 namespace CurrencyTracker.Manager;
 
 internal class HookManager

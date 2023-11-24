@@ -1,8 +1,3 @@
-using CurrencyTracker.Manager;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main

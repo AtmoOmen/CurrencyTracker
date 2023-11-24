@@ -1,16 +1,3 @@
-using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Trackers;
-using Dalamud.Interface;
-using Dalamud.Utility;
-using ImGuiNET;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using TinyPinyin;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main
@@ -445,7 +432,6 @@ public partial class Main
             C.Save();
         }
     }
-
 
     // 用于处理货币名变更 Used to handle currency rename
     private void CurrencyRenameHandler(string editedCurrencyName)

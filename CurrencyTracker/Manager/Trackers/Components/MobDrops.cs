@@ -1,12 +1,5 @@
-using CurrencyTracker.Manager.Libs;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Trackers.Components
 {
@@ -44,7 +37,6 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
                 enemiesList.Add(target.Name.TextValue);
             }
-
         }
 
         private void OnConditionChange(ConditionFlag flag, bool value)
