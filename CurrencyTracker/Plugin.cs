@@ -70,7 +70,6 @@ namespace CurrencyTracker
 
         private void HandleLogout()
         {
-            Main.isFirstTime = false;
             Service.Tracker.UninitializeTracking();
         }
 
@@ -238,6 +237,14 @@ namespace CurrencyTracker
             var isChineseSimplified = Configuration.SelectedLanguage == "ChineseSimplified";
             partialName = partialName.Normalize(NormalizationForm.FormKC);
 
+            var exactMatch = currencyList
+                .FirstOrDefault(currency => string.Equals(currency, partialName, StringComparison.OrdinalIgnoreCase));
+
+            if (exactMatch != null)
+            {
+                return new List<string> { exactMatch };
+            }
+
             return currencyList
                 .Where(currency => MatchesCurrency(currency, partialName, isChineseSimplified))
                 .ToList();
@@ -255,6 +262,7 @@ namespace CurrencyTracker
 
             return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
         }
+
 
         public static void ParseOldConfiguration(string jsonFilePath)
         {

@@ -186,7 +186,6 @@ namespace CurrencyTracker.Manager
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
                 return;
             }
 
@@ -198,11 +197,6 @@ namespace CurrencyTracker.Manager
             var editedTransaction = LoadLatestSingleTransaction(currencyID);
 
             if (editedTransaction == null)
-            {
-                return;
-            }
-
-            if (!editedTransaction.Note.IsNullOrEmpty())
             {
                 return;
             }
@@ -413,7 +407,7 @@ namespace CurrencyTracker.Manager
 
             foreach (var transaction in selectedTransactions)
             {
-                var foundTransaction = allTransactions.FirstOrDefault(t => Widgets.IsTransactionEqual(t, transaction));
+                var foundTransaction = allTransactions.FirstOrDefault(t => IsTransactionEqual(t, transaction));
 
                 if (foundTransaction == null)
                 {

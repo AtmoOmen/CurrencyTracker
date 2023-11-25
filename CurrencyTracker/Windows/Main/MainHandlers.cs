@@ -195,20 +195,20 @@ public partial class Main
             .Where(itemName => !C.AllCurrencies.Keys.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
             .ToList();
 
-        CCTItemCounts = (uint)items.Count;
+        itemCountsCCT = (uint)items.Count;
         return items;
     }
 
     // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
-    private List<string> ApplyCCTFilter(string searchFilter)
+    private List<string> ApplyCCTFilter(string searchFilterCCT)
     {
-        if (CCTItemNames.Count > 0)
+        if (itemNamesCCT.Count > 0)
         {
-            return CCTItemNames.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilter, StringComparison.OrdinalIgnoreCase))).ToList();
+            return itemNamesCCT.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase))).ToList();
         }
         else
         {
-            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
                 .ToList();
         }
     }
@@ -222,36 +222,15 @@ public partial class Main
     // 延迟加载搜索结果 Used to handle too-fast CCT items loading
     private void SearchTimerCCTElapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-        if (!searchFilter.IsNullOrEmpty())
+        if (!searchFilterCCT.IsNullOrEmpty())
         {
-            currentItemPage = 0;
-            CCTItemNames = ApplyCCTFilter(searchFilter);
+            currentItemPageCCT = 0;
+            itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
         }
         else
         {
-            CCTItemNames = InitCCTItems();
+            itemNamesCCT = InitCCTItems();
         }
-    }
-
-    // 合并交易记录用 Used to simplified merging transactions code
-    private int MergeTransactions(bool oneWay)
-    {
-        if (!C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
-        {
-            Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-            return 0;
-        }
-
-        var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        var mergeCount = Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyID, threshold, oneWay);
-
-        if (mergeCount > 0)
-            Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
-        else
-            Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
-
-        UpdateTransactions();
-        return mergeCount;
     }
 
     // 调整列表框和表格高度用 Used to adjust the height of listbox and chart
@@ -298,128 +277,12 @@ public partial class Main
         if (isNoteFilterEnabled)
             currentTypeTransactions = ApplyNoteFilter(currentTypeTransactions, searchNoteContent);
 
-        if (isReversed)
+        if (C.ReverseSort)
         {
             currentTypeTransactions = currentTypeTransactions.OrderByDescending(item => item.TimeStamp).ToList();
         }
 
         return currentTypeTransactions;
-    }
-
-    // 日期筛选器 Date Picker
-    private void CreateDatePicker(ref DateTime currentDate, bool enableStartDate)
-    {
-        if (ImGui.BeginChildFrame(4, new Vector2(320, 215), ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar))
-        {
-            ImGui.Separator();
-
-            ImGui.SetCursorPosX((ImGui.GetWindowWidth()) / 8);
-
-            // 上一年 Last Year
-            if (Widgets.IconButton(FontAwesomeIcon.Backward, "None", "LastYear"))
-            {
-                currentDate = currentDate.AddYears(-1);
-                searchTimer.Stop();
-                searchTimer.Start();
-            }
-
-            ImGui.SameLine();
-
-            // 上一月 Last Month
-            if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left))
-            {
-                currentDate = currentDate.AddMonths(-1);
-                searchTimer.Stop();
-                searchTimer.Start();
-            }
-
-            ImGui.SameLine();
-            ImGui.Text($"{currentDate.Year}.{string.Format("{0:MM}", currentDate)}");
-            ImGui.SameLine();
-
-            // 下一月 Next Month
-            if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right))
-            {
-                currentDate = currentDate.AddMonths(1);
-                searchTimer.Stop();
-                searchTimer.Start();
-            }
-
-            ImGui.SameLine();
-
-            // 下一年 Next Year
-            if (Widgets.IconButton(FontAwesomeIcon.Forward, "None", "NextYear"))
-            {
-                currentDate = currentDate.AddYears(1);
-                searchTimer.Stop();
-                searchTimer.Start();
-            }
-
-            if (ImGui.BeginTable("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
-            {
-                // 表头 Header Column
-                var weekDaysData = Service.Lang.GetText("WeekDays");
-                var weekDays = weekDaysData.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var day in weekDays)
-                {
-                    ImGui.TableNextColumn();
-                    Widgets.TextCentered(day);
-                }
-
-                ImGui.TableNextRow(ImGuiTableRowFlags.None);
-
-                var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
-                var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
-
-                var daysInMonth = DateTime.DaysInMonth(currentDate.Year, currentDate.Month);
-
-                // 不存在于该月的日期 Date not exsited in this month
-                for (var i = 0; i < firstDayOfWeek; i++)
-                {
-                    ImGui.TableNextColumn();
-                    Widgets.TextCentered("");
-                }
-
-                // 日期绘制 Draw Dates
-                for (var day = 1; day <= daysInMonth; day++)
-                {
-                    ImGui.TableNextColumn();
-                    var currentDay = new DateTime(currentDate.Year, currentDate.Month, day);
-                    if (currentDate.Day == day)
-                    {
-                        // 选中的日期 Selected Date
-                        ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
-                        if (Widgets.SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
-                        {
-                            currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
-                        }
-                        ImGui.PopStyleColor();
-                    }
-                    else
-                    {
-                        // 其余不可选中的日期 Date that cannot be selected
-                        if ((enableStartDate && currentDay >= filterEndDate) || (!enableStartDate && currentDay <= filterStartDate))
-                        {
-                            ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                            Widgets.TextCentered(day.ToString());
-                            ImGui.PopStyleColor();
-                        }
-                        else
-                        {
-                            // 可选中的日期 Selectable Date
-                            if (Widgets.SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
-                            {
-                                currentDate = new DateTime(currentDate.Year, currentDate.Month, day);
-                                searchTimer.Stop();
-                                searchTimer.Start();
-                            }
-                        }
-                    }
-                }
-                ImGui.EndTable();
-            }
-            ImGui.EndChildFrame();
-        }
     }
 
     // 显示列勾选框 Displayed Column Checkbox
@@ -431,49 +294,6 @@ public partial class Main
             C.ColumnVisibility[boolName] = isShowColumn;
             C.Save();
         }
-    }
-
-    // 用于处理货币名变更 Used to handle currency rename
-    private void CurrencyRenameHandler(string editedCurrencyName)
-    {
-        if (C.AllCurrencies.ContainsValue(editedCurrencyName))
-        {
-            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
-            return;
-        }
-
-        var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
-
-        if (File.Exists(editedFilePath))
-        {
-            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
-            return;
-        }
-
-        var currencyName = string.Empty;
-
-        // 预设货币 Is Preset Currency
-        if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
-        {
-            C.PresetCurrencies[selectedCurrencyID] = editedCurrencyName;
-            C.isUpdated = true;
-        }
-        else if (C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
-        {
-            C.CustomCurrencies[selectedCurrencyID] = editedCurrencyName;
-            C.isUpdated = true;
-        }
-
-        C.Save();
-
-        var selectedFilePath = Path.Combine(P.PlayerDataFolder, $"{currencyName}.txt");
-
-        if (File.Exists(selectedFilePath))
-        {
-            File.Move(selectedFilePath, editedFilePath);
-        }
-
-        UpdateTransactions();
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added

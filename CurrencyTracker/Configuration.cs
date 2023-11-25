@@ -6,7 +6,6 @@ namespace CurrencyTracker
         public int Version { get; set; } = 0;
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
-
         public Dictionary<uint, string> PresetCurrencies
         {
             set
@@ -19,7 +18,6 @@ namespace CurrencyTracker
                 return presetCurrencies;
             }
         }
-
         public Dictionary<uint, string> CustomCurrencies
         {
             set
@@ -32,7 +30,6 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
-
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
@@ -41,7 +38,6 @@ namespace CurrencyTracker
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ExportDataFileType { get; set; } = 0;
-
         public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
         {
             { "ShowTimeColumn", true },
@@ -52,7 +48,6 @@ namespace CurrencyTracker
             { "ShowOrderColumn", true },
             { "ShowCheckboxColumn", true }
         };
-
         public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
         {
             { "DutyRewards", true},
@@ -68,11 +63,9 @@ namespace CurrencyTracker
             { "TripleTriad", true},
             { "WarpCosts", true},
         };
-
         public int ChildWidthOffset { get; set; } = 0;
-
-        [Newtonsoft.Json.JsonIgnore]
-        public List<CurrencyIcon> AllCurrencyIcons
+        [JsonIgnore]
+        public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
         {
             get
             {
@@ -83,8 +76,7 @@ namespace CurrencyTracker
                 return allCurrencyIcons;
             }
         }
-
-        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public Dictionary<uint, string> AllCurrencies
         {
             get
@@ -101,7 +93,7 @@ namespace CurrencyTracker
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
 
-        private List<CurrencyIcon>? allCurrencyIcons = new();
+        private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = new();
         private Dictionary<uint, string>? allCurrencies = new();
         private Dictionary<uint, string> presetCurrencies = new();
         private Dictionary<uint, string> customCurrencies = new();
@@ -113,11 +105,7 @@ namespace CurrencyTracker
 
             foreach (var currency in allCurrencies)
             {
-                allCurrencyIcons.Add(new CurrencyIcon
-                {
-                    CurrencyID = currency.Key,
-                    Icon = CurrencyInfo.GetIcon(currency.Key)
-                });
+                allCurrencyIcons.Add(currency.Key, CurrencyInfo.GetIcon(currency.Key));
             }
 
             isUpdated = false;

@@ -25,33 +25,50 @@ namespace CurrencyTracker.Manager
             return true;
         }
 
-        // 打开链接用 Used to open URL
-        public static void OpenUrl(string url)
+        public static void OpenDirectory(string path)
         {
-            ProcessStartInfo psi = new ProcessStartInfo();
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (path.IsNullOrEmpty())
             {
-                psi.FileName = url;
-                psi.UseShellExecute = true;
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                psi.FileName = "xdg-open";
-                psi.ArgumentList.Add(url);
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
-                psi.FileName = "open";
-                psi.ArgumentList.Add(url);
-            }
-            else
-            {
-                Service.PluginLog.Error("Unsupported OS");
                 return;
             }
 
-            Process.Start(psi);
+            try
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "cmd",
+                        Arguments = $"/c start \"\" \"{path}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "xdg-open",
+                        Arguments = path
+                    });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = "open",
+                        Arguments = path
+                    });
+                }
+                else
+                {
+                    Service.PluginLog.Error("Unsupported OS");
+                }
+            }
+            catch (Exception ex)
+            {
+                Service.PluginLog.Error($"Error :{ex.Message}");
+            }
         }
 
         public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
@@ -135,6 +152,12 @@ namespace CurrencyTracker.Manager
 
             float cursorPosX = (columnWidth - textWidth) * 0.5f + offset;
             return cursorPosX;
+        }
+
+        public static void Restart(this Timer timer)
+        {
+            timer.Stop();
+            timer.Start();
         }
     }
 }

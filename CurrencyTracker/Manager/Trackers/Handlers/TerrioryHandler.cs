@@ -48,7 +48,7 @@ namespace CurrencyTracker.Manager.Trackers
         public void Init()
         {
             PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
-            PreviousLocationName = CurrentLocationName = Tracker.TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+            PreviousLocationName = CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
 
@@ -63,7 +63,9 @@ namespace CurrencyTracker.Manager.Trackers
             PreviousLocationName = CurrentLocationName;
 
             CurrentLocationID = Service.ClientState.TerritoryType;
-            CurrentLocationName = Tracker.TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+            CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+
+            Service.PluginLog.Debug(CurrentLocationName);
         }
 
         public void Uninit()

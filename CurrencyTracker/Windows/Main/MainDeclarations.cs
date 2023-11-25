@@ -2,107 +2,52 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    // 当前选中的货币ID Currently-Selected Currency ID
-    public uint selectedCurrencyID = 0;
+    // 当前货币相关值 Current Currency Related Values
+    internal uint selectedCurrencyID = 0;
 
-    // 是否显示记录选项 If Show Record Options
+    internal int selectedOptionIndex = -1;
+    internal Dictionary<uint, List<bool>>? selectedStates = new();
+    internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
+    internal List<TransactionsConvertor> currentTypeTransactions = new();
+    internal List<TransactionsConvertor> lastTransactions = new();
+
+    // 顶栏显示情况 Top Columns Visibility
     private bool showRecordOptions = true;
 
-    // 是否显示其他 If Show Others
     private bool showOthers = true;
 
-    // 时间聚类 Time Clustering
-    private int clusterHour;
+    // 筛选器开关 Filters Switch
+    private bool isClusteredByTime = false;
 
-    // 时间聚类开关 Time Clustering Switch
-    private bool isClusteredByTime;
+    private bool isChangeFilterEnabled = false;
+    private bool isTimeFilterEnabled = false;
+    private bool isLocationFilterEnabled = false;
+    private bool isNoteFilterEnabled = false;
 
-    // 倒序排序开关 Reverse Sorting Switch
-    internal bool isReversed;
+    // 筛选器值 Filters Values
+    private int clusterHour = 0;
 
-    // 收支筛选开关 Income/Expense Filter Switch
-    private bool isChangeFilterEnabled;
-
-    // 时间筛选开关 Time Filter Switch
-    private bool isTimeFilterEnabled;
-
-    // 地点筛选开关 Location Filter Switch
-    private bool isLocationFilterEnabled;
-
-    // 备注筛选开关 Note Filter Switch
-    private bool isNoteFilterEnabled;
-
-    // 地点筛选名称 Location Filter Key
-    private string? searchLocationName = string.Empty;
-
-    // 备注筛选名称 Note Filter Key
-    private string? searchNoteContent = string.Empty;
-
-    // 筛选模式：0为大于，1为小于 Filtering Mode: 0 for Above, 1 for Below
-    private int filterMode;
-
-    // 用户指定的筛选值 User-Specified Filtering Value
-    private int filterValue;
-
-    // 每页显示的交易记录数 Number of Transaction Records Displayed Per Page
-    private int transactionsPerPage = 20;
-
-    // 当前页码 Current Page Number
-    private int currentPage;
-
-    // 自定义追踪物品ID Custom Tracked Currency ID
-    private uint customCurrencyID = uint.MaxValue;
-
-    // CSV文件名 CSV File Name
-    private string fileName = string.Empty;
-
-    // 默认选中的选项 Default Selected Option
-    internal int selectedOptionIndex = -1;
-
-    // 选择的语言 Selected Language
-    internal string playerLang = string.Empty;
-
-    // 搜索框值 Search Filter
-    private static string searchFilter = string.Empty;
-
-    // 合并的临界值 Merge Threshold
-    private int mergeThreshold;
-
-    // 当前页索引 Current Page Index
-    private int visibleStartIndex;
-
-    private int visibleEndIndex;
-
-    // 修改后地点名 Location Name after Editing
-    private string? editedLocationName = string.Empty;
-
-    // 编辑页面开启状态 Edit Popup
-    private bool isOnEdit = false;
-
-    // 工具栏合并页面开启状态 Merging Popup in Table Tools
-    private bool isOnMergingTT = false;
-
-    // 收支染色开启状态 Change Text Coloring
-    private bool isChangeColoring = false;
-
-    // 收支染色 Change Text Colors
-    private Vector4 positiveChangeColor = new(1.0f, 0.0f, 0.0f, 1.0f);
-
-    private Vector4 negativeChangeColor = new(0.0f, 1.0f, 0.0f, 1.0f);
-
-    // 每页显示的项数和页数 Items in Custom Currency Paging Function
-    private readonly int itemsPerPage = 10;
-
-    private int currentItemPage = 0;
-
-    // 筛选时间段的起始 Filtering Time Period
     private DateTime filterStartDate = DateTime.Now;
-
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
+    private int filterMode;
+    private int filterValue = 0;
+    private bool isChangeColoring = false;
+    private Vector4 positiveChangeColor = new(1.0f, 0.0f, 0.0f, 1.0f);
+    private Vector4 negativeChangeColor = new(0.0f, 1.0f, 0.0f, 1.0f);
+    private string? searchLocationName = string.Empty;
+    private string? searchNoteContent = string.Empty;
 
-    // 自定义货币追踪过滤物品用 Used to filter some outdate/abandoned items in custom tracker item list
+    // 自定义货币追踪相关值 CCT Related Values
+    private static string searchFilterCCT = string.Empty;
+
+    private uint currencyIDCCT = uint.MaxValue;
+    private readonly int itemsPerPageCCT = 10;
+    private int currentItemPageCCT = 0;
+    private List<string> itemNamesCCT = new();
+    private uint itemCountsCCT = 0;
+
     private static readonly string[] filterNamesForCCT = new string[]
     {
         // 过期物品 Dated items
@@ -111,52 +56,30 @@ public partial class Main
         "腰带", "ベルト", "Gürtel", "gürtel", "Ceinture"
     };
 
-    // 这个 bool 永远为 false，仅为填充用，无实际作用
-    // This bool will always be false, for method filling purposes only, no actual effect
-    private bool selectTimeDeco = false;
+    // 数据显示相关值 Data Display Related Values
+    private int currentPage;
 
-    // 导出文件的类型 Export Data File Type : 0 - .csv ; 1 - .md
-    private int exportDataFileType = 0;
+    private int transactionsPerPage = 20;
+    private int visibleStartIndex;
+    private int visibleEndIndex;
 
-    // 编辑的备注内容 Edited Note Content
+    // 数据处理相关值 Data Handler Related Values
+    private string fileName = string.Empty;
+
+    private bool isOnMergingTT = false;
+    private int mergeThreshold;
+    private bool isOnEdit = false;
+    private string? editedLocationName = string.Empty;
     private string editedNoteContent = string.Empty;
-
-    // 是否显示表格指定列 Whether Show Specific Column
-    private bool isShowTimeColumn = true;
-
-    private bool isShowAmountColumn = true;
-    private bool isShowChangeColumn = true;
-    private bool isShowLocationColumn = true;
-    private bool isShowNoteColumn = true;
-    private bool isShowOrderColumn = true;
-    private bool isShowCheckboxColumn = true;
-
-    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
-    private readonly System.Timers.Timer searchTimer = new(100);
-
-    // 用于控制 UI 的刷新速度 Used to slow down UI refresh speed
-    private readonly System.Timers.Timer searchTimerCCT = new(100);
-
-    // 是否为本回首次打开 Is First Time to Open Main Windown
-    internal bool isFirstTime = true;
-
-    // 修改后货币名 Edited Currency Name
     private string editedCurrencyName = string.Empty;
 
-    // 自定义货币追踪物品名称 For Custom Currency Tracker
-    private List<string> CCTItemNames = new();
+    // 界面控制相关值 UI Control Related Values
+    private bool selectTimeDeco = false; // Always False
 
-    private uint CCTItemCounts = 0;
-
-    // 子窗口宽度偏移量 Childframes Width Offset
+    private readonly System.Timers.Timer searchTimer = new(100);
+    private readonly System.Timers.Timer searchTimerCCT = new(100);
     private int childWidthOffset = 0;
 
-    internal Dictionary<uint, List<bool>>? selectedStates = new();
-    internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
-    internal List<TransactionsConvertor> currentTypeTransactions = new();
-    internal List<TransactionsConvertor> lastTransactions = new();
-    internal long[]? LinePlotData;
-
-    private Configuration? C = Plugin.Instance.Configuration;
-    private Plugin? P = Plugin.Instance;
+    private readonly Configuration? C = Plugin.Instance.Configuration;
+    private readonly Plugin? P = Plugin.Instance;
 }

@@ -74,7 +74,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void OnFrameworkUpdate(IFramework framework)
         {
-            if (!isOnExchange || !Exchange.isOnExchange)
+            if (!isOnExchange && !Exchange.isOnExchange)
             {
                 Service.Framework.Update -= OnFrameworkUpdate;
                 return;
@@ -87,7 +87,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndExchangeHandler()
         {
-            if (!isOnExchange || !Exchange.isOnExchange) return;
+            if (Exchange.isOnExchange) return;
 
             isOnExchange = false;
 

@@ -110,27 +110,3 @@ public static class CurrencyInfo
         }
     }
 }
-
-public class CurrencyIcon
-{
-    public uint CurrencyID { get; set; }
-    private IDalamudTextureWrap? icon;
-
-    public IDalamudTextureWrap? Icon
-    {
-        get
-        {
-            if (icon == null)
-            {
-                GetIcon();
-            }
-            return icon;
-        }
-        set { icon = value; }
-    }
-
-    private void GetIcon()
-    {
-        icon = CurrencyInfo.GetIcon(CurrencyID);
-    }
-}

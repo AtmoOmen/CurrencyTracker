@@ -47,5 +47,7 @@ global using System.Resources;
 global using System.Runtime.InteropServices;
 global using System.Text;
 global using System.Threading.Tasks;
+global using System.Timers;
 global using TinyPinyin;
 global using static CurrencyTracker.Manager.Trackers.Tracker;
+global using static CurrencyTracker.Manager.Widgets;

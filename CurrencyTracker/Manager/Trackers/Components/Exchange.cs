@@ -125,7 +125,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndExchange(AddonEvent type, AddonArgs args)
         {
-            if (!isOnExchange || !SpecialExchange.isOnExchange) return;
+            if (SpecialExchange.isOnExchange) return;
 
             if (WindowUI.ContainsKey(args.AddonName))
             {
@@ -139,8 +139,6 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndExchangeHandler()
         {
-            if (!isOnExchange || !SpecialExchange.isOnExchange) return;
-
             isOnExchange = false;
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
@@ -156,8 +154,6 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndExchangeWindowHandler()
         {
-            if (!isOnExchange || !SpecialExchange.isOnExchange) return;
-
             isOnExchange = false;
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
