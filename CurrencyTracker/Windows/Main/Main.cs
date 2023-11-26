@@ -67,6 +67,8 @@ public partial class Main : Window, IDisposable
     {
         if (!Service.ClientState.IsLoggedIn) return;
 
+        windowWidth = ImGui.GetWindowWidth();
+
         DrawCategory(ref showRecordOptions, Service.Lang.GetText("ConfigLabel1"), RecordOptionsUI);
         if (!showRecordOptions && !showOthers) ImGui.SameLine();
         DrawCategory(ref showOthers, Service.Lang.GetText("ConfigLabel2"), OthersUI);

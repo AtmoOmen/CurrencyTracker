@@ -226,8 +226,7 @@ namespace CurrencyTracker.Windows
                 ImGui.SameLine();
                 if (ImGui.InputInt("##ChildframesWidthOffset", ref childWidthOffset, 10))
                 {
-                    childWidthOffset = Math.Max(-240, childWidthOffset);
-                    childWidthOffset = Math.Min(childWidthOffset, 450);
+                    childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
                     C.ChildWidthOffset = childWidthOffset;
                     C.Save();
                 }

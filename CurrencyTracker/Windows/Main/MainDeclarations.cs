@@ -18,7 +18,6 @@ public partial class Main
 
     // 筛选器开关 Filters Switch
     private bool isClusteredByTime = false;
-
     private bool isChangeFilterEnabled = false;
     private bool isTimeFilterEnabled = false;
     private bool isLocationFilterEnabled = false;
@@ -26,7 +25,6 @@ public partial class Main
 
     // 筛选器值 Filters Values
     private int clusterHour = 0;
-
     private DateTime filterStartDate = DateTime.Now;
     private DateTime filterEndDate = DateTime.Now;
     private bool startDateEnable;
@@ -41,7 +39,6 @@ public partial class Main
 
     // 自定义货币追踪相关值 CCT Related Values
     private static string searchFilterCCT = string.Empty;
-
     private uint currencyIDCCT = uint.MaxValue;
     private readonly int itemsPerPageCCT = 10;
     private int currentItemPageCCT = 0;
@@ -58,14 +55,12 @@ public partial class Main
 
     // 数据显示相关值 Data Display Related Values
     private int currentPage;
-
     private int transactionsPerPage = 20;
     private int visibleStartIndex;
     private int visibleEndIndex;
 
     // 数据处理相关值 Data Handler Related Values
     private string fileName = string.Empty;
-
     private bool isOnMergingTT = false;
     private int mergeThreshold;
     private bool isOnEdit = false;
@@ -74,10 +69,11 @@ public partial class Main
     private string editedCurrencyName = string.Empty;
 
     // 界面控制相关值 UI Control Related Values
-    private bool selectTimeDeco = false; // Always False
+    private readonly bool selectTimeDeco = false; // Always False
 
-    private readonly System.Timers.Timer searchTimer = new(100);
-    private readonly System.Timers.Timer searchTimerCCT = new(100);
+    private readonly Timer searchTimer = new(100);
+    private readonly Timer searchTimerCCT = new(100);
+    private float windowWidth;
     private int childWidthOffset = 0;
 
     private readonly Configuration? C = Plugin.Instance.Configuration;
