@@ -13,6 +13,8 @@ namespace CurrencyTracker.Windows
 
         public override void Draw()
         {
+            if (!P.Main.IsOpen) IsOpen = false;
+
             if (ImGui.BeginTabBar("NoteSettings", ImGuiTabBarFlags.AutoSelectNewTabs))
             {
                 // 一般 General

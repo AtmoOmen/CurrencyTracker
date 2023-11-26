@@ -32,14 +32,21 @@ namespace CurrencyTracker.Manager.Trackers
                     Service.PluginLog.Warning($"Fail to get component {component.GetType().Name} configurations");
                 }
 
-                if (!component.Initialized)
+                try
                 {
-                    component.Init();
-                    Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                    if (!component.Initialized)
+                    {
+                        component.Init();
+                        Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                    }
+                    else
+                    {
+                        Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                    Service.PluginLog.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
                 }
             }
         }
@@ -48,14 +55,21 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (Components.Contains(component))
             {
-                if (!component.Initialized)
+                try
                 {
-                    component.Init();
-                    Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                    if (!component.Initialized)
+                    {
+                        component.Init();
+                        Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                    }
+                    else
+                    {
+                        Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                    Service.PluginLog.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
                 }
             }
             else

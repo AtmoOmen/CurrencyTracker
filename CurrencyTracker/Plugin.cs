@@ -13,7 +13,6 @@ namespace CurrencyTracker
         public static Plugin Instance = null!;
 
         internal const string CommandName = "/ct";
-        private HookManager hookManager;
 
         public string PlayerDataFolder = string.Empty;
         private string playerLang = string.Empty;
@@ -50,8 +49,6 @@ namespace CurrencyTracker
 
             PluginInterface.UiBuilder.Draw += DrawUI;
             PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-
-            hookManager = new HookManager(this);
 
             Main = new Main(this);
             WindowSystem.AddWindow(Main);
@@ -333,8 +330,6 @@ namespace CurrencyTracker
             Main.Dispose();
             Graph.Dispose();
             RecordSettings.Dispose();
-
-            hookManager.Dispose();
 
             Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
             Service.Tracker.Dispose();
