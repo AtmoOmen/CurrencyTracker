@@ -3,6 +3,26 @@ namespace CurrencyTracker.Windows
     // 合并记录 / 清除异常记录 / 导出记录
     public partial class Main : Window, IDisposable
     {
+        private void RecordOptionsUI()
+        {
+            RecordSettingsUI();
+            ImGui.SameLine();
+            MergeTransactionUI();
+            ImGui.SameLine();
+            ClearExceptionUI();
+            ImGui.SameLine();
+            ExportDataUI();
+        }
+
+        // 记录设置界面 Record Settings
+        private void RecordSettingsUI()
+        {
+            if (ImGui.Button(Service.Lang.GetText("RecordSettings") + "[DEV]"))
+            {
+                P.RecordSettings.IsOpen = !P.RecordSettings.IsOpen;
+            }
+        }
+
         // 按临界值合并记录界面 Merge Transactions By Threshold
         private void MergeTransactionUI()
         {

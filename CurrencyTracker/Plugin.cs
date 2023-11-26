@@ -2,15 +2,13 @@ namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Currency Tracker";
+        public static string Name => "Currency Tracker";
         public DalamudPluginInterface PluginInterface { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
         internal Main Main { get; init; }
         internal Graph Graph { get; init; }
-        /*
         internal RecordSettings RecordSettings { get; init; }
-        */
         public CharacterInfo? CurrentCharacter { get; set; }
         public static Plugin Instance = null!;
 
@@ -62,10 +60,8 @@ namespace CurrencyTracker
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
 
-            /*
             RecordSettings = new RecordSettings(this);
             WindowSystem.AddWindow(RecordSettings);
-            */
         }
 
         private void HandleLogout()
@@ -263,7 +259,6 @@ namespace CurrencyTracker
             return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
         }
 
-
         public static void ParseOldConfiguration(string jsonFilePath)
         {
             if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath))
@@ -337,9 +332,7 @@ namespace CurrencyTracker
 
             Main.Dispose();
             Graph.Dispose();
-            /*
             RecordSettings.Dispose();
-            */
 
             hookManager.Dispose();
 

@@ -96,6 +96,19 @@ namespace CurrencyTracker.Manager
             return ImGui.Selectable(text, selected, flags);
         }
 
+        public static void SelectableClickToCopy(string text, string? textCopy = null, int? order = null)
+        {
+            textCopy ??= text;
+
+            ImGui.Selectable($"{text}##{order ?? 0}");
+
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            {
+                ImGui.SetClipboardText(textCopy ?? "");
+                Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {textCopy}");
+            }
+        }
+
         public static unsafe ImFontPtr GetFont(float size)
         {
             var style = new Dalamud.Interface.GameFonts.GameFontStyle(Dalamud.Interface.GameFonts.GameFontStyle.GetRecommendedFamilyAndSize(Dalamud.Interface.GameFonts.GameFontFamily.Axis, size));

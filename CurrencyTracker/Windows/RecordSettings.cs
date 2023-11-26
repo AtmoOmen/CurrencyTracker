@@ -1,90 +1,50 @@
 namespace CurrencyTracker.Windows
 {
-    /*
     public class RecordSettings : Window, IDisposable
     {
         private Configuration? C = Plugin.Instance.Configuration;
         private Plugin? P = Plugin.Instance;
 
-        private bool isRecordContentName;
-        private bool isRecordTeleportDes;
-        private bool isRecordTeleport;
-        private bool isTrackinDuty;
-        private bool isWaitExComplete;
-
-        public RecordSettings(Plugin plugin) : base("Currency Tracker - Record Settings")
+        public RecordSettings(Plugin plugin) : base($"Record Settings##{Plugin.Name}")
         {
             Flags |= ImGuiWindowFlags.NoScrollbar;
             Flags |= ImGuiWindowFlags.AlwaysAutoResize;
-
-            InitOptions();
         }
 
         public override void Draw()
         {
             if (ImGui.BeginTabBar("NoteSettings", ImGuiTabBarFlags.AutoSelectNewTabs))
             {
-                if (ImGui.BeginTabItem("一般"))
+                // 一般 General
+                if (ImGui.BeginTabItem(Service.Lang.GetText("General")))
                 {
-                    if (ImGui.Checkbox("记录传送费", ref isRecordTeleport))
-                    {
-                        C.RecordTeleport = isRecordTeleport;
-                        C.Save();
-
-                        if (isRecordTeleport)
-                        {
-                        }
-                        else
-                        {
-                        }
-                    }
-
-                    if (isRecordTeleport)
-                    {
-                        ImGui.BulletText("");
-                        ImGui.SameLine();
-                        if (ImGui.Checkbox("记录传送地点", ref isRecordTeleportDes))
-                        {
-                            C.RecordTeleportDes = isRecordTeleportDes;
-                            C.Save();
-                        }
-                    }
-
-                    if (ImGui.Checkbox("等待交易完成", ref isWaitExComplete))
-                    {
-                        C.WaitExComplete = isWaitExComplete;
-                        C.Save();
-                    }
+                    ModuleCheckbox(typeof(Exchange), "Exchange", Service.Lang.GetText("Exchange-RecordExchangeResult"), Service.Lang.GetText("Exchange-RecordExchangeResultHelp"));
+                    ModuleCheckbox(typeof(SpecialExchange), "SpecialExchange", Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"), Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResultHelp"));
+                    ModuleCheckbox(typeof(TeleportCosts), "TeleportCosts", Service.Lang.GetText("TeleportCosts-RecordTPCosts"), Service.Lang.GetText("TeleportCosts-RecordTPCostsHelp"));
+                    ModuleCheckbox(typeof(WarpCosts), "WarpCosts", Service.Lang.GetText("WarpCosts-RecordTPCosts"), Service.Lang.GetText("WarpCosts-RecordTPCostsHelp"));
+                    ModuleCheckbox(typeof(QuestRewards), "QuestRewards", Service.Lang.GetText("QuestRewards-RecordQuestRewards"), Service.Lang.GetText("QuestRewards-RecordQuestRewardsHelp"));
+                    ModuleCheckbox(typeof(Trade), "Trade", Service.Lang.GetText("Trade-RecordTradeTarget"), Service.Lang.GetText("Trade-RecordTradeTargetHelp"));
+                    ModuleCheckbox(typeof(FateRewards), "FateRewards", Service.Lang.GetText("FateRewards-RecordFateRewards"), Service.Lang.GetText("FateRewards-RecordFateRewardsHelp"));
+                    ModuleCheckbox(typeof(MobDrops), "MobDrops", Service.Lang.GetText("MobDrops-RecordMobDrops"), Service.Lang.GetText("MobDrops-RecordMobDropsHelp"));
+                    ModuleCheckbox(typeof(IslandSanctuary), "IslandSanctuary", Service.Lang.GetText("IslandSanctuary-RecordISResult"), Service.Lang.GetText("IslandSanctuary-RecordISResultHelp"));
 
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("副本"))
+                // 副本 Content/Duty
+                if (ImGui.BeginTabItem(Service.Lang.GetText("Content")))
                 {
-                    if (ImGui.Checkbox(Service.Lang.GetText("TrackInDuty"), ref isTrackinDuty))
-                    {
-                        C.TrackedInDuty = isTrackinDuty;
-                        C.Save();
-                    }
-                    ImGui.SameLine();
-                    ImGuiComponents.HelpMarker(Service.Lang.GetText("TrackInDutyHelp"));
-
-                    if (isTrackinDuty)
-                    {
-                        ImGui.BulletText("");
-                        ImGui.SameLine();
-                        if (ImGui.Checkbox("记录副本名称", ref isRecordContentName))
-                        {
-                            C.RecordContentName = isRecordContentName;
-                            C.Save();
-                        }
-                    }
+                    ModuleCheckbox(typeof(DutyRewards), "DutyRewards", Service.Lang.GetText("DutyRewards-RecordDutyRewards"), Service.Lang.GetText("DutyRewards-RecordDutyRewardsHelp"));
+                    if (C.ComponentEnabled["DutyRewards"]) SecondaryCheckbox("RecordContentName", Service.Lang.GetText("DutyRewards-RecordContentName"), Service.Lang.GetText("DutyRewards-RecordContentNameHelp"));
 
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("金碟"))
+                // 金碟 Gold Saucer
+                if (ImGui.BeginTabItem(Service.Lang.GetText("GoldSaucer")))
                 {
+                    ModuleCheckbox(typeof(GoldSaucer), "GoldSaucer", Service.Lang.GetText("GoladSaucer-RecordMGPSource"), Service.Lang.GetText("GoladSaucer-RecordMGPSourceHelp"));
+                    ModuleCheckbox(typeof(Manager.Trackers.Components.TripleTriad), "TripleTriad", Service.Lang.GetText("TripleTriad-RecordTTResult"), Service.Lang.GetText("TripleTriad-RecordTTResultHelp"));
                     ImGui.EndTabItem();
                 }
 
@@ -92,18 +52,70 @@ namespace CurrencyTracker.Windows
             }
         }
 
-        private void InitOptions()
+        private void ModuleCheckbox(Type type, string boolName, string checkboxLabel, string help = "")
         {
-            isRecordContentName = C.RecordContentName;
-            isRecordTeleportDes = C.RecordTeleportDes;
-            isRecordTeleport = C.RecordTeleport;
-            isTrackinDuty = C.TrackedInDuty;
-            isWaitExComplete = C.WaitExComplete;
+            var cbool = C.ComponentEnabled[boolName];
+
+            if (typeof(ITrackerComponent).IsAssignableFrom(type))
+            {
+                if (ImGui.Checkbox($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
+                {
+                    C.ComponentEnabled[boolName] = !C.ComponentEnabled[boolName];
+                    var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
+                    if (component != null)
+                    {
+                        if (C.ComponentEnabled[boolName])
+                        {
+                            ComponentManager.Load(component);
+                        }
+                        else
+                        {
+                            ComponentManager.Unload(component);
+                        }
+                    }
+                    else
+                    {
+                        Service.PluginLog.Error($"Fail to fetch component {component.GetType().Name}");
+                    }
+
+                    C.Save();
+                }
+
+                if (!help.IsNullOrEmpty())
+                {
+                    ImGui.SameLine();
+                    ImGuiComponents.HelpMarker(help);
+                }
+            }
+            else
+            {
+                Service.PluginLog.Error($"Fail to fetch component {type.Name}");
+            }
+        }
+
+        private void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")
+        {
+            var cbool = C.ComponentProp[boolName];
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.BulletText("");
+
+            ImGui.SameLine();
+            if (ImGui.Checkbox(checkboxLabel, ref cbool))
+            {
+                C.ComponentProp[boolName] = !C.ComponentProp[boolName];
+                C.Save();
+            }
+
+            if (!help.IsNullOrEmpty())
+            {
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker(help);
+            }
         }
 
         public void Dispose()
         {
         }
     }
-    */
 }

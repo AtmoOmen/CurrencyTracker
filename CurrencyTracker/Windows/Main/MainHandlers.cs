@@ -285,17 +285,6 @@ public partial class Main
         return currentTypeTransactions;
     }
 
-    // 显示列勾选框 Displayed Column Checkbox
-    private void ColumnDisplayCheckbox(string boolName, string text)
-    {
-        var isShowColumn = C.ColumnVisibility[boolName];
-        if (ImGui.Checkbox($"{Service.Lang.GetText(text)}##Display{text}Column", ref isShowColumn))
-        {
-            C.ColumnVisibility[boolName] = isShowColumn;
-            C.Save();
-        }
-    }
-
     // 用于在记录新增时更新记录 Used to update transactions when transactions added
     public void UpdateTransactionsEvent(object sender, EventArgs e)
     {

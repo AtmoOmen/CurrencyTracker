@@ -1,30 +1,31 @@
 namespace CurrencyTracker.Windows
 {
-    // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换
+    // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换 / 测试功能
     public partial class Main : Window, IDisposable
     {
+        private void OthersUI()
+        {
+            OpenDataFolderUI();
+            ImGui.SameLine();
+            HelpPageUI();
+            ImGui.SameLine();
+            LanguageSwitchUI();
+            if (P.PluginInterface.IsDev) TestingFeaturesUI();
+        }
+
         // 打开数据文件夹 Open Data Folder
         private void OpenDataFolderUI()
         {
-            if (ImGui.Button(Service.Lang.GetText("OpenDataFolder")))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Folder, Service.Lang.GetText("OpenDataFolder")))
             {
                 OpenDirectory(P.PlayerDataFolder);
-            }
-        }
-
-        // 打开插件 GitHub 页面 Open Plugin GitHub Page
-        private static void OpenGitHubUI()
-        {
-            if (ImGui.Button("GitHub"))
-            {
-                Util.OpenLink("https://github.com/AtmoOmen/CurrencyTracker");
             }
         }
 
         // 帮助页面 Help Page
         private void HelpPageUI()
         {
-            if (ImGui.Button($"{Service.Lang.GetText("NeedHelp")}?"))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.QuestionCircle, $"{Service.Lang.GetText("NeedHelp")}"))
             {
                 ImGui.OpenPopup("NeedHelp");
             }
@@ -77,7 +78,7 @@ namespace CurrencyTracker.Windows
         // 界面语言切换功能 Language Switch
         private void LanguageSwitchUI()
         {
-            if (IconButton(FontAwesomeIcon.Globe, "Languages"))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Globe, "Languages"))
             {
                 ImGui.OpenPopup("LanguagesList");
             }
@@ -104,6 +105,11 @@ namespace CurrencyTracker.Windows
 
                 ImGui.EndPopup();
             }
+        }
+
+        // 测试功能 Features still under testing
+        private void TestingFeaturesUI()
+        {
         }
     }
 }

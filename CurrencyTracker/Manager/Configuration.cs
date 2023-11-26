@@ -63,6 +63,14 @@ namespace CurrencyTracker
             { "TripleTriad", true},
             { "WarpCosts", true},
         };
+        public Dictionary<string, bool> ComponentProp { get; set; } = new()
+        {
+            // DutyRewards
+            { "RecordContentName", true },
+            // TeleportCosts
+            { "RecordTeleportDes", true }
+        };
+
         public int ChildWidthOffset { get; set; } = 0;
         [JsonIgnore]
         public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons

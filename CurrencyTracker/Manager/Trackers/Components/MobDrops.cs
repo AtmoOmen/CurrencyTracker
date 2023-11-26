@@ -1,6 +1,3 @@
-using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Plugin.Services;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class MobDrops : ITrackerComponent
@@ -41,7 +38,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void OnConditionChange(ConditionFlag flag, bool value)
         {
-            if (Flags.IsBoundByDuty() || Flags.OccupiedInEvent() || Flags.BetweenAreas() || ConditionHandler.InCE || ConditionHandler.InFate) return;
+            if (Flags.IsBoundByDuty() || Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
 
             if (flag == ConditionFlag.InCombat && value)
             {

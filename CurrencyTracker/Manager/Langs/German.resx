@@ -248,11 +248,13 @@ Zwei-Wege-Zusammenführung: Transaktionen mit Differenzen ins positive und negat
   <data name="ReverseSort" xml:space="preserve">
     <value>Umgekehrte Sortierung</value>
   </data>
-  <data name="TrackInDuty" xml:space="preserve">
-    <value>Während Missionen aufzeichnen</value>
+  <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
+    <value>Record Duty Rewards</value>
   </data>
-  <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>Wenn diese Option nicht aktiviert ist, wird das Plugin die Aufzeichnung von Veränderungen bis zum Verlassen der Missionen pausieren, was auch zur Erfassung falscher Standorte führt.</value>
+  <data name="DutyRewards-RecordDutyRewardsHelp" xml:space="preserve">
+    <value>The plugin will record the TOTAL rewards obtained during the duty.
+(Include PVP)
+(Exclude Bozja and Eureka)</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>Keine passenden Transaktionen gefunden.</value>
@@ -540,42 +542,35 @@ Transaktionen mit einer Differenz, die gleich dem Betrag ist /mit Differenz, wel
   <data name="Guide" xml:space="preserve">
     <value>Guide</value>
   </data>
-  <data name="RecordContentName" xml:space="preserve">
-    <value>Inhaltsnamen aufzeichnen</value>
+  <data name="DutyRewards-RecordContentName" xml:space="preserve">
+    <value>Record Content Name</value>
   </data>
-  <data name="RecordContentNameHelp" xml:space="preserve">
-    <value>Dies schließt Inhalte und PVP ein</value>
+  <data name="DutyRewards-RecordContentNameHelp" xml:space="preserve">
+    <value>The Note section of the duty rewards transaction will be filled with the content name.</value>
   </data>
-  <data name="RecordGoldSaucerHelp" xml:space="preserve">
-    <value>Die folgenden Optionen bedeuten, dass die Notiz bestimmter Transaktionen mit der Quelle gefüllt wird, wenn ausgewählt.
-Wenn nicht ausgewählt, bedeutet das Plugin wird  keine bestimmten Transaktionen aufzeichnen.</value>
-  </data>
-  <data name="RecordMGPSource" xml:space="preserve">
-    <value>Quelle der MGP Belohnung aufzeichnen</value>
+  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
+    <value>Record MGP Rewards Source</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>Aufzeichnungseinstellungen</value>
   </data>
-  <data name="RecordTPCosts" xml:space="preserve">
-    <value>TP-Kosten aufzeichnen</value>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>Record Teleport Costs</value>
   </data>
-  <data name="RecordTPCostsHelp" xml:space="preserve">
-    <value>Kosten beinhalten Gil und Ätherytkarten.</value>
+  <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
+    <value>The Note section of costs transaction will be filled with the area name you teleport to.</value>
   </data>
-  <data name="RecordTPDest" xml:space="preserve">
-    <value>TP-Ziel aufzeichnen</value>
-  </data>
-  <data name="RecordTripleTriad" xml:space="preserve">
-    <value>Triple-Triad Ergebnis aufzeichnen</value>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>Record Triple Triad Result</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>Vorschlagen oder Melden</value>
   </data>
-  <data name="WaitExchange" xml:space="preserve">
-    <value>Warte auf Abschluss des Austausches/Handels</value>
+  <data name="Exchange-RecordExchangeResult" xml:space="preserve">
+    <value>Record Exchange Result</value>
   </data>
-  <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>Wenn aktiviert, wird auf den Abschluss von Austäuschen/Käufen gewartet, bevor Währungsänderungen überprüft werden. Dazu gehören das Marktbrett, ALLE NPC Shops, Gehilfen, staatliche Gesellschaft, Gehilfen, und die Truhe der FG.</value>
+  <data name="Exchange-RecordExchangeResultHelp" xml:space="preserve">
+    <value>The plugin will record the TOTAL changes that occur during the exchange.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Öffne das Hauptfenster des Plugins</value>
@@ -612,18 +607,19 @@ wird der Hinweis bei den zusammengeführten Transaktionen sein:
   <data name="Quest" xml:space="preserve">
     <value>Quest {0}</value>
   </data>
-  <data name="RecordQuestName" xml:space="preserve">
-    <value>Questname aufzeichnen</value>
+  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
+    <value>Record Quest Rewards</value>
   </data>
-  <data name="RecordMGPSourceHelp" xml:space="preserve">
-    <value>(Nur wirksam im Gold Saucer)
-Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem du die MGP erhalten hast, ausgefüllt.</value>
+  <data name="GoladSaucer-RecordMGPSourceHelp" xml:space="preserve">
+    <value>The Note section of MGP rewards transaction will be filled with source.
+(ONLY effective in Gold Saucer)</value>
   </data>
-  <data name="RecordTripleTriadHelp" xml:space="preserve">
-    <value>Wenn ausgewählt, wird die Notiz bestimmter Transaktionen mit dem Spielergebnis ausgefüllt.</value>
+  <data name="TripleTriad-RecordTTResultHelp" xml:space="preserve">
+    <value>The Note section of MGP/cards transaction will be filled with the result.
+(Include win/loss result and the rival name)</value>
   </data>
-  <data name="RecordTrade" xml:space="preserve">
-    <value>Handelsziel aufzeichnen</value>
+  <data name="Trade-RecordTradeTarget" xml:space="preserve">
+    <value>Record Trade Target</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
     <value>Handel mit {0}</value>
@@ -652,8 +648,8 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
   <data name="Reset" xml:space="preserve">
     <value>Zurücksetzen</value>
   </data>
-  <data name="RecordFateName" xml:space="preserve">
-    <value>FATE Namen aufzeichnen</value>
+  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
+    <value>Record FATE Rewards</value>
   </data>
   <data name="IslandFarm" xml:space="preserve">
     <value>Island Farm</value>
@@ -664,14 +660,8 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
   <data name="IslandWorkshop" xml:space="preserve">
     <value>Island Workshop</value>
   </data>
-  <data name="IslandSanctuary" xml:space="preserve">
-    <value>Island Sanctuary</value>
-  </data>
-  <data name="RecordIsland" xml:space="preserve">
-    <value>Record Related Rewards/Costs</value>
-  </data>
-  <data name="RecordIslandHelp" xml:space="preserve">
-    <value>Include Workshop, Farm, Pasture, Ganary, Building and Crafting.</value>
+  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
+    <value>Record Island Result</value>
   </data>
   <data name="Fate" xml:space="preserve">
     <value>FATE</value>
@@ -684,5 +674,37 @@ Wenn aktiviert, wird die Notiz bestimmter Transaktionen mit der Quelle von dem d
   </data>
   <data name="ChildframeWidthOffset" xml:space="preserve">
     <value>Width Offset</value>
+  </data>
+  <data name="FateRewards-RecordFateRewardsHelp" xml:space="preserve">
+    <value>The Note section of rewards-related transaction will be filled with the FATE name.</value>
+  </data>
+  <data name="IslandSanctuary-RecordISResultHelp" xml:space="preserve">
+    <value>The Note section of specific transactions will be filled with the source.
+(Include Workshop, Farm, Pasture, Ganary, Building and Crafting.)</value>
+  </data>
+  <data name="MobDrops-RecordMobDrops" xml:space="preserve">
+    <value>Record Mob Drops</value>
+  </data>
+  <data name="MobDrops-RecordMobDropsHelp" xml:space="preserve">
+    <value>The Note section of drops-related transaction will be filled with the mobs names.
+(Maybe not very accurate)</value>
+  </data>
+  <data name="QuestRewards-RecordQuestRewardsHelp" xml:space="preserve">
+    <value>The Note section of rewards-related transaction will be filled with the quest name.</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
+    <value>Record Special Exchange Result</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResultHelp" xml:space="preserve">
+    <value>Same as above. Just Supplement to the above option.</value>
+  </data>
+  <data name="Trade-RecordTradeTargetHelp" xml:space="preserve">
+    <value>The Note section of specific transaction will be filled with the trade target name.</value>
+  </data>
+  <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
+    <value>Record Special Teleport Costs</value>
+  </data>
+  <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
+    <value>Same as above. Just Supplement to the above option.</value>
   </data>
 </root>

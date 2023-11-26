@@ -7,7 +7,7 @@ public class Graph : Window, IDisposable
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
 
-    public Graph(Plugin plugin) : base("Currency Tracker - Graphs")
+    public Graph(Plugin plugin) : base($"Graphs##{Plugin.Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
 

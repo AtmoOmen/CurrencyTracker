@@ -32,7 +32,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     var FateName = textNode->NodeText.ToString();
                     Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                     {
-                        Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})");
+                        Transactions.EditLatestTransaction(currency.Key, "None", $"({Service.Lang.GetText("Fate")} {FateName})", false, 5, true);
                     });
 
                     FateName = string.Empty;

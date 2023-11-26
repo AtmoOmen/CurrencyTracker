@@ -23,6 +23,15 @@ namespace CurrencyTracker.Manager.Trackers
         {
             foreach (var component in Components)
             {
+                if (Plugin.Instance.Configuration.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))
+                {
+                    if (!enabled) continue;
+                }
+                else
+                {
+                    Service.PluginLog.Warning($"Fail to get component {component.GetType().Name} configurations");
+                }
+
                 if (!component.Initialized)
                 {
                     component.Init();
@@ -35,34 +44,33 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        public static void Load<T>() where T : ITrackerComponent, new()
+        public static void Load(ITrackerComponent component)
         {
-            if (!Components.OfType<T>().Any())
+            if (Components.Contains(component))
             {
-                var component = new T();
-
                 if (!component.Initialized)
                 {
                     component.Init();
-                    Components.Add(component);
-                    Service.PluginLog.Debug($"Loaded {typeof(T).Name} module");
+                    Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
                 }
                 else
                 {
                     Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
                 }
             }
+            else
+            {
+                Service.PluginLog.Error($"Fail to fetch component {component}");
+            }
         }
 
-        public static void Unload<T>() where T : ITrackerComponent
+        public static void Unload(ITrackerComponent component)
         {
-            var component = Components.OfType<T>().FirstOrDefault();
-            if (component != null)
+            if (Components.Contains(component))
             {
                 component.Uninit();
-                Components.Remove(component);
+                Service.PluginLog.Debug($"Unloaded {component.GetType().Name} module");
             }
-            Service.PluginLog.Debug($"Unloaded {typeof(T).Name} module");
         }
 
         public static void Uninit()

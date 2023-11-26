@@ -249,11 +249,13 @@
   <data name="ReverseSort" xml:space="preserve">
     <value>倒序排序</value>
   </data>
-  <data name="TrackInDuty" xml:space="preserve">
-    <value>記錄副本內數據</value>
+  <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
+    <value>Record Duty Rewards</value>
   </data>
-  <data name="TrackInDutyHelp" xml:space="preserve">
-    <value>如果未勾選本項，當你位於副本區域內時，插件將會暫停記錄所有貨幣可能發生的任何變化，直到你離開副本，這也同時會導致地點記錄不準確。</value>
+  <data name="DutyRewards-RecordDutyRewardsHelp" xml:space="preserve">
+    <value>The plugin will record the TOTAL rewards obtained during the duty.
+(Include PVP)
+(Exclude Bozja and Eureka)</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>未找到符合條件的記錄。</value>
@@ -538,43 +540,35 @@
   <data name="Guide" xml:space="preserve">
     <value>指南 </value>
   </data>
-  <data name="RecordContentName" xml:space="preserve">
-    <value>記錄副本名稱</value>
+  <data name="DutyRewards-RecordContentName" xml:space="preserve">
+    <value>Record Content Name</value>
   </data>
-  <data name="RecordContentNameHelp" xml:space="preserve">
-    <value>包含副本與PVP</value>
+  <data name="DutyRewards-RecordContentNameHelp" xml:space="preserve">
+    <value>The Note section of the duty rewards transaction will be filled with the content name.</value>
   </data>
-  <data name="RecordGoldSaucerHelp" xml:space="preserve">
-    <value>以下的選項僅代表勾選後相關記錄的備註部分會被填入對應內容,
-不代表不勾選插件就不記錄相關收支記錄</value>
-  </data>
-  <data name="RecordMGPSource" xml:space="preserve">
-    <value>記錄金碟幣來源</value>
+  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
+    <value>Record MGP Rewards Source</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>記錄設定</value>
   </data>
-  <data name="RecordTPCosts" xml:space="preserve">
-    <value>記錄傳送費</value>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>Record Teleport Costs</value>
   </data>
-  <data name="RecordTPCostsHelp" xml:space="preserve">
-    <value>傳送費包含金幣以及傳送網使用券</value>
+  <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
+    <value>The Note section of costs transaction will be filled with the area name you teleport to.</value>
   </data>
-  <data name="RecordTPDest" xml:space="preserve">
-    <value>記錄傳送目的地</value>
-  </data>
-  <data name="RecordTripleTriad" xml:space="preserve">
-    <value>記錄九宮幻卡結果</value>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>Record Triple Triad Result</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>建議或回饋</value>
   </data>
-  <data name="WaitExchange" xml:space="preserve">
-    <value>等待交易完成</value>
+  <data name="Exchange-RecordExchangeResult" xml:space="preserve">
+    <value>Record Exchange Result</value>
   </data>
-  <data name="WaitExchangeHelp" xml:space="preserve">
-    <value>如果選取此項，會等待交換/交易結束，再檢查所有貨幣的增減情況
-包含 所有NPC商店、軍事籌備、市場佈告欄、員工和部隊箱</value>
+  <data name="Exchange-RecordExchangeResultHelp" xml:space="preserve">
+    <value>The plugin will record the TOTAL changes that occur during the exchange.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>開啟插件主介面</value>
@@ -611,18 +605,19 @@
   <data name="Quest" xml:space="preserve">
     <value>任務 {0}</value>
   </data>
-  <data name="RecordQuestName" xml:space="preserve">
-    <value>記錄任務名稱</value>
+  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
+    <value>Record Quest Rewards</value>
   </data>
-  <data name="RecordMGPSourceHelp" xml:space="preserve">
-    <value>(僅在金碟遊樂場內生效)
-如果選取此項, 相關記錄的備註部分會被填入你所獲得的金幣來源</value>
+  <data name="GoladSaucer-RecordMGPSourceHelp" xml:space="preserve">
+    <value>The Note section of MGP rewards transaction will be filled with source.
+(ONLY effective in Gold Saucer)</value>
   </data>
-  <data name="RecordTripleTriadHelp" xml:space="preserve">
-    <value>若選取此項, 相關記錄的備註部分會被填入對局的結果</value>
+  <data name="TripleTriad-RecordTTResultHelp" xml:space="preserve">
+    <value>The Note section of MGP/cards transaction will be filled with the result.
+(Include win/loss result and the rival name)</value>
   </data>
-  <data name="RecordTrade" xml:space="preserve">
-    <value>記錄交易對象</value>
+  <data name="Trade-RecordTradeTarget" xml:space="preserve">
+    <value>Record Trade Target</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
     <value>交易自 {0}</value>
@@ -651,8 +646,8 @@
   <data name="Reset" xml:space="preserve">
     <value>重置</value>
   </data>
-  <data name="RecordFateName" xml:space="preserve">
-    <value>記錄F.A.T.E名稱</value>
+  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
+    <value>Record FATE Rewards</value>
   </data>
   <data name="IslandFarm" xml:space="preserve">
     <value>無人島耕地</value>
@@ -663,14 +658,8 @@
   <data name="IslandWorkshop" xml:space="preserve">
     <value>無人島工房</value>
   </data>
-  <data name="IslandSanctuary" xml:space="preserve">
-    <value>無人島</value>
-  </data>
-  <data name="RecordIsland" xml:space="preserve">
-    <value>記錄無人島相關收支</value>
-  </data>
-  <data name="RecordIslandHelp" xml:space="preserve">
-    <value>包含工房、耕地、牧場、屯貨倉庫、開拓建造、開拓製作</value>
+  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
+    <value>Record Island Result</value>
   </data>
   <data name="Fate" xml:space="preserve">
     <value>F.A.T.E</value>
@@ -683,5 +672,37 @@
   </data>
   <data name="ChildframeWidthOffset" xml:space="preserve">
     <value>Width Offset</value>
+  </data>
+  <data name="FateRewards-RecordFateRewardsHelp" xml:space="preserve">
+    <value>The Note section of rewards-related transaction will be filled with the FATE name.</value>
+  </data>
+  <data name="IslandSanctuary-RecordISResultHelp" xml:space="preserve">
+    <value>The Note section of specific transactions will be filled with the source.
+(Include Workshop, Farm, Pasture, Ganary, Building and Crafting.)</value>
+  </data>
+  <data name="MobDrops-RecordMobDrops" xml:space="preserve">
+    <value>Record Mob Drops</value>
+  </data>
+  <data name="MobDrops-RecordMobDropsHelp" xml:space="preserve">
+    <value>The Note section of drops-related transaction will be filled with the mobs names.
+(Maybe not very accurate)</value>
+  </data>
+  <data name="QuestRewards-RecordQuestRewardsHelp" xml:space="preserve">
+    <value>The Note section of rewards-related transaction will be filled with the quest name.</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
+    <value>Record Special Exchange Result</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResultHelp" xml:space="preserve">
+    <value>Same as above. Just Supplement to the above option.</value>
+  </data>
+  <data name="Trade-RecordTradeTargetHelp" xml:space="preserve">
+    <value>The Note section of specific transaction will be filled with the trade target name.</value>
+  </data>
+  <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
+    <value>Record Special Teleport Costs</value>
+  </data>
+  <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
+    <value>Same as above. Just Supplement to the above option.</value>
   </data>
 </root>

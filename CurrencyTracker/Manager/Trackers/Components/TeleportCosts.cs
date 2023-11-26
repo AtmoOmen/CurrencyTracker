@@ -22,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         public void TeleportBetweenAreas(ushort obj)
         {
-            if (teleportCost == 0) return;
+            if (teleportCost == 0 || !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"]) return;
 
             if (TerrioryHandler.CurrentLocationName != TerrioryHandler.PreviousLocationName)
             {
@@ -58,12 +58,12 @@ namespace CurrencyTracker.Manager.Trackers.Components
             // 传送网使用券 Aetheryte Ticket
             if (GilAmount == -1)
             {
-                Service.Tracker.CheckCurrency(7569, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative);
+                Service.Tracker.CheckCurrency(7569, TerrioryHandler.PreviousLocationName, !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
             }
             // 金币 Gil
             else if (GilAmount > 0)
             {
-                Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative);
+                Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
             }
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
