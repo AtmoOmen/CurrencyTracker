@@ -74,7 +74,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandPasture")})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandPasture")})", RecordChangeType.All, 4);
             });
         }
 
@@ -91,7 +91,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandFarm")})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandFarm")})", RecordChangeType.All, 5);
             });
         }
 
@@ -109,7 +109,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 7);
             });
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -129,7 +129,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 8);
             });
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -149,7 +149,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 9);
             });
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -174,7 +174,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
                 Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                 {
-                    Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandWorkshop")})");
+                    Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandWorkshop")})", RecordChangeType.All, 6);
                 });
 
                 HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;

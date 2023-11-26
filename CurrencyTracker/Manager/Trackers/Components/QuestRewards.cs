@@ -75,7 +75,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("Quest", questName)})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("Quest", questName)})", RecordChangeType.All, 11);
             });
 
             ResetQuestState();

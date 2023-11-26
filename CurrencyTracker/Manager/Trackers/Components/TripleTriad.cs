@@ -73,7 +73,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})", RecordChangeType.All, 14);
             });
 
             ttRivalName = ttResultText = string.Empty;

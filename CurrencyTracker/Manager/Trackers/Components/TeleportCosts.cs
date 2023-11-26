@@ -24,28 +24,17 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (teleportCost == 0 || !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"]) return;
 
-            if (TerrioryHandler.CurrentLocationName != TerrioryHandler.PreviousLocationName)
+            if (CurrentLocationName != PreviousLocationName)
             {
-                // 传送网使用券 Aetheryte Ticket
-                if (teleportCost == -1)
+                Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
                 {
-                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(7569, out var _))
-                    {
-                        Transactions.EditLatestTransaction(7569, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
-                        Plugin.Instance.Main.UpdateTransactions();
-                    }
-                }
-                // 金币 Gil
-                else if (teleportCost > 0)
-                {
-                    if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(1, out var _))
-                    {
-                        Transactions.EditLatestTransaction(1, "None", $"({Service.Lang.GetText("TeleportTo", TerrioryHandler.CurrentLocationName)})");
-                        Plugin.Instance.Main.UpdateTransactions();
-                    }
-                }
+                    Transactions.EditLatestTransaction(currency.Key, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})", false, 5, false);
+                });
+
+                Plugin.Instance.Main.UpdateTransactions();
 
                 teleportCost = 0;
+                Service.PluginLog.Debug($"Teleport from {PreviousLocationName} to {CurrentLocationName}");
             }
         }
 
@@ -55,16 +44,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             teleportCost = GilAmount;
 
-            // 传送网使用券 Aetheryte Ticket
-            if (GilAmount == -1)
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(7569, TerrioryHandler.PreviousLocationName, !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
-            }
-            // 金币 Gil
-            else if (GilAmount > 0)
-            {
-                Service.Tracker.CheckCurrency(1, TerrioryHandler.PreviousLocationName, !Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative);
-            }
+                Service.Tracker.CheckCurrency(currency.Key, CurrentLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 19);
+            });
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
         }

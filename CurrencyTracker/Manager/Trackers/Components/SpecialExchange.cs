@@ -93,7 +93,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowName})");
+                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowName})", RecordChangeType.All, 2);
             });
 
             windowName = string.Empty;

@@ -81,7 +81,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
             {
-                Service.Tracker.CheckCurrency(currency.Key, TerrioryHandler.PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "");
+                Service.Tracker.CheckCurrency(currency.Key, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 1);
             });
 
             isDutyStarted = false;

@@ -44,11 +44,18 @@ namespace CurrencyTracker.Manager.Trackers
         private static uint _currentLocationID = 0;
         private static string _previousLocationName = string.Empty;
         private static uint _previousLocationID = 0;
+        internal static Dictionary<uint, string> TerritoryNames = new();
 
         public void Init()
         {
-            PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
-            PreviousLocationName = CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+            TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
+                .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
+                .ToDictionary(
+                    x => x.RowId,
+                    x => $"{x.PlaceName?.Value?.Name}");
+
+            _previousLocationID = _currentLocationID = Service.ClientState.TerritoryType;
+            _previousLocationName = _currentLocationName = TerritoryNames.TryGetValue(_currentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
 
@@ -59,21 +66,20 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (_isBlocked) return;
 
-            PreviousLocationID = CurrentLocationID;
-            PreviousLocationName = CurrentLocationName;
+            _previousLocationID = _currentLocationID;
+            _previousLocationName = _currentLocationName;
 
-            CurrentLocationID = Service.ClientState.TerritoryType;
-            CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
-
-            Service.PluginLog.Debug(CurrentLocationName);
+            _currentLocationID = Service.ClientState.TerritoryType;
+            _currentLocationName = TerritoryNames.TryGetValue(_currentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
         }
 
         public void Uninit()
         {
             Service.ClientState.TerritoryChanged -= OnZoneChange;
 
-            PreviousLocationID = CurrentLocationID = 0;
-            PreviousLocationName = CurrentLocationName = string.Empty;
+            TerritoryNames.Clear();
+            _previousLocationID = _currentLocationID = 0;
+            _previousLocationName = _currentLocationName = string.Empty;
 
             _initialized = false;
         }

@@ -14,8 +14,6 @@ namespace CurrencyTracker.Windows
         {
             if (selectedCurrencyID == 0)
                 return;
-            if (Service.Condition[ConditionFlag.BetweenAreas] || Service.Condition[ConditionFlag.BetweenAreas51])
-                return;
 
             var childFrameHeight = ChildframeHeightAdjust();
             var childScale = new Vector2(ImGui.GetWindowWidth() - 100 - childWidthOffset, childFrameHeight);

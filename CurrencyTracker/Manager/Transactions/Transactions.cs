@@ -145,13 +145,19 @@ namespace CurrencyTracker.Manager
         // 删除最新一条记录 Delete Latest Transaction
         public static uint DeleteLatestTransaction(uint currencyID)
         {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty() || !Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed or Currency Missed.");
+                Service.PluginLog.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed.");
                 return 0;
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            {
+                Service.PluginLog.Error("Currency Missed");
+                return 0;
+            }
+
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
             {
@@ -169,6 +175,7 @@ namespace CurrencyTracker.Manager
             return 1;
         }
 
+         // 编辑最新一条记录 Edit Latest Transaction
         public static void EditLatestTransaction(uint currencyID, string LocationName = "None", string Note = "None", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
@@ -182,13 +189,35 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            var editedTransaction = LoadLatestSingleTransaction(currencyID);
-
-            if (editedTransaction == null || (!forceEdit && (DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout) || (onlyEditEmpty && !editedTransaction.Note.IsNullOrEmpty()))
+            if (!Plugin.Instance.Configuration.AllCurrencies.ContainsValue(currencyName))
             {
                 return;
             }
 
+            var editedTransaction = LoadLatestSingleTransaction(currencyID);
+
+            if (editedTransaction == null)
+            {
+                return;
+            }
+
+            if (!forceEdit)
+            {
+                if ((DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout)
+                {
+                    return;
+                }
+            }
+
+            if (onlyEditEmpty)
+            {
+                if (!editedTransaction.Note.IsNullOrEmpty())
+                {
+                    return;
+                }
+            }
+
+            // 删除失败 Fail to Delte
             if (DeleteLatestTransaction(currencyID) == 0)
             {
                 return;

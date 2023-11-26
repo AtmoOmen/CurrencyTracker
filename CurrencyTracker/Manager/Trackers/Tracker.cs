@@ -14,7 +14,6 @@ namespace CurrencyTracker.Manager.Trackers
             57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
         };
 
-        private static Dictionary<uint, string> _territoryNames = new();
         private static Dictionary<uint, string> _itemNames = new();
         private static HashSet<string> _itemNamesSet = new();
 
@@ -71,32 +70,30 @@ namespace CurrencyTracker.Manager.Trackers
 
             Parallel.ForEach(C.AllCurrencies, currency =>
             {
-                CheckCurrency(currency.Key);
+                CheckCurrency(currency.Key, "", "", RecordChangeType.All, 18) ;
             });
         }
 
         // 检查货币情况 Check the currency
-        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All)
+        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
         {
             if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
 
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID);
-            uint locationKey = Service.ClientState.TerritoryType;
-            locationName = locationName.IsNullOrEmpty()
-                ? TerritoryNames.TryGetValue(locationKey, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation")
-                : locationName;
-
             var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyID);
 
             if (latestTransaction != null)
             {
                 var currencyChange = currencyAmount - latestTransaction.Amount;
+                if (currencyChange == 0) return false;
 
+                locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
                 if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
                 {
                     Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent);
                     OnTransactionsUpdate(EventArgs.Empty);
                     Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                    Service.PluginLog.Debug($"Source: {source}");
                     return true;
                 }
             }
@@ -149,11 +146,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         private static void LoadConstantNames()
         {
-            _territoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
-                .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.PlaceName?.Value?.Name}");
+            
 
             _itemNames = Service.DataManager.GetExcelSheet<Item>()
                 .Where(x => !string.IsNullOrEmpty(x.Name?.ToString()))
@@ -221,14 +214,6 @@ namespace CurrencyTracker.Manager.Trackers
             get
             {
                 return _itemNames;
-            }
-        }
-
-        public static Dictionary<uint, string> TerritoryNames
-        {
-            get
-            {
-                return _territoryNames;
             }
         }
 
