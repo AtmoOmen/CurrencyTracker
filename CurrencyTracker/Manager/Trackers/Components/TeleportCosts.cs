@@ -18,11 +18,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private bool isReadyTP = false;
         private bool tpBetweenAreas = false;
         private bool tpInAreas = false;
-
+        
         public void Init()
         {
             var actorControlSelfPtr = Service.SigScanner.ScanText(ActorControlSig);
-            actorControlSelfHook = Service.GameInteropProvider.HookFromAddress<ActorControlSelfDelegate>(actorControlSelfPtr, ActorControlSelf);
+            actorControlSelfHook = Service.Hook.HookFromAddress<ActorControlSelfDelegate>(actorControlSelfPtr, ActorControlSelf);
             actorControlSelfHook.Enable();
 
             _initialized = true;
