@@ -14,9 +14,6 @@ namespace CurrencyTracker.Manager.Trackers
             57, 0, 2110, 2105, 62, 3006, 3001, 2238, 2622
         };
 
-        private static Dictionary<uint, string> _itemNames = new();
-        private static HashSet<string> _itemNamesSet = new();
-
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
 
         public event CurrencyChangedHandler? OnCurrencyChanged;
@@ -29,7 +26,11 @@ namespace CurrencyTracker.Manager.Trackers
 
         public Tracker()
         {
-            LoadConstantNames();
+            Init();
+        }
+
+        private void Init()
+        {
             InitCurrencies();
 
             HandlerManager ??= new HandlerManager();
@@ -144,19 +145,6 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        private static void LoadConstantNames()
-        {
-            
-
-            _itemNames = Service.DataManager.GetExcelSheet<Item>()
-                .Where(x => !string.IsNullOrEmpty(x.Name?.ToString()))
-                .ToDictionary(
-                    x => x.RowId,
-                    x => $"{x.Name}");
-
-            _itemNamesSet = new HashSet<string>(_itemNames.Values);
-        }
-
         public unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
         {
             textNodeIDs ??= new uint[] { 3, 4 };
@@ -199,22 +187,6 @@ namespace CurrencyTracker.Manager.Trackers
             var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
 
             return windowTitle;
-        }
-
-        public static HashSet<string> ItemNamesSet
-        {
-            get
-            {
-                return _itemNamesSet;
-            }
-        }
-
-        public static Dictionary<uint, string> ItemNames
-        {
-            get
-            {
-                return _itemNames;
-            }
         }
 
         public void Dispose()

@@ -56,11 +56,6 @@ public partial class Main : Window, IDisposable
         {
             ReloadOrderedOptions();
         }
-
-        if (itemNamesCCT.Count == 0 || itemNamesCCT == null)
-        {
-            itemNamesCCT = InitCCTItems();
-        }
     }
 
     public override void Draw()

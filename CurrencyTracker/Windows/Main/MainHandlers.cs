@@ -186,51 +186,10 @@ public partial class Main
         return filteredTransactions;
     }
 
-    // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
-    private List<string> InitCCTItems()
-    {
-        var itemNamesSet = new HashSet<string>(Tracker.ItemNamesSet, StringComparer.OrdinalIgnoreCase);
-
-        var items = itemNamesSet
-            .Where(itemName => !C.AllCurrencies.Keys.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
-            .ToList();
-
-        itemCountsCCT = (uint)items.Count;
-        return items;
-    }
-
-    // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
-    private List<string> ApplyCCTFilter(string searchFilterCCT)
-    {
-        if (itemNamesCCT.Count > 0)
-        {
-            return itemNamesCCT.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase))).ToList();
-        }
-        else
-        {
-            return Tracker.ItemNamesSet.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
-                .ToList();
-        }
-    }
-
     // 延迟加载收支记录 Used to handle too-fast transactions loading
-    private void SearchTimerElapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    private void SearchTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         UpdateTransactions();
-    }
-
-    // 延迟加载搜索结果 Used to handle too-fast CCT items loading
-    private void SearchTimerCCTElapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-        if (!searchFilterCCT.IsNullOrEmpty())
-        {
-            currentItemPageCCT = 0;
-            itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
-        }
-        else
-        {
-            itemNamesCCT = InitCCTItems();
-        }
     }
 
     // 调整列表框和表格高度用 Used to adjust the height of listbox and chart

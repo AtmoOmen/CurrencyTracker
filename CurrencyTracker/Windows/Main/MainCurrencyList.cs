@@ -108,8 +108,7 @@ namespace CurrencyTracker.Windows
                     ImGui.SetNextItemWidth(200f);
                     if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 50))
                     {
-                        searchTimerCCT.Stop();
-                        searchTimerCCT.Start();
+                        searchTimerCCT.Restart();
                     }
 
                     ImGui.SameLine();
@@ -153,10 +152,7 @@ namespace CurrencyTracker.Windows
 
                     // 鼠标滚轮控制翻页 Mouse wheel control for flipping pages
                     if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentItemPageCCT > 0) currentItemPageCCT--;
-                    if (itemNamesCCT.Count > 0 && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1)
-                    {
-                        currentItemPageCCT++;
-                    }
+                    if (itemNamesCCT.Count > 0 && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1) currentItemPageCCT++;
 
                     ImGui.Separator();
 
@@ -182,8 +178,9 @@ namespace CurrencyTracker.Windows
 
                 if (ImGui.IsItemClicked() && searchFilterCCT.IsNullOrEmpty())
                 {
-                    if (itemCountsCCT == 0)
+                    if (itemNamesCCT.Count == 0 || itemNamesCCT == null)
                     {
+                        LoadItemsForCCT();
                         itemNamesCCT = InitCCTItems();
                     }
                     else
@@ -217,7 +214,7 @@ namespace CurrencyTracker.Windows
 
                     selectedStates.Add(currencyIDCCT, new());
                     selectedTransactions.Add(currencyIDCCT, new());
-                    selectedOptionIndex = C.OrderedOptions.Count - 1;
+                    selectedOptionIndex = C.OrderedOptions.Count;
                     selectedCurrencyID = currencyIDCCT;
                     ReloadOrderedOptions();
 
@@ -231,6 +228,59 @@ namespace CurrencyTracker.Windows
                     ImGui.CloseCurrentPopup();
                 }
                 ImGui.EndPopup();
+            }
+        }
+
+        // 加载自定义货币追踪里的所有物品 Load All Items for CCT
+        public static void LoadItemsForCCT()
+        {
+            var items = Service.DataManager.GetExcelSheet<Item>()
+                .Select(x => new { x.RowId, Name = x.Name?.ToString() })
+                .Where(x => !x.Name.IsNullOrEmpty())
+                .ToList();
+
+            ItemNames = items.ToDictionary(x => x.RowId, x => $"{x.Name}");
+            ItemNamesSet = new HashSet<string>(ItemNames.Values);
+        }
+
+        // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
+        private List<string> InitCCTItems()
+        {
+            var itemNamesSet = new HashSet<string>(ItemNamesSet, StringComparer.OrdinalIgnoreCase);
+
+            var items = itemNamesSet
+                .Where(itemName => !C.AllCurrencies.Keys.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
+                .ToList();
+
+            itemCountsCCT = (uint)items.Count;
+            return items;
+        }
+
+        // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
+        private List<string> ApplyCCTFilter(string searchFilterCCT)
+        {
+            if (itemNamesCCT.Count > 0)
+            {
+                return itemNamesCCT.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase))).ToList();
+            }
+            else
+            {
+                return ItemNamesSet.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+                    .ToList();
+            }
+        }
+
+        // 延迟加载搜索结果 Used to handle too-fast CCT items loading
+        private void SearchTimerCCTElapsed(object? sender, ElapsedEventArgs e)
+        {
+            if (!searchFilterCCT.IsNullOrEmpty())
+            {
+                currentItemPageCCT = 0;
+                itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
+            }
+            else
+            {
+                itemNamesCCT = InitCCTItems();
             }
         }
 

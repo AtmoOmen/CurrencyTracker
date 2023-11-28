@@ -42,8 +42,10 @@ public partial class Main
     private uint currencyIDCCT = uint.MaxValue;
     private readonly int itemsPerPageCCT = 10;
     private int currentItemPageCCT = 0;
-    private List<string> itemNamesCCT = new();
     private uint itemCountsCCT = 0;
+    private static Dictionary<uint, string> ItemNames = new();
+    private static HashSet<string> ItemNamesSet= new();
+    private List<string> itemNamesCCT = new();
 
     private static readonly string[] filterNamesForCCT = new string[]
     {
