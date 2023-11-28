@@ -65,10 +65,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.PluginLog.Debug($"Combat Ends, Currency Change Check Starts.");
 
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"(Drops from {string.Join(", ", enemiesList.TakeLast(3))})", RecordChangeType.All, 10);
-            });
+            Service.Tracker.CheckAllCurrencies("", $"(Drops from {string.Join(", ", enemiesList.TakeLast(3))})", RecordChangeType.All, 8);
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
 

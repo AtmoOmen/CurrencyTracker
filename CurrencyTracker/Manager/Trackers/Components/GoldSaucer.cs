@@ -34,8 +34,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     {
                         if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(29, out var _))
                         {
-                            Transactions.EditLatestTransaction(29, "None", $"({GameName})");
-                            Plugin.Instance.Main.UpdateTransactions();
+                            Transactions.EditLatestTransaction(29, "", $"({GameName})", false, 5, true);
                         }
                     }
                 }

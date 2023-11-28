@@ -14,9 +14,22 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private bool isOnWorkshop = false;
         private string windowTitle = string.Empty;
 
+        private readonly Dictionary<string, string> MJIModules = new()
+        {
+            { "MJIFarmManagement",  Service.Lang.GetText("IslandFarm") },
+            { "MJIAnimalManagement",  Service.Lang.GetText("IslandPasture") }
+        };
+
+        private readonly Dictionary<string, uint> MJIWindowModules = new()
+        {
+            { "MJIGatheringHouse", 73 },
+            { "MJIRecipeNoteBook", 37 },
+            { "MJIBuilding", 25 }
+        };
+
         public void Init()
         {
-            if (TerrioryHandler.CurrentLocationID == 1055)
+            if (CurrentLocationID == 1055)
             {
                 isInIsland = true;
                 Service.Framework.Update += OnFrameworkUpdate;
@@ -24,33 +37,23 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.ClientState.TerritoryChanged += OnZoneChanged;
 
-            // 囤货仓库 Gathering House
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIGatheringHouse", MGHStart);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIGatheringHouse", MGHEnd);
-            // 无人岛制作 Island Crafting
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIRecipeNoteBook", MRNBStart);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIRecipeNoteBook", MRNBEnd);
-            // 无人岛建造 Island Building
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIBuilding", MBStart);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIBuilding", MBEnd);
-            // 无人岛耕地 Island Farm
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIFarmManagement", MFMStart);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIFarmManagement", MFMEnd);
-            // 无人岛牧场 Island Pasture
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "MJIAnimalManagement", MAMStart);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "MJIAnimalManagement", MAMEnd);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
+
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
 
             _initialized = true;
         }
 
         private void OnZoneChanged(ushort obj)
         {
-            if (!isInIsland && TerrioryHandler.CurrentLocationID == 1055)
+            if (!isInIsland && CurrentLocationID == 1055)
             {
                 Service.Framework.Update += OnFrameworkUpdate;
             }
 
-            if (isInIsland && TerrioryHandler.CurrentLocationID != 1055)
+            if (isInIsland && CurrentLocationID != 1055)
             {
                 Service.Framework.Update -= OnFrameworkUpdate;
             }
@@ -61,96 +64,49 @@ namespace CurrencyTracker.Manager.Trackers.Components
             WorkshopHandler();
         }
 
-        // 无人岛牧场
-        private void MAMStart(AddonEvent type, AddonArgs args)
+        private void BeginMJI(AddonEvent type, AddonArgs args)
+        {
+            BeginMJIHandler();
+        }
+
+        private void BeginMJIHandler()
         {
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
         }
 
-        private void MAMEnd(AddonEvent type, AddonArgs args)
+        private void EndMJI(AddonEvent type, AddonArgs args)
         {
-            if (Flags.OccupiedInEvent())
-                return;
-
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandPasture")})", RecordChangeType.All, 4);
-            });
+            EndMJIHandler(args);
         }
 
-        // 无人岛耕地
-        private void MFMStart(AddonEvent type, AddonArgs args)
+        private void EndMJIHandler(AddonArgs args)
         {
+            if (Flags.OccupiedInEvent()) return;
+
+            Service.Tracker.CheckAllCurrencies("", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
+        }
+
+        private void BeginMJIWindow(AddonEvent type, AddonArgs args)
+        {
+            BeginMJIWindowHandler(args);
+        }
+
+        private void BeginMJIWindowHandler(AddonArgs args)
+        {
+            windowTitle = Service.Tracker.GetWindowTitle(args, MJIWindowModules[args.AddonName]);
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
         }
 
-        private void MFMEnd(AddonEvent type, AddonArgs args)
+        private void EndMJIWindow(AddonEvent type, AddonArgs args)
         {
-            if (Flags.OccupiedInEvent())
-                return;
-
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandFarm")})", RecordChangeType.All, 5);
-            });
+            EndMJIWindowHandler();
         }
 
-        // 无人岛建造 Island Building
-        private unsafe void MBStart(AddonEvent type, AddonArgs args)
+        private void EndMJIWindowHandler()
         {
-            windowTitle = Service.Tracker.GetWindowTitle(args, 25);
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-        }
+            if (Flags.OccupiedInEvent()) return;
 
-        private void MBEnd(AddonEvent type, AddonArgs args)
-        {
-            if (Flags.OccupiedInEvent())
-                return;
-
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 7);
-            });
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-        }
-
-        // 无人岛制作
-        private unsafe void MRNBStart(AddonEvent type, AddonArgs args)
-        {
-            windowTitle = Service.Tracker.GetWindowTitle(args, 37);
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-        }
-
-        private void MRNBEnd(AddonEvent type, AddonArgs args)
-        {
-            if (Flags.OccupiedInEvent())
-                return;
-
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 8);
-            });
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-        }
-
-        // 无人岛屯货仓库
-        private unsafe void MGHStart(AddonEvent type, AddonArgs args)
-        {
-            windowTitle = Service.Tracker.GetWindowTitle(args, 73);
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-        }
-
-        private void MGHEnd(AddonEvent type, AddonArgs args)
-        {
-            if (Flags.OccupiedInEvent())
-                return;
-
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", $"({windowTitle})", RecordChangeType.All, 9);
-            });
+            Service.Tracker.CheckAllCurrencies("", $"({windowTitle})", RecordChangeType.All, 6);
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
         }
@@ -172,10 +128,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 }
                 isOnWorkshop = false;
 
-                Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-                {
-                    Service.Tracker.CheckCurrency(currency.Key, "", $"({Service.Lang.GetText("IslandWorkshop")})", RecordChangeType.All, 6);
-                });
+                Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("IslandWorkshop")})", RecordChangeType.All, 7);
 
                 HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             }
@@ -187,14 +140,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
             isOnWorkshop = false;
             windowTitle = string.Empty;
 
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MJIGatheringHouse", MGHStart);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIGatheringHouse", MGHEnd);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MJIRecipeNotebook", MRNBStart);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIRecipeNotebook", MRNBEnd);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MJIBuilding", MBStart);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIBuilding", MBEnd);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "MJIFarmManagement", MFMStart);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "MJIFarmManagement", MFMEnd);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
+
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
 
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.ClientState.TerritoryChanged -= OnZoneChanged;

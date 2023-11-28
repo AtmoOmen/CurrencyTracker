@@ -82,7 +82,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (warpTPBetweenAreas)
             {
-                if (Service.Tracker.CheckCurrency(1, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})" : "", RecordChangeType.Negative, 15))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})" : "", RecordChangeType.Negative, 15))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -91,11 +91,17 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
             else if (warpTPInAreas)
             {
-                if (Service.Tracker.CheckCurrency(1, CurrentLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 16))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, CurrentLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 16))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
                 }
+            }
+
+            if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
+            {
+                ResetStates();
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             }
         }
 

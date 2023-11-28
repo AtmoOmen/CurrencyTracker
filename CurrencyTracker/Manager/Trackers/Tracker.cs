@@ -47,7 +47,7 @@ namespace CurrencyTracker.Manager.Trackers
             HandlerManager.Init();
             ComponentManager.Init();
 
-            UpdateCurrencies();
+            CheckAllCurrencies("", "", RecordChangeType.All, 0);
             Service.PluginLog.Debug("Currency Tracker Activated");
         }
 
@@ -63,16 +63,6 @@ namespace CurrencyTracker.Manager.Trackers
         public virtual void OnTransactionsUpdate(EventArgs e)
         {
             OnCurrencyChanged?.Invoke(this, e);
-        }
-
-        public void UpdateCurrencies()
-        {
-            if (!Service.ClientState.IsLoggedIn || Flags.BetweenAreas()) return;
-
-            Parallel.ForEach(C.AllCurrencies, currency =>
-            {
-                CheckCurrency(currency.Key, "", "", RecordChangeType.All, 18) ;
-            });
         }
 
         // 检查货币情况 Check the currency
@@ -94,7 +84,7 @@ namespace CurrencyTracker.Manager.Trackers
                     Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent);
                     OnTransactionsUpdate(EventArgs.Empty);
                     Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
-                    Service.PluginLog.Debug($"Source: {source}");
+                    if (P.PluginInterface.IsDev) Service.PluginLog.Debug($"Source: {source}");
                     return true;
                 }
             }
@@ -106,6 +96,26 @@ namespace CurrencyTracker.Manager.Trackers
                 return true;
             }
             return false;
+        }
+
+        public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
+        {
+            var isChanged = false;
+            Parallel.ForEach(C.AllCurrencies, currency =>
+            {
+                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source)) isChanged = true;
+            });
+            return isChanged;
+        }
+
+        public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
+        {
+            var isChanged = false;
+            Parallel.ForEach(currencies, currency =>
+            {
+                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source)) isChanged = true;
+            });
+            return isChanged;
         }
 
         private void InitCurrencies()

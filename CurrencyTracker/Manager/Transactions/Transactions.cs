@@ -143,40 +143,45 @@ namespace CurrencyTracker.Manager
         }
 
         // 删除最新一条记录 Delete Latest Transaction
-        public static uint DeleteLatestTransaction(uint currencyID)
+        public static bool DeleteLatestTransaction(uint currencyID)
         {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty() || !Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.PluginLog.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed.");
-                return 0;
-            }
-
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
-            {
-                Service.PluginLog.Error("Currency Missed");
-                return 0;
+                return false;
             }
 
             var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
             {
-                return 0;
+                return false;
             }
 
-            var lines = File.ReadAllLines(filePath);
-
-            if (lines.Length == 0)
+            var tempFile = Path.GetTempFileName();
+            using (var reader = new StreamReader(filePath))
+            using (var writer = new StreamWriter(tempFile))
             {
-                return 0;
+                string? line;
+                string? lastLine = null;
+
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (lastLine != null)
+                        writer.WriteLine(lastLine);
+
+                    lastLine = line;
+                }
             }
 
-            File.WriteAllLines(filePath, lines.Take(lines.Length - 1).ToArray());
-            return 1;
+            File.Delete(filePath);
+            File.Move(tempFile, filePath);
+
+            return true;
         }
 
-         // 编辑最新一条记录 Edit Latest Transaction
-        public static void EditLatestTransaction(uint currencyID, string LocationName = "None", string Note = "None", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false)
+        // 编辑最新一条记录 Edit Latest Transaction
+        public static void EditLatestTransaction(uint currencyID, string LocationName = "", string Note = "", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false)
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
@@ -184,48 +189,42 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
-            {
-                return;
-            }
-
-            if (!Plugin.Instance.Configuration.AllCurrencies.ContainsValue(currencyName))
+            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName) || !Plugin.Instance.Configuration.AllCurrencies.ContainsValue(currencyName))
             {
                 return;
             }
 
             var editedTransaction = LoadLatestSingleTransaction(currencyID);
 
-            if (editedTransaction == null)
+            if (editedTransaction == null || (!forceEdit && (DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout) || (onlyEditEmpty && !editedTransaction.Note.IsNullOrEmpty()))
             {
                 return;
             }
 
-            if (!forceEdit)
-            {
-                if ((DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout)
-                {
-                    return;
-                }
-            }
-
-            if (onlyEditEmpty)
-            {
-                if (!editedTransaction.Note.IsNullOrEmpty())
-                {
-                    return;
-                }
-            }
-
-            // 删除失败 Fail to Delte
-            if (DeleteLatestTransaction(currencyID) == 0)
+            if (!DeleteLatestTransaction(currencyID))
             {
                 return;
             }
 
-            AppendTransaction(currencyID, editedTransaction.TimeStamp, editedTransaction.Amount, editedTransaction.Change, (LocationName == "None") ? editedTransaction.LocationName : LocationName, (Note == "None") ? editedTransaction.Note : Note);
+            AppendTransaction(currencyID, editedTransaction.TimeStamp, editedTransaction.Amount, editedTransaction.Change, (LocationName.IsNullOrEmpty()) ? editedTransaction.LocationName : LocationName, (Note.IsNullOrEmpty()) ? editedTransaction.Note : Note);
+
+            Plugin.Instance.Main.UpdateTransactions();
         }
 
+        // 编辑全部货币最新一条记录 Edit All Currencies Latest Transaction
+        public static void EditAllLatestTransaction(string LocationName = "", string Note = "", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false)
+        {
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            {
+                Service.PluginLog.Warning("Fail to Edit Transaction: Player Data Folder Path Missed.");
+                return;
+            }
+
+            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
+            {
+                EditLatestTransaction(currency.Key, LocationName, Note, forceEdit, timeout, onlyEditEmpty);
+            });
+        }
 
         // 在数据末尾追加最新一条记录 Append One Transaction
         public static void AppendTransaction(uint currencyID, DateTime TimeStamp, long Amount, long Change, string LocationName, string Note)

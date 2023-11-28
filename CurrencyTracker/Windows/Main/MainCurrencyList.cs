@@ -218,7 +218,7 @@ namespace CurrencyTracker.Windows
                     selectedCurrencyID = currencyIDCCT;
                     ReloadOrderedOptions();
 
-                    Service.Tracker.UpdateCurrencies();
+                    Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 1);
                     currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
                     lastTransactions = currentTypeTransactions;
 
