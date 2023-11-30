@@ -57,7 +57,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 isDutyStarted = true;
                 contentName = !dutyName.IsNullOrEmpty() ? dutyName : Service.Lang.GetText("UnknownContent");
 
-                Service.PluginLog.Debug($"Duty {dutyName} Starts");
+                Service.Log.Debug($"Duty {dutyName} Starts");
             }
         }
 
@@ -77,7 +77,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (!isDutyStarted) return;
 
-            Service.PluginLog.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
+            Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
             Service.Tracker.CheckAllCurrencies(PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
 
@@ -85,7 +85,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             contentName = string.Empty;
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.PluginLog.Debug("Currency Change Check Completes.");
+            Service.Log.Debug("Currency Change Check Completes.");
         }
 
         public void Uninit()

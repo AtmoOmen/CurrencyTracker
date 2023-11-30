@@ -114,7 +114,7 @@ namespace CurrencyTracker
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
                 CurrentCharacter = existingCharacter;
-                Service.PluginLog.Debug("Successfully load current character info.");
+                Service.Log.Debug("Successfully load current character info.");
             }
             else
             {
@@ -129,7 +129,7 @@ namespace CurrencyTracker
             if (!Directory.Exists(dataFolderName))
             {
                 Directory.CreateDirectory(dataFolderName);
-                Service.PluginLog.Debug("Successfully create character info directory.");
+                Service.Log.Debug("Successfully create character info directory.");
             }
 
             PlayerDataFolder = dataFolderName;
@@ -150,7 +150,7 @@ namespace CurrencyTracker
                 if (!Directory.Exists(dataFolderName))
                 {
                     Directory.CreateDirectory(dataFolderName);
-                    Service.PluginLog.Debug("Successfully create character info directory.");
+                    Service.Log.Debug("Successfully create character info directory.");
                 }
 
                 PlayerDataFolder = dataFolderName;

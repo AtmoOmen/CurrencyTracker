@@ -24,68 +24,30 @@ namespace CurrencyTracker.Windows
             {
                 TransactionTablePagingUI();
 
-                var columnCount = TableColumns.Count(column => C.ColumnVisibility[$"Show{column}Column"]);
+                var visibleColumns = TableColumns.Where(column => C.ColumnVisibility[$"Show{column}Column"]).ToList();
+                var columnCount = visibleColumns.Count;
 
                 if (columnCount == 0) return;
 
                 if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
                 {
-                    foreach (var column in TableColumns)
+                    foreach (var column in visibleColumns)
                     {
-                        if (!C.ColumnVisibility[$"Show{column}Column"]) continue;
-
-                        var flags = ImGuiTableColumnFlags.None;
-                        var width = column switch
-                        {
-                            "Order" => ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10,
-                            "Time" => 150,
-                            "Amount" => 130,
-                            "Change" => 100,
-                            "Location" => 100,
-                            "Note" => 150,
-                            "Checkbox" => 30,
-                            _ => 0
-                        };
-
-                        if (column == "Order" || column == "Checkbox")
-                        {
-                            flags = ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
-                        }
+                        var flags = columnFlags.TryGetValue(column, out var value) ? value : ImGuiTableColumnFlags.None;
+                        var width = columnWidths.TryGetValue(column, out var value2) ? value2 : 0;
+                        if (column == "Order") width = (int)ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
 
                         ImGui.TableSetupColumn(column, flags, width, 0);
                     }
 
                     ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
 
-                    foreach (var column in TableColumns)
+                    foreach (var column in visibleColumns)
                     {
-                        if (C.ColumnVisibility[$"Show{column}Column"])
+                        ImGui.TableNextColumn();
+                        if (ColumnHeaderActions.TryGetValue(column, out var value))
                         {
-                            ImGui.TableNextColumn();
-                            switch (column)
-                            {
-                                case "Order":
-                                    OrderColumnHeaderUI();
-                                    break;
-                                case "Time":
-                                    TimeColumnHeaderUI();
-                                    break;
-                                case "Amount":
-                                    AmountColumnHeaderUI();
-                                    break;
-                                case "Change":
-                                    ChangeColumnHeaderUI();
-                                    break;
-                                case "Location":
-                                    LocationColumnHeaderUI();
-                                    break;
-                                case "Note":
-                                    NoteColumnHeaderUI();
-                                    break;
-                                case "Checkbox":
-                                    CheckboxColumnHeaderUI();
-                                    break;
-                            }
+                            value.Invoke();
                         }
                     }
 
@@ -97,51 +59,26 @@ namespace CurrencyTracker.Windows
                         return;
                     }
 
+                    while (selectedStates[selectedCurrencyID].Count <= visibleEndIndex)
+                    {
+                        selectedStates[selectedCurrencyID].Add(false);
+                    }
+
                     for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                     {
                         var transaction = currentTypeTransactions[i];
-                        while (selectedStates[selectedCurrencyID].Count <= i)
-                        {
-                            selectedStates[selectedCurrencyID].Add(false);
-                        }
-
                         var selected = selectedStates[selectedCurrencyID][i];
 
-                        foreach (var column in TableColumns)
+                        foreach (var column in visibleColumns)
                         {
-                            if (C.ColumnVisibility[$"Show{column}Column"])
+                            ImGui.TableNextColumn();
+                            if (ColumnCellActions.TryGetValue(column, out var value))
                             {
-                                ImGui.TableNextColumn();
-                                switch (column)
-                                {
-                                    case "Order":
-                                        OrderColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Time":
-                                        TimeColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Amount":
-                                        AmountColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Change":
-                                        ChangeColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Location":
-                                        LocationColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Note":
-                                        NoteColumnCellUI(i, selected, transaction);
-                                        break;
-                                    case "Checkbox":
-                                        CheckboxColumnCellUI(i, selected, transaction);
-                                        break;
-                                }
+                                value.Invoke(i, selected, transaction);
                             }
                         }
-
                         ImGui.TableNextRow();
                     }
-
                     ImGui.EndTable();
                 }
 
@@ -284,14 +221,13 @@ namespace CurrencyTracker.Windows
         // 序号列标题栏 Order Column Header
         private void OrderColumnHeaderUI()
         {
-            ImGui.SetCursorPosX(SetColumnCenterAligned("     ", 0, 8));
-            if (ImGui.ArrowButton(C.ReverseSort ? "UpSort" : "DownSort", C.ReverseSort ? ImGuiDir.Up : ImGuiDir.Down))
+            ImGui.SetCursorPosX(1f);
+            if (SelectableIconButton(C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown, "None", "OrderControl", new Vector2(ImGui.GetContentRegionAvail().X + 10f, 20.0f * ImGuiHelpers.GlobalScale)))
             {
                 C.ReverseSort = !C.ReverseSort;
                 C.Save();
 
-                searchTimer.Stop();
-                searchTimer.Start();
+                searchTimer.Restart();
             }
         }
 

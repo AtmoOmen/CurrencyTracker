@@ -17,8 +17,8 @@ public static class CurrencyInfo
     public static readonly Dictionary<uint, string> PresetCurrencies = new()
     {
         { 1, "Gil" },
-        { GetNonLimitedTomestoneId(), "NonLimitedTomestone"},
-        { GetLimitedTomestoneId(), "LimitedTomestone"}
+        { GetSpecialTomestoneId(2), "NonLimitedTomestone"},
+        { GetSpecialTomestoneId(3), "LimitedTomestone"}
     };
 
     // 传入货币ID后，获取货币于当前语言环境的名称
@@ -34,13 +34,19 @@ public static class CurrencyInfo
     }
 
     // 传入货币ID后，获取货币当前的数量
-    public static long GetCurrencyAmount(uint currencyID)
+    public static unsafe long GetCurrencyAmount(uint currencyID)
     {
-        unsafe
-        {
-            return InventoryManager.Instance()->GetInventoryItemCount(currencyID);
-        }
+        return InventoryManager.Instance()->GetInventoryItemCount(currencyID);
     }
+
+    private static uint GetSpecialTomestoneId(int row)
+    {
+        return LuminaCache<TomestonesItem>.Instance
+            .Where(tomestone => tomestone.Tomestones.Row == row)
+            .First()
+            .Item.Row;
+    }
+
 
     private static uint GetNonLimitedTomestoneId()
     {
@@ -67,7 +73,7 @@ public static class CurrencyInfo
             return Service.TextureProvider.GetIcon(iconId, iconFlags);
         }
 
-        Service.PluginLog.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
+        Service.Log.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
         return null;
     }
 
@@ -101,7 +107,7 @@ public static class CurrencyInfo
                     if (retainer != null)
                     {
                         SomeGil += retainer->Gil;
-                        Service.PluginLog.Debug($"SomeGil:{SomeGil}");
+                        Service.Log.Debug($"SomeGil:{SomeGil}");
                     }
                 }
             }

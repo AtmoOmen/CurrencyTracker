@@ -62,19 +62,17 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private void EndMobDropsHandler()
         {
             if (Service.Condition[ConditionFlag.InCombat]) return;
-
-            Service.PluginLog.Debug($"Combat Ends, Currency Change Check Starts.");
+            Service.Framework.Update -= OnFrameworkUpdate;
+            Service.Log.Debug($"Combat Ends, Currency Change Check Starts.");
 
             Service.Tracker.CheckAllCurrencies("", $"(Drops from {string.Join(", ", enemiesList.TakeLast(3))})", RecordChangeType.All, 8);
 
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-
             inCombat = false;
-
             enemiesList.Clear();
 
-            Service.Framework.Update -= OnFrameworkUpdate;
-            Service.PluginLog.Debug("Currency Change Check Completes.");
+            Service.Log.Debug("Currency Change Check Completes.");
+
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
         }
 
         public void Uninit()

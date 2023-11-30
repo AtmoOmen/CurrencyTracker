@@ -29,7 +29,7 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 else
                 {
-                    Service.PluginLog.Warning($"Fail to get component {component.GetType().Name} configurations");
+                    Service.Log.Warning($"Fail to get component {component.GetType().Name} configurations");
                 }
 
                 try
@@ -37,16 +37,17 @@ namespace CurrencyTracker.Manager.Trackers
                     if (!component.Initialized)
                     {
                         component.Init();
-                        Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                        Service.Log.Debug($"Loaded {component.GetType().Name} module");
                     }
                     else
                     {
-                        Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                        Service.Log.Debug($"{component.GetType().Name} has been loaded, skip.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Service.PluginLog.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
+                    Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
+                    Service.Log.Warning(ex.StackTrace ?? "Unknown");
                 }
             }
         }
@@ -60,21 +61,21 @@ namespace CurrencyTracker.Manager.Trackers
                     if (!component.Initialized)
                     {
                         component.Init();
-                        Service.PluginLog.Debug($"Loaded {component.GetType().Name} module");
+                        Service.Log.Debug($"Loaded {component.GetType().Name} module");
                     }
                     else
                     {
-                        Service.PluginLog.Debug($"{component.GetType().Name} has been loaded, skip.");
+                        Service.Log.Debug($"{component.GetType().Name} has been loaded, skip.");
                     }
                 }
                 catch (Exception ex)
                 {
-                    Service.PluginLog.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
+                    Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
                 }
             }
             else
             {
-                Service.PluginLog.Error($"Fail to fetch component {component}");
+                Service.Log.Error($"Fail to fetch component {component}");
             }
         }
 
@@ -83,7 +84,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (Components.Contains(component))
             {
                 component.Uninit();
-                Service.PluginLog.Debug($"Unloaded {component.GetType().Name} module");
+                Service.Log.Debug($"Unloaded {component.GetType().Name} module");
             }
         }
 
@@ -92,7 +93,7 @@ namespace CurrencyTracker.Manager.Trackers
             foreach (var component in Components)
             {
                 component.Uninit();
-                Service.PluginLog.Debug($"Unloaded {component.GetType().Name} module");
+                Service.Log.Debug($"Unloaded {component.GetType().Name} module");
             }
         }
     }

@@ -1,3 +1,5 @@
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
+
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class SpecialExchange : ITrackerComponent
@@ -54,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             windowName = Service.Tracker.GetWindowTitle(args, UI[args.AddonName]) ?? string.Empty;
 
             Service.Framework.Update += OnFrameworkUpdate;
-            Service.PluginLog.Debug("Exchange Starts");
+            Service.Log.Debug("Exchange Starts");
         }
 
         private void BeginExchangeHandler(string addonName)
@@ -69,7 +71,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             windowName = Service.Tracker.GetWindowTitle(addon, UI[addonName]) ?? string.Empty;
 
             Service.Framework.Update += OnFrameworkUpdate;
-            Service.PluginLog.Debug("Exchange Starts");
+            Service.Log.Debug("Exchange Starts");
         }
 
         private void OnFrameworkUpdate(IFramework framework)
@@ -97,7 +99,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Framework.Update -= OnFrameworkUpdate;
-            Service.PluginLog.Debug("Exchange Completes");
+            Service.Log.Debug("Exchange Completes");
         }
 
         public void Uninit()

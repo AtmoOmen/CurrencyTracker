@@ -77,7 +77,7 @@ namespace CurrencyTracker.Windows
                     }
                     else
                     {
-                        Service.PluginLog.Error($"Fail to fetch component {component.GetType().Name}");
+                        Service.Log.Error($"Fail to fetch component {component.GetType().Name}");
                     }
 
                     C.Save();
@@ -91,7 +91,7 @@ namespace CurrencyTracker.Windows
             }
             else
             {
-                Service.PluginLog.Error($"Fail to fetch component {type.Name}");
+                Service.Log.Error($"Fail to fetch component {type.Name}");
             }
         }
 

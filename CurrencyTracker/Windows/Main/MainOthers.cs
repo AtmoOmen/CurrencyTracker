@@ -42,15 +42,19 @@ namespace CurrencyTracker.Windows
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("SuggestOrReport")}?");
                 ImGui.Separator();
                 ImGui.Text("GitHub - AtmoOmen, Discord - AtmoOmen#0");
+                ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.TankBlue);
                 if (ImGui.Button("GitHub Issue"))
                 {
                     Util.OpenLink("https://github.com/AtmoOmen/CurrencyTracker/issues");
                 }
+                ImGui.PopStyleColor();
                 ImGui.SameLine();
+                ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.ParsedPurple);
                 if (ImGui.Button("Discord Thread"))
                 {
                     Util.OpenLink("https://discord.com/channels/581875019861328007/1019646133305344090/threads/1163039624957010021");
                 }
+                ImGui.PopStyleColor();
                 if (C.SelectedLanguage == "ChineseSimplified")
                 {
                     ImGui.TextColored(ImGuiColors.DalamudYellow, "如果你是国服玩家:\n" +
@@ -108,7 +112,7 @@ namespace CurrencyTracker.Windows
         }
 
         // 测试功能 Features still under testing
-        private void TestingFeaturesUI()
+        private unsafe void TestingFeaturesUI()
         {
         }
     }

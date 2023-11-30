@@ -19,9 +19,9 @@ namespace CurrencyTracker.Windows
             ImGui.PushStyleColor(ImGuiCol.HeaderHovered, headerHoveredColor with { W = 0.2f });
             ImGui.PushStyleColor(ImGuiCol.Header, textSelectedColor with { W = 0.2f });
 
-            foreach (var option in C.OrderedOptions.Where(option => option != 0))
+            for (var i = 0; i < C.OrderedOptions.Count; i++)
             {
-                var i = C.OrderedOptions.IndexOf(option);
+                var option = C.OrderedOptions[i];
                 if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
                 {
                     selectedOptionIndex = i;
@@ -57,7 +57,9 @@ namespace CurrencyTracker.Windows
         // 货币列表顶端工具栏 Currency List Listbox Tools
         private void CurrencyListboxToolUI()
         {
-            ImGui.SetCursorPosX(28.0f);
+            ImGuiHelpers.CenterCursorFor(185);
+
+            ImGui.BeginGroup();
             AddCustomCurrencyUI();
 
             ImGui.SameLine();
@@ -79,6 +81,7 @@ namespace CurrencyTracker.Windows
 
             ImGui.SameLine();
             RenameCurrencyUI();
+            ImGui.EndGroup();
         }
 
         // 添加自定义货币 Add Custom Currency
@@ -91,6 +94,8 @@ namespace CurrencyTracker.Windows
 
             if (ImGui.BeginPopup("CustomCurrency", ImGuiWindowFlags.AlwaysAutoResize))
             {
+                if (ItemNames == null) LoadItemsForCCT();
+
                 ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("CustomCurrencyTracker"));
                 ImGuiComponents.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
 
@@ -176,19 +181,16 @@ namespace CurrencyTracker.Windows
                     ImGui.EndCombo();
                 }
 
-                if (ImGui.IsItemClicked() && searchFilterCCT.IsNullOrEmpty())
+                if (ImGui.IsItemClicked())
                 {
-                    if (itemNamesCCT.Count == 0 || itemNamesCCT == null)
+                    if (ItemNames == null)
                     {
                         LoadItemsForCCT();
-                        itemNamesCCT = InitCCTItems();
                     }
-                    else
+
+                    if (itemNamesCCT.Count == 0 || itemNamesCCT == null || itemNamesCCT.Count != itemCountsCCT)
                     {
-                        if (itemNamesCCT.Count != itemCountsCCT)
-                        {
-                            itemNamesCCT = InitCCTItems();
-                        }
+                        itemNamesCCT = ApplyCCTFilter();
                     }
                 }
 
@@ -223,6 +225,7 @@ namespace CurrencyTracker.Windows
                     lastTransactions = currentTypeTransactions;
 
                     searchFilterCCT = string.Empty;
+                    itemNamesCCT.Remove(selected);
                     currencyIDCCT = 0;
 
                     ImGui.CloseCurrentPopup();
@@ -236,52 +239,41 @@ namespace CurrencyTracker.Windows
         {
             var items = Service.DataManager.GetExcelSheet<Item>()
                 .Select(x => new { x.RowId, Name = x.Name?.ToString() })
-                .Where(x => !x.Name.IsNullOrEmpty())
+                .Where(x => !x.Name.IsNullOrEmpty() && !filterNamesForCCT.Contains(x.Name))
                 .ToList();
 
             ItemNames = items.ToDictionary(x => x.RowId, x => $"{x.Name}");
-            ItemNamesSet = new HashSet<string>(ItemNames.Values);
-        }
-
-        // 初始化自定义货币追踪内的物品 Initialize Items in Custom Currency Tracker
-        private List<string> InitCCTItems()
-        {
-            var itemNamesSet = new HashSet<string>(ItemNamesSet, StringComparer.OrdinalIgnoreCase);
-
-            var items = itemNamesSet
-                .Where(itemName => !C.AllCurrencies.Keys.Any(option => itemName.Equals(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Equals(filter)))
-                .ToList();
-
-            itemCountsCCT = (uint)items.Count;
-            return items;
+            itemNamesCCT = ItemNames.Values.ToList();
         }
 
         // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
-        private List<string> ApplyCCTFilter(string searchFilterCCT)
+        private List<string> ApplyCCTFilter(string searchFilterCCT = "")
         {
-            if (itemNamesCCT.Count > 0)
+            if (!string.IsNullOrEmpty(searchFilterCCT))
             {
-                return itemNamesCCT.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) || (C.SelectedLanguage == "ChineseSimplified" && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase))).ToList();
+                var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+                return itemNamesCCT
+                    .Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)
+                        || (isChineseSimplified && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)))
+                    .ToList();
             }
             else
             {
-                return ItemNamesSet.Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase) && C.AllCurrencies.Keys.All(option => !itemName.Contains(CurrencyInfo.CurrencyLocalName(option))) && !filterNamesForCCT.Any(filter => itemName.Contains(filter)))
+                var currencyNames = C.AllCurrencies.Keys.Select(CurrencyInfo.CurrencyLocalName).ToHashSet();
+                var items = ItemNames.Values
+                    .Where(itemName => !currencyNames.Contains(itemName))
                     .ToList();
+
+                itemCountsCCT = (uint)items.Count;
+                return items;
             }
         }
 
         // 延迟加载搜索结果 Used to handle too-fast CCT items loading
         private void SearchTimerCCTElapsed(object? sender, ElapsedEventArgs e)
         {
-            if (!searchFilterCCT.IsNullOrEmpty())
-            {
-                currentItemPageCCT = 0;
-                itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
-            }
-            else
-            {
-                itemNamesCCT = InitCCTItems();
-            }
+            itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
+            currentItemPageCCT = 0;
         }
 
         // 删除自定义货币 Delete Custom Currency

@@ -48,7 +48,7 @@ namespace CurrencyTracker.Manager.Trackers
             ComponentManager.Init();
 
             CheckAllCurrencies("", "", RecordChangeType.All, 0);
-            Service.PluginLog.Debug("Currency Tracker Activated");
+            Service.Log.Debug("Currency Tracker Activated");
         }
 
         public void UninitializeTracking()
@@ -56,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers
             HandlerManager.Uninit();
             ComponentManager.Uninit();
 
-            Service.PluginLog.Debug("Currency Tracker Deactivated");
+            Service.Log.Debug("Currency Tracker Deactivated");
         }
 
         // (人为触发)发现货币发生改变时触发的事件
@@ -83,8 +83,8 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent);
                     OnTransactionsUpdate(EventArgs.Empty);
-                    Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
-                    if (P.PluginInterface.IsDev) Service.PluginLog.Debug($"Source: {source}");
+                    Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                    if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
                     return true;
                 }
             }
@@ -92,7 +92,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent);
                 OnTransactionsUpdate(EventArgs.Empty);
-                Service.PluginLog.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
                 return true;
             }
             return false;

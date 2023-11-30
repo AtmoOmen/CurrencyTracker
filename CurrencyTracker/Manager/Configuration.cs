@@ -118,12 +118,12 @@ namespace CurrencyTracker
 
             isUpdated = false;
 
-            Service.PluginLog.Debug("Successfully reacquire all currency icons");
+            Service.Log.Debug("Successfully reacquire all currency icons");
         }
 
         private Dictionary<uint, string> GetAllCurrencies()
         {
-            Service.PluginLog.Debug("Successfully reacquire all currencies");
+            Service.Log.Debug("Successfully reacquire all currencies");
             isUpdated = false;
             return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Key, kv => kv.Value);
         }

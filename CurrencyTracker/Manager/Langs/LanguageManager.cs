@@ -38,7 +38,7 @@ namespace CurrencyTracker.Manager
             var format = resourceManager.GetString(key);
             if (format.IsNullOrEmpty())
             {
-                Service.PluginLog.Error($"Localization String {key} Not Found in Current Language!");
+                Service.Log.Error($"Localization String {key} Not Found in Current Language!");
                 return key;
             }
 

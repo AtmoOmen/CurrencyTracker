@@ -26,11 +26,11 @@ namespace CurrencyTracker.Manager.Trackers
                 if (!handler.Initialized)
                 {
                     handler.Init();
-                    Service.PluginLog.Debug($"Loaded {handler.GetType().Name} handler");
+                    Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
                 }
                 else
                 {
-                    Service.PluginLog.Debug($"{handler.GetType().Name} has been loaded, skip.");
+                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
                 }
             }
         }
@@ -45,11 +45,11 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     handler.Init();
                     Handlers.Add(handler);
-                    Service.PluginLog.Debug($"Loaded {typeof(T).Name} handler");
+                    Service.Log.Debug($"Loaded {typeof(T).Name} handler");
                 }
                 else
                 {
-                    Service.PluginLog.Debug($"{handler.GetType().Name} has been loaded, skip.");
+                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
                 }
             }
         }
@@ -62,7 +62,7 @@ namespace CurrencyTracker.Manager.Trackers
                 handler.Uninit();
                 Handlers.Remove(handler);
             }
-            Service.PluginLog.Debug($"Unloaded {typeof(T).Name} module");
+            Service.Log.Debug($"Unloaded {typeof(T).Name} module");
         }
 
         public static void Uninit()
@@ -70,7 +70,7 @@ namespace CurrencyTracker.Manager.Trackers
             foreach (var handler in Handlers)
             {
                 handler.Uninit();
-                Service.PluginLog.Debug($"Unloaded {handler.GetType().Name} module");
+                Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
             }
         }
     }

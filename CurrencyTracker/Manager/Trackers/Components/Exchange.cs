@@ -44,9 +44,9 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 }
                 else if (ui == WindowUI.Keys)
                 {
-                    Service.PluginLog.Debug(foundUI);
+                    Service.Log.Debug(foundUI);
                     BeginExchangeWindowHandler(foundUI);
-                    Service.PluginLog.Debug(foundUI);
+                    Service.Log.Debug(foundUI);
                 }
                 break;
             }
@@ -79,7 +79,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             isOnExchange = true;
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
             currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
-            Service.PluginLog.Debug("Exchange Starts");
+            Service.Log.Debug("Exchange Starts");
         }
 
         private void BeginExchangeWindowHandler(AddonArgs args)
@@ -97,7 +97,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             {
                 windowName = Service.Tracker.GetWindowTitle(args, WindowUI[args.AddonName]) ?? string.Empty;
             }
-            Service.PluginLog.Debug("Exchange Starts");
+            Service.Log.Debug("Exchange Starts");
         }
 
         private void BeginExchangeWindowHandler(string addonName)
@@ -120,7 +120,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             {
                 windowName = Service.Tracker.GetWindowTitle(addon, WindowUI[addonName]) ?? string.Empty;
             }
-            Service.PluginLog.Debug("Exchange Starts");
+            Service.Log.Debug("Exchange Starts");
         }
 
         private void EndExchange(AddonEvent type, AddonArgs args)
@@ -146,7 +146,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             currentTargetName = string.Empty;
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.PluginLog.Debug("Exchange Completes");
+            Service.Log.Debug("Exchange Completes");
         }
 
         private void EndExchangeWindowHandler()
@@ -158,7 +158,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             windowName = string.Empty;
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.PluginLog.Debug("Exchange Completes");
+            Service.Log.Debug("Exchange Completes");
         }
 
         public void Uninit()

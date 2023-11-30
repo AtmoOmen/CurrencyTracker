@@ -48,7 +48,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                 Service.Framework.Update += OnFrameworkUpdate;
 
-                Service.PluginLog.Debug($"Quest {questName} Ready to Finish!");
+                Service.Log.Debug($"Quest {questName} Ready to Finish!");
             }
         }
 
@@ -71,7 +71,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             isReadyFinish = false;
 
-            Service.PluginLog.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
+            Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
 
             Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Quest", questName)})", RecordChangeType.All, 9);
 
@@ -79,7 +79,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Framework.Update -= OnFrameworkUpdate;
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
 
-            Service.PluginLog.Debug("Currency Change Check Completes.");
+            Service.Log.Debug("Currency Change Check Completes.");
         }
 
         private void ResetQuestState()

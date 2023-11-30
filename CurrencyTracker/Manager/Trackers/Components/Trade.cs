@@ -35,7 +35,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
                 HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                 Service.Framework.Update += OnFrameworkUpdate;
-                Service.PluginLog.Debug("Trade Starts");
+                Service.Log.Debug("Trade Starts");
             }
         }
 
@@ -62,7 +62,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Framework.Update -= OnFrameworkUpdate;
-            Service.PluginLog.Debug("Trade Ends");
+            Service.Log.Debug("Trade Ends");
         }
 
         public void Uninit()

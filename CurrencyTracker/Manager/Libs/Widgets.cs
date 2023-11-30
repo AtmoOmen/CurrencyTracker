@@ -62,12 +62,12 @@ namespace CurrencyTracker.Manager
                 }
                 else
                 {
-                    Service.PluginLog.Error("Unsupported OS");
+                    Service.Log.Error("Unsupported OS");
                 }
             }
             catch (Exception ex)
             {
-                Service.PluginLog.Error($"Error :{ex.Message}");
+                Service.Log.Error($"Error :{ex.Message}");
             }
         }
 
@@ -160,10 +160,10 @@ namespace CurrencyTracker.Manager
 
         public static float SetColumnCenterAligned(string text, int columnIndex = 0, float offset = 0)
         {
-            float columnWidth = ImGui.GetColumnWidth(0);
-            float textWidth = ImGui.CalcTextSize(text).X;
+            var columnWidth = ImGui.GetColumnWidth(0);
+            var textWidth = ImGui.CalcTextSize(text).X;
 
-            float cursorPosX = (columnWidth - textWidth) * 0.5f + offset;
+            var cursorPosX = (columnWidth - textWidth) * 0.5f + offset;
             return cursorPosX;
         }
 

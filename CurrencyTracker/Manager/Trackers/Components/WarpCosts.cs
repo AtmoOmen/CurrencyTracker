@@ -86,7 +86,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-                    Service.PluginLog.Debug($"Teleport from {PreviousLocationName} to {CurrentLocationName}");
+                    Service.Log.Debug($"Teleport from {PreviousLocationName} to {CurrentLocationName}");
                 }
             }
             else if (warpTPInAreas)

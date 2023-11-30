@@ -34,10 +34,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             if (_isBlocked) return;
             if (!ValidChatTypes.Contains((ushort)type)) return;
 
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
-            {
-                Service.Tracker.CheckCurrency(currency.Key, "", "", RecordChangeType.All, 17);
-            });
+            Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
         }
 
         public void Uninit()

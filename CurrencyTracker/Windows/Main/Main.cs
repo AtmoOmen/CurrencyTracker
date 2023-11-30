@@ -35,19 +35,16 @@ public partial class Main : Window, IDisposable
     // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
     private void LoadOptions()
     {
-        var addedOptions = new HashSet<uint>();
-
-        foreach (var currency in C.AllCurrencies)
+        foreach (var currencyKey in C.AllCurrencies.Keys)
         {
-            if (!addedOptions.Contains(currency.Key))
+            if (!selectedStates.ContainsKey(currencyKey))
             {
-                addedOptions.Add(currency.Key);
-                selectedStates.Add(currency.Key, new());
-                selectedTransactions.Add(currency.Key, new());
+                selectedStates.Add(currencyKey, new());
+                selectedTransactions.Add(currencyKey, new());
             }
         }
 
-        if (C.OrderedOptions.Count == 0 || C.OrderedOptions == null)
+        if (C.OrderedOptions == null || C.OrderedOptions.Count == 0)
         {
             C.OrderedOptions = C.AllCurrencies.Keys.ToList();
             C.Save();

@@ -43,7 +43,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             {
                 ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ToString() ?? string.Empty;
             }
-            Service.PluginLog.Debug("Triple Triad Starts");
+            Service.Log.Debug("Triple Triad Starts");
         }
 
         private void EndTripleTriad(AddonEvent type, AddonArgs args)
@@ -68,14 +68,14 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 ttResultText = draw ? TTRGui->GetTextNodeById(5)->NodeText.ToString() :
                              lose ? TTRGui->GetTextNodeById(4)->NodeText.ToString() :
                              win ? TTRGui->GetTextNodeById(3)->NodeText.ToString() : "";
-                Service.PluginLog.Debug(ttResultText);
+                Service.Log.Debug(ttResultText);
             }
 
             Service.Tracker.CheckAllCurrencies("", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})", RecordChangeType.All, 14);
 
             ttRivalName = ttResultText = string.Empty;
 
-            Service.PluginLog.Debug("Triple Triad Ends");
+            Service.Log.Debug("Triple Triad Ends");
         }
 
         public void Uninit()

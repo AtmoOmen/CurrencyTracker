@@ -9,13 +9,13 @@ namespace CurrencyTracker.Manager
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Load All Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Load All Transactions: Player Data Folder Path Missed.");
                 return allTransactions;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return allTransactions;
             }
 
@@ -32,7 +32,7 @@ namespace CurrencyTracker.Manager
             }
             catch (Exception ex)
             {
-                Service.PluginLog.Debug($"Error Loding All Transactionsa from the data file: {ex.Message}");
+                Service.Log.Debug($"Error Loding All Transactionsa from the data file: {ex.Message}");
             }
 
             return allTransactions;
@@ -43,13 +43,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Load Lastest Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Load Lastest Transaction: Player Data Folder Path Missed.");
                 return new();
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return new();
             }
 
@@ -84,13 +84,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
                 return new();
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return new();
             }
 
@@ -147,7 +147,7 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty() || !Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed.");
                 return false;
             }
 
@@ -185,7 +185,7 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Edit Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Edit Transaction: Player Data Folder Path Missed.");
                 return;
             }
 
@@ -216,7 +216,7 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Edit Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Edit Transaction: Player Data Folder Path Missed.");
                 return;
             }
 
@@ -231,13 +231,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
                 return;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return;
             }
 
@@ -264,13 +264,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Append Transaction: Player Data Folder Path Missed.");
                 return;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return;
             }
 
@@ -298,13 +298,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Reorder Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Reorder Transactions: Player Data Folder Path Missed.");
                 return;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return;
             }
 
@@ -322,13 +322,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
                 return 0;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return 0;
             }
 
@@ -392,13 +392,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Merge Transactions: Player Data Folder Path Missed.");
                 return 0;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return 0;
             }
 
@@ -456,13 +456,13 @@ namespace CurrencyTracker.Manager
         {
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Clear Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Clear Transactions: Player Data Folder Path Missed.");
                 return 0;
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return 0;
             }
 
@@ -492,7 +492,7 @@ namespace CurrencyTracker.Manager
         {
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
-                Service.PluginLog.Error("Currency Missed");
+                Service.Log.Error("Currency Missed");
                 return string.Empty;
             }
 
@@ -521,7 +521,7 @@ namespace CurrencyTracker.Manager
 
             if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
             {
-                Service.PluginLog.Warning("Fail to Export Transactions: Player Data Folder Path Missed.");
+                Service.Log.Warning("Fail to Export Transactions: Player Data Folder Path Missed.");
                 return "Fail";
             }
 
