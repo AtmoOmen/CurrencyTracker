@@ -1,4 +1,5 @@
 global using CurrencyTracker.Manager;
+global using CurrencyTracker.Manager.Infos;
 global using CurrencyTracker.Manager.Libs;
 global using CurrencyTracker.Manager.Trackers;
 global using CurrencyTracker.Manager.Trackers.Components;
@@ -35,6 +36,7 @@ global using Lumina.Excel.GeneratedSheets;
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Linq;
 global using System;
+global using System.Collections.Concurrent;
 global using System.Collections;
 global using System.Collections.Generic;
 global using System.Diagnostics;

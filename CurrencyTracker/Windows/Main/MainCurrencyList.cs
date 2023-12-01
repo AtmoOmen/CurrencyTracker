@@ -341,7 +341,7 @@ namespace CurrencyTracker.Windows
 
                 ImGui.SameLine();
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
-                ImGui.Image(CurrencyInfo.GetIcon(selectedCurrencyID).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                ImGui.Image(C.AllCurrencyIcons[selectedCurrencyID].ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
 
                 ImGui.SameLine();
                 ImGui.Text(C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) ? currencyName : "Unknown");

@@ -14,7 +14,7 @@ namespace CurrencyTracker.Manager
                 return false;
             }
 
-            for (int i = 0; i < list1.Count; i++)
+            for (var i = 0; i < list1.Count; i++)
             {
                 if (!IsTransactionEqual(list1[i], list2[i]))
                 {
@@ -122,17 +122,21 @@ namespace CurrencyTracker.Manager
             return font;
         }
 
-        public static unsafe bool SelectableButton(string name)
+        public static unsafe bool SelectableButton(string name, string str_id = "None", string tooltip = "", Vector2 size = default)
         {
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderActive)));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderHovered)));
             ImGui.PushStyleColor(ImGuiCol.Button, 0);
-            var result = ImGui.Button(name);
+            var result = ImGui.Button($"{name}##{name}-{str_id}", size);
             ImGui.PopStyleColor(3);
+
+            if (!tooltip.IsNullOrEmpty())
+                TextTooltip(tooltip);
+
             return result;
         }
 
-        public static unsafe bool SelectableIconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
+        public static unsafe bool SelectableIconButton(FontAwesomeIcon icon, string tooltip = "", string str_id = "None", Vector2 size = default)
         {
             ImGui.PushStyleColor(ImGuiCol.ButtonActive, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderActive)));
             ImGui.PushStyleColor(ImGuiCol.ButtonHovered, ImGui.ColorConvertFloat4ToU32(*ImGui.GetStyleColorVec4(ImGuiCol.HeaderHovered)));
@@ -142,7 +146,7 @@ namespace CurrencyTracker.Manager
             ImGui.PopFont();
             ImGui.PopStyleColor(3);
 
-            if (tooltip != null && tooltip != "None")
+            if (!tooltip.IsNullOrEmpty())
                 TextTooltip(tooltip);
 
             return result;

@@ -68,7 +68,8 @@ namespace CurrencyTracker
             // DutyRewards
             { "RecordContentName", true },
             // TeleportCosts
-            { "RecordTeleportDes", true }
+            { "RecordDesAetheryteName", false },
+            { "RecordDesAreaName", true }
         };
 
         public int ChildWidthOffset { get; set; } = 0;

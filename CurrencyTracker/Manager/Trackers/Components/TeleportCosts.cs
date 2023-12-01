@@ -1,5 +1,3 @@
-using System.Xml.Linq;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class TeleportCosts : ITrackerComponent
@@ -18,14 +16,14 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private delegate byte TeleportActionSelfDelegate(long p1, uint p2, byte p3);
         private Hook<TeleportActionSelfDelegate>? teleportActionSelfHook;
 
-        public static Dictionary<uint, string> AetheryteNames = new();
+        private static Dictionary<uint, string> AetheryteNames = new();
 
         private bool _initialized = false;
         private bool isReadyTP = false;
         private bool tpBetweenAreas = false;
         private bool tpInAreas = false;
-        private string tpDestination = string.Empty;
-        
+        private string tpDestination = string.Empty; // Aetheryte Name
+
         public void Init()
         {
             GetAetherytes();
@@ -81,7 +79,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             try
             {
-                if (param1 == 4590 || param1 == 4591)
+                if ((param1 == 4590 || param1 == 4591) && param2 != 0)
                 {
                     ComponentManager.Components.OfType<TeleportCosts>().FirstOrDefault().TeleportWithCost();
                 }
@@ -123,7 +121,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (tpBetweenAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination.IsNullOrEmpty() ? CurrentLocationName : tpDestination)})" : "", RecordChangeType.Negative, 11))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", Plugin.Instance.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})" ))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -131,7 +129,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
             else if (tpInAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, CurrentLocationName, Plugin.Instance.Configuration.ComponentProp["RecordTeleportDes"] ? $"({(tpDestination.IsNullOrEmpty() ? Service.Lang.GetText("TeleportWithinArea") : Service.Lang.GetText("TeleportTo", tpDestination))})" : "", RecordChangeType.Negative, 12))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordDesAetheryteName"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})" : $"{Service.Lang.GetText("TeleportWithinArea")}"))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;

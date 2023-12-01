@@ -249,7 +249,7 @@ namespace CurrencyTracker.Windows
         // 时间列标题栏 Time Column Header
         private void TimeColumnHeaderUI()
         {
-            ImGui.Selectable($" {Service.Lang.GetText("Time")}{CalcNumSpaces()}");
+            ImGui.Selectable($" {Service.Lang.GetText("Time")}");
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
                 ImGui.OpenPopup("TimeFunctions");
@@ -488,7 +488,7 @@ namespace CurrencyTracker.Windows
         // 金额列标题栏 Amount Column Header
         private void AmountColumnHeaderUI()
         {
-            ImGui.Text($" {Service.Lang.GetText("Amount")}{CalcNumSpaces()}");
+            ImGui.Text($" {Service.Lang.GetText("Amount")}");
         }
 
         // 金额列单元格 Amount Column Cell
@@ -500,7 +500,7 @@ namespace CurrencyTracker.Windows
         // 收支列标题栏 Change Column Header
         private void ChangeColumnHeaderUI()
         {
-            ImGui.Selectable($" {Service.Lang.GetText("Change")}{CalcNumSpaces()}");
+            ImGui.Selectable($" {Service.Lang.GetText("Change")}");
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
                 ImGui.OpenPopup("ChangeFunctions");
@@ -615,7 +615,7 @@ namespace CurrencyTracker.Windows
         // 地点列标题栏 Location Column Header
         private void LocationColumnHeaderUI()
         {
-            ImGui.Selectable($" {Service.Lang.GetText("Location")}{CalcNumSpaces()}");
+            ImGui.Selectable($" {Service.Lang.GetText("Location")}");
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
                 ImGui.OpenPopup("LocationSearch");
@@ -685,7 +685,7 @@ namespace CurrencyTracker.Windows
         // 备注列标题栏 Note Column Header
         private void NoteColumnHeaderUI()
         {
-            ImGui.Selectable($" {Service.Lang.GetText("Note")}{CalcNumSpaces()}");
+            ImGui.Selectable($" {Service.Lang.GetText("Note")}");
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
             {
                 ImGui.OpenPopup("NoteSearch");

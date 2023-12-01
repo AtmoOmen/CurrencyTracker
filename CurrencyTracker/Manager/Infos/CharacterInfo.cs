@@ -1,4 +1,4 @@
-namespace CurrencyTracker.Manager
+namespace CurrencyTracker.Manager.Infos
 {
     public class CharacterInfo
     {

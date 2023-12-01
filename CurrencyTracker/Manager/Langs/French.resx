@@ -118,135 +118,140 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ChangeFilterEnabled" xml:space="preserve">
-    <value>Filter ändern</value>
+    <value>Modifier le filtre</value>
   </data>
   <data name="ChangeFilterLabel" xml:space="preserve">
-    <value>Nur Transaktionen {0} {1} in Differenz anzeigen</value>
+    <value>Only display transactions {0} {1} in Change</value>
   </data>
   <data name="ClusterByTime" xml:space="preserve">
-    <value>Nach Zeit gruppieren</value>
+    <value>Grouper par leur Heure</value>
   </data>
   <data name="ClusterByTimeHelp1" xml:space="preserve">
-    <value>Transaktionen in einem {0} Stunde(n) Intervall aktualisieren</value>
+    <value>Display transactions in {0} hour(s) interval</value>
   </data>
   <data name="ClusterInterval" xml:space="preserve">
-    <value>Stunden</value>
+    <value>Heures</value>
   </data>
   <data name="ConfigLabel" xml:space="preserve">
-    <value>Filter Optionen</value>
+    <value>Options de filtre</value>
   </data>
   <data name="ConfigLabel1" xml:space="preserve">
-    <value>Aufzeichnungseinstellungen</value>
+    <value>Options d'enregistrement</value>
   </data>
   <data name="ConfigLabel2" xml:space="preserve">
-    <value>Sonstige</value>
+    <value>Autres</value>
   </data>
   <data name="ConfigLabelHelp" xml:space="preserve">
-    <value>Klicke zum Erweitern/Verbergen</value>
+    <value>Cliquez pour développer/réduire</value>
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
-    <value>Hinweis:
-1. Die 3 voreingestellten Währungen können nicht gelöscht, sondern nur ausgeblendet werden.
-2. Es ist nicht empfohlen nicht Währungsitems zu verfolgen, dafür sollte es anderen Plugins geben (wenn du aber darauf bestehst, ist das auch in Ordnung).
-3. Existierende Dateien werden durch das Entfernen von Währungen nicht automatich mitgelöscht. Wenn notwendig, die Dateien bitte manuell löschen.</value>
+    <value>Note:
+1. The 3 preset currencies cannot be deleted, you can only hide them.
+2. Not recommend to track not-currency items, there should be another plugin to do that.
+(If you insist, that's also ok)
+3. Deleting currencies will not delete the existing data files, if necessary, please delete them by yourself.</value>
   </data>
   <data name="CustomCurrencyTracker" xml:space="preserve">
-    <value>Benutzerdefinierter Währungsaufzeichnung</value>
+    <value>Suivi de devise personnalisé</value>
   </data>
   <data name="PleaseSelect" xml:space="preserve">
-    <value>Auswählen...</value>
+    <value>Sélectionner...</value>
   </data>
   <data name="PleaseSearch" xml:space="preserve">
-    <value>Suchen...</value>
+    <value>Rechercher...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
-    <value>Konnte nicht hinzugefügt werden: die ausgewählte Währung existiert bereits</value>
+    <value>Impossible d'ajouter : la devise que vous avez sélectionnée existe déjà</value>
   </data>
   <data name="CustomCurrencyHelp2" xml:space="preserve">
-    <value>Löschen fehlgeschlagen: Die ausgewählte Währung existiert nicht</value>
+    <value>Échec de la suppression : la devise que vous avez sélectionnée n'existe pas</value>
   </data>
   <data name="Day" xml:space="preserve">
-    <value>T</value>
+    <value>D</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Löschen</value>
+    <value>Supprimer</value>
   </data>
   <data name="ExportCsvMessage1" xml:space="preserve">
-    <value>Keine Transaktionen unter der aktuell ausgewählten Währung vorhanden.</value>
+    <value>Aucune transaction dans la devise sélectionnée.</value>
   </data>
   <data name="ExportFileCSVHeader" xml:space="preserve">
-    <value>Zeitpunkt,Betrag,Differenz,Standort,Notiz</value>
+    <value>Heure, Montant, Monnaie, Lieu, Note</value>
   </data>
   <data name="ExportCsvMessage3" xml:space="preserve">
-    <value>Datei wurde exportiert nach:</value>
+    <value>A file has been exported to: </value>
   </data>
   <data name="ExportFileHelp1" xml:space="preserve">
-    <value>Hinweis: Die exportierten Transaktionen unterliegen allen derzeit aktiven Sortier- und Filterbedingungen (ohne Seitenumbruch).</value>
+    <value>Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (exclude paging).</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
-    <value>Dateiname, wenn unausgefüllt:</value>
+    <value>Si laissée vide, le fichier sera nommé :</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
-    <value>Dateiname: (Zum Bestätigen Enter drücken)</value>
+    <value>Nom du fichier : (Appuyer sur Entrée pour confirmer)</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
-    <value>AktuelleZeit</value>
+    <value>Heure actuelle</value>
   </data>
   <data name="FilterByTime" xml:space="preserve">
-    <value>ZeitFilter</value>
+    <value>Filtre Timer</value>
   </data>
   <data name="FirstPage" xml:space="preserve">
-    <value>Erste Seite</value>
+    <value>Premier</value>
   </data>
   <data name="Greater" xml:space="preserve">
-    <value>Oberhalb</value>
+    <value>Au-dessus</value>
   </data>
   <data name="LastPage" xml:space="preserve">
-    <value>Letzte Seite</value>
+    <value>Dernier</value>
   </data>
   <data name="Less" xml:space="preserve">
-    <value>Unterhalb</value>
+    <value>En dessous</value>
   </data>
   <data name="MergeTransactionsHelp" xml:space="preserve">
-    <value>Bitte Grenzwert eingeben</value>
+    <value>Veuillez entrer un seuil</value>
   </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
-    <value>{0} Transaktionen zusammengeführt.</value>
+    <value>Merged {0} transactions.</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
-    <value>Führe Transaktionen unter der derzeit ausgewählten Währung zusammen, wenn sie am gleichen Standort aufeinanderfolgen und wenn der Differenz &lt; des Grenzwerts ist.
-Nach dem Zusammenführen werden Zeit und Betrag des zusammengeführten Datensatzes aus dem neuesten Datensatz unter den zusammengeführten Datensätzen übernommen, während die Differenzen aufsummiert werden.
-Wenn der Grenzwert 0 beträgt, werden ALLE aufeinanderfolgenden Transaktionen unter der derzeit ausgewählten Währung mit demselben Standort zusammengeführt.
+    <value>PLEASE review this, it's shaky. 
 
-Einweg-Zusammenführung: Transaktionen mit Differenzen ins positive und negative werden getrennt berechnet, wenn aufeinanderfolgende Transaktionen zusammengeführt werden.
-Zwei-Wege-Zusammenführung: Transaktionen mit Differenzen ins positive und negative werden zusammengerechnet, wenn aufeinanderfolgende Transaktionen zusammengeführt werden.</value>
+Fusionner les transactions avec la devise actuellement sélectionnée, au même endroit, adjacentes l'une et l'autre, et avec le seuil de Monnaie &lt; .
+Après la fusion, l'Heure et le Montant de l'enregistrement des fusions sera extrait du dernier enregistrement présent dans les fusions, alors que la Monnaie sera synthétisée.
+Si le seuil est 0, le plugin fusionnera TOUTES les transactions sous la devise actuellement selectionnée, au même endroit, adjacentes l'une à l'autre.
+
+Fusion simple : les Transactions avec la Monnaie (positive/négative) sont calculées séparément lorsque vous fusionnez des Transactions adjacentes.
+
+Fusion double : les Transactions avec la Monnaie (positive/négative) sont calculées ensemble lorsque vous fusionnez des Transactions adjacentes. </value>
   </data>
   <data name="MergeTransactionsLabel" xml:space="preserve">
-    <value>Zusammenführen</value>
+    <value>Fusionner</value>
   </data>
   <data name="Threshold" xml:space="preserve">
-    <value>Grenzwert</value>
+    <value>
+Seuil</value>
   </data>
   <data name="TwoWayMerge" xml:space="preserve">
-    <value>Zwei-Wege-Zusammenführung</value>
+    <value>Fusion double</value>
   </data>
   <data name="OneWayMerge" xml:space="preserve">
-    <value>Einweg-Zusammenführung</value>
+    <value>Fusion simple</value>
   </data>
   <data name="MergeTransactionsLabel4" xml:space="preserve">
-    <value>Manuelle Zusammenführung</value>
+    <value>Fusion manuelle</value>
   </data>
   <data name="NextPage" xml:space="preserve">
-    <value>Nächste Seite</value>
+    <value>Suivant</value>
   </data>
   <data name="OpenDataFolder" xml:space="preserve">
-    <value>Dateiordner</value>
+    <value>Dossier</value>
   </data>
   <data name="PreviousPage" xml:space="preserve">
-    <value>Vorherige Seite</value>
+    <value>Précédent</value>
   </data>
   <data name="ReverseSort" xml:space="preserve">
-    <value>Umgekehrte Sortierung</value>
+    <value>Tri Inversé</value>
   </data>
   <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
     <value>Record Duty Rewards</value>
@@ -257,287 +262,286 @@ Zwei-Wege-Zusammenführung: Transaktionen mit Differenzen ins positive und negat
 (Exclude Bozja and Eureka)</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
-    <value>Keine passenden Transaktionen gefunden.</value>
+    <value>Aucunes transactions correspondantes trouvées.</value>
   </data>
   <data name="TransactionsHelp1" xml:space="preserve">
-    <value>Es wurde keine Währung ausgewählt.</value>
+    <value>Aucune devise n'est actuellement sélectionnée.</value>
   </data>
   <data name="TransactionsHelp2" xml:space="preserve">
-    <value>Hinweis: Der Vorgang kann nicht rückgängig gemacht werden. Falls erforderlich, bitte ein Backup erstellen.</value>
+    <value>Note : L'opération ne peut pas être annulée. Si nécessaire, veuillez faire une sauvegarde.</value>
   </data>
   <data name="UnknownCurrency" xml:space="preserve">
-    <value>Unbekannte Währung</value>
+    <value>Devise inconnue</value>
   </data>
   <data name="UnknownLocation" xml:space="preserve">
-    <value>Unbekannt</value>
+    <value>Inconnu</value>
   </data>
   <data name="Time" xml:space="preserve">
-    <value>Zeitpunkt</value>
+    <value>Heure</value>
   </data>
   <data name="Amount" xml:space="preserve">
-    <value>Menge</value>
+    <value>Montant</value>
   </data>
   <data name="Change" xml:space="preserve">
-    <value>Differenz</value>
+    <value>Monnaie</value>
   </data>
   <data name="Location" xml:space="preserve">
-    <value>Standort</value>
+    <value>Emplacement</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
-    <value>Aufzeichnungen pro Seite:</value>
+    <value>Enregistrements par page :</value>
   </data>
   <data name="Add" xml:space="preserve">
-    <value>Hinzufügen </value>
+    <value>Ajouter</value>
   </data>
   <data name="ClearExTransactionsHelp" xml:space="preserve">
-    <value>Versuch, alle Ausnahmetransaktionen unter der aktuell ausgewählten Währung zu bereinigen.</value>
+    <value>Essayer de débarrasser touts les transactions exceptionnelles sous la devise actuellement sélectionnée</value>
   </data>
   <data name="ClearExTransactionsHelp1" xml:space="preserve">
-    <value>Aktuelle Beurteilungskriterien:
-Transaktionen mit einer Differenz, die gleich dem Betrag ist /mit Differenz, welche gleich null ist.</value>
+    <value>Current judgment criteria:
+Transactions with Change equal to the Amount /with Change equal to 0</value>
   </data>
   <data name="ClearExTransactionsLabel" xml:space="preserve">
-    <value>Clear Ex
-</value>
+    <value>Effacer Ex</value>
   </data>
   <data name="Month" xml:space="preserve">
     <value>M</value>
   </data>
   <data name="Year" xml:space="preserve">
-    <value>J</value>
+    <value>Y</value>
   </data>
   <data name="GraphHelpMessages" xml:space="preserve">
-    <value>Hilfe</value>
+    <value>Aide</value>
   </data>
   <data name="GraphHelpMessages1" xml:space="preserve">
-    <value>-Es wird vorgeschlagen, Filter in der Hauptansicht zu aktivieren, um die Anzahl der angezeigten Transaktionen zu reduzieren.
--Sie können ein Diagramm anpassen, indem Sie auf die horizontale oder vertikale Achse klicken.
--Dieses Fenster befindet sich immer noch in der Testphase. Wenn Sie auf Probleme stoßen oder Ideen für neue Funktionen haben, reiche bitte ein "Issue" auf meiner Github-Seite ein.</value>
+    <value>-Suggest enabling filters on the main window to reduce the number of transactions shown here.
+-You can adjust a plot by clicking on the horizontal or vertical axis.
+-This window is still in testing. If you encounter any bugs or have ideas for new features, please submit an issue on my Github page.</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
-    <value>Anzahl an Transaktionen:</value>
+    <value>Montant des Transactions :</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
-    <value>Mengendiagramm</value>
+    <value>Graphique du montant</value>
   </data>
   <data name="AmountGraph1" xml:space="preserve">
-    <value>[Zeitpunkt - Menge]</value>
+    <value>[Heure - Montant]</value>
   </data>
   <data name="AmountGraph2" xml:space="preserve">
-    <value>Gesamtrate</value>
+    <value>Taux global</value>
   </data>
   <data name="AmountGraph3" xml:space="preserve">
-    <value>Neueste Rate</value>
+    <value>Dernier Taux</value>
   </data>
   <data name="AmountGraph4" xml:space="preserve">
-    <value>* Dieser Bereich spiegelt hauptsächlich Unterschiede in der Währungsmenge im Laufe der Zeit wider.</value>
+    <value>* This plot mainly reflects changes in the Amount of the currency over Time.</value>
   </data>
   <data name="DividedUnitThou" xml:space="preserve">
-    <value>(Einheit: Tausend)</value>
+    <value>(Unité : Milliers)</value>
   </data>
   <data name="DividedUnitMil" xml:space="preserve">
-    <value>(Einheit: Millionen)</value>
+    <value>(Unité : Millions)</value>
   </data>
   <data name="DividedUnitBil" xml:space="preserve">
-    <value>(Einheit: Milliarden)</value>
+    <value>(Unité : Milliards)</value>
   </data>
   <data name="ChangeRateToolTip" xml:space="preserve">
-    <value>(Zunehmend)</value>
+    <value>(Augmentation)</value>
   </data>
   <data name="ChangeRateToolTip1" xml:space="preserve">
-    <value>(Abnehmend)</value>
+    <value>(Diminution)</value>
   </data>
   <data name="ChangeGraph" xml:space="preserve">
-    <value>Differenzdiagramm</value>
+    <value>Graphique des Monnaies</value>
   </data>
   <data name="ChangeGraph1" xml:space="preserve">
-    <value>[Zeitpunkt - Differenz]</value>
+    <value>[Time - Change]</value>
   </data>
   <data name="ChangeGraph2" xml:space="preserve">
-    <value>* Dieser Bereich spiegelt hauptsächlich die Unterschiede in der Währungsdifferenz im Laufe der Zeit wider.</value>
+    <value>* This plot mainly reflects changes in the Change of the currency over Time.</value>
   </data>
   <data name="LocationGraph" xml:space="preserve">
-    <value>Standortdiagramm</value>
+    <value>Graphique de l'emplacement</value>
   </data>
   <data name="LocationGraph1" xml:space="preserve">
-    <value> [Standort - Frequenz]</value>
+    <value> [Emplacement - Fréquence]</value>
   </data>
   <data name="LocationGraph2" xml:space="preserve">
-    <value>* Dieser Bereich spiegelt hauptsächlich die Häufigkeit des Auftretens jedes Standortes in den Währungstransaktionen wider.</value>
+    <value>* This plot mainly reflects the frequency of occurrence of each location in the currency transactions.</value>
   </data>
   <data name="LocationAmountGraph" xml:space="preserve">
-    <value>Standort-Differenz-Diagramm</value>
+    <value>Graphique de changement d'emplacement</value>
   </data>
   <data name="LocationAmountGraph1" xml:space="preserve">
-    <value> [Standort - Differenz]</value>
+    <value> [Location - Change]</value>
   </data>
   <data name="LocationAmountGraph2" xml:space="preserve">
-    <value>* Dieser Bereich spiegelt Hauptsächlich den Gesamtbetrag der Veränderung an jedem Standort der Währungstransaktionen wider.</value>
+    <value>* This plot mainly reflects the the total amount of Change of each location in the currency transactions.</value>
   </data>
   <data name="Graphs" xml:space="preserve">
-    <value>Diagramme</value>
+    <value>Graphiques</value>
   </data>
   <data name="HideCurrency" xml:space="preserve">
-    <value>Ausblenden
-(Doppelter Rechtsklick)</value>
+    <value>Hide
+(Double Right-Click)</value>
   </data>
   <data name="OrderChangeHelp" xml:space="preserve">
-    <value>Alle versteckten Währungen wurden wiederhergestellt!</value>
+    <value>Toutes les devises casquées ont été restaurées !</value>
   </data>
   <data name="OrderChangeHelp1" xml:space="preserve">
-    <value>Wiederhergestellt</value>
+    <value>Restauré</value>
   </data>
   <data name="OrderChangeHelp2" xml:space="preserve">
-    <value>Währungen.</value>
+    <value>devises.</value>
   </data>
   <data name="OrderChangeLabel" xml:space="preserve">
-    <value>Aktuelle Reihenfolge:</value>
+    <value>Current Order:</value>
   </data>
   <data name="RestoreHidden" xml:space="preserve">
-    <value>Ausgeblendete wiederherstellen
-(Doppelter Rechtsklick)</value>
+    <value>Restaurer les éléments cachés
+(Double clic droit)</value>
   </data>
   <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>{0} Ausnahmetransaktionen wiederhergestellt.</value>
+    <value>Removed {0} exception transactions.</value>
   </data>
   <data name="Manage" xml:space="preserve">
-    <value>Verwalten</value>
+    <value>Gérer</value>
   </data>
   <data name="Transactions" xml:space="preserve">
-    <value>Transaktionen</value>
+    <value>Transactions</value>
   </data>
   <data name="Now" xml:space="preserve">
-    <value>Jetzt</value>
+    <value>Maintenant</value>
   </data>
   <data name="Unselect" xml:space="preserve">
-    <value>Auswahl aufheben</value>
+    <value>Désélectionner</value>
   </data>
   <data name="CopiedToClipboard" xml:space="preserve">
-    <value>In die Zwischenablage kopiert</value>
+    <value>Copié dans le presse-papier</value>
   </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
-    <value>Derzeit sind keine Transaktionen ausgewählt.</value>
+    <value>Aucunes transactions actuellement sélectionnées.</value>
   </data>
   <data name="CopyTransactionsHelp" xml:space="preserve">
-    <value>{0} Transaktionen in die Zwischenablage kopiert.</value>
+    <value>Copied {0} transactions to clipboard.</value>
   </data>
   <data name="Edit" xml:space="preserve">
-    <value>Bearbeiten</value>
+    <value>Éditer</value>
   </data>
   <data name="Export" xml:space="preserve">
-    <value>Export</value>
+    <value>Exporter</value>
   </data>
   <data name="EditHelp" xml:space="preserve">
-    <value>Drücke Enter zum Bestätigen</value>
+    <value>Appuyer sur Entrée pour valider</value>
   </data>
   <data name="EditHelp1" xml:space="preserve">
-    <value>Bitte einen Standortnamen einfügen</value>
+    <value>Veuillez saisir un nom de lieu.</value>
   </data>
   <data name="EditLocationHelp" xml:space="preserve">
-    <value>Standort von {0} Transaktionen geändert zu</value>
+    <value>Changed {0} transactions' Location to</value>
   </data>
   <data name="EditNoteHelp" xml:space="preserve">
-    <value>Die Notiz von {0} Transaktionen geändert zu</value>
+    <value>Changed {0} transactions' Note to</value>
   </data>
   <data name="Copy" xml:space="preserve">
-    <value>Kopieren</value>
+    <value>Copier</value>
   </data>
   <data name="ChangeTextColoring" xml:space="preserve">
-    <value>Textfarbe ändern</value>
+    <value>Changer la couleur du texte</value>
   </data>
   <data name="CurrentSettings" xml:space="preserve">
-    <value>Aktuelle Einstellungen</value>
+    <value>Réglages actuels</value>
   </data>
   <data name="LocationFilter" xml:space="preserve">
-    <value>Standort Filter</value>
+    <value>Location Filter</value>
   </data>
   <data name="NegativeChange" xml:space="preserve">
-    <value>Negativ</value>
+    <value>Negative</value>
   </data>
   <data name="PositiveChange" xml:space="preserve">
-    <value>Positiv</value>
+    <value>Positive</value>
   </data>
   <data name="InverseSelect" xml:space="preserve">
-    <value>Auswahl umkehren</value>
+    <value>Inverse Select</value>
   </data>
   <data name="SelectAll" xml:space="preserve">
-    <value>Alles Auswählen</value>
+    <value>Select All</value>
   </data>
   <data name="Merge" xml:space="preserve">
-    <value>Zusammenführen</value>
+    <value>Merge</value>
   </data>
   <data name="MergeTransactionsHelp4" xml:space="preserve">
-    <value>Bitte wähle mindestens 2 Transaktionen aus.</value>
+    <value>Please select at least 2 transactions.</value>
   </data>
   <data name="EndDate" xml:space="preserve">
-    <value>Enddatum</value>
+    <value>Date de fin</value>
   </data>
   <data name="StartDate" xml:space="preserve">
-    <value>Start Datum</value>
+    <value>Date de début</value>
   </data>
   <data name="WeekDays" xml:space="preserve">
-    <value>So,Mo,Di,Mi,Do,Fr,Sa</value>
+    <value>Dim, Lun, Mardi, Mer, Jeu, Ven, Sam</value>
   </data>
   <data name="TeleportTo" xml:space="preserve">
-    <value>Teleport nach {0}</value>
+    <value>Teleport to {0}</value>
   </data>
   <data name="TeleportWithinArea" xml:space="preserve">
-    <value>Teleport innerhalb des Bereiches</value>
+    <value>Teleport within area</value>
   </data>
   <data name="MergedSpecificHelp" xml:space="preserve">
-    <value>Zusammengeführt aus {0} Transaktionen</value>
+    <value>Merged from {0} transactions</value>
   </data>
   <data name="Note" xml:space="preserve">
-    <value>Notiz</value>
+    <value>Note</value>
   </data>
   <data name="ExportFileHelp" xml:space="preserve">
-    <value>Hinweis: Die Wahl des Export-Dateityps hier wird auch anderswo angewandt.</value>
+    <value>Note : Le choix du type de fichier d'exportation ici sera aussi appliqué ailleurs.</value>
   </data>
   <data name="ExportFileHelp2" xml:space="preserve">
-    <value>Ungültiger Export-Dateityp</value>
+    <value>Type de fichier d'exportation invalide.</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
-    <value># Transaktionen exportieren -</value>
+    <value># Exportation des Transactions -</value>
   </data>
   <data name="ExportFileMDHeader1" xml:space="preserve">
-    <value>| Zeitpunkt | Betrag | Differenz | Standort | Notiz |
+    <value>| Heure | Montant | Monnaie | Emplacement | Note |
 | --- | --- | --- | --- | --- | --- | --- | --- |</value>
   </data>
   <data name="ExportFileType" xml:space="preserve">
-    <value>Dateityp exportieren</value>
+    <value>Type de fichier d’exportation</value>
   </data>
   <data name="ColumnsDisplayed" xml:space="preserve">
-    <value>Angezeigte Spalten</value>
+    <value>Colonnes affichées</value>
   </data>
   <data name="Order" xml:space="preserve">
-    <value>Reihenfolge</value>
+    <value>Ordre</value>
   </data>
   <data name="TableAppearance" xml:space="preserve">
-    <value>Tabellenansicht</value>
+    <value>Apparence du Tableau</value>
   </data>
   <data name="UnknownContent" xml:space="preserve">
-    <value>Unbekannter Inhalt</value>
+    <value>Contenu inconnu</value>
   </data>
   <data name="MiniCactpot" xml:space="preserve">
-    <value>Mini-Glückskaktor</value>
+    <value>Mini Cactpot</value>
   </data>
   <data name="TripleTriadWith" xml:space="preserve">
-    <value>Triple Triad mit {0}</value>
+    <value>Triple Triad with {0}</value>
   </data>
   <data name="Content" xml:space="preserve">
-    <value>Inhalt</value>
+    <value>Contenu</value>
   </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>Gold Saucer</value>
   </data>
   <data name="HelpTranslate" xml:space="preserve">
-    <value>Übersetzen helfen</value>
+    <value>Aider à traduire</value>
   </data>
   <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>Herzlichen Dank für Deine Beiträge</value>
+    <value>Merci beaucoup pour votre contribution</value>
   </data>
   <data name="NeedHelp" xml:space="preserve">
-    <value>Brauchen Sie Hilfe?</value>
+    <value>Besoin d'aide ?</value>
   </data>
   <data name="Guide" xml:space="preserve">
     <value>Guide</value>
@@ -552,7 +556,7 @@ Transaktionen mit einer Differenz, die gleich dem Betrag ist /mit Differenz, wel
     <value>Record MGP Rewards Source</value>
   </data>
   <data name="RecordSettings" xml:space="preserve">
-    <value>Aufzeichnungseinstellungen</value>
+    <value>Paramètres d'enregistrement</value>
   </data>
   <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
     <value>Record Teleport Costs</value>
@@ -568,7 +572,7 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
     <value>Record Triple Triad Result</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
-    <value>Vorschlagen oder Melden</value>
+    <value>Suggérer ou Signaler</value>
   </data>
   <data name="Exchange-RecordExchangeResult" xml:space="preserve">
     <value>Record Exchange Result</value>
@@ -577,36 +581,36 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
     <value>The plugin will record the TOTAL changes that occur during the exchange.</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
-    <value>Öffne das Hauptfenster des Plugins</value>
+    <value>Ouvrir la fenêtre principale du plugin</value>
   </data>
   <data name="CommandHelp1" xml:space="preserve">
-    <value>/ct &lt;currencyname&gt; → Öffne das Hauptfenster mit einer bestimmten Währung.</value>
+    <value>/ct &lt;currencyname&gt;&lt;currencyname&gt; → Ouvre la fenêtre principale avec une devise spécifique.</value>
   </data>
   <data name="EditFailed" xml:space="preserve">
-    <value>Bearbeitung ist fehlgeschlagen.</value>
+    <value>Edit Failed.</value>
   </data>
   <data name="MergeNoteHelp" xml:space="preserve">
-    <value>Wenn unausgefüllt,
-wird der Hinweis bei den zusammengeführten Transaktionen sein:
-(Zusammengeführt aus X Transaktionen)</value>
+    <value>If left blank,
+the Note of the merged transaction will be:
+(Merged from X transactions)</value>
   </data>
   <data name="OperationGuide" xml:space="preserve">
-    <value>Bedienungsanleitung</value>
+    <value>Guide d'opération</value>
   </data>
   <data name="UnknownLang" xml:space="preserve">
-    <value>Unbekannte Sprache</value>
+    <value>Unknown Language</value>
   </data>
   <data name="CommandHelp2" xml:space="preserve">
-    <value>Mutiple Währungen gefunden</value>
+    <value>Multi currencies found</value>
   </data>
   <data name="CommandHelp3" xml:space="preserve">
-    <value>Keine Währung gefunden.</value>
+    <value>No Currency Found</value>
   </data>
   <data name="ExchangeWith" xml:space="preserve">
-    <value>Handel mit {0}</value>
+    <value>Exchange with {0}</value>
   </data>
   <data name="General" xml:space="preserve">
-    <value>Allgemein</value>
+    <value>General</value>
   </data>
   <data name="Quest" xml:space="preserve">
     <value>Quest {0}</value>
@@ -626,31 +630,31 @@ wird der Hinweis bei den zusammengeführten Transaktionen sein:
     <value>Record Trade Target</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
-    <value>Handel mit {0}</value>
+    <value>Trade with {0}</value>
   </data>
   <data name="DeleteCurrency" xml:space="preserve">
-    <value>Löschen (Doppelter Rechtsklick)</value>
+    <value>Delete (Double Right-Click)</value>
   </data>
   <data name="PageComponent" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
   <data name="Confirm" xml:space="preserve">
-    <value>Bestätigen</value>
+    <value>Confirm</value>
   </data>
   <data name="CurrencyRenameHelp" xml:space="preserve">
-    <value>Bitte geben Sie einen geänderten Währungsnamen ein.</value>
+    <value>Please enter a modified currency name.</value>
   </data>
   <data name="CurrencyRenameHelp1" xml:space="preserve">
-    <value>Eine Währung mit demselben Namen ist bereits vorhanden.</value>
+    <value>Another currency with the same name already exists.</value>
   </data>
   <data name="CurrencyRenameHelp2" xml:space="preserve">
-    <value>Eine Datei mit demselben Namen ist bereits vorhanden</value>
+    <value>A data file with the same name already exists: {0}</value>
   </data>
   <data name="Rename" xml:space="preserve">
-    <value>Umbenennen</value>
+    <value>Rename</value>
   </data>
   <data name="Reset" xml:space="preserve">
-    <value>Zurücksetzen</value>
+    <value>Reset</value>
   </data>
   <data name="FateRewards-RecordFateRewards" xml:space="preserve">
     <value>Record FATE Rewards</value>

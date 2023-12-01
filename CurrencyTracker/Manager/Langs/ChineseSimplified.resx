@@ -557,7 +557,11 @@
     <value>记录传送费</value>
   </data>
   <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>传送费相关记录的备注部分将被填入你传送的目的地名称</value>
+    <value>相关记录的备注部分将被填入你传送至的以太之光/区域
+
+例:
+以太之光 选项: (传送至 隼巢)
+区域名 选项: (传送至 库尔札斯西部高地)</value>
   </data>
   <data name="TripleTriad-RecordTTResult" xml:space="preserve">
     <value>记录九宫幻卡结果</value>
@@ -705,5 +709,14 @@
   </data>
   <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
     <value>和上面选项功能相同，只是额外的功能补充</value>
+  </data>
+  <data name="MultiCharaStats" xml:space="preserve">
+    <value>多角色数据</value>
+  </data>
+  <data name="TeleportCosts-RecordAetheryteName" xml:space="preserve">
+    <value>以太之光</value>
+  </data>
+  <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
+    <value>区域名</value>
   </data>
 </root>

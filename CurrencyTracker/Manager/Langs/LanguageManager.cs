@@ -17,6 +17,7 @@ namespace CurrencyTracker.Manager
             new TranslationInfo { Language = "English", DisplayName = "English", Translators = "AtmoOmen" },
             new TranslationInfo { Language = "Spanish", DisplayName = "Español", Translators = "Risu"},
             new TranslationInfo { Language = "German", DisplayName = "Deutsch", Translators = "vyrnius"},
+            new TranslationInfo { Language = "French", DisplayName = "Français", Translators = "Lexideru"},
             new TranslationInfo { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = "AtmoOmen"},
             new TranslationInfo { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = "Fluxus"}
         };

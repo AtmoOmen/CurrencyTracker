@@ -80,47 +80,40 @@ namespace CurrencyTracker.Manager
         }
 
         // 加载最新一条记录 Load Latest Transaction
-        public static TransactionsConvertor LoadLatestSingleTransaction(uint currencyID)
+        public static TransactionsConvertor? LoadLatestSingleTransaction(uint currencyID, CharacterInfo? characterInfo = null)
         {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty())
+            var playerDataFolder = string.Empty;
+
+            if (characterInfo != null)
             {
-                Service.Log.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
-                return new();
+                playerDataFolder = Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{characterInfo.Name}_{characterInfo.Server}");
+            }
+            else
+            {
+                playerDataFolder = Plugin.Instance.PlayerDataFolder;
+                if (playerDataFolder.IsNullOrEmpty())
+                {
+                    Service.Log.Warning("Fail to Load Lastest Single Transaction: Player Data Folder Path Missed.");
+                    return null;
+                }
             }
 
             if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
-                return new();
+                return null;
             }
 
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
+            var filePath = Path.Combine(playerDataFolder, $"{currencyName}.txt");
 
             if (!File.Exists(filePath))
             {
-                return new();
+                return null;
             }
 
-            string? lastLine = null;
-            using (var stream = File.OpenRead(filePath))
-            {
-                stream.Position = Math.Max(0, stream.Length - 512);
-                using var reader = new StreamReader(stream);
-                string? line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    lastLine = line;
-                }
-            }
+            var lastLine = File.ReadLines(filePath).LastOrDefault();
 
-            if (lastLine == null)
-            {
-                return new();
-            }
-
-            var latestTransaction = TransactionsConvertor.FromFileLine(lastLine);
-
-            return latestTransaction;
+            return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine);
         }
 
         // 加载指定范围内的记录 Load Transactions in Specific Range
@@ -308,11 +301,9 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            var allTransactions = LoadAllTransactions(currencyID);
+            var allTransactions = LoadAllTransactions(currencyID).OrderBy(x => x.TimeStamp).ToList();
 
-            allTransactions = allTransactions.OrderBy(x => x.TimeStamp).ToList();
-
-            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder ?? "", $"{currencyName}.txt");
+            var filePath = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{currencyName}.txt");
 
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
         }

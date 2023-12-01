@@ -10,10 +10,7 @@ public partial class Main
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
-            orderedOptionsSet.UnionWith(allCurrenciesSet);
-            orderedOptionsSet.IntersectWith(allCurrenciesSet);
-
-            C.OrderedOptions = orderedOptionsSet.ToList();
+            C.OrderedOptions = allCurrenciesSet.ToList();
             C.Save();
         }
     }
@@ -26,67 +23,53 @@ public partial class Main
     }
 
     // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
-    private List<TransactionsConvertor> ApplyChangeFilter(List<TransactionsConvertor> transactions)
+    private ParallelQuery<TransactionsConvertor> ApplyChangeFilter(ParallelQuery<TransactionsConvertor> transactions)
     {
-        var filteredTransactions = new List<TransactionsConvertor>();
-
-        foreach (var transaction in transactions)
-        {
-            var isTransactionValid = filterMode == 0 ?
-                transaction.Change > filterValue :
-                transaction.Change < filterValue;
-
-            if (isTransactionValid)
-            {
-                filteredTransactions.Add(transaction);
-            }
-        }
-        return filteredTransactions;
+        return transactions.Where(transaction => filterMode == 0 ? transaction.Change > filterValue : transaction.Change < filterValue);
     }
 
     // 按时间间隔聚类交易记录 Cluster Transactions By Interval
-    private static List<TransactionsConvertor> ClusterTransactionsByTime(List<TransactionsConvertor> transactions, TimeSpan interval)
+    private static ParallelQuery<TransactionsConvertor> ClusterTransactionsByTime(ParallelQuery<TransactionsConvertor> transactions, TimeSpan interval)
     {
-        var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
+        var clusteredTransactions = new ConcurrentDictionary<DateTime, TransactionsConvertor>();
 
-        foreach (var transaction in transactions)
+        transactions.ForAll(transaction =>
         {
             var clusterTime = transaction.TimeStamp.AddTicks(-(transaction.TimeStamp.Ticks % interval.Ticks));
-            if (!clusteredTransactions.TryGetValue(clusterTime, out var cluster))
+            var cluster = clusteredTransactions.GetOrAdd(clusterTime, _ => new TransactionsConvertor
             {
-                cluster = new TransactionsConvertor
-                {
-                    TimeStamp = clusterTime,
-                    Amount = 0,
-                    Change = 0,
-                    LocationName = string.Empty
-                };
-                clusteredTransactions.Add(clusterTime, cluster);
-            }
+                TimeStamp = clusterTime,
+                Amount = 0,
+                Change = 0,
+                LocationName = string.Empty
+            });
 
-            if (!transaction.LocationName.IsNullOrEmpty() && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
+            lock (cluster)
             {
-                if (string.IsNullOrWhiteSpace(cluster.LocationName))
+                if (!transaction.LocationName.IsNullOrEmpty() && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
                 {
-                    cluster.LocationName = transaction.LocationName;
-                }
-                else
-                {
-                    var locationNames = cluster.LocationName.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-                    if (locationNames.Length < 3)
+                    if (cluster.LocationName.IsNullOrEmpty())
                     {
-                        cluster.LocationName += $", {transaction.LocationName}";
+                        cluster.LocationName = transaction.LocationName;
+                    }
+                    else
+                    {
+                        var locationNames = cluster.LocationName.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                        if (locationNames.Length < 3 && !cluster.LocationName.Contains(transaction.LocationName))
+                        {
+                            cluster.LocationName = new StringBuilder(cluster.LocationName).Append(", ").Append(transaction.LocationName).ToString();
+                        }
                     }
                 }
-            }
 
-            cluster.Change += transaction.Change;
+                cluster.Change += transaction.Change;
 
-            if (cluster.TimeStamp <= transaction.TimeStamp)
-            {
-                cluster.Amount = transaction.Amount;
+                if (cluster.TimeStamp <= transaction.TimeStamp)
+                {
+                    cluster.Amount = transaction.Amount;
+                }
             }
-        }
+        });
 
         foreach (var cluster in clusteredTransactions.Values)
         {
@@ -96,94 +79,82 @@ public partial class Main
             }
         }
 
-        return clusteredTransactions.Values.ToList();
+        return clusteredTransactions.Values.AsParallel();
     }
 
     // 按时间显示交易记录 Hide Unmatched Transactions By Time
-    private List<TransactionsConvertor> ApplyDateTimeFilter(List<TransactionsConvertor> transactions)
+    private ParallelQuery<TransactionsConvertor> ApplyDateTimeFilter(ParallelQuery<TransactionsConvertor> transactions)
     {
-        var filteredTransactions = new List<TransactionsConvertor>();
-
-        foreach (var transaction in transactions)
-        {
-            if (transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= filterEndDate.AddDays(1))
-            {
-                filteredTransactions.Add(transaction);
-            }
-        }
-        return filteredTransactions;
+        var nextDay = filterEndDate.AddDays(1);
+        return transactions.Where(transaction => transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= nextDay);
     }
 
     // 按地点名显示交易记录 Hide Unmatched Transactions By Location
-    private List<TransactionsConvertor> ApplyLocationFilter(List<TransactionsConvertor> transactions, string query)
+    private ParallelQuery<TransactionsConvertor> ApplyLocationFilter(ParallelQuery<TransactionsConvertor> transactions, string query)
     {
-        if (string.IsNullOrEmpty(query))
+        if (query.IsNullOrEmpty())
         {
             return transactions;
         }
 
-        var queries = query.Split(',')
-                           .Select(q => q.Trim().Normalize(NormalizationForm.FormKC))
-                           .Where(q => !string.IsNullOrEmpty(q))
-                           .ToList();
         var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
-        var filteredTransactions = new List<TransactionsConvertor>();
+        var queries = query.Split(',')
+                           .Select(q => new
+                           {
+                               Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
+                               Pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
+                           })
+                           .Where(q => !q.Normalized.IsNullOrEmpty())
+                           .ToList();
 
-        foreach (var transaction in transactions)
+        return transactions.Where(transaction =>
         {
             var normalizedLocation = transaction.LocationName.Normalize(NormalizationForm.FormKC);
-
-            if (queries.Any(q => normalizedLocation.Contains(q, StringComparison.OrdinalIgnoreCase)))
+            if (queries.Any(q => normalizedLocation.Contains(q.Normalized, StringComparison.OrdinalIgnoreCase)))
             {
-                filteredTransactions.Add(transaction);
+                return true;
             }
             else if (isChineseSimplified)
             {
                 var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
-                if (queries.Any(q => pinyin.Contains(q, StringComparison.OrdinalIgnoreCase)))
-                {
-                    filteredTransactions.Add(transaction);
-                }
+                return queries.Any(q => pinyin.Contains(q.Pinyin, StringComparison.OrdinalIgnoreCase));
             }
-        }
-
-        return filteredTransactions;
+            return false;
+        });
     }
 
     // 按备注显示交易记录 Hide Unmatched Transactions By Note
-    private List<TransactionsConvertor> ApplyNoteFilter(List<TransactionsConvertor> transactions, string query)
+    private ParallelQuery<TransactionsConvertor> ApplyNoteFilter(ParallelQuery<TransactionsConvertor> transactions, string query)
     {
-        if (string.IsNullOrEmpty(query))
+        if (query.IsNullOrEmpty())
         {
             return transactions;
         }
 
-        var queries = query.Split(',')
-                           .Select(q => q.Trim().Normalize(NormalizationForm.FormKC))
-                           .Where(q => !string.IsNullOrEmpty(q))
-                           .ToList();
         var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
-        var filteredTransactions = new List<TransactionsConvertor>();
+        var queries = query.Split(',')
+                           .Select(q => new
+                           {
+                               Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
+                               Pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
+                           })
+                           .Where(q => !q.Normalized.IsNullOrEmpty())
+                           .ToList();
 
-        foreach (var transaction in transactions)
+        return transactions.Where(transaction =>
         {
             var normalizedNote = transaction.Note.Normalize(NormalizationForm.FormKC);
-
-            if (queries.Any(q => normalizedNote.Contains(q, StringComparison.OrdinalIgnoreCase)))
+            if (queries.Any(q => normalizedNote.Contains(q.Normalized, StringComparison.OrdinalIgnoreCase)))
             {
-                filteredTransactions.Add(transaction);
+                return true;
             }
             else if (isChineseSimplified)
             {
                 var pinyin = PinyinHelper.GetPinyin(normalizedNote, "");
-                if (queries.Any(q => pinyin.Contains(q, StringComparison.OrdinalIgnoreCase)))
-                {
-                    filteredTransactions.Add(transaction);
-                }
+                return queries.Any(q => pinyin.Contains(q.Pinyin, StringComparison.OrdinalIgnoreCase));
             }
-        }
-
-        return filteredTransactions;
+            return false;
+        });
     }
 
     // 延迟加载收支记录 Used to handle too-fast transactions loading
@@ -205,43 +176,33 @@ public partial class Main
         return ChildFrameHeight;
     }
 
-    // 调整文本长度用 Used to adjust the length of the text in header columns.
-    private static string CalcNumSpaces()
-    {
-        var fontSize = ImGui.GetFontSize() / 2;
-        var numSpaces = (int)(ImGui.GetColumnWidth() / fontSize);
-        var spaces = new string('　', numSpaces);
-
-        return spaces;
-    }
-
     // 应用筛选器 Apply Filters
     internal List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
     {
+        IEnumerable<TransactionsConvertor> filteredTransactions = currentTypeTransactions;
+
         if (isClusteredByTime && clusterHour > 0)
         {
             var interval = TimeSpan.FromHours(clusterHour);
-            currentTypeTransactions = ClusterTransactionsByTime(currentTypeTransactions, interval);
+            filteredTransactions = ClusterTransactionsByTime(filteredTransactions.AsParallel(), interval);
         }
 
         if (isChangeFilterEnabled)
-            currentTypeTransactions = ApplyChangeFilter(currentTypeTransactions);
+            filteredTransactions = ApplyChangeFilter(filteredTransactions.AsParallel());
 
         if (isTimeFilterEnabled)
-            currentTypeTransactions = ApplyDateTimeFilter(currentTypeTransactions);
+            filteredTransactions = ApplyDateTimeFilter(filteredTransactions.AsParallel());
 
         if (isLocationFilterEnabled)
-            currentTypeTransactions = ApplyLocationFilter(currentTypeTransactions, searchLocationName);
+            filteredTransactions = ApplyLocationFilter(filteredTransactions.AsParallel(), searchLocationName);
 
         if (isNoteFilterEnabled)
-            currentTypeTransactions = ApplyNoteFilter(currentTypeTransactions, searchNoteContent);
+            filteredTransactions = ApplyNoteFilter(filteredTransactions.AsParallel(), searchNoteContent);
 
         if (C.ReverseSort)
-        {
-            currentTypeTransactions = currentTypeTransactions.OrderByDescending(item => item.TimeStamp).ToList();
-        }
+            filteredTransactions = filteredTransactions.OrderByDescending(item => item.TimeStamp);
 
-        return currentTypeTransactions;
+        return filteredTransactions.ToList();
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added

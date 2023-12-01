@@ -14,7 +14,7 @@ namespace CurrencyTracker
 
         internal const string CommandName = "/ct";
 
-        public string PlayerDataFolder = string.Empty;
+        public string PlayerDataFolder => GetCurrentCharcterDataFolder();
         private string playerLang = string.Empty;
 
         public Plugin(DalamudPluginInterface pluginInterface)
@@ -64,6 +64,7 @@ namespace CurrencyTracker
         private void HandleLogout()
         {
             Service.Tracker.UninitializeTracking();
+            CurrentCharacter = null;
         }
 
         private void HandleLogin()
@@ -74,7 +75,6 @@ namespace CurrencyTracker
             }
 
             CurrentCharacter = GetCurrentCharacter();
-            GetCurrentCharcterDataFolder();
 
             if (WindowSystem.Windows.Contains(Main) && Main.selectedCurrencyID != 0)
             {
@@ -87,26 +87,24 @@ namespace CurrencyTracker
 
         public CharacterInfo GetCurrentCharacter()
         {
-            if (Service.ClientState.LocalContentId == 0) return null;
+            if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null || !Service.ClientState.IsLoggedIn) return null;
 
-            if (CurrentCharacter != null && CurrentCharacter.Name == Service.ClientState.LocalPlayer.Name.TextValue)
+            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
+            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name?.RawString;
+
+            if (playerName.IsNullOrEmpty() || serverName.IsNullOrEmpty())
+            {
+                Service.Log.Error("Fail to load current character info");
+            }
+
+            var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+
+            if (CurrentCharacter != null && CurrentCharacter.Name == playerName)
             {
                 return CurrentCharacter;
             }
 
-            var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-            var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-            var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-
-            if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName))
-            {
-                throw new InvalidOperationException("Can't load current character info");
-            }
-
-            if (Configuration.CurrentActiveCharacter == null)
-            {
-                Configuration.CurrentActiveCharacter = new List<CharacterInfo>();
-            }
+            Configuration.CurrentActiveCharacter ??= new();
 
             var existingCharacter = Configuration.CurrentActiveCharacter.FirstOrDefault(x => x.Name == playerName);
             if (existingCharacter != null)
@@ -132,29 +130,25 @@ namespace CurrencyTracker
                 Service.Log.Debug("Successfully create character info directory.");
             }
 
-            PlayerDataFolder = dataFolderName;
-
             Configuration.Save();
 
             return CurrentCharacter;
         }
 
-        private void GetCurrentCharcterDataFolder()
+        private string GetCurrentCharcterDataFolder()
         {
-            if (Service.ClientState.LocalPlayer != null)
+            CurrentCharacter ??= GetCurrentCharacter();
+
+            if (CurrentCharacter == null) return string.Empty;
+
+            var path = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{CurrentCharacter.Name}_{CurrentCharacter.Server}");
+            if (!Directory.Exists(path))
             {
-                var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-                var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name;
-                var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
-
-                if (!Directory.Exists(dataFolderName))
-                {
-                    Directory.CreateDirectory(dataFolderName);
-                    Service.Log.Debug("Successfully create character info directory.");
-                }
-
-                PlayerDataFolder = dataFolderName;
+                Directory.CreateDirectory(path);
+                Service.Log.Debug("Successfully create character info directory.");
             }
+
+            return path;
         }
 
         internal void OnCommand(string command, string args)

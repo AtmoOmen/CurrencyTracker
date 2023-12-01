@@ -23,6 +23,7 @@ namespace CurrencyTracker.Windows
                     ModuleCheckbox(typeof(Exchange), "Exchange", Service.Lang.GetText("Exchange-RecordExchangeResult"), Service.Lang.GetText("Exchange-RecordExchangeResultHelp"));
                     ModuleCheckbox(typeof(SpecialExchange), "SpecialExchange", Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"), Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResultHelp"));
                     ModuleCheckbox(typeof(TeleportCosts), "TeleportCosts", Service.Lang.GetText("TeleportCosts-RecordTPCosts"), Service.Lang.GetText("TeleportCosts-RecordTPCostsHelp"));
+                    if (C.ComponentEnabled["TeleportCosts"]) SecondaryRadioButtons("RecordDesAetheryteName", "RecordDesAreaName", Service.Lang.GetText("TeleportCosts-RecordAetheryteName"), Service.Lang.GetText("TeleportCosts-RecordAreaName"));
                     ModuleCheckbox(typeof(WarpCosts), "WarpCosts", Service.Lang.GetText("WarpCosts-RecordTPCosts"), Service.Lang.GetText("WarpCosts-RecordTPCostsHelp"));
                     ModuleCheckbox(typeof(QuestRewards), "QuestRewards", Service.Lang.GetText("QuestRewards-RecordQuestRewards"), Service.Lang.GetText("QuestRewards-RecordQuestRewardsHelp"));
                     ModuleCheckbox(typeof(Trade), "Trade", Service.Lang.GetText("Trade-RecordTradeTarget"), Service.Lang.GetText("Trade-RecordTradeTargetHelp"));
@@ -106,6 +107,37 @@ namespace CurrencyTracker.Windows
             if (ImGui.Checkbox(checkboxLabel, ref cbool))
             {
                 C.ComponentProp[boolName] = !C.ComponentProp[boolName];
+                C.Save();
+            }
+
+            if (!help.IsNullOrEmpty())
+            {
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker(help);
+            }
+        }
+
+        private void SecondaryRadioButtons(string boolName1, string boolName2, string buttonLabel1, string buttonLabel2, string help = "")
+        {
+            var cbool1 = C.ComponentProp[boolName1];
+            var cbool2 = C.ComponentProp[boolName2];
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.BulletText("");
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
+            {
+                C.ComponentProp[boolName1] = true;
+                C.ComponentProp[boolName2] = false;
+                C.Save();
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton($"{buttonLabel2}##{buttonLabel1}", cbool2))
+            {
+                C.ComponentProp[boolName1] = false;
+                C.ComponentProp[boolName2] = true;
                 C.Save();
             }
 

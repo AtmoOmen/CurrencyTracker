@@ -7,6 +7,8 @@ namespace CurrencyTracker.Windows
         {
             OpenDataFolderUI();
             ImGui.SameLine();
+            MultiCharaStatsUI();
+            ImGui.SameLine();
             HelpPageUI();
             ImGui.SameLine();
             LanguageSwitchUI();
@@ -19,6 +21,44 @@ namespace CurrencyTracker.Windows
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Folder, Service.Lang.GetText("OpenDataFolder")))
             {
                 OpenDirectory(P.PlayerDataFolder);
+            }
+        }
+
+        // 多角色数据界面 Multi-Chara Stats
+        private void MultiCharaStatsUI()
+        {
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartColumn, Service.Lang.GetText("MultiCharaStats")))
+            {
+                foreach (var character in C.CurrentActiveCharacter)
+                {
+                    if (!characterCurrencyInfos.TryGetValue(character, out var existingInfo))
+                    {
+                        existingInfo = new CharacterCurrencyInfo { Character = character };
+                        characterCurrencyInfos.Add(character, existingInfo);
+                    }
+                    existingInfo.GetCharacterCurrencyAmount();
+                }
+                ImGui.OpenPopup("MultiCharStats");
+            }
+
+            if (ImGui.BeginPopup("MultiCharStats"))
+            {
+                foreach (var characterCurrencyInfo in characterCurrencyInfos.Values)
+                {
+                    if (ImGui.BeginCombo($"##{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", $"{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", ImGuiComboFlags.HeightLarge))
+                    {
+                        foreach (var currency in C.AllCurrencies)
+                        {
+                            var amount = characterCurrencyInfo.CurrencyAmount.TryGetValue(currency.Key, out var value) ? value : 0;
+                            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
+                            ImGui.Image(C.AllCurrencyIcons[currency.Key].ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                            ImGui.SameLine();
+                            ImGui.Text($"{currency.Value} - {amount}");
+                        }
+                        ImGui.EndCombo();
+                    }
+                }
+                ImGui.EndPopup();
             }
         }
 

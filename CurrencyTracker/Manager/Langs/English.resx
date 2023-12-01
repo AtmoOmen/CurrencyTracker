@@ -561,7 +561,11 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
     <value>Record Teleport Costs</value>
   </data>
   <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>The Note section of costs transaction will be filled with the area name you teleport to.</value>
+    <value>The Note section of specific transaction will be filled with Aetheryte/Area you teleport to.
+
+Example:
+Aetheryte option: (Teleport to Falcon's Nest)
+Area option: (Teleport to Coerthas Western Highlands)</value>
   </data>
   <data name="TripleTriad-RecordTTResult" xml:space="preserve">
     <value>Record Triple Triad Result</value>
@@ -709,5 +713,14 @@ the Note of the merged transaction will be:
   </data>
   <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
     <value>Same as above. Just Supplement to the above option.</value>
+  </data>
+  <data name="MultiCharaStats" xml:space="preserve">
+    <value>Multi-Chara Stats</value>
+  </data>
+  <data name="TeleportCosts-RecordAetheryteName" xml:space="preserve">
+    <value>Aetheryte</value>
+  </data>
+  <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
+    <value>Area</value>
   </data>
 </root>

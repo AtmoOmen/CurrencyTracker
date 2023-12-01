@@ -106,6 +106,8 @@ public partial class Main
         {"Note", Plugin.Instance.Main.NoteColumnCellUI},
         {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
     };
+    
+    private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
 
     private readonly Configuration? C = Plugin.Instance.Configuration;
     private readonly Plugin? P = Plugin.Instance;

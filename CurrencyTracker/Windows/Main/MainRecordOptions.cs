@@ -17,7 +17,7 @@ namespace CurrencyTracker.Windows
         // 记录设置界面 Record Settings
         private void RecordSettingsUI()
         {
-            if (ImGui.Button(Service.Lang.GetText("RecordSettings") + "[DEV]"))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, Service.Lang.GetText("RecordSettings") + "[DEV]"))
             {
                 P.RecordSettings.IsOpen = !P.RecordSettings.IsOpen;
             }
@@ -26,7 +26,7 @@ namespace CurrencyTracker.Windows
         // 按临界值合并记录界面 Merge Transactions By Threshold
         private void MergeTransactionUI()
         {
-            if (ImGui.Button(Service.Lang.GetText("MergeTransactionsLabel")))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("MergeTransactionsLabel")))
             {
                 ImGui.OpenPopup("MergeTransactions");
             }
@@ -89,7 +89,7 @@ namespace CurrencyTracker.Windows
         // 清除异常记录界面 Clear Exceptional Transactions
         private void ClearExceptionUI()
         {
-            if (ImGui.Button(Service.Lang.GetText("ClearExTransactionsLabel")))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ExclamationCircle, Service.Lang.GetText("ClearExTransactionsLabel")))
             {
                 ImGui.OpenPopup("ClearExceptionNote");
             }
@@ -124,7 +124,7 @@ namespace CurrencyTracker.Windows
         // 导出数据界面 Export Transactions
         private void ExportDataUI()
         {
-            if (ImGui.Button(Service.Lang.GetText("Export")))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.FileExport, Service.Lang.GetText("Export")))
             {
                 if (selectedCurrencyID == 0)
                 {
