@@ -5,7 +5,7 @@ namespace CurrencyTracker.Windows
         private Configuration? C = Plugin.Instance.Configuration;
         private Plugin? P = Plugin.Instance;
 
-        public RecordSettings(Plugin plugin) : base($"Record Settings##{Plugin.Name}")
+        public RecordSettings(Plugin plugin) : base($"Record Settings##{Plugin.Instance.Name}")
         {
             Flags |= ImGuiWindowFlags.NoScrollbar;
             Flags |= ImGuiWindowFlags.AlwaysAutoResize;

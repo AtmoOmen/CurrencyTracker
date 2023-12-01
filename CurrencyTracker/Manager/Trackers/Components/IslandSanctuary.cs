@@ -1,3 +1,4 @@
+
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class IslandSanctuary : ITrackerComponent
@@ -46,7 +47,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             _initialized = true;
         }
 
-        private void OnZoneChanged(ushort obj)
+        private void OnZoneChanged(object? sender, ushort e)
         {
             if (!isInIsland && CurrentLocationID == 1055)
             {
@@ -59,7 +60,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             WorkshopHandler();
         }

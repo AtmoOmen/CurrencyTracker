@@ -61,7 +61,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private void OnZoneChange(ushort obj)
+        private void OnZoneChange(object? sender, ushort e)
         {
             if (Flags.IsBoundByDuty())
             {

@@ -29,11 +29,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
             GetAetherytes();
 
             var actorControlSelfPtr = Service.SigScanner.ScanText(ActorControlSig);
-            actorControlSelfHook = Service.Hook.HookFromAddress<ActorControlSelfDelegate>(actorControlSelfPtr, ActorControlSelf);
+            actorControlSelfHook = Hook<ActorControlSelfDelegate>.FromAddress(actorControlSelfPtr, ActorControlSelf);
             actorControlSelfHook.Enable();
 
             var teleportActionSelfPtr = Service.SigScanner.ScanText(TeleportActionSig);
-            teleportActionSelfHook = Service.Hook.HookFromAddress<TeleportActionSelfDelegate>(teleportActionSelfPtr, TeleportActionSelf);
+            teleportActionSelfHook = Hook<TeleportActionSelfDelegate>.FromAddress(teleportActionSelfPtr, TeleportActionSelf);
             teleportActionSelfHook.Enable();
 
             _initialized = true;
@@ -100,7 +100,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Framework.Update += OnFrameworkUpdate;
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             if (!isReadyTP)
             {

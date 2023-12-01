@@ -20,7 +20,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             _initialized = true;
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             if (!inCombat) return;
 

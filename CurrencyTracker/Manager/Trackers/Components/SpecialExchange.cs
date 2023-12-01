@@ -74,7 +74,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Log.Debug("Exchange Starts");
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             if (!isOnExchange && !Exchange.isOnExchange)
             {

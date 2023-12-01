@@ -62,7 +62,7 @@ namespace CurrencyTracker.Manager.Trackers
             _initialized = true;
         }
 
-        private void OnZoneChange(ushort obj)
+        private void OnZoneChange(object? sender, ushort e)
         {
             if (_isBlocked) return;
 

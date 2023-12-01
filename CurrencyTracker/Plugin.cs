@@ -2,7 +2,7 @@ namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public static string Name => "Currency Tracker";
+        public string Name => "Currency Tracker";
         public DalamudPluginInterface PluginInterface { get; init; }
         public Configuration Configuration { get; init; }
         public WindowSystem WindowSystem = new("CurrencyTracker");
@@ -61,13 +61,14 @@ namespace CurrencyTracker
             WindowSystem.AddWindow(RecordSettings);
         }
 
-        private void HandleLogout()
+
+        private void HandleLogout(object? sender, EventArgs e)
         {
             Service.Tracker.UninitializeTracking();
             CurrentCharacter = null;
         }
 
-        private void HandleLogin()
+        private void HandleLogin(object? sender, EventArgs e)
         {
             if (Configuration.CurrentActiveCharacter == null)
             {

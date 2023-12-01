@@ -52,7 +52,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             if (!isReadyFinish)
             {
