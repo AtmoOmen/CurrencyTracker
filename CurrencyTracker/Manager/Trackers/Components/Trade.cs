@@ -19,23 +19,23 @@ namespace CurrencyTracker.Manager.Trackers.Components
             _initialized = true;
         }
 
-        private void StartTrade(AddonEvent type, AddonArgs args)
+        private unsafe void StartTrade(AddonEvent type, AddonArgs args)
         {
             if (isOnTrade) return;
 
-            var TGUI = Service.GameGui.GetAddonByName("Trade");
+            var TGUI = (AtkUnitBase*)args.Addon;
 
-            if (TGUI != nint.Zero)
+            if (TGUI != null && TGUI->RootNode != null && TGUI->RootNode->ChildNode != null && TGUI->UldManager.NodeList != null)
             {
-                isOnTrade = true;
-                if (Service.TargetManager.Target != null)
+                var textNode = TGUI->GetTextNodeById(17);
+                if (textNode != null)
                 {
-                    tradeTargetName = Service.TargetManager.Target.Name.TextValue;
+                    tradeTargetName = textNode->NodeText.ToString();
+                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+                    isOnTrade = true;
+                    Service.Framework.Update += OnFrameworkUpdate;
+                    Service.Log.Debug("Trade Starts");
                 }
-
-                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-                Service.Framework.Update += OnFrameworkUpdate;
-                Service.Log.Debug("Trade Starts");
             }
         }
 
@@ -44,24 +44,22 @@ namespace CurrencyTracker.Manager.Trackers.Components
             if (!isOnTrade)
             {
                 Service.Framework.Update -= OnFrameworkUpdate;
+                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
                 return;
             }
 
-            if (Flags.OccupiedInEvent()) return;
+            if (Service.Condition[ConditionFlag.TradeOpen]) return;
 
             EndTradeHandler();
         }
 
         private void EndTradeHandler()
         {
-            isOnTrade = false;
-
-            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
-
-            tradeTargetName = string.Empty;
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Framework.Update -= OnFrameworkUpdate;
+            isOnTrade = false;
+            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
+            tradeTargetName = string.Empty;
+            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Log.Debug("Trade Ends");
         }
 
