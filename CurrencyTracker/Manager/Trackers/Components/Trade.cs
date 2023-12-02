@@ -15,7 +15,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         public void Init()
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
             _initialized = true;
         }
 
@@ -34,7 +34,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                     isOnTrade = true;
                     Service.Framework.Update += OnFrameworkUpdate;
-                    Service.Log.Debug("Trade Starts");
+                    Service.Log.Debug($"Trade Starts {tradeTargetName}");
                 }
             }
         }
