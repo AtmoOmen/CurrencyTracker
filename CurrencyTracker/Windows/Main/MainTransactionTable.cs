@@ -222,7 +222,7 @@ namespace CurrencyTracker.Windows
         private void OrderColumnHeaderUI()
         {
             ImGui.SetCursorPosX(1f);
-            if (SelectableIconButton(C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown, "None", "OrderControl", new Vector2(ImGui.GetContentRegionAvail().X + 10f, 20.0f * ImGuiHelpers.GlobalScale)))
+            if (SelectableIconButton(C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown, "", "OrderControl", new Vector2(ImGui.GetContentRegionAvail().X + 10f, 20.0f * ImGuiHelpers.GlobalScale)))
             {
                 C.ReverseSort = !C.ReverseSort;
                 C.Save();
