@@ -91,11 +91,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (args.AddonName == "PvpReward")
             {
-                windowName = Service.Tracker.GetWindowTitle(args, WindowUI[args.AddonName], new uint[] { 4, 5 }) ?? string.Empty;
+                windowName = GetWindowTitle(args, WindowUI[args.AddonName], new uint[] { 4, 5 }) ?? string.Empty;
             }
             else
             {
-                windowName = Service.Tracker.GetWindowTitle(args, WindowUI[args.AddonName]) ?? string.Empty;
+                windowName = GetWindowTitle(args, WindowUI[args.AddonName]) ?? string.Empty;
             }
             Service.Log.Debug("Exchange Starts");
         }
@@ -114,11 +114,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
             if (addonName == "PvpReward")
             {
-                windowName = Service.Tracker.GetWindowTitle(addon, WindowUI[addonName], new uint[] { 4, 5 }) ?? string.Empty;
+                windowName = GetWindowTitle(addon, WindowUI[addonName], new uint[] { 4, 5 }) ?? string.Empty;
             }
             else
             {
-                windowName = Service.Tracker.GetWindowTitle(addon, WindowUI[addonName]) ?? string.Empty;
+                windowName = GetWindowTitle(addon, WindowUI[addonName]) ?? string.Empty;
             }
             Service.Log.Debug("Exchange Starts");
         }

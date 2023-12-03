@@ -93,7 +93,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void BeginMJIWindowHandler(AddonArgs args)
         {
-            windowTitle = Service.Tracker.GetWindowTitle(args, MJIWindowModules[args.AddonName]);
+            windowTitle = GetWindowTitle(args, MJIWindowModules[args.AddonName]);
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
         }
 

@@ -47,7 +47,6 @@ public static class CurrencyInfo
             .Item.Row;
     }
 
-
     private static uint GetNonLimitedTomestoneId()
     {
         return LuminaCache<TomestonesItem>.Instance
