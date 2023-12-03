@@ -101,20 +101,20 @@ namespace CurrencyTracker.Manager.Trackers
         public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
         {
             var isChanged = false;
-            Parallel.ForEach(C.AllCurrencies, currency =>
+            foreach (var currency in C.AllCurrencies)
             {
                 if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source)) isChanged = true;
-            });
+            };
             return isChanged;
         }
 
         public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
         {
             var isChanged = false;
-            Parallel.ForEach(currencies, currency =>
+            foreach(var currency in C.AllCurrencies)
             {
-                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source)) isChanged = true;
-            });
+                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source)) isChanged = true;
+            };
             return isChanged;
         }
 
