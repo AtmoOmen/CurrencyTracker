@@ -171,6 +171,12 @@ namespace CurrencyTracker.Manager
             return cursorPosX;
         }
 
+        public static void CenterCursorFor(int itemWidth)
+        {
+            var num = (int)ImGui.GetWindowWidth();
+            ImGui.SetCursorPosX((num / 2) - (itemWidth / 2));
+        }
+
         public static void Restart(this Timer timer)
         {
             timer.Stop();

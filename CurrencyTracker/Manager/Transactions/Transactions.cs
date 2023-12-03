@@ -213,10 +213,10 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            Parallel.ForEach(Plugin.Instance.Configuration.AllCurrencies, currency =>
+            foreach (var currency in Plugin.Instance.Configuration.AllCurrencies)
             {
                 EditLatestTransaction(currency.Key, LocationName, Note, forceEdit, timeout, onlyEditEmpty);
-            });
+            }
         }
 
         // 在数据末尾追加最新一条记录 Append One Transaction

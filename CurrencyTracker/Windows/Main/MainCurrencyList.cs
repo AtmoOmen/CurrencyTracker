@@ -57,7 +57,7 @@ namespace CurrencyTracker.Windows
         // 货币列表顶端工具栏 Currency List Listbox Tools
         private void CurrencyListboxToolUI()
         {
-            ImGuiHelpers.CenterCursorFor(185);
+            CenterCursorFor(185);
 
             ImGui.BeginGroup();
             AddCustomCurrencyUI();

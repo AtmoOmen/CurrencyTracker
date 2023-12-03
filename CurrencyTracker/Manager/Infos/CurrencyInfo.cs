@@ -2,7 +2,7 @@ namespace CurrencyTracker.Manager.Infos;
 
 public static class CurrencyInfo
 {
-    public static readonly List<uint> defaultCurrenciesToAdd = new List<uint>
+    public static readonly List<uint> defaultCurrenciesToAdd = new()
     {
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
