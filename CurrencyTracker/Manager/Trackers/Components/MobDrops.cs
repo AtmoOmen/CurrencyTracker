@@ -65,7 +65,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.Log.Debug($"Combat Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckAllCurrencies("", $"(Drops from {string.Join(", ", enemiesList.TakeLast(3))})", RecordChangeType.All, 8);
+            Service.Tracker.CheckAllCurrencies("",  $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
 
             inCombat = false;
             enemiesList.Clear();

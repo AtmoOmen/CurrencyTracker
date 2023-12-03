@@ -723,4 +723,7 @@ the Note of the merged transaction will be:
   <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
     <value>Area</value>
   </data>
+  <data name="MobDrops-MobDropsNote" xml:space="preserve">
+    <value>Drop from {0}</value>
+  </data>
 </root>

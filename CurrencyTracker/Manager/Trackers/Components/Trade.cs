@@ -16,16 +16,22 @@ namespace CurrencyTracker.Manager.Trackers.Components
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "Trade", EndTrade);
             _initialized = true;
         }
 
-        private unsafe void StartTrade(AddonEvent type, AddonArgs args)
+        private void StartTrade(AddonEvent type, AddonArgs args)
         {
             if (isOnTrade) return;
 
+            StartTradeHandler(args);
+        }
+
+        private unsafe void StartTradeHandler(AddonArgs args)
+        {
             var TGUI = (AtkUnitBase*)args.Addon;
 
-            if (TGUI != null && TGUI->RootNode != null && TGUI->RootNode->ChildNode != null && TGUI->UldManager.NodeList != null)
+            if (TGUI != null)
             {
                 var textNode = TGUI->GetTextNodeById(17);
                 if (textNode != null)
@@ -33,10 +39,21 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     tradeTargetName = textNode->NodeText.ToString();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
                     isOnTrade = true;
-                    Service.Framework.Update += OnFrameworkUpdate;
                     Service.Log.Debug($"Trade Starts {tradeTargetName}");
                 }
             }
+        }
+
+        private void EndTrade(AddonEvent eventType, AddonArgs addonInfo)
+        {
+            if (!isOnTrade) return;
+
+            EndTradeHandler();
+        }
+
+        private void EndTradeHandler()
+        {
+            Service.Framework.Update += OnFrameworkUpdate;
         }
 
         private void OnFrameworkUpdate(IFramework framework)
@@ -50,17 +67,14 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (Service.Condition[ConditionFlag.TradeOpen]) return;
 
-            EndTradeHandler();
-        }
-
-        private void EndTradeHandler()
-        {
-            Service.Framework.Update -= OnFrameworkUpdate;
             isOnTrade = false;
             Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
             tradeTargetName = string.Empty;
+            Service.Framework.Update -= OnFrameworkUpdate;
             HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Log.Debug("Trade Ends");
+
+            EndTradeHandler();
         }
 
         public void Uninit()
@@ -70,6 +84,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Framework.Update -= OnFrameworkUpdate;
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "Trade", EndTrade);
 
             _initialized = false;
         }

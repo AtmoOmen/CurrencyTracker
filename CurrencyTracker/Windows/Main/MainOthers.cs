@@ -41,7 +41,7 @@ namespace CurrencyTracker.Windows
                 ImGui.OpenPopup("MultiCharStats");
             }
 
-            if (ImGui.BeginPopup("MultiCharStats"))
+            if (ImGui.BeginPopup("MultiCharStats", ImGuiWindowFlags.AlwaysVerticalScrollbar))
             {
                 foreach (var characterCurrencyInfo in characterCurrencyInfos.Values)
                 {

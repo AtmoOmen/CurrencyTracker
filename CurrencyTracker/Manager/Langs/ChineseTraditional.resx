@@ -718,4 +718,7 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
   <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
     <value>Area</value>
   </data>
+  <data name="MobDrops-MobDropsNote" xml:space="preserve">
+    <value>Drop from {0}</value>
+  </data>
 </root>
