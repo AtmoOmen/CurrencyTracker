@@ -79,7 +79,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckAllCurrencies(PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
+            Service.Tracker.CheckAllCurrencies(PreviousLocationName, Plugin.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
 
             isDutyStarted = false;
             contentName = string.Empty;

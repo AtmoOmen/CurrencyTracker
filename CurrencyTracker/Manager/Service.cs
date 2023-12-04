@@ -7,16 +7,34 @@ public class Service
         Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(pluginInterface);
         pluginInterface.Create<Service>();
+
+        InitLanguage();
+        Tracker = new Tracker();
     }
 
-    [PluginService] public static IAetheryteList AetheryteList { get; private set; } = null!;
+    private static void InitLanguage()
+    {
+        var playerLang = Configuration.SelectedLanguage;
+        if (playerLang.IsNullOrEmpty())
+        {
+            playerLang = ClientState.ClientLanguage.ToString();
+            if (!LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
+            {
+                playerLang = "English";
+            }
+            Configuration.SelectedLanguage = playerLang;
+            Configuration.Save();
+        }
+
+        Lang = new LanguageManager(playerLang);
+    }
+
     [PluginService] public static IClientState ClientState { get; private set; } = null!;
     [PluginService] public static IFramework Framework { get; private set; } = null!;
     [PluginService] public static ICondition Condition { get; private set; } = null!;
     [PluginService] public static IDataManager DataManager { get; private set; } = null!;
     [PluginService] public static IChatGui Chat { get; private set; } = null!;
     [PluginService] public static ICommandManager CommandManager { get; set; } = null!;
-    [PluginService] public static IDutyState DutyState { get; private set; } = null!;
     [PluginService] public static IPluginLog Log { get; private set; } = null!;
     [PluginService] public static IGameInteropProvider Hook { get; private set; } = null!;
     [PluginService] public static IGameGui GameGui { get; private set; } = null!;

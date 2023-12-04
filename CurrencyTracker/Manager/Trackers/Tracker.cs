@@ -16,7 +16,7 @@ namespace CurrencyTracker.Manager.Trackers
         public HandlerManager HandlerManager = null!;
         public ComponentManager ComponentManager = null!;
 
-        private Configuration? C = Plugin.Instance.Configuration;
+        private Configuration? C = Plugin.Configuration;
         private Plugin? P = Plugin.Instance;
 
         public Tracker()

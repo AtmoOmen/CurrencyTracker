@@ -32,7 +32,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        if (Plugin.Instance.Configuration.AllCurrencies.TryGetValue(29, out var _))
+                        if (Plugin.Configuration.AllCurrencies.TryGetValue(29, out var _))
                         {
                             Transactions.EditLatestTransaction(29, "", $"({GameName})", false, 5, true);
                         }

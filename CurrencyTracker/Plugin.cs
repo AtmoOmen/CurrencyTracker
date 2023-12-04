@@ -3,36 +3,30 @@ namespace CurrencyTracker
     public sealed class Plugin : IDalamudPlugin
     {
         public static string Name => "Currency Tracker";
-        public DalamudPluginInterface PluginInterface { get; init; }
-        public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("CurrencyTracker");
-        internal Main Main { get; init; }
-        internal Graph Graph { get; init; }
-        internal RecordSettings RecordSettings { get; init; }
+        public const string CommandName = "/ct";
+
         public CharacterInfo? CurrentCharacter { get; set; }
+        public string PlayerDataFolder => GetCurrentCharcterDataFolder();
+
+        public DalamudPluginInterface PluginInterface { get; init; }
+        public Main? Main { get; private set; }
+        public Graph? Graph { get; private set; }
+        public RecordSettings? RecordSettings { get; private set; }
+
+        public WindowSystem WindowSystem = new("CurrencyTracker");
+        public static Configuration? Configuration = null!;
         public static Plugin Instance = null!;
 
-        internal const string CommandName = "/ct";
-
-        public string PlayerDataFolder => GetCurrentCharcterDataFolder();
-        private string playerLang = string.Empty;
 
         public Plugin(DalamudPluginInterface pluginInterface)
         {
             Instance = this;
             PluginInterface = pluginInterface;
 
-            if (File.Exists(Path.Combine(Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory()), "CurrencyTracker.json")))
-            {
-                ParseOldConfiguration(Path.Combine(Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory()), "CurrencyTracker.json"));
-            }
-            Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-            Configuration.Initialize(PluginInterface);
+            ConfigHandler(pluginInterface);
 
             Service.Initialize(pluginInterface);
-            InitLanguage();
 
-            // 已登录 Have Logged in
             if (Service.ClientState.LocalPlayer != null || Service.ClientState.LocalContentId != 0)
             {
                 CurrentCharacter = GetCurrentCharacter();
@@ -40,25 +34,10 @@ namespace CurrencyTracker
 
             Service.ClientState.Login += HandleLogin;
             Service.ClientState.Logout += HandleLogout;
-            Service.Tracker = new Tracker();
 
-            Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
-            {
-                HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
-            });
+            CommandHandler();
 
-            PluginInterface.UiBuilder.Draw += DrawUI;
-            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-
-            Main = new Main(this);
-            WindowSystem.AddWindow(Main);
-            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
-
-            Graph = new Graph(this);
-            WindowSystem.AddWindow(Graph);
-
-            RecordSettings = new RecordSettings(this);
-            WindowSystem.AddWindow(RecordSettings);
+            WindowsHandler();
         }
 
         private void HandleLogout()
@@ -69,10 +48,7 @@ namespace CurrencyTracker
 
         private void HandleLogin()
         {
-            if (Configuration.CurrentActiveCharacter == null)
-            {
-                Configuration.CurrentActiveCharacter = new();
-            }
+            Configuration.CurrentActiveCharacter ??= new();
 
             CurrentCharacter = GetCurrentCharacter();
 
@@ -91,26 +67,28 @@ namespace CurrencyTracker
 
             var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
             var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name?.RawString;
+            var contentID = Service.ClientState.LocalContentId;
 
-            if (playerName.IsNullOrEmpty() || serverName.IsNullOrEmpty())
+            if (playerName.IsNullOrEmpty() || serverName.IsNullOrEmpty() || contentID == 0)
             {
                 Service.Log.Error("Fail to load current character info");
             }
 
             var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-            if (CurrentCharacter != null && CurrentCharacter.Name == playerName)
+            if (CurrentCharacter != null && (CurrentCharacter.ContentID == contentID || (CurrentCharacter.Name == playerName && CurrentCharacter.Server == serverName)))
             {
                 return CurrentCharacter;
             }
 
             Configuration.CurrentActiveCharacter ??= new();
 
-            var existingCharacter = Configuration.CurrentActiveCharacter.FirstOrDefault(x => x.Name == playerName);
+            var existingCharacter = Configuration.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == contentID || (x.Name == playerName && x.Server == serverName));
             if (existingCharacter != null)
             {
                 existingCharacter.Server = serverName;
                 existingCharacter.Name = playerName;
+                existingCharacter.ContentID = contentID;
                 CurrentCharacter = existingCharacter;
                 Service.Log.Debug("Successfully load current character info.");
             }
@@ -120,6 +98,7 @@ namespace CurrencyTracker
                 {
                     Name = playerName,
                     Server = serverName,
+                    ContentID = contentID,
                 };
                 Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
             }
@@ -151,7 +130,78 @@ namespace CurrencyTracker
             return path;
         }
 
-        internal void OnCommand(string command, string args)
+        private void ConfigHandler(DalamudPluginInterface pluginInterface)
+        {
+            var configDirectory = Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory());
+            var configPath = Path.Combine(configDirectory, "CurrencyTracker.json");
+
+            if (File.Exists(configPath))
+            {
+                ParseOldConfiguration(configPath);
+            }
+
+            Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+            Configuration.Initialize(PluginInterface);
+        }
+
+        public static void ParseOldConfiguration(string jsonFilePath)
+        {
+            if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath))
+            {
+                return;
+            }
+
+            var json = File.ReadAllText(jsonFilePath);
+            var jsonObj = JObject.Parse(json);
+
+            var dicts = new Dictionary<string, string>[]
+            {
+                jsonObj["CustomCurrencies"]?.ToObject<Dictionary<string, string>>(),
+                jsonObj["PresetCurrencies"]?.ToObject<Dictionary<string, string>>()
+            };
+
+            foreach (var originalDict in dicts)
+            {
+                if (originalDict == null)
+                {
+                    continue;
+                }
+
+                var swappedDict = new JObject();
+
+                foreach (var entry in originalDict)
+                {
+                    if (uint.TryParse(entry.Key, out var _))
+                    {
+                        swappedDict.Add(entry.Key, JToken.FromObject(entry.Value));
+                    }
+                    else
+                    {
+                        swappedDict.Add(entry.Value, JToken.FromObject(entry.Key));
+                    }
+                }
+
+                if (originalDict == dicts[0])
+                {
+                    jsonObj["CustomCurrencies"] = swappedDict;
+                }
+                else
+                {
+                    jsonObj["PresetCurrencies"] = swappedDict;
+                }
+            }
+
+            var outputJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
+            File.WriteAllText(jsonFilePath, outputJson);
+        }
+
+        private void CommandHandler()
+        {
+            var helpMessage = $"{Service.Lang.GetText("CommandHelp")}\n{Service.Lang.GetText("CommandHelp1")}";
+            Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = helpMessage });
+        }
+
+        public void OnCommand(string command, string args)
         {
             if (args.IsNullOrEmpty())
             {
@@ -202,23 +252,6 @@ namespace CurrencyTracker
             }
         }
 
-        private void InitLanguage()
-        {
-            playerLang = Configuration.SelectedLanguage;
-            if (string.IsNullOrEmpty(playerLang))
-            {
-                playerLang = Service.ClientState.ClientLanguage.ToString();
-                if (!LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
-                {
-                    playerLang = "English";
-                }
-                Configuration.SelectedLanguage = playerLang;
-                Configuration.Save();
-            }
-
-            Service.Lang = new LanguageManager(playerLang);
-        }
-
         private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
         {
             var isChineseSimplified = Configuration.SelectedLanguage == "ChineseSimplified";
@@ -233,72 +266,33 @@ namespace CurrencyTracker
             }
 
             return currencyList
-                .Where(currency => MatchesCurrency(currency, partialName, isChineseSimplified))
+                .Where(currency =>
+                {
+                    var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
+                    if (isChineseSimplified)
+                    {
+                        var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
+                        return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+                    }
+                    return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
+                })
                 .ToList();
         }
 
-        private static bool MatchesCurrency(string currency, string partialName, bool isChineseSimplified)
+        private void WindowsHandler()
         {
-            var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
+            PluginInterface.UiBuilder.Draw += DrawUI;
+            PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
 
-            if (isChineseSimplified)
-            {
-                var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
-                return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) || pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase);
-            }
+            Main = new Main(this);
+            WindowSystem.AddWindow(Main);
+            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
 
-            return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase);
-        }
+            Graph = new Graph(this);
+            WindowSystem.AddWindow(Graph);
 
-        public static void ParseOldConfiguration(string jsonFilePath)
-        {
-            if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath))
-            {
-                return;
-            }
-
-            var json = File.ReadAllText(jsonFilePath);
-            var jsonObj = JObject.Parse(json);
-
-            Dictionary<string, string>[] dicts = new Dictionary<string, string>[]
-            {
-                jsonObj["CustomCurrencies"]?.ToObject<Dictionary<string, string>>(),
-                jsonObj["PresetCurrencies"]?.ToObject<Dictionary<string, string>>()
-            };
-
-            foreach (var originalDict in dicts)
-            {
-                if (originalDict == null)
-                {
-                    continue;
-                }
-
-                var swappedDict = new JObject();
-
-                foreach (var entry in originalDict)
-                {
-                    if (uint.TryParse(entry.Key, out var _))
-                    {
-                        swappedDict.Add(entry.Key, JToken.FromObject(entry.Value));
-                    }
-                    else
-                    {
-                        swappedDict.Add(entry.Value, JToken.FromObject(entry.Key));
-                    }
-                }
-
-                if (originalDict == dicts[0])
-                {
-                    jsonObj["CustomCurrencies"] = swappedDict;
-                }
-                else
-                {
-                    jsonObj["PresetCurrencies"] = swappedDict;
-                }
-            }
-
-            var outputJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-            File.WriteAllText(jsonFilePath, outputJson);
+            RecordSettings = new RecordSettings(this);
+            WindowSystem.AddWindow(RecordSettings);
         }
 
         private void DrawUI()

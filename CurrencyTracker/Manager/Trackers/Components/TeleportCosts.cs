@@ -121,7 +121,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (tpBetweenAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", Plugin.Instance.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})" ))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})" ))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
@@ -129,7 +129,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
             else if (tpInAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Instance.Configuration.ComponentProp["RecordDesAetheryteName"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})" : $"{Service.Lang.GetText("TeleportWithinArea")}"))
+                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})" : $"{Service.Lang.GetText("TeleportWithinArea")}"))
                 {
                     ResetStates();
                     HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;

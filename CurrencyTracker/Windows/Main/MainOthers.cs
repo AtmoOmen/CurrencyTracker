@@ -9,6 +9,8 @@ namespace CurrencyTracker.Windows
             ImGui.SameLine();
             MultiCharaStatsUI();
             ImGui.SameLine();
+            GraphWindowUI();
+            ImGui.SameLine();
             HelpPageUI();
             ImGui.SameLine();
             LanguageSwitchUI();
@@ -85,6 +87,18 @@ namespace CurrencyTracker.Windows
                 ImGui.EndPopup();
             }
 
+        }
+
+        // 图表窗口 Graphs Window
+        private void GraphWindowUI()
+        {
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")))
+            {
+                if (selectedCurrencyID != 0 &&  currentTypeTransactions != null && currentTypeTransactions.Count > 1)
+                {
+                    P.Graph.IsOpen = !P.Graph.IsOpen;
+                }
+            }
         }
 
         // 帮助页面 Help Page

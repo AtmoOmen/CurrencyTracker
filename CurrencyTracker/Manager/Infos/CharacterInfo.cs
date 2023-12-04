@@ -4,5 +4,6 @@ namespace CurrencyTracker.Manager.Infos
     {
         public string Name { get; set; } = null!;
         public string Server { get; set; } = null!;
+        public ulong ContentID { get; set; }
     }
 }

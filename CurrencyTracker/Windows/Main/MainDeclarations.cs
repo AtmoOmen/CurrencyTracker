@@ -109,6 +109,6 @@ public partial class Main
     
     private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
 
-    private readonly Configuration? C = Plugin.Instance.Configuration;
+    private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
 }

@@ -13,7 +13,7 @@ namespace CurrencyTracker.Manager
                 return allTransactions;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return allTransactions;
@@ -47,7 +47,7 @@ namespace CurrencyTracker.Manager
                 return new();
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return new();
@@ -98,7 +98,7 @@ namespace CurrencyTracker.Manager
                 }
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return null;
@@ -138,7 +138,7 @@ namespace CurrencyTracker.Manager
         // 删除最新一条记录 Delete Latest Transaction
         public static bool DeleteLatestTransaction(uint currencyID)
         {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty() || !Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty() || !Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Warning("Fail to Delete Lastest Single Transaction: Player Data Folder Path Missed.");
                 return false;
@@ -182,7 +182,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName) || !Plugin.Instance.Configuration.AllCurrencies.ContainsValue(currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName) || !Plugin.Configuration.AllCurrencies.ContainsValue(currencyName))
             {
                 return;
             }
@@ -213,7 +213,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            foreach (var currency in Plugin.Instance.Configuration.AllCurrencies)
+            foreach (var currency in Plugin.Configuration.AllCurrencies)
             {
                 EditLatestTransaction(currency.Key, LocationName, Note, forceEdit, timeout, onlyEditEmpty);
             }
@@ -228,7 +228,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return;
@@ -261,7 +261,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return;
@@ -295,7 +295,7 @@ namespace CurrencyTracker.Manager
                 return;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return;
@@ -317,7 +317,7 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return 0;
@@ -387,7 +387,7 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return 0;
@@ -451,7 +451,7 @@ namespace CurrencyTracker.Manager
                 return 0;
             }
 
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return 0;
@@ -481,7 +481,7 @@ namespace CurrencyTracker.Manager
         // 导出数据 Export Transactions Data
         public static string ExportData(List<TransactionsConvertor> data, string fileName, uint currencyID, int exportType)
         {
-            if (!Plugin.Instance.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
+            if (!Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName))
             {
                 Service.Log.Error("Currency Missed");
                 return string.Empty;

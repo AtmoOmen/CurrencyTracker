@@ -2,7 +2,7 @@ namespace CurrencyTracker.Windows
 {
     public class RecordSettings : Window, IDisposable
     {
-        private Configuration? C = Plugin.Instance.Configuration;
+        private Configuration? C = Plugin.Configuration;
         private Plugin? P = Plugin.Instance;
 
         public RecordSettings(Plugin plugin) : base($"Record Settings##{Plugin.Name}")
