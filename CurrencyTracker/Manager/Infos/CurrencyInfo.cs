@@ -47,22 +47,6 @@ public static class CurrencyInfo
             .Item.Row;
     }
 
-    private static uint GetNonLimitedTomestoneId()
-    {
-        return LuminaCache<TomestonesItem>.Instance
-            .Where(tomestone => tomestone.Tomestones.Row is 2)
-            .First()
-            .Item.Row;
-    }
-
-    private static uint GetLimitedTomestoneId()
-    {
-        return LuminaCache<TomestonesItem>.Instance
-            .Where(tomestone => tomestone.Tomestones.Row is 3)
-            .First()
-            .Item.Row;
-    }
-
     public static IDalamudTextureWrap? GetIcon(uint currencyID)
     {
         if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
@@ -74,44 +58,5 @@ public static class CurrencyInfo
 
         Service.Log.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
         return null;
-    }
-
-    public static long GetRetainerAmount(uint currencyID)
-    {
-        unsafe
-        {
-            InventoryManager* inventoryManagerPtr = InventoryManager.Instance();
-
-            long itemCount = 0;
-            foreach (var flag in RetainersInventory)
-            {
-                itemCount += inventoryManagerPtr->GetItemCountInContainer(currencyID, flag);
-            }
-
-            return itemCount;
-        }
-    }
-
-    public static ulong GetRetainerID()
-    {
-        unsafe
-        {
-            uint SomeGil = 0;
-            var retainerManager = RetainerManager.Instance();
-            if (retainerManager != null)
-            {
-                for (uint i = 0; i < retainerManager->GetRetainerCount(); i++)
-                {
-                    var retainer = retainerManager->GetRetainerBySortedIndex(i);
-                    if (retainer != null)
-                    {
-                        SomeGil += retainer->Gil;
-                        Service.Log.Debug($"SomeGil:{SomeGil}");
-                    }
-                }
-            }
-
-            return SomeGil;
-        }
     }
 }

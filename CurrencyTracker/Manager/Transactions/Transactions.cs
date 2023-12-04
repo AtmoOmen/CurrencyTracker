@@ -1,7 +1,41 @@
 namespace CurrencyTracker.Manager
 {
-    public partial class Transactions
+    public class Transactions
     {
+        // Transactions Type Suffix:
+        // Inventory - {CurrencyName}.txt
+        // Retainer - {CurrencyName}_{RetainerID}.txt
+        // Saddle Bag - {CurrencyName}_SB.txt
+        // Premium Saddle Bag - {CurrencyName}_PSB.txt
+        public enum TransactionFileCategory
+        {
+            Inventory = 0,
+            Retainer = 1,
+            SaddleBag = 2,
+            PremiumSaddleBag = 3,
+        }
+
+        public static string GetTransactionFileSuffix(TransactionFileCategory category, ulong ID = 0)
+        {
+            var suffix = string.Empty;
+            switch (category)
+            {
+                case TransactionFileCategory.Inventory:
+                    suffix = string.Empty;
+                    break;
+                case TransactionFileCategory.Retainer:
+                    suffix = $"_{0}";
+                    break;
+                case TransactionFileCategory.SaddleBag:
+                    suffix = "_SB";
+                    break;
+                case TransactionFileCategory.PremiumSaddleBag:
+                    suffix = "_PSB";
+                    break;
+            }
+            return suffix;
+        }
+
         // 加载全部记录 Load All Transactions
         public static List<TransactionsConvertor> LoadAllTransactions(uint currencyID)
         {
