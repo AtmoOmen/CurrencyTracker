@@ -24,7 +24,7 @@ namespace CurrencyTracker.Windows
             }
         }
 
-        // 多角色数据界面 Multi-Chara Stats
+        // 多角色数据界面 Multi-Chara Stats (等待优化 Wait for performance improvement)
         private void MultiCharaStatsUI()
         {
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartColumn, Service.Lang.GetText("MultiCharaStats")))
@@ -41,9 +41,33 @@ namespace CurrencyTracker.Windows
                 ImGui.OpenPopup("MultiCharStats");
             }
 
-            if (ImGui.BeginPopup("MultiCharStats", ImGuiWindowFlags.AlwaysVerticalScrollbar))
+            var currentPage = 0;
+            var searchFilter = string.Empty;
+
+            if (ImGui.BeginPopup("MultiCharStats"))
             {
-                foreach (var characterCurrencyInfo in characterCurrencyInfos.Values)
+                ImGui.SetNextItemWidth(250f);
+                ImGui.InputTextWithHint("##selectfltsmultichara", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 100);
+                ImGui.SameLine();
+                if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentPage > 0)
+                {
+                    currentPage--;
+                }
+                ImGui.SameLine();
+                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentPage < (characterCurrencyInfos.Count - 1) / itemsPerPageCCT)
+                {
+                    currentPage++;
+                }
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker(Service.Lang.GetText("Main-MultiCharStats-Help"));
+
+
+                var charactersToShow = characterCurrencyInfos.Values
+                    .Where(characterCurrencyInfo => searchFilter.IsNullOrEmpty() || characterCurrencyInfo.Character.Name.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || characterCurrencyInfo.Character.Server.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
+                    .Skip(currentPage * itemsPerPageCCT)
+                    .Take(itemsPerPageCCT);
+
+                foreach (var characterCurrencyInfo in charactersToShow)
                 {
                     if (ImGui.BeginCombo($"##{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", $"{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", ImGuiComboFlags.HeightLarge))
                     {
@@ -60,6 +84,7 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndPopup();
             }
+
         }
 
         // 帮助页面 Help Page

@@ -111,7 +111,7 @@ namespace CurrencyTracker.Windows
                     var endIndex = Math.Min(startIndex + itemsPerPageCCT, itemNamesCCT.Count);
 
                     ImGui.SetNextItemWidth(200f);
-                    if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 50))
+                    if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100))
                     {
                         searchTimerCCT.Restart();
                     }
