@@ -56,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Framework.Update += OnFrameworkUpdate;
         }
 
-        private void OnFrameworkUpdate(IFramework framework)
+        private void OnFrameworkUpdate(Framework framework)
         {
             if (!isOnTrade)
             {
