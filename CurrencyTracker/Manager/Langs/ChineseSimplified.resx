@@ -722,4 +722,8 @@
   <data name="MobDrops-MobDropsNote" xml:space="preserve">
     <value>掉落自 {0}</value>
   </data>
+  <data name="Main-MultiCharStats-Help" xml:space="preserve">
+    <value>要让你的角色数据出现在这里，
+你需要在启用本插件的情况下，至少登录过目标角色一次</value>
+  </data>
 </root>

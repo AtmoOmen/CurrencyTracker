@@ -40,7 +40,7 @@ public class Graph : Window, IDisposable
 
         ImGui.Text($"{Service.Lang.GetText("Now")}:");
         ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, Plugin.Instance.Configuration.AllCurrencies[Main.selectedCurrencyID]);
+        ImGui.TextColored(ImGuiColors.DalamudOrange, Plugin.Configuration.AllCurrencies[Main.selectedCurrencyID]);
         ImGui.SameLine();
         ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();

@@ -177,6 +177,50 @@ namespace CurrencyTracker.Manager
             ImGui.SetCursorPosX((num / 2) - (itemWidth / 2));
         }
 
+        public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
+        {
+            textNodeIDs ??= new uint[] { 3, 4 };
+
+            var UI = (AtkUnitBase*)args.Addon;
+
+            if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
+                return string.Empty;
+
+            var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
+            if (windowNode == null)
+                return string.Empty;
+
+            // 国服和韩服特别处理逻辑 For CN and KR Client
+            var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
+            var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
+
+            var windowTitle = !smallTitle.IsNullOrEmpty() ? smallTitle : bigTitle;
+
+            return windowTitle;
+        }
+
+        public static unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
+        {
+            textNodeIDs ??= new uint[] { 3, 4 };
+
+            var UI = (AtkUnitBase*)addon;
+
+            if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
+                return string.Empty;
+
+            var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
+            if (windowNode == null)
+                return string.Empty;
+
+            // 国服和韩服特别处理逻辑 For CN and KR Client
+            var textNode3 = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
+            var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
+
+            var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
+
+            return windowTitle;
+        }
+
         public static void Restart(this Timer timer)
         {
             timer.Stop();

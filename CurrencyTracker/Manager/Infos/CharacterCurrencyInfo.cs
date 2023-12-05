@@ -19,7 +19,7 @@ namespace CurrencyTracker.Manager.Infos
 
         public void GetCharacterCurrencyAmount()
         {
-            foreach (var currency in Plugin.Instance.Configuration.AllCurrencies)
+            foreach (var currency in Plugin.Configuration.AllCurrencies)
             {
                 if (!currencyAmount.TryGetValue(currency.Key, out var value))
                 {

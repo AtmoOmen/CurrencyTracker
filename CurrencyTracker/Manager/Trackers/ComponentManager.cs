@@ -23,7 +23,7 @@ namespace CurrencyTracker.Manager.Trackers
         {
             foreach (var component in Components)
             {
-                if (Plugin.Instance.Configuration.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))
+                if (Plugin.Configuration.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))
                 {
                     if (!enabled) continue;
                 }

@@ -37,6 +37,7 @@ namespace CurrencyTracker
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
+        public int ChildWidthOffset { get; set; } = 0;
         public int ExportDataFileType { get; set; } = 0;
         public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
         {
@@ -72,7 +73,9 @@ namespace CurrencyTracker
             { "RecordDesAreaName", true }
         };
 
-        public int ChildWidthOffset { get; set; } = 0;
+
+        [JsonIgnore]
+        public bool isUpdated;
         [JsonIgnore]
         public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
         {
@@ -99,14 +102,14 @@ namespace CurrencyTracker
             }
         }
 
-        [NonSerialized]
-        private DalamudPluginInterface? pluginInterface;
-
         private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = new();
         private Dictionary<uint, string>? allCurrencies = new();
         private Dictionary<uint, string> presetCurrencies = new();
         private Dictionary<uint, string> customCurrencies = new();
-        public bool isUpdated;
+
+        [NonSerialized]
+        private DalamudPluginInterface? pluginInterface;
+
 
         public void GetAllCurrencyIcons()
         {
