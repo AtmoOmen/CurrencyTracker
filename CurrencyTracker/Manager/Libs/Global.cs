@@ -55,3 +55,4 @@ global using TinyPinyin;
 global using static CurrencyTracker.Manager.Trackers.Tracker;
 global using static CurrencyTracker.Manager.Widgets;
 global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+global using static CurrencyTracker.Manager.Transactions;

@@ -1,12 +1,12 @@
 namespace CurrencyTracker.Manager.Trackers
 {
-    public partial class Tracker : IDisposable
+    public class Tracker : IDisposable
     {
         public enum RecordChangeType
         {
-            All,
-            Positive,
-            Negative
+            All = 0,
+            Positive = 1,
+            Negative = 2
         }
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
@@ -61,54 +61,60 @@ namespace CurrencyTracker.Manager.Trackers
         }
 
         // 检查货币情况 Check the currency
-        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
+        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
             if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
 
-            var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID);
-            var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyID);
+            var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
+            var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, category, ID);
 
-            if (latestTransaction != null)
+            if (previousAmount != null)
             {
-                var currencyChange = currencyAmount - latestTransaction.Amount;
+                var currencyChange = currencyAmount - (long)previousAmount;
                 if (currencyChange == 0) return false;
 
                 locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
+                Service.Log.Debug(CurrentLocationName);
+                
                 if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
                 {
-                    Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent);
-                    OnTransactionsUpdate(EventArgs.Empty);
-                    Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
-                    if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+                    Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent, category, ID);
+                    PostTransactionUpdate(currencyID, currencyName, source, category, ID);
                     return true;
                 }
             }
-            else if (currencyAmount > 0 && (recordChangeType == RecordChangeType.All || recordChangeType == RecordChangeType.Positive))
+            else if (currencyAmount > 0)
             {
-                Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent);
-                OnTransactionsUpdate(EventArgs.Empty);
-                Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+                Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent, category, ID);
+                PostTransactionUpdate(currencyID, currencyName, source, category, ID);
                 return true;
             }
             return false;
         }
 
-        public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
+        private void PostTransactionUpdate(uint currencyID, string currencyName, uint source, TransactionFileCategory category, ulong ID)
+        {
+            OnTransactionsUpdate(EventArgs.Empty);
+            Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+        }
+
+        public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
             var isChanged = false;
             foreach (var currency in C.AllCurrencies)
             {
-                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source)) isChanged = true;
+                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };
             return isChanged;
         }
 
-        public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0)
+        public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
             var isChanged = false;
             foreach(var currency in C.AllCurrencies)
             {
-                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source)) isChanged = true;
+                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };
             return isChanged;
         }

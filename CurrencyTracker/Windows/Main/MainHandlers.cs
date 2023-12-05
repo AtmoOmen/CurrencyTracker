@@ -227,8 +227,8 @@ public partial class Main
 
         if (C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
         {
-            Transactions.ReorderTransactions(selectedCurrencyID);
-            currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
+            Transactions.ReorderTransactions(selectedCurrencyID, currentView, currentViewID);
+            currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
         }
     }
 }

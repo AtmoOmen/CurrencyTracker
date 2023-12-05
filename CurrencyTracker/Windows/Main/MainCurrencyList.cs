@@ -27,7 +27,8 @@ namespace CurrencyTracker.Windows
                     selectedOptionIndex = i;
                     selectedCurrencyID = option;
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
-                    lastTransactions = currentTypeTransactions;
+                    currentView = TransactionFileCategory.Inventory;
+                    currentViewID = 0;
                 }
 
                 if (ImGui.IsItemHovered() && ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
@@ -222,7 +223,6 @@ namespace CurrencyTracker.Windows
 
                     Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 1);
                     currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
-                    lastTransactions = currentTypeTransactions;
 
                     searchFilterCCT = string.Empty;
                     itemNamesCCT.Remove(selected);

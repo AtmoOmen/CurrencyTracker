@@ -39,6 +39,7 @@ namespace CurrencyTracker
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
         public int ChildWidthOffset { get; set; } = 0;
         public int ExportDataFileType { get; set; } = 0;
+        public Dictionary<ulong, List<ulong>> CharacterRetainers { get; set; } = new();
         public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
         {
             { "ShowTimeColumn", true },
@@ -57,7 +58,9 @@ namespace CurrencyTracker
             { "GoldSaucer", true},
             { "IslandSanctuary", true},
             { "MobDrops", true},
+            { "PremiumSaddleBag", true },
             { "QuestRewards", true},
+            { "SaddleBag", true },
             { "SpecialExchange", true},
             { "TeleportCosts", true},
             { "Trade", true},

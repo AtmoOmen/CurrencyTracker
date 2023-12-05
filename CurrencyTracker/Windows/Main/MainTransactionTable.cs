@@ -1,3 +1,5 @@
+using FFXIVClientStructs.FFXIV.Client.Graphics.Render;
+
 namespace CurrencyTracker.Windows
 {
     // 数据表格 / 数据表格翻页组件 / 数据表格信息栏
@@ -101,14 +103,7 @@ namespace CurrencyTracker.Windows
 
             // 图表 Graphs
             ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - ImGui.CalcTextSize("    ").X);
-            if (IconButton(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")) && pageCount > 0)
-            {
-                if (selectedCurrencyID != 0 && currentTypeTransactions.Count != 1 && currentTypeTransactions != null)
-                {
-                    P.Graph.IsOpen = !P.Graph.IsOpen;
-                }
-                else return;
-            }
+            TableViewSwitchUI();
 
             // 首页 First Page
             var pageButtonPosX = ((ImGui.GetWindowWidth() - 360) / 2) - 40;
@@ -194,6 +189,39 @@ namespace CurrencyTracker.Windows
                     if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPage < pageCount - 1)
                         currentPage++;
                 }
+            }
+        }
+
+        // 切换数据表格视图 Switch the view of the transaction table
+        private void TableViewSwitchUI()
+        {
+            if (IconButton(FontAwesomeIcon.Bars, "None"))
+            {
+                ImGui.OpenPopup("TableViewSwitch");
+            }
+
+            if (ImGui.BeginPopup("TableViewSwitch"))
+            {
+                var boolUI = false;
+                if (ImGui.Selectable("Inventory", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, 0, 0));
+                }
+                if (ImGui.Selectable("Retainer", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, 0));
+                }
+                if (ImGui.Selectable("Saddle Bag", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
+                    currentView = TransactionFileCategory.SaddleBag;
+                    currentViewID = 0;
+                }
+                if (ImGui.Selectable("Premium Saddle Bag", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
+                }
+                ImGui.EndPopup();
             }
         }
 
@@ -654,8 +682,8 @@ namespace CurrencyTracker.Windows
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var filePath = Path.Combine(P.PlayerDataFolder, $"{C.AllCurrencies[selectedCurrencyID]}.txt");
-                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
+                    var filePath = GetTransactionFilePath(selectedCurrencyID, currentView, currentViewID);
+                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID);
                     var index = -1;
 
                     for (var d = 0; d < editedTransactions.Count; d++)
@@ -675,6 +703,7 @@ namespace CurrencyTracker.Windows
                     else
                     {
                         Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                        Service.Log.Debug($"{currentView} {currentViewID}");
                     }
                 }
 
@@ -731,8 +760,8 @@ namespace CurrencyTracker.Windows
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var filePath = Path.Combine(P.PlayerDataFolder, $"{C.AllCurrencies[selectedCurrencyID]}.txt");
-                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
+                    var filePath = GetTransactionFilePath(selectedCurrencyID, currentView, currentViewID);
+                    var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID);
                     var index = -1;
 
                     for (var d = 0; d < editedTransactions.Count; d++)
@@ -973,12 +1002,12 @@ namespace CurrencyTracker.Windows
                         return;
                     }
 
-                    var filePath = Path.Combine(P.PlayerDataFolder, $"{C.AllCurrencies[selectedCurrencyID]}.txt");
+                    var filePath = GetTransactionFilePath(selectedCurrencyID, currentView, currentViewID);
                     var failCounts = 0;
 
                     foreach (var selectedTransaction in selectedTransactions[selectedCurrencyID])
                     {
-                        var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
+                        var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID);
 
                         var index = -1;
                         for (var i = 0; i < editedTransactions.Count; i++)

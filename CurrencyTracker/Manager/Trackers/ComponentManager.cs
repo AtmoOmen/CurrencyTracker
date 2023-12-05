@@ -29,7 +29,8 @@ namespace CurrencyTracker.Manager.Trackers
                 }
                 else
                 {
-                    Service.Log.Warning($"Fail to get component {component.GetType().Name} configurations");
+                    Service.Log.Warning($"Fail to get component {component.GetType().Name} configurations, skip loading");
+                    continue;
                 }
 
                 try

@@ -8,7 +8,6 @@ public partial class Main
     internal Dictionary<uint, List<bool>>? selectedStates = new();
     internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
-    internal List<TransactionsConvertor> lastTransactions = new();
 
     // 顶栏显示情况 Top Columns Visibility
     private bool showRecordOptions = true;
@@ -56,6 +55,8 @@ public partial class Main
     private int transactionsPerPage = 20;
     private int visibleStartIndex;
     private int visibleEndIndex;
+    private TransactionFileCategory currentView = TransactionFileCategory.Inventory;
+    private ulong currentViewID = 0;
 
     // 数据处理相关值 Data Handler Related Values
     private string fileName = string.Empty;
