@@ -2,7 +2,7 @@ namespace CurrencyTracker
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public static string Name => "Currency Tracker";
+        public string Name => "Currency Tracker";
         public const string CommandName = "/ct";
 
         public CharacterInfo? CurrentCharacter { get; set; }
@@ -40,13 +40,13 @@ namespace CurrencyTracker
             WindowsHandler();
         }
 
-        private void HandleLogout()
+        private void HandleLogout(object? sender, EventArgs e)
         {
             Service.Tracker.UninitializeTracking();
             CurrentCharacter = null;
         }
 
-        private void HandleLogin()
+        private void HandleLogin(object? sender, EventArgs e)
         {
             Configuration.CurrentActiveCharacter ??= new();
 
