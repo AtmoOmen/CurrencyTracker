@@ -1,3 +1,5 @@
+using Dalamud.Interface.Utility.Raii;
+
 namespace CurrencyTracker.Windows
 {
     // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换 / 测试功能
@@ -26,48 +28,43 @@ namespace CurrencyTracker.Windows
             }
         }
 
-        // 多角色数据界面 Multi-Chara Stats (等待优化 Wait for performance improvement)
+        // 多角色数据界面 Multi-Chara Stats
         private void MultiCharaStatsUI()
         {
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartColumn, Service.Lang.GetText("MultiCharaStats")))
             {
-                foreach (var character in C.CurrentActiveCharacter)
-                {
-                    if (!characterCurrencyInfos.TryGetValue(character, out var existingInfo))
-                    {
-                        existingInfo = new CharacterCurrencyInfo { Character = character };
-                        characterCurrencyInfos.Add(character, existingInfo);
-                    }
-                    existingInfo.GetCharacterCurrencyAmount();
-                }
+                if (!characterCurrencyInfos.Any()) LoadMultiCharaData();
+                LoadMultiCharaSearch();
                 ImGui.OpenPopup("MultiCharStats");
             }
 
-            var currentPage = 0;
-            var searchFilter = string.Empty;
-
             if (ImGui.BeginPopup("MultiCharStats"))
             {
-                ImGui.SetNextItemWidth(250f);
-                ImGui.InputTextWithHint("##selectfltsmultichara", Service.Lang.GetText("PleaseSearch"), ref searchFilter, 100);
-                ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentPage > 0)
+                ImGui.SetNextItemWidth(240f);
+                if (ImGui.InputTextWithHint("##selectfltsmultichara", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100))
                 {
-                    currentPage--;
+                    searchTimerMCS.Restart();
                 }
                 ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentPage < (characterCurrencyInfos.Count - 1) / itemsPerPageCCT)
+                if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentPageMCS > 0)
                 {
-                    currentPage++;
+                    currentPageMCS--;
+                    LoadMultiCharaSearch();
+                }
+                ImGui.SameLine();
+                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentPageMCS < (characterCurrencyInfos.Count - 1) / itemsPerPageCCT)
+                {
+                    currentPageMCS++;
+                    LoadMultiCharaSearch();
+                }
+                ImGui.SameLine();
+                if (IconButton(FontAwesomeIcon.Sync, "None", "MCSRefresh"))
+                {
+                    LoadMultiCharaData();
+                    LoadMultiCharaSearch();
                 }
                 ImGui.SameLine();
                 ImGuiComponents.HelpMarker(Service.Lang.GetText("Main-MultiCharStats-Help"));
-
-
-                var charactersToShow = characterCurrencyInfos.Values
-                    .Where(characterCurrencyInfo => searchFilter.IsNullOrEmpty() || characterCurrencyInfo.Character.Name.Contains(searchFilter, StringComparison.OrdinalIgnoreCase) || characterCurrencyInfo.Character.Server.Contains(searchFilter, StringComparison.OrdinalIgnoreCase))
-                    .Skip(currentPage * itemsPerPageCCT)
-                    .Take(itemsPerPageCCT);
 
                 foreach (var characterCurrencyInfo in charactersToShow)
                 {
@@ -86,7 +83,37 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndPopup();
             }
+        }
 
+        // 加载多角色数据 Load data for Multi-Chara Stats
+        private void LoadMultiCharaData()
+        {
+            Parallel.ForEach(C.CurrentActiveCharacter, character =>
+            {
+                if (!characterCurrencyInfos.TryGetValue(character, out var existingInfo))
+                {
+                    existingInfo = new CharacterCurrencyInfo { Character = character };
+                    characterCurrencyInfos.Add(character, existingInfo);
+                }
+                existingInfo.GetCharacterCurrencyAmount();
+            });
+        }
+
+        // 加载多角色搜索数据 Load data for Multi-Chara Stats
+        private void LoadMultiCharaSearch()
+        {
+            charactersToShow = characterCurrencyInfos.Values
+                    .OrderByDescending(characterCurrencyInfo => characterCurrencyInfo.Character.ContentID == P.CurrentCharacter.ContentID)
+                    .Where(characterCurrencyInfo => searchFilterMCS.IsNullOrEmpty() || characterCurrencyInfo.Character.Name.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase) || characterCurrencyInfo.Character.Server.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase))
+                    .Skip(currentPageMCS * itemsPerPageCCT)
+                    .Take(itemsPerPageCCT);
+        }
+
+        // 延迟多角色数据搜索
+        private void SearchTimerMCSElapsed(object? sender, ElapsedEventArgs e)
+        {
+            currentPageMCS = 0;
+            LoadMultiCharaSearch();
         }
 
         // 图表窗口 Graphs Window

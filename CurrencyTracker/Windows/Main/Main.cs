@@ -1,3 +1,4 @@
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -28,6 +29,9 @@ public partial class Main : Window, IDisposable
 
         searchTimerCCT.Elapsed += SearchTimerCCTElapsed;
         searchTimerCCT.AutoReset = false;
+
+        searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
+        searchTimerMCS.AutoReset = false;
 
         LoadOptions();
     }
@@ -99,5 +103,9 @@ public partial class Main : Window, IDisposable
         searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
         searchTimerCCT.Stop();
         searchTimerCCT.Dispose();
+
+        searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
+        searchTimerMCS.Stop();
+        searchTimerMCS.Dispose();
     }
 }

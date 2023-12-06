@@ -71,6 +71,7 @@ public partial class Main
     private readonly bool selectTimeDeco = false; // Always False
     private readonly Timer searchTimer = new(100);
     private readonly Timer searchTimerCCT = new(100);
+    private readonly Timer searchTimerMCS = new(100);
     private float windowWidth;
     private int childWidthOffset = 0;
     private static readonly Dictionary<string, int> columnWidths = new()
@@ -109,6 +110,9 @@ public partial class Main
     };
     
     private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
+    private string searchFilterMCS = string.Empty;
+    private int currentPageMCS = 0;
+    private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
 
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
