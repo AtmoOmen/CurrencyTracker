@@ -1,3 +1,5 @@
+using System.IO;
+
 namespace CurrencyTracker.Windows
 {
     // 货币列表 / 货币列表顶端工具栏 / 添加自定义货币 / 删除自定义货币 / 重命名货币
@@ -359,9 +361,7 @@ namespace CurrencyTracker.Windows
                 }
                 else
                 {
-                    ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
                     ImGui.Button(Service.Lang.GetText("Confirm"));
-                    ImGui.PopStyleVar();
                 }
 
                 ImGui.SameLine();
@@ -378,29 +378,56 @@ namespace CurrencyTracker.Windows
         // 用于处理货币名变更 Used to handle currency rename
         private void RenameCurrencyHandler(string editedCurrencyName)
         {
-            var editedFilePath = Path.Combine(P.PlayerDataFolder, $"{editedCurrencyName}.txt");
-
-            if (C.AllCurrencies.ContainsValue(editedCurrencyName) || File.Exists(editedFilePath))
+            if (C.AllCurrencies.ContainsValue(editedCurrencyName))
             {
                 Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
                 return;
             }
 
-            var currencyName = string.Empty;
-
-            if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
+            var filePaths = new Dictionary<string, string>();
+            var categories = new List<TransactionFileCategory> { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
+            foreach (var category in categories)
             {
-                C.PresetCurrencies[selectedCurrencyID] = editedCurrencyName;
+                var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(category, 0)}.txt");
+                var selectedFilePath = Transactions.GetTransactionFilePath(selectedCurrencyID, category, 0);
+                filePaths[selectedFilePath] = editedFilePath;
+                Service.Log.Debug($"{selectedFilePath} | {editedFilePath}");
+            }
+            foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+            {
+                var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(TransactionFileCategory.Retainer, retainer.Key)}.txt");
+                var selectedFilePath = Transactions.GetTransactionFilePath(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key);
+                filePaths[selectedFilePath] = editedFilePath;
+                Service.Log.Debug($"{selectedFilePath} | {editedFilePath}");
+            }
+
+            if (filePaths.Values.Any(x => File.Exists(x)))
+            {
+                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+                return;
+            }
+
+            if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
+            {
+                if (C.PresetCurrencies.ContainsKey(selectedCurrencyID))
+                {
+                    C.PresetCurrencies[selectedCurrencyID] = editedCurrencyName;
+                }
+                else
+                {
+                    C.CustomCurrencies[selectedCurrencyID] = editedCurrencyName;
+                }
                 C.isUpdated = true;
                 C.Save();
 
-                var selectedFilePath = Path.Combine(P.PlayerDataFolder, $"{currencyName}.txt");
-
-                if (File.Exists(selectedFilePath))
+                foreach (var path in filePaths)
                 {
-                    File.Move(selectedFilePath, editedFilePath);
+                    Service.Log.Debug($"Try moving file from {path.Key} to {path.Value}");
+                    if (File.Exists(path.Key))
+                    {
+                        File.Move(path.Key, path.Value);
+                    }
                 }
-
                 UpdateTransactions();
             }
         }
