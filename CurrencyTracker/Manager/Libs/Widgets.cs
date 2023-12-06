@@ -102,7 +102,7 @@ namespace CurrencyTracker.Manager
 
             ImGui.Selectable($"{text}##{order ?? 0}");
 
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
             {
                 ImGui.SetClipboardText(textCopy ?? "");
                 Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {textCopy}");

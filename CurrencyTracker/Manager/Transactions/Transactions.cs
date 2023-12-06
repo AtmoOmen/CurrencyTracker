@@ -164,6 +164,35 @@ namespace CurrencyTracker.Manager
             Plugin.Instance.Main.UpdateTransactions();
         }
 
+        // 编辑指定记录 Edit Specific Transactions
+        public static int EditSpecificTransactions(uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "", string noteContent = "", TransactionFileCategory category = 0, ulong ID = 0)
+        {
+            if (!selectedTransactions.Any()) return selectedTransactions.Count;
+
+            var editedTransactions = LoadAllTransactions(currencyID, category, ID);
+            var filePath = GetTransactionFilePath(currencyID, category, ID);
+
+            var failCount = 0;
+
+            foreach (var transaction in selectedTransactions)
+            {
+                var index = editedTransactions.FindIndex(t => IsTransactionEqual(t, transaction));
+
+                if (index == -1)
+                {
+                    failCount++;
+                    continue;
+                }
+
+                editedTransactions[index].LocationName = locationName.IsNullOrEmpty() ? editedTransactions[index].LocationName : locationName;
+                editedTransactions[index].Note = noteContent.IsNullOrEmpty() ? editedTransactions[index].Note : noteContent;
+            }
+
+            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+
+            return failCount;
+        }
+
         // 编辑全部货币最新一条记录 Edit All Currencies Latest Transaction
         public static void EditAllLatestTransaction(string LocationName = "", string Note = "", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false, TransactionFileCategory category = 0, ulong ID = 0)
         {

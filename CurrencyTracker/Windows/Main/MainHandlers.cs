@@ -230,5 +230,7 @@ public partial class Main
             Transactions.ReorderTransactions(selectedCurrencyID, currentView, currentViewID);
             currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
         }
+
+        ImGui.CloseCurrentPopup();
     }
 }
