@@ -64,7 +64,6 @@ namespace CurrencyTracker.Manager
         }
 
 
-
         // 加载全部记录 Load All Transactions
         public static List<TransactionsConvertor> LoadAllTransactions(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
         {
@@ -310,7 +309,7 @@ namespace CurrencyTracker.Manager
             return mergedCount;
         }
 
-        // 合并特定的记录 Merge Specific Transactions (等待测试)
+        // 合并特定的记录 Merge Specific Transactions
         public static int MergeSpecificTransactions(uint currencyID, string LocationName, List<TransactionsConvertor> selectedTransactions, string NoteContent = "-1", TransactionFileCategory category = 0, ulong ID = 0)
         {
             if (!ValidityCheck(currencyID) || selectedTransactions.Count <= 1) return 0;
@@ -318,30 +317,44 @@ namespace CurrencyTracker.Manager
             var allTransactions = LoadAllTransactions(currencyID, category, ID);
             var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-            var latestTransaction = selectedTransactions
-                .Select(t => allTransactions.FirstOrDefault(a => IsTransactionEqual(a, t)))
-                .Where(t => t != null)
-                .OrderByDescending(t => t.TimeStamp)
-                .FirstOrDefault();
+            var latestTime = DateTime.MinValue;
+            long overallChange = 0;
+            long finalAmount = 0;
+            var mergedCount = 0;
 
-            if (latestTransaction == null) return 0;
+            foreach (var transaction in selectedTransactions)
+            {
+                var foundTransaction = allTransactions.FirstOrDefault(t => IsTransactionEqual(t, transaction));
 
-            selectedTransactions.ForEach(t => allTransactions.Remove(t));
+                if (foundTransaction == null)
+                {
+                    continue;
+                }
+
+                if (latestTime < foundTransaction.TimeStamp)
+                {
+                    latestTime = foundTransaction.TimeStamp;
+                    finalAmount = foundTransaction.Amount;
+                }
+
+                overallChange += foundTransaction.Change;
+                allTransactions.Remove(foundTransaction);
+                mergedCount++;
+            }
 
             var finalTransaction = new TransactionsConvertor
             {
-                TimeStamp = latestTransaction.TimeStamp,
-                Change = selectedTransactions.Sum(t => t.Change),
+                TimeStamp = latestTime,
+                Change = overallChange,
                 LocationName = LocationName,
-                Amount = latestTransaction.Amount,
-                Note = NoteContent != "-1" ? NoteContent : $"({Service.Lang.GetText("MergedSpecificHelp", selectedTransactions.Count)})"
+                Amount = finalAmount,
+                Note = NoteContent != "-1" ? NoteContent : $"({Service.Lang.GetText("MergedSpecificHelp", mergedCount)})"
             };
 
             allTransactions.Add(finalTransaction);
-
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
-            return selectedTransactions.Count;
+            return mergedCount;
         }
 
         // 清除异常记录 Clear Exceptional Records
