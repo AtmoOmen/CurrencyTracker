@@ -1,5 +1,3 @@
-using Dalamud.Interface.Utility.Raii;
-
 namespace CurrencyTracker.Windows
 {
     // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换 / 测试功能
@@ -109,7 +107,7 @@ namespace CurrencyTracker.Windows
                     .Take(itemsPerPageCCT);
         }
 
-        // 延迟多角色数据搜索
+        // 延迟多角色数据搜索 Lagged MCS Searching
         private void SearchTimerMCSElapsed(object? sender, ElapsedEventArgs e)
         {
             currentPageMCS = 0;

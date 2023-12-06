@@ -12,6 +12,8 @@ namespace CurrencyTracker.Windows
             ClearExceptionUI();
             ImGui.SameLine();
             ExportDataUI();
+            ImGui.SameLine();
+            BackupUI();
         }
 
         // 记录设置界面 Record Settings
@@ -98,6 +100,8 @@ namespace CurrencyTracker.Windows
             {
                 ImGui.Text($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}\n{Service.Lang.GetText("TransactionsHelp2")}");
 
+                ImGui.Separator();
+
                 if (ImGui.Button(Service.Lang.GetText("Confirm")))
                 {
                     if (selectedCurrencyID == 0)
@@ -180,6 +184,81 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndPopup();
             }
+        }
+
+        // 备份数据界面 Backup Interface
+        private void BackupUI()
+        {
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Save, Service.Lang.GetText("Backup")))
+            {
+                ImGui.OpenPopup("BackupUI");
+            }
+
+            if (ImGui.BeginPopup("BackupUI"))
+            {
+                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("ManualBackup"));
+                ImGui.Separator();
+
+                if (ImGui.Button($"{Service.Lang.GetText("BackupCurrentCharacter")}"))
+                {
+                    var filePath = BackupHandler(P.PlayerDataFolder);
+                    Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button($"{Service.Lang.GetText("BackupAllCharacter")}"))
+                {
+                    var failCharacters = C.CurrentActiveCharacter
+                        .Where(character => BackupHandler(Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}")).IsNullOrEmpty())
+                        .Select(character => $"{character.Name}@{character.Server}")
+                        .ToList();
+
+                    var successCount = C.CurrentActiveCharacter.Count - failCharacters.Count;
+                    Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) + (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
+
+                    if (failCharacters.Any())
+                    {
+                        Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                        foreach(var chara in failCharacters)
+                        {
+                            Service.Chat.PrintError(chara);
+                        }
+                    }
+                }
+                ImGui.EndPopup();
+            }
+        }
+
+        // 备份数据处理 Backup Handler
+        private string BackupHandler(string dataFolder)
+        {
+            var backupFolder = Path.Combine(dataFolder, "Backups");
+            Directory.CreateDirectory(backupFolder);
+
+            var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempFolder);
+
+            var zipFilePath = string.Empty;
+            try
+            {
+                var files = Directory.GetFiles(dataFolder);
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file);
+                    var destFile = Path.Combine(tempFolder, fileName);
+                    File.Copy(file, destFile, true);
+                }
+
+                var zipFileName = "Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
+                zipFilePath = Path.Combine(backupFolder, zipFileName);
+
+                ZipFile.CreateFromDirectory(tempFolder, zipFilePath);
+            }
+            finally
+            {
+                Directory.Delete(tempFolder, true);
+            }
+            return zipFilePath;
         }
     }
 }

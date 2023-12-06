@@ -734,4 +734,28 @@ you need to log in to the target character at least once with this plugin enable
   <data name="SaddleBag" xml:space="preserve">
     <value>Saddle Bag</value>
   </data>
+  <data name="Backup" xml:space="preserve">
+    <value>Backup</value>
+  </data>
+  <data name="BackupAllCharacter" xml:space="preserve">
+    <value>Backup All</value>
+  </data>
+  <data name="BackupCurrentCharacter" xml:space="preserve">
+    <value>Backup Current</value>
+  </data>
+  <data name="BackupHelp1" xml:space="preserve">
+    <value>Successfully backed up data for {0} characters</value>
+  </data>
+  <data name="BackupHelp2" xml:space="preserve">
+    <value>, with {0} characters failed to backup</value>
+  </data>
+  <data name="BackupHelp3" xml:space="preserve">
+    <value>Failed characters:</value>
+  </data>
+  <data name="BackupHelp4" xml:space="preserve">
+    <value>Backed up to: {0}</value>
+  </data>
+  <data name="ManualBackup" xml:space="preserve">
+    <value>Manual Backup</value>
+  </data>
 </root>
