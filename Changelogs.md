@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/12/06 | 1.3.2.4 | - Added tracking for Saddle Bag, Premium Saddle Bag, and Retainer items.<br/>- Optimized the logic of the editing feature. <br/>- Fixed the issue where Currency Renaming feature was not working. <br/>- Optimized the performance of the Multi-Chara Stats interface.<br/>-  Added Backup feature. |
 | 2023/12/04 | 1.3.2.3 | - Code cleanup<br/>- Try to fix an issue where Multi-Chara Stats feature couldn't show all characters in the popup. |
 | 2023/12/03 | 1.3.2.2 | - Fixed an issue where missing method in ImGuiHelpers for unknown reasons leads to game crash.<br/>- Fixed an issue where the Record Trade Target module could not get the names of the trade target correctly<br/>- Fixed an issue where the Multi-Character Stats function could not fully display the data due to the large number of characters. |
 | 2023/12/01 | 1.3.2.1 | - Obivious performance improvement.<br/>- Fixed an issue where the Currency List toolbar and the Data Table Reverse Sort button did not stay centered in non-AXIS fonts<br/>- Record Teleport Costs Module: Added a new feature to record teleport destionation aetheryte.<br/>- Added a new feature: Multi-Chara Stats. |
@@ -51,6 +52,7 @@
 
 | 日期           | 版本号  | 更新日志                                                     |
 | -------------- | ------- | ------------------------------------------------------------ |
+| 2023年12月6日  | 1.3.2.4 | - 新增了对鸟包, 额外鸟包, 雇员 物品的追踪<br/>- 优化了数据表格 编辑 功能的逻辑<br/>- 修复了 货币重命名 功能失效的问题<br/>- 优化了 多角色数据 界面的性能<br/>- 新增了 备份记录 功能 |
 | 2023年12月4日  | 1.3.2.3 | - 代码清理<br/>- 尝试修复了 多角色数据 角色显示不全的问题    |
 | 2023年12月3日  | 1.3.2.2 | - 修复了因未知原因 ImGuiHelpers 内方法丢失而导致的游戏崩溃问题<br/>- 修复了 记录交易对象 模块无法正常获取交易对象名称的问题<br/>- 修复了 多角色数据 功能中因角色数量太多无法完全显示的问题 |
 | 2023年12月1日  | 1.3.2.1 | - 性能改善<br/>- 修复了货币列表工具栏和数据表格倒序排序按钮在非 AXIS 字体下未保持居中的问题<br/>- **记录传送费用模块**: 新增了记录传送目的地以太之光的功能<br/>- 新增了 多角色数据 功能 |
