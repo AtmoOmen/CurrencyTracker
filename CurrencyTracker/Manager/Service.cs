@@ -9,6 +9,7 @@ public class Service
         pluginInterface.Create<Service>();
 
         InitLanguage();
+        InitCharacter();
         Tracker = new Tracker();
     }
 
@@ -27,6 +28,14 @@ public class Service
         }
 
         Lang = new LanguageManager(playerLang);
+    }
+
+    private static void InitCharacter()
+    {
+        if (ClientState.LocalPlayer != null || ClientState.LocalContentId != 0)
+        {
+            Plugin.Instance.CurrentCharacter = Plugin.Instance.GetCurrentCharacter();
+        }
     }
 
     [PluginService] public static IClientState ClientState { get; private set; } = null!;

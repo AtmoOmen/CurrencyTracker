@@ -74,7 +74,6 @@ namespace CurrencyTracker.Manager.Trackers
                 if (currencyChange == 0) return false;
 
                 locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
-                Service.Log.Debug(CurrentLocationName);
                 
                 if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
                 {

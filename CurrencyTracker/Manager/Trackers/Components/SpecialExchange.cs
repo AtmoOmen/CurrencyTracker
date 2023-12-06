@@ -13,7 +13,6 @@ namespace CurrencyTracker.Manager.Trackers.Components
         // Addon Name - Window Node ID
         private static readonly Dictionary<string, uint> UI = new()
         {
-            { "RetainerList", 28 },
             { "GrandCompanySupplyList", 27 },
             { "WeeklyBingoResult", 99 },
             { "ReconstructionBox", 31 },

@@ -37,7 +37,7 @@ public static class CurrencyInfo
             TransactionFileCategory.Inventory => InventoryManager.Instance()->GetInventoryItemCount(currencyID),
             TransactionFileCategory.SaddleBag => SaddleBag.InventoryItemCount[currencyID],
             TransactionFileCategory.PremiumSaddleBag => PremiumSaddleBag.InventoryItemCount[currencyID],
-            TransactionFileCategory.Retainer => 0,// 未实现
+            TransactionFileCategory.Retainer => Retainer.InventoryItemCount[ID][currencyID],
             _ => 0,
         };
     }

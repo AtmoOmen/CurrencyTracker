@@ -60,6 +60,7 @@ namespace CurrencyTracker
             { "MobDrops", true},
             { "PremiumSaddleBag", true },
             { "QuestRewards", true},
+            { "Retainer", true },
             { "SaddleBag", true },
             { "SpecialExchange", true},
             { "TeleportCosts", true},

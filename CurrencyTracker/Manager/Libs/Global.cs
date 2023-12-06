@@ -6,6 +6,7 @@ global using CurrencyTracker.Manager.Trackers.Components;
 global using CurrencyTracker.Manager.Trackers.Handlers;
 global using CurrencyTracker.Windows;
 global using Dalamud;
+global using Dalamud.Memory;
 global using Dalamud.Configuration;
 global using Dalamud.Game;
 global using Dalamud.Game.Addon.Lifecycle;

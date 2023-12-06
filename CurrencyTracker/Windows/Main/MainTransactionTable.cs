@@ -201,21 +201,24 @@ namespace CurrencyTracker.Windows
             if (ImGui.BeginPopup("TableViewSwitch"))
             {
                 var boolUI = false;
-                if (ImGui.Selectable("Inventory", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, 0, 0));
                 }
-                if (ImGui.Selectable("Retainer", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                foreach(var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
                 {
-                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, 0));
+                    if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                    }
                 }
-                if (ImGui.Selectable("Saddle Bag", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
                     currentView = TransactionFileCategory.SaddleBag;
                     currentViewID = 0;
                 }
-                if (ImGui.Selectable("Premium Saddle Bag", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
                 }

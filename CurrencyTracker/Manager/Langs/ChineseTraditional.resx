@@ -725,4 +725,13 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
     <value>To make your character data appear here,
 you need to log in to the target character at least once with this plugin enabled.</value>
   </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="PSaddleBag" xml:space="preserve">
+    <value>Premium Saddle Bag</value>
+  </data>
+  <data name="SaddleBag" xml:space="preserve">
+    <value>Saddle Bag</value>
+  </data>
 </root>

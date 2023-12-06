@@ -27,11 +27,6 @@ namespace CurrencyTracker
 
             Service.Initialize(pluginInterface);
 
-            if (Service.ClientState.LocalPlayer != null || Service.ClientState.LocalContentId != 0)
-            {
-                CurrentCharacter = GetCurrentCharacter();
-            }
-
             Service.ClientState.Login += HandleLogin;
             Service.ClientState.Logout += HandleLogout;
 

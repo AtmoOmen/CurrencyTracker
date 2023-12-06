@@ -726,4 +726,13 @@
     <value>要让你的角色数据出现在这里，
 你需要在启用本插件的情况下，至少登录过目标角色一次</value>
   </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>背包</value>
+  </data>
+  <data name="PSaddleBag" xml:space="preserve">
+    <value>额外鸟包</value>
+  </data>
+  <data name="SaddleBag" xml:space="preserve">
+    <value>鸟包</value>
+  </data>
 </root>

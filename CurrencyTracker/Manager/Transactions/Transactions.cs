@@ -34,7 +34,7 @@ namespace CurrencyTracker.Manager
                     suffix = string.Empty;
                     break;
                 case TransactionFileCategory.Retainer:
-                    suffix = $"_{0}";
+                    suffix = $"_{ID}";
                     break;
                 case TransactionFileCategory.SaddleBag:
                     suffix = "_SB";
@@ -96,7 +96,7 @@ namespace CurrencyTracker.Manager
 
             var filePath = characterInfo != null
                 ? Path.Join(playerDataFolder, $"{Plugin.Configuration.AllCurrencies[currencyID]}{GetTransactionFileSuffix(category, ID)}.txt")
-                : GetTransactionFilePath(currencyID, category);
+                : GetTransactionFilePath(currencyID, category, ID);
 
             if (characterInfo == null && !ValidityCheck(currencyID)) return null;
             if (!File.Exists(filePath)) return null;
