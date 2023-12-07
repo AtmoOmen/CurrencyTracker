@@ -33,6 +33,9 @@ namespace CurrencyTracker
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
+        public bool AutoSaveMessage { get; set; } = true;
+        public int AutoSaveMode { get; set; } = 0; // 0 - Save Current ; 1 - Save All
+        public int AutoSaveInterval { get; set; } = 30; // Minutes
         public int RecordsPerPage { get; set; } = 20;
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -52,21 +55,22 @@ namespace CurrencyTracker
         };
         public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
         {
-            { "DutyRewards", true},
-            { "Exchange", true},
-            { "FateRewards", true},
-            { "GoldSaucer", true},
-            { "IslandSanctuary", true},
-            { "MobDrops", true},
+            { "AutoSave", true },
+            { "DutyRewards", true },
+            { "Exchange", true },
+            { "FateRewards", true },
+            { "GoldSaucer", true },
+            { "IslandSanctuary", true },
+            { "MobDrops", true },
             { "PremiumSaddleBag", true },
-            { "QuestRewards", true},
+            { "QuestRewards", true },
             { "Retainer", true },
             { "SaddleBag", true },
-            { "SpecialExchange", true},
-            { "TeleportCosts", true},
-            { "Trade", true},
-            { "TripleTriad", true},
-            { "WarpCosts", true},
+            { "SpecialExchange", true },
+            { "TeleportCosts", true },
+            { "Trade", true },
+            { "TripleTriad", true },
+            { "WarpCosts", true },
         };
         public Dictionary<string, bool> ComponentProp { get; set; } = new()
         {

@@ -66,6 +66,7 @@ public partial class Main
     private string? editedLocationName = string.Empty;
     private string editedNoteContent = string.Empty;
     private string editedCurrencyName = string.Empty;
+    private int autoSaveInterval = 30;
 
     // 界面控制相关值 UI Control Related Values
     private readonly bool selectTimeDeco = false; // Always False
@@ -109,6 +110,7 @@ public partial class Main
         {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
     };
     
+    // 多角色数据相关值 Multi-Chara Stats Related Values
     private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
     private string searchFilterMCS = string.Empty;
     private int currentPageMCS = 0;

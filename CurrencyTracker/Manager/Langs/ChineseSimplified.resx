@@ -754,9 +754,21 @@
     <value>失败角色列表如下:</value>
   </data>
   <data name="BackupHelp4" xml:space="preserve">
-    <value>已备份至: {0}</value>
+    <value>已备份当前角色数据至: {0}</value>
   </data>
   <data name="ManualBackup" xml:space="preserve">
     <value>手动备份</value>
+  </data>
+  <data name="AutoBackup" xml:space="preserve">
+    <value>自动备份</value>
+  </data>
+  <data name="Interval" xml:space="preserve">
+    <value>备份间隔</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>分钟</value>
+  </data>
+  <data name="BackupHelp5" xml:space="preserve">
+    <value>备份后发送提示信息</value>
   </data>
 </root>

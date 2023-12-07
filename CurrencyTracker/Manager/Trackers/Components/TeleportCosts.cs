@@ -81,7 +81,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             {
                 if ((param1 == 4590 || param1 == 4591) && param2 != 0)
                 {
-                    ComponentManager.Components.OfType<TeleportCosts>().FirstOrDefault().TeleportWithCost();
+                    TeleportWithCost();
                 }
             }
             catch (Exception e)

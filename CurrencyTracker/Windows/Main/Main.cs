@@ -20,6 +20,7 @@ public partial class Main : Window, IDisposable
         positiveChangeColor = C.PositiveChangeColor;
         negativeChangeColor = C.NegativeChangeColor;
         childWidthOffset = C.ChildWidthOffset;
+        autoSaveInterval = C.AutoSaveInterval;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);

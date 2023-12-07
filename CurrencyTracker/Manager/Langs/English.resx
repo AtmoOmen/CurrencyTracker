@@ -749,7 +749,7 @@ you need to log in to the target character at least once with this plugin enable
     <value>Backup Current</value>
   </data>
   <data name="BackupHelp1" xml:space="preserve">
-    <value>Successfully backed up data for {0} characters</value>
+    <value>Successfully backup for {0} characters</value>
   </data>
   <data name="BackupHelp2" xml:space="preserve">
     <value>, with {0} characters failed to backup</value>
@@ -758,9 +758,21 @@ you need to log in to the target character at least once with this plugin enable
     <value>Failed characters:</value>
   </data>
   <data name="BackupHelp4" xml:space="preserve">
-    <value>Backed up to: {0}</value>
+    <value>Successfully backup current character datat to: {0}</value>
   </data>
   <data name="ManualBackup" xml:space="preserve">
     <value>Manual Backup</value>
+  </data>
+  <data name="AutoBackup" xml:space="preserve">
+    <value>Auto Backup</value>
+  </data>
+  <data name="Interval" xml:space="preserve">
+    <value>Interval</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>Minutes</value>
+  </data>
+  <data name="BackupHelp5" xml:space="preserve">
+    <value>Notification in Chat</value>
   </data>
 </root>
