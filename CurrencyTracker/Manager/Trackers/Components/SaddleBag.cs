@@ -41,7 +41,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             SaddleBagHandler();
         }
 
-        private unsafe void SaddleBagScanner(IFramework framework)
+        private unsafe void SaddleBagScanner(Framework framework)
         {
             var inventoryManager = InventoryManager.Instance();
 

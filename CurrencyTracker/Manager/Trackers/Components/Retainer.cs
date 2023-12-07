@@ -61,7 +61,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private unsafe void RetainerInventoryScanner(IFramework framework)
+        private unsafe void RetainerInventoryScanner(Framework framework)
         {
             var inventoryManager = InventoryManager.Instance();
             var retainerManager = RetainerManager.Instance();
@@ -136,7 +136,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private void RetainerUIWacther(IFramework framework)
+        private void RetainerUIWacther(Framework framework)
         {
             if (!isOnRetainer)
             {

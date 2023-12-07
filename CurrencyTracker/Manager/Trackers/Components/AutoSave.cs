@@ -23,7 +23,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             _initialized = true;
         }
 
-        private void OnAutoSave(IFramework framework)
+        private void OnAutoSave(Framework framework)
         {
             if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(C.AutoSaveInterval))
             {
