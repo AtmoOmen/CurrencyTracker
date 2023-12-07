@@ -27,11 +27,6 @@ namespace CurrencyTracker
 
             Service.Initialize(pluginInterface);
 
-            if (Service.ClientState.LocalPlayer != null || Service.ClientState.LocalContentId != 0)
-            {
-                CurrentCharacter = GetCurrentCharacter();
-            }
-
             Service.ClientState.Login += HandleLogin;
             Service.ClientState.Logout += HandleLogout;
 
@@ -55,7 +50,6 @@ namespace CurrencyTracker
             if (WindowSystem.Windows.Contains(Main) && Main.selectedCurrencyID != 0)
             {
                 Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyID);
-                Main.lastTransactions = Main.currentTypeTransactions;
             }
 
             Service.Tracker.InitializeTracking();
@@ -231,7 +225,6 @@ namespace CurrencyTracker
                         Main.selectedCurrencyID = currencyID;
                         Main.selectedOptionIndex = Configuration.OrderedOptions.IndexOf(currencyID);
                         Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(currencyID));
-                        Main.lastTransactions = Main.currentTypeTransactions;
                         Main.IsOpen = true;
                     }
                     else
@@ -245,7 +238,6 @@ namespace CurrencyTracker
                             Main.selectedCurrencyID = currencyID;
                             Main.selectedOptionIndex = Configuration.OrderedOptions.IndexOf(currencyID);
                             Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(currencyID));
-                            Main.lastTransactions = Main.currentTypeTransactions;
                         }
                     }
                 }

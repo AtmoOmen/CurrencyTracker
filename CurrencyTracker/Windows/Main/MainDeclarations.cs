@@ -8,7 +8,6 @@ public partial class Main
     internal Dictionary<uint, List<bool>>? selectedStates = new();
     internal Dictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
-    internal List<TransactionsConvertor> lastTransactions = new();
 
     // 顶栏显示情况 Top Columns Visibility
     private bool showRecordOptions = true;
@@ -56,6 +55,8 @@ public partial class Main
     private int transactionsPerPage = 20;
     private int visibleStartIndex;
     private int visibleEndIndex;
+    private TransactionFileCategory currentView = TransactionFileCategory.Inventory;
+    private ulong currentViewID = 0;
 
     // 数据处理相关值 Data Handler Related Values
     private string fileName = string.Empty;
@@ -65,11 +66,13 @@ public partial class Main
     private string? editedLocationName = string.Empty;
     private string editedNoteContent = string.Empty;
     private string editedCurrencyName = string.Empty;
+    private int autoSaveInterval = 30;
 
     // 界面控制相关值 UI Control Related Values
     private readonly bool selectTimeDeco = false; // Always False
     private readonly Timer searchTimer = new(100);
     private readonly Timer searchTimerCCT = new(100);
+    private readonly Timer searchTimerMCS = new(100);
     private float windowWidth;
     private int childWidthOffset = 0;
     private static readonly Dictionary<string, int> columnWidths = new()
@@ -107,7 +110,11 @@ public partial class Main
         {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
     };
     
+    // 多角色数据相关值 Multi-Chara Stats Related Values
     private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
+    private string searchFilterMCS = string.Empty;
+    private int currentPageMCS = 0;
+    private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
 
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;

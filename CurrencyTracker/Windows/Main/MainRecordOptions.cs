@@ -12,6 +12,8 @@ namespace CurrencyTracker.Windows
             ClearExceptionUI();
             ImGui.SameLine();
             ExportDataUI();
+            ImGui.SameLine();
+            BackupUI();
         }
 
         // 记录设置界面 Record Settings
@@ -98,6 +100,8 @@ namespace CurrencyTracker.Windows
             {
                 ImGui.Text($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}\n{Service.Lang.GetText("TransactionsHelp2")}");
 
+                ImGui.Separator();
+
                 if (ImGui.Button(Service.Lang.GetText("Confirm")))
                 {
                     if (selectedCurrencyID == 0)
@@ -180,6 +184,172 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndPopup();
             }
+        }
+
+        // 备份数据界面 Backup Interface
+        private void BackupUI()
+        {
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Save, Service.Lang.GetText("Backup")))
+            {
+                ImGui.OpenPopup("BackupUI");
+            }
+
+            if (ImGui.BeginPopup("BackupUI"))
+            {
+                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("ManualBackup"));
+                ImGui.Separator();
+
+                if (ImGui.Button($"{Service.Lang.GetText("BackupCurrentCharacter")}"))
+                {
+                    var filePath = BackupHandler(P.PlayerDataFolder);
+                    Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                }
+
+                ImGui.SameLine();
+                if (ImGui.Button($"{Service.Lang.GetText("BackupAllCharacter")}"))
+                {
+                    var failCharacters = C.CurrentActiveCharacter
+                        .Where(character => BackupHandler(Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}")).IsNullOrEmpty())
+                        .Select(character => $"{character.Name}@{character.Server}")
+                        .ToList();
+
+                    var successCount = C.CurrentActiveCharacter.Count - failCharacters.Count;
+                    Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) + (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
+
+                    if (failCharacters.Any())
+                    {
+                        Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                        foreach(var chara in failCharacters)
+                        {
+                            Service.Chat.PrintError(chara);
+                        }
+                    }
+                }
+
+                AutoBackupUI();
+
+                ImGui.EndPopup();
+            }
+        }
+
+        // 自动备份界面 AutoBackupUI
+        private void AutoBackupUI()
+        {
+            var autoSaveEnabled = C.ComponentEnabled["AutoSave"];
+            var time = DateTime.Today.Add(ComponentManager.Components.OfType<AutoSave>().FirstOrDefault().Initialized ?
+            (AutoSave.LastAutoSave + TimeSpan.FromMinutes(C.AutoSaveInterval) - DateTime.Now) : TimeSpan.FromMinutes(0));
+            var timeFormat = time.Hour == 0 ? "mm:ss" : "HH:mm:ss";
+            var autoBackupText = autoSaveEnabled ? $"{Service.Lang.GetText("AutoBackup")} ({time.ToString(timeFormat)})" : Service.Lang.GetText("AutoBackup");
+
+            ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            {
+                ToggleAutoSave();
+            }
+
+            if (autoSaveEnabled)
+            {
+                AutoSaveOptionsUI();
+            }
+        }
+
+        // 启用/关闭自动保存 Toggle Autosave
+        private void ToggleAutoSave()
+        {
+            C.ComponentEnabled["AutoSave"] = !C.ComponentEnabled["AutoSave"];
+            var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == typeof(AutoSave));
+            if (component != null)
+            {
+                if (C.ComponentEnabled["AutoSave"])
+                {
+                    ComponentManager.Load(component);
+                }
+                else
+                {
+                    ComponentManager.Unload(component);
+                }
+            }
+            else
+            {
+                Service.Log.Error($"Fail to fetch component {component.GetType().Name}");
+            }
+
+            C.Save();
+        }
+
+        // 自动保存界面 Auto Backup UI
+        private void AutoSaveOptionsUI()
+        {
+            ImGui.Separator();
+            ImGui.AlignTextToFramePadding();
+            ImGui.Text("");
+
+            ImGui.SameLine(5f);
+            AutoSaveRadioButton("BackupCurrentCharacter", 0);
+            ImGui.SameLine();
+            AutoSaveRadioButton("BackupAllCharacter", 1);
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Interval")}:");
+
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(140f);
+            if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
+            {
+                if (autoSaveInterval < 5) autoSaveInterval = 5;
+                C.AutoSaveInterval = autoSaveInterval;
+                C.Save();
+            }
+
+            var isNotification = C.AutoSaveMessage;
+            if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
+            {
+                C.AutoSaveMessage = !C.AutoSaveMessage;
+            }
+        }
+
+        // 自动保存界面单选按钮 Auto Backup Radio Button
+        private void AutoSaveRadioButton(string textKey, int mode)
+        {
+            var isSelected = C.AutoSaveMode == mode;
+            ImGui.RadioButton(Service.Lang.GetText(textKey), isSelected);
+            if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
+            {
+                C.AutoSaveMode = mode;
+                C.Save();
+            }
+        }
+
+        // 备份数据处理 Backup Handler
+        internal static string BackupHandler(string dataFolder)
+        {
+            var backupFolder = Path.Combine(dataFolder, "Backups");
+            Directory.CreateDirectory(backupFolder);
+
+            var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempFolder);
+
+            var zipFilePath = string.Empty;
+            try
+            {
+                var files = Directory.GetFiles(dataFolder);
+                foreach (var file in files)
+                {
+                    var fileName = Path.GetFileName(file);
+                    var destFile = Path.Combine(tempFolder, fileName);
+                    File.Copy(file, destFile, true);
+                }
+
+                var zipFileName = "Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
+                zipFilePath = Path.Combine(backupFolder, zipFileName);
+
+                ZipFile.CreateFromDirectory(tempFolder, zipFilePath);
+            }
+            finally
+            {
+                Directory.Delete(tempFolder, true);
+            }
+            return zipFilePath;
         }
     }
 }

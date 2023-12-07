@@ -1,3 +1,4 @@
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -19,6 +20,7 @@ public partial class Main : Window, IDisposable
         positiveChangeColor = C.PositiveChangeColor;
         negativeChangeColor = C.NegativeChangeColor;
         childWidthOffset = C.ChildWidthOffset;
+        autoSaveInterval = C.AutoSaveInterval;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
@@ -28,6 +30,9 @@ public partial class Main : Window, IDisposable
 
         searchTimerCCT.Elapsed += SearchTimerCCTElapsed;
         searchTimerCCT.AutoReset = false;
+
+        searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
+        searchTimerMCS.AutoReset = false;
 
         LoadOptions();
     }
@@ -99,5 +104,9 @@ public partial class Main : Window, IDisposable
         searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
         searchTimerCCT.Stop();
         searchTimerCCT.Dispose();
+
+        searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
+        searchTimerMCS.Stop();
+        searchTimerMCS.Dispose();
     }
 }

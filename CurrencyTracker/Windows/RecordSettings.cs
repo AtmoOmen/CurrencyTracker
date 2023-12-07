@@ -59,40 +59,39 @@ namespace CurrencyTracker.Windows
         {
             var cbool = C.ComponentEnabled[boolName];
 
-            if (typeof(ITrackerComponent).IsAssignableFrom(type))
+            if (!typeof(ITrackerComponent).IsAssignableFrom(type))
             {
-                if (ImGui.Checkbox($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
+                Service.Log.Error($"Fail to fetch component {type.Name}");
+                return;
+            }
+
+            if (ImGui.Checkbox($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
+            {
+                C.ComponentEnabled[boolName] = !C.ComponentEnabled[boolName];
+                var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
+                if (component != null)
                 {
-                    C.ComponentEnabled[boolName] = !C.ComponentEnabled[boolName];
-                    var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
-                    if (component != null)
+                    if (C.ComponentEnabled[boolName])
                     {
-                        if (C.ComponentEnabled[boolName])
-                        {
-                            ComponentManager.Load(component);
-                        }
-                        else
-                        {
-                            ComponentManager.Unload(component);
-                        }
+                        ComponentManager.Load(component);
                     }
                     else
                     {
-                        Service.Log.Error($"Fail to fetch component {component.GetType().Name}");
+                        ComponentManager.Unload(component);
                     }
-
-                    C.Save();
                 }
-
-                if (!help.IsNullOrEmpty())
+                else
                 {
-                    ImGui.SameLine();
-                    ImGuiComponents.HelpMarker(help);
+                    Service.Log.Error($"Fail to fetch component {type.Name}");
                 }
+
+                C.Save();
             }
-            else
+
+            if (!help.IsNullOrEmpty())
             {
-                Service.Log.Error($"Fail to fetch component {type.Name}");
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker(help);
             }
         }
 
