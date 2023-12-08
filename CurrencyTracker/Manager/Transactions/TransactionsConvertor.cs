@@ -8,16 +8,29 @@ public class TransactionsConvertor
     public string LocationName { get; set; } = string.Empty; // 地名 Location Name
     public string Note { get; set; } = string.Empty; // 备注 Note
 
-    // 将字典改变为字符串，存储至数据文件 Change the dic into strings and save the strings to the data file
+    // 将单行交易记录解析为字符串 Parse a transaction into string
     public string ToFileLine()
     {
         return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
     }
 
-    // 解析文件中的一行数据 Parse a line of transactions in the data file
-    public static TransactionsConvertor FromFileLine(string line)
+    // 将单行字符串解析为交易记录 Parese string into a transaction
+    public static TransactionsConvertor FromFileLine(ReadOnlySpan<char> span)
     {
-        var parts = line.Split(";");
+        var parts = new string[5];
+        var partIndex = 0;
+        var start = 0;
+
+        for (var i = 0; i < span.Length; i++)
+        {
+            if (span[i] == ';')
+            {
+                parts[partIndex++] = span.Slice(start, i - start).ToString();
+                start = i + 1;
+            }
+        }
+
+        parts[partIndex] = span.Slice(start, span.Length - start).ToString();
 
         var transaction = new TransactionsConvertor
         {
@@ -31,7 +44,7 @@ public class TransactionsConvertor
         return transaction;
     }
 
-    // 解析整个数据文件 Parse a specific data file
+    // 解析整个数据文件 Parse a data file
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
         var transactions = new List<TransactionsConvertor>();
@@ -47,11 +60,11 @@ public class TransactionsConvertor
             string? line;
             while ((line = sr.ReadLine()) != null)
             {
-                var transaction = FromFileLine(line);
+                var transaction = FromFileLine(line.AsSpan());
                 transactions.Add(transaction);
             }
         }
-        catch (Exception ex)
+        catch (IOException ex)
         {
             Service.Log.Error($"Error parsing entire data file.: {ex.Message}");
         }
@@ -59,7 +72,8 @@ public class TransactionsConvertor
         return transactions;
     }
 
-    // 同步将单个交易记录追加入数据文件(正常情况) Append a transaction into the data file (Normal Circumstances)
+
+    // 同步将单个交易记录追加入数据文件 Append a transaction into the data file
     public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
     {
         try
@@ -80,23 +94,11 @@ public class TransactionsConvertor
         }
     }
 
-    // 同步将整个交易记录覆写进数据文件(异常数据处理) Overwrite the data file (Exception situations)
+    // 同步将整个交易记录覆写进数据文件 Overwrite the data file
     public static void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
         try
         {
-            if (!File.Exists(filePath))
-            {
-                if (transactions.Count > 0)
-                {
-                    File.WriteAllText(filePath, string.Empty);
-                }
-                else
-                {
-                    return;
-                }
-            }
-
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
             foreach (var transaction in transactions)

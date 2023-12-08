@@ -31,6 +31,11 @@ namespace CurrencyTracker.Windows
 
                 if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
                 {
+                    while (selectedStates[selectedCurrencyID].Count <= visibleEndIndex)
+                    {
+                        selectedStates[selectedCurrencyID].Add(false);
+                    }
+
                     foreach (var column in visibleColumns)
                     {
                         var flags = columnFlags.TryGetValue(column, out var value) ? value : ImGuiTableColumnFlags.None;
@@ -57,11 +62,6 @@ namespace CurrencyTracker.Windows
                     {
                         ImGui.EndTable();
                         return;
-                    }
-
-                    while (selectedStates[selectedCurrencyID].Count <= visibleEndIndex)
-                    {
-                        selectedStates[selectedCurrencyID].Add(false);
                     }
 
                     for (var i = visibleStartIndex; i < visibleEndIndex; i++)
@@ -240,7 +240,7 @@ namespace CurrencyTracker.Windows
         // 表格信息栏 Table Info Bar
         private void TransactionTableInfoBarUI()
         {
-            if (selectedCurrencyID != 0 && selectedTransactions[selectedCurrencyID].Count > 0)
+            if (selectedCurrencyID != 0 && selectedTransactions[selectedCurrencyID].Any())
             {
                 var transactions = selectedTransactions[selectedCurrencyID];
                 ImGui.TextColored(ImGuiColors.DalamudGrey, Service.Lang.GetText("SelectedTransactionsInfo", transactions.Count, transactions.Sum(x => x.Change), Math.Round(transactions.Average(x => x.Change), 2), transactions.Max(x => x.Change), transactions.Min(x => x.Change)));
