@@ -65,8 +65,10 @@ namespace CurrencyTracker.Manager.Trackers
         {
             if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
 
+            if (!CheckCurrencyRules(currencyID)) return false;
+
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
-            var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, category, ID);
+            var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, P.CurrentCharacter, category, ID);
 
             if (previousAmount != null)
             {
@@ -89,6 +91,29 @@ namespace CurrencyTracker.Manager.Trackers
                 return true;
             }
             return false;
+        }
+
+        public bool CheckCurrencyRules(uint currencyID)
+        {
+            if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
+            {
+                C.CurrencyRules.Add(currencyID, rule = new());
+                C.Save();
+            }
+            else
+            {
+                // 地点限制 Location Restrictions
+                if (!rule.RegionRulesMode) // 黑名单 Blacklist
+                {
+                    if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
+                }
+                else // 白名单 Whitelist
+                {
+                    if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
+                }
+            }
+
+            return true;
         }
 
         private void PostTransactionUpdate(uint currencyID, string currencyName, uint source, TransactionFileCategory category, ulong ID)

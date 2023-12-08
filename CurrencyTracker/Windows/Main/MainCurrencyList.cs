@@ -58,7 +58,7 @@ namespace CurrencyTracker.Windows
         // 货币列表顶端工具栏 Currency List Listbox Tools
         private void CurrencyListboxToolUI()
         {
-            CenterCursorFor(185);
+            CenterCursorFor(184);
 
             ImGui.BeginGroup();
             AddCustomCurrencyUI();
@@ -81,7 +81,8 @@ namespace CurrencyTracker.Windows
             }
 
             ImGui.SameLine();
-            RenameCurrencyUI();
+            CurrencySettingsUI();
+
             ImGui.EndGroup();
         }
 
@@ -239,7 +240,7 @@ namespace CurrencyTracker.Windows
         {
             var items = Service.DataManager.GetExcelSheet<Item>()
                 .Select(x => new { x.RowId, Name = x.Name?.ToString() })
-                .Where(x => !x.Name.IsNullOrEmpty() && !filterNamesForCCT.Contains(x.Name))
+                .Where(x => !x.Name.IsNullOrEmpty() && !filterNamesForCCT.Any(x.Name.Contains))
                 .ToList();
 
             ItemNames = items.ToDictionary(x => x.RowId, x => $"{x.Name}");
@@ -313,20 +314,20 @@ namespace CurrencyTracker.Windows
             }
         }
 
-        // 修改货币本地名称 Rename Currency
-        private void RenameCurrencyUI()
+        // 货币设置 Currency Settings
+        private void CurrencySettingsUI()
         {
             if (selectedCurrencyID == 0)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                IconButton(FontAwesomeIcon.Pen, "None", "RenameCurrency");
+                IconButton(FontAwesomeIcon.Edit, "None", "CurrencySettings");
                 ImGui.PopStyleVar();
             }
             else
             {
-                if (IconButton(FontAwesomeIcon.Pen, Service.Lang.GetText("Rename"), "RenameCurrency"))
+                if (IconButton(FontAwesomeIcon.Edit, "None", "CurrencySettings"))
                 {
-                    ImGui.OpenPopup("CurrencyRename");
+                    ImGui.OpenPopup("CurrencySettings");
                     if (C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
                     {
                         editedCurrencyName = currencyName;
@@ -334,8 +335,10 @@ namespace CurrencyTracker.Windows
                 }
             }
 
-            if (ImGui.BeginPopup("CurrencyRename", ImGuiWindowFlags.AlwaysAutoResize))
+            if (ImGui.BeginPopup("CurrencySettings", ImGuiWindowFlags.AlwaysAutoResize))
             {
+                if (ItemNames == null) LoadTerrioriesNamesCS();
+
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Now")}:");
 
@@ -346,42 +349,49 @@ namespace CurrencyTracker.Windows
                 ImGui.SameLine();
                 ImGui.Text(C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) ? currencyName : "Unknown");
 
-                ImGui.SetNextItemWidth(Math.Max(ImGui.CalcTextSize(currencyName).X + 115, 150));
-                ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
+                ImGui.Separator();
 
-                if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
-                {
-                    if (ImGui.Button(Service.Lang.GetText("Confirm")))
-                    {
-                        RenameCurrencyHandler(editedCurrencyName);
-                        ImGui.CloseCurrentPopup();
-                    }
-                }
-                else
-                {
-                    ImGui.Button(Service.Lang.GetText("Confirm"));
-                }
+                RenameCurrencyUI(currencyName);
 
-                ImGui.SameLine();
-                if (ImGui.Button(Service.Lang.GetText("Reset")))
-                {
-                    RenameCurrencyHandler(CurrencyInfo.CurrencyLocalName(selectedCurrencyID));
-                    ImGui.CloseCurrentPopup();
-                }
+                TerrioryRestrictedUI(currencyName);
 
                 ImGui.EndPopup();
+            }
+        }
+
+        // 修改货币本地名称 Rename Currency
+        private void RenameCurrencyUI(string currencyName)
+        {
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Rename")}:");
+
+            ImGui.SetNextItemWidth(210f);
+            ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
+
+            ImGui.SameLine();
+            if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
+            {
+                if (IconButton(FontAwesomeIcon.Check, Service.Lang.GetText("Confirm"), "RenameCurrencyConfirm"))
+                {
+                    RenameCurrencyHandler(editedCurrencyName);
+                    ImGui.CloseCurrentPopup();
+                }
+            }
+            else
+            {
+                IconButton(FontAwesomeIcon.Check, Service.Lang.GetText("Confirm"), "RenameCurrencyConfirm");
+            }
+
+            ImGui.SameLine();
+            if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), "RenameCurrencyReset"))
+            {
+                RenameCurrencyHandler(CurrencyInfo.CurrencyLocalName(selectedCurrencyID));
             }
         }
 
         // 用于处理货币名变更 Used to handle currency rename
         private void RenameCurrencyHandler(string editedCurrencyName)
         {
-            if (C.AllCurrencies.ContainsValue(editedCurrencyName))
-            {
-                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
-                return;
-            }
-
             var filePaths = new Dictionary<string, string>();
             var categories = new List<TransactionFileCategory> { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
             foreach (var category in categories)
@@ -399,13 +409,11 @@ namespace CurrencyTracker.Windows
                 Service.Log.Debug($"{selectedFilePath} | {editedFilePath}");
             }
 
-            if (filePaths.Values.Any(x => File.Exists(x)))
+            if (C.AllCurrencies.ContainsValue(editedCurrencyName) || filePaths.Values.Any(x => File.Exists(x)))
             {
                 Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
-                return;
             }
-
-            if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
+            else if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
             {
                 if (C.PresetCurrencies.ContainsKey(selectedCurrencyID))
                 {
@@ -420,13 +428,108 @@ namespace CurrencyTracker.Windows
 
                 foreach (var path in filePaths)
                 {
-                    Service.Log.Debug($"Try moving file from {path.Key} to {path.Value}");
+                    Service.Log.Debug($"Moving file from {path.Key} to {path.Value}");
                     if (File.Exists(path.Key))
                     {
                         File.Move(path.Key, path.Value);
                     }
                 }
                 UpdateTransactions();
+            }
+        }
+
+        // 延迟加载搜索结果 Used to handle too-fast CS Terrories Names loading
+        private void SearchTimerCSElapsed(object? sender, ElapsedEventArgs e)
+        {
+            LoadTerrioriesNamesCS();
+        }
+
+        // 加载地名 Load Terriories Names for CS
+        private void LoadTerrioriesNamesCS()
+        {
+            if (searchFilterCS.IsNullOrEmpty())
+            {
+                TerritoryNamesCS = TerrioryHandler.TerritoryNames;
+            }
+            else
+            {
+                TerritoryNamesCS = TerrioryHandler.TerritoryNames
+                    .Where(x => x.Value.Contains(searchFilterCS, StringComparison.OrdinalIgnoreCase) || x.Key.ToString().Contains(searchFilterCS, StringComparison.OrdinalIgnoreCase))
+                    .ToDictionary(x => x.Key, x => x.Value);
+            }
+        }
+
+        // 地区限制 Terriories Restricted UI
+        private void TerrioryRestrictedUI(string currencyName)
+        {
+            var rules = C.CurrencyRules[selectedCurrencyID];
+            var isBlacklist = !rules.RegionRulesMode;
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-AreaRestriction")}:");
+
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Blacklist")}", isBlacklist))
+            {
+                rules.RegionRulesMode = false;
+                C.Save();
+            }
+
+            ImGui.SameLine();
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Whitelist")}", !isBlacklist))
+            {
+                rules.RegionRulesMode = true;
+                C.Save();
+            }
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
+
+            ImGui.SetNextItemWidth(215f);
+            if (ImGui.BeginCombo("##AreaResticted", TerrioryHandler.TerritoryNames.TryGetValue(selectedAreaIDCS, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+            {
+                ImGui.SetNextItemWidth(285f);
+                if (ImGui.InputText("", ref searchFilterCS, 50))
+                {
+                    searchTimerCS.Restart();
+                }
+                foreach (var area in TerritoryNamesCS)
+                {
+                    if (ImGui.Selectable($"{area.Key} | {area.Value}"))
+                    {
+                        selectedAreaIDCS = area.Key;
+                    }
+                }
+                ImGui.EndCombo();
+            }
+            if (!selectedAreaName.IsNullOrEmpty()) TextTooltip(selectedAreaName);
+
+            ImGui.SameLine();
+            if (IconButton(FontAwesomeIcon.Plus, "None", "AddRestrictedAreas") && !rules.RestrictedAreas.Contains(selectedAreaIDCS))
+            {
+                rules.RestrictedAreas.Add(selectedAreaIDCS);
+                selectedAreaIDCS = 0;
+                C.Save();
+            }
+            ImGui.SameLine();
+            if (IconButton(FontAwesomeIcon.TrashAlt, "None", "DeleteRestrictedAreas") && rules.RestrictedAreas.Contains(selectedAreaIDCS))
+            {
+                rules.RestrictedAreas.Remove(selectedAreaIDCS);
+                selectedAreaIDCS = 0;
+                C.Save();
+            }
+
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
+
+            ImGui.SetNextItemWidth(290f);
+            if (ImGui.BeginCombo("##RestictedAreas", rules.RestrictedAreas.Any() ? TerrioryHandler.TerritoryNames[rules.RestrictedAreas.FirstOrDefault()] : "", ImGuiComboFlags.HeightLarge))
+            {
+                foreach (var area in rules.RestrictedAreas)
+                {
+                    ImGui.Selectable($"{area} | {TerrioryHandler.TerritoryNames[area]}");
+                }
+
+                ImGui.EndCombo();
             }
         }
     }

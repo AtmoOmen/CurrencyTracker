@@ -1,5 +1,3 @@
-using Lumina.Data;
-
 namespace CurrencyTracker.Manager.Infos;
 
 public static class CurrencyInfo
@@ -43,9 +41,9 @@ public static class CurrencyInfo
     }
 
     // 获取数据文件中最新一条数据的货币数量
-    public static long? GetCurrencyAmountFromFile(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
+    public static long? GetCurrencyAmountFromFile(uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
-        var latestTransaction = LoadLatestSingleTransaction(currencyID, null, category, ID);
+        var latestTransaction = LoadLatestSingleTransaction(currencyID, character, category, ID);
 
         return latestTransaction?.Amount;
     }
@@ -70,4 +68,10 @@ public static class CurrencyInfo
         Service.Log.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
         return null;
     }
+}
+
+public class CurrencyRule
+{
+    public bool RegionRulesMode { get; set; } = false; // false - Blacklist ; true - Whitelist
+    public List<uint> RestrictedAreas { get; set; } = new(); // Area IDs
 }

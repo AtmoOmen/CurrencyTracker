@@ -146,7 +146,7 @@
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>注:
-1.插件预设的3种货币不可删除，只可以隐藏
+1.插件预设的3种货币不可删除
 2.不建议对非货币物品进行追踪, 建议使用其他插件来追踪非货币物品
 3.删除货币并不会删除已有的数据文件，如有需要请自行删除</value>
   </data>
@@ -770,5 +770,20 @@
   </data>
   <data name="BackupHelp5" xml:space="preserve">
     <value>备份后发送提示信息</value>
+  </data>
+  <data name="Blacklist" xml:space="preserve">
+    <value>黑名单</value>
+  </data>
+  <data name="Main-CS-AreaRestriction" xml:space="preserve">
+    <value>区域限制</value>
+  </data>
+  <data name="Main-CS-RestrictedArea" xml:space="preserve">
+    <value>已限制区域</value>
+  </data>
+  <data name="Main-CS-SelectArea" xml:space="preserve">
+    <value>选择区域</value>
+  </data>
+  <data name="Whitelist" xml:space="preserve">
+    <value>白名单</value>
   </data>
 </root>

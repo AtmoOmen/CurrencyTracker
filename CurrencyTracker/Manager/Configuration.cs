@@ -30,6 +30,7 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
+        public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = new();
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;

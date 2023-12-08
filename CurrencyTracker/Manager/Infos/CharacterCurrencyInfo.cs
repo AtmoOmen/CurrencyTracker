@@ -21,12 +21,24 @@ namespace CurrencyTracker.Manager.Infos
         {
             foreach (var currency in Plugin.Configuration.AllCurrencies)
             {
-                if (!currencyAmount.TryGetValue(currency.Key, out var value))
+                long amount = 0;
+                var categories = new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
+
+                foreach (var category in categories)
                 {
-                    currencyAmount[currency.Key] = 0;
+                    var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currency.Key, Character, category, 0);
+                    amount += currencyAmount == null ? 0 : (long)currencyAmount;
                 }
-                var latestTransaction = Transactions.LoadLatestSingleTransaction(currency.Key, Character);
-                currencyAmount[currency.Key] = latestTransaction == null ? 0 : latestTransaction.Amount;
+
+                if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var value))
+                {
+                    foreach (var retainer in value)
+                    {
+                        var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currency.Key, Character, TransactionFileCategory.Retainer, retainer.Key);
+                        amount += currencyAmount == null ? 0 : (long)currencyAmount;
+                    }
+                }
+                currencyAmount[currency.Key] = amount;
             }
         }
     }

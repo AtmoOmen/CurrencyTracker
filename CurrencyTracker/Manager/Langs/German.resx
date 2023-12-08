@@ -145,10 +145,11 @@
     <value>Klicke zum Erweitern/Verbergen</value>
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
-    <value>Hinweis:
-1. Die 3 voreingestellten Währungen können nicht gelöscht, sondern nur ausgeblendet werden.
-2. Es ist nicht empfohlen nicht Währungsitems zu verfolgen, dafür sollte es anderen Plugins geben (wenn du aber darauf bestehst, ist das auch in Ordnung).
-3. Existierende Dateien werden durch das Entfernen von Währungen nicht automatich mitgelöscht. Wenn notwendig, die Dateien bitte manuell löschen.</value>
+    <value>Note:
+1. The 3 preset currencies cannot be deleted.
+2. Not recommend to track not-currency items, there should be another plugin to do that.
+(If you insist, that's also ok)
+3. Deleting currencies will not delete the existing data files, if necessary, please delete them by yourself.</value>
   </data>
   <data name="CustomCurrencyTracker" xml:space="preserve">
     <value>Benutzerdefinierter Währungsaufzeichnung</value>
@@ -771,5 +772,20 @@ you need to log in to the target character at least once with this plugin enable
   </data>
   <data name="BackupHelp5" xml:space="preserve">
     <value>Notification in Chat</value>
+  </data>
+  <data name="Blacklist" xml:space="preserve">
+    <value>Blacklist</value>
+  </data>
+  <data name="Main-CS-AreaRestriction" xml:space="preserve">
+    <value>Area Restriction</value>
+  </data>
+  <data name="Main-CS-RestrictedArea" xml:space="preserve">
+    <value>Restricted Area</value>
+  </data>
+  <data name="Main-CS-SelectArea" xml:space="preserve">
+    <value>Selecte Area</value>
+  </data>
+  <data name="Whitelist" xml:space="preserve">
+    <value>Whitelist</value>
   </data>
 </root>
