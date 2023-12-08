@@ -127,7 +127,7 @@ namespace CurrencyTracker.Windows
                     if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentItemPageCCT > 0) currentItemPageCCT--; ImGui.SameLine();
 
                     // 下一页 Next Page
-                    if (itemNamesCCT.Count > 0)
+                    if (itemNamesCCT.Any())
                     {
                         if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1)
                         {
@@ -143,7 +143,7 @@ namespace CurrencyTracker.Windows
                     ImGui.SameLine();
 
                     // 尾页 Last Page
-                    if (itemNamesCCT.Count > 0)
+                    if (itemNamesCCT.Any())
                     {
                         if (IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage"))
                         {
@@ -159,11 +159,11 @@ namespace CurrencyTracker.Windows
 
                     // 鼠标滚轮控制翻页 Mouse wheel control for flipping pages
                     if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentItemPageCCT > 0) currentItemPageCCT--;
-                    if (itemNamesCCT.Count > 0 && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1) currentItemPageCCT++;
+                    if (itemNamesCCT.Any() && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1) currentItemPageCCT++;
 
                     ImGui.Separator();
 
-                    if (itemNamesCCT.Count > 0)
+                    if (itemNamesCCT.Any())
                     {
                         foreach (var itemName in itemNamesCCT.Skip(startIndex).Take(endIndex - startIndex))
                         {

@@ -91,7 +91,7 @@ namespace CurrencyTracker.Windows
         // 表格翻页组件 Table Paging Components
         private void TransactionTablePagingUI()
         {
-            var pageCount = (currentTypeTransactions.Count > 0) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
+            var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
             currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
             if (pageCount == 0)
