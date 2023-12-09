@@ -755,7 +755,7 @@ you need to log in to the target character at least once with this plugin enable
     <value>Failed characters:</value>
   </data>
   <data name="BackupHelp4" xml:space="preserve">
-    <value>Successfully backup current character datat to: {0}</value>
+    <value>Successfully backup current character data to: {0}</value>
   </data>
   <data name="ManualBackup" xml:space="preserve">
     <value>Manual Backup</value>
@@ -782,7 +782,7 @@ you need to log in to the target character at least once with this plugin enable
     <value>Restricted Area</value>
   </data>
   <data name="Main-CS-SelectArea" xml:space="preserve">
-    <value>Selecte Area</value>
+    <value>Select Area</value>
   </data>
   <data name="Whitelist" xml:space="preserve">
     <value>Whitelist</value>

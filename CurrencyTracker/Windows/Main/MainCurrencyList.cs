@@ -250,7 +250,7 @@ namespace CurrencyTracker.Windows
         // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
         private List<string> ApplyCCTFilter(string searchFilterCCT = "")
         {
-            if (!string.IsNullOrEmpty(searchFilterCCT))
+            if (!searchFilterCCT.IsNullOrEmpty())
             {
                 var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
                 return itemNamesCCT
