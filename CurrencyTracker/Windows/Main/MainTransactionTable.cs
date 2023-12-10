@@ -668,6 +668,11 @@ namespace CurrencyTracker.Windows
         {
             ImGui.Selectable($"{transaction.LocationName}##_{i}");
 
+            if (!transaction.LocationName.IsNullOrEmpty())
+            {
+                TextTooltip(transaction.LocationName);
+            }
+
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
             {
                 ImGui.OpenPopup($"EditLocationName##_{i}");
@@ -726,12 +731,9 @@ namespace CurrencyTracker.Windows
         {
             ImGui.Selectable($"{transaction.Note}##_{i}");
 
-            if (ImGui.IsItemHovered())
+            if (!transaction.Note.IsNullOrEmpty())
             {
-                if (!transaction.Note.IsNullOrEmpty())
-                {
-                    ImGui.SetTooltip(transaction.Note);
-                }
+                TextTooltip(transaction.Note);
             }
 
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))

@@ -9,8 +9,6 @@ namespace CurrencyTracker.Windows
             ImGui.SameLine();
             MergeTransactionUI();
             ImGui.SameLine();
-            ClearExceptionUI();
-            ImGui.SameLine();
             ExportDataUI();
             ImGui.SameLine();
             BackupUI();
@@ -91,6 +89,7 @@ namespace CurrencyTracker.Windows
         // 清除异常记录界面 Clear Exceptional Transactions
         private void ClearExceptionUI()
         {
+            /*
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ExclamationCircle, Service.Lang.GetText("ClearExTransactionsLabel")))
             {
                 ImGui.OpenPopup("ClearExceptionNote");
@@ -123,6 +122,7 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndPopup();
             }
+            */
         }
 
         // 导出数据界面 Export Transactions
