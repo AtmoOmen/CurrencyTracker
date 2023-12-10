@@ -9,6 +9,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         }
 
         public static DateTime LastAutoSave = DateTime.MinValue;
+        private static Timer AutoSaveTimer = new(1000);
 
         private bool _initialized = false;
 
@@ -18,12 +19,14 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             LastAutoSave = DateTime.Now;
 
-            Service.Framework.Update += OnAutoSave;
+            AutoSaveTimer.Elapsed += OnAutoSave;
+            AutoSaveTimer.AutoReset = true;
+            AutoSaveTimer.Enabled = true;
 
             _initialized = true;
         }
 
-        private void OnAutoSave(IFramework framework)
+        private void OnAutoSave(object? sender, ElapsedEventArgs e)
         {
             if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(C.AutoSaveInterval))
             {
@@ -65,7 +68,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         public void Uninit()
         {
-            Service.Framework.Update -= OnAutoSave;
+            AutoSaveHandler();
+
+            AutoSaveTimer.Stop();
+            AutoSaveTimer.Dispose();
             LastAutoSave = DateTime.MinValue;
 
             _initialized = false;

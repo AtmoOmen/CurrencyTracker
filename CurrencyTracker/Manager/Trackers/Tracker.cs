@@ -10,7 +10,6 @@ namespace CurrencyTracker.Manager.Trackers
         }
 
         public delegate void CurrencyChangedHandler(object sender, EventArgs e);
-
         public event CurrencyChangedHandler? OnCurrencyChanged;
 
         public HandlerManager HandlerManager = null!;
@@ -35,112 +34,6 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 InitializeTracking();
             }
-        }
-
-        public void InitializeTracking()
-        {
-            HandlerManager.Init();
-            ComponentManager.Init();
-
-            CheckAllCurrencies("", "", RecordChangeType.All, 0);
-            Service.Log.Debug("Currency Tracker Activated");
-        }
-
-        public void UninitializeTracking()
-        {
-            HandlerManager.Uninit();
-            ComponentManager.Uninit();
-
-            Service.Log.Debug("Currency Tracker Deactivated");
-        }
-
-        // (人为触发)发现货币发生改变时触发的事件
-        public virtual void OnTransactionsUpdate(EventArgs e)
-        {
-            OnCurrencyChanged?.Invoke(this, e);
-        }
-
-        // 检查货币情况 Check the currency
-        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
-
-            if (!CheckCurrencyRules(currencyID)) return false;
-
-            var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
-            var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, P.CurrentCharacter, category, ID);
-
-            if (previousAmount != null)
-            {
-                var currencyChange = currencyAmount - (long)previousAmount;
-                if (currencyChange == 0) return false;
-
-                locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
-                
-                if (currencyChange != 0 && (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0)))
-                {
-                    Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent, category, ID);
-                    PostTransactionUpdate(currencyID, currencyName, source, category, ID);
-                    return true;
-                }
-            }
-            else if (currencyAmount > 0)
-            {
-                Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent, category, ID);
-                PostTransactionUpdate(currencyID, currencyName, source, category, ID);
-                return true;
-            }
-            return false;
-        }
-
-        public bool CheckCurrencyRules(uint currencyID)
-        {
-            if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
-            {
-                C.CurrencyRules.Add(currencyID, rule = new());
-                C.Save();
-            }
-            else
-            {
-                // 地点限制 Location Restrictions
-                if (!rule.RegionRulesMode) // 黑名单 Blacklist
-                {
-                    if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-                }
-                else // 白名单 Whitelist
-                {
-                    if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-                }
-            }
-
-            return true;
-        }
-
-        private void PostTransactionUpdate(uint currencyID, string currencyName, uint source, TransactionFileCategory category, ulong ID)
-        {
-            OnTransactionsUpdate(EventArgs.Empty);
-            Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
-            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
-        }
-
-        public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            var isChanged = false;
-            foreach (var currency in C.AllCurrencies)
-            {
-                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
-            };
-            return isChanged;
-        }
-
-        public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            var isChanged = false;
-            foreach(var currency in C.AllCurrencies)
-            {
-                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
-            };
-            return isChanged;
         }
 
         private void InitCurrencies()
@@ -178,6 +71,109 @@ namespace CurrencyTracker.Manager.Trackers
                 C.FisrtOpen = false;
                 C.Save();
             }
+        }
+
+        public void InitializeTracking()
+        {
+            HandlerManager.Init();
+            ComponentManager.Init();
+
+            CheckAllCurrencies("", "", RecordChangeType.All, 0);
+            Service.Log.Debug("Currency Tracker Activated");
+        }
+
+        public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
+        {
+            if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
+            if (!CheckCurrencyRules(currencyID)) return false;
+
+            var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
+            var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, P.CurrentCharacter, category, ID);
+
+            if (previousAmount == null && currencyAmount <= 0) return false;
+
+            var currencyChange = currencyAmount - (previousAmount ?? 0);
+            if (currencyChange == 0) return false;
+
+            locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
+
+            if (recordChangeType == RecordChangeType.All || (recordChangeType == RecordChangeType.Positive && currencyChange > 0) || (recordChangeType == RecordChangeType.Negative && currencyChange < 0))
+            {
+                if (previousAmount != null)
+                {
+                    Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName, noteContent, category, ID);
+                }
+                else
+                {
+                    Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent, category, ID);
+                }
+                PostTransactionUpdate(currencyID, currencyName, source, category, ID);
+                return true;
+            }
+            return false;
+        }
+
+        public bool CheckCurrencyRules(uint currencyID)
+        {
+            if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
+            {
+                C.CurrencyRules.Add(currencyID, rule = new());
+                C.Save();
+            }
+            else
+            {
+                // 地点限制 Location Restrictions
+                if (!rule.RegionRulesMode) // 黑名单 Blacklist
+                {
+                    if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
+                }
+                else // 白名单 Whitelist
+                {
+                    if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
+        {
+            var isChanged = false;
+            foreach (var currency in currencies)
+            {
+                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
+            };
+            return isChanged;
+        }
+
+        public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
+        {
+            var isChanged = false;
+            foreach (var currency in C.AllCurrencies)
+            {
+                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
+            };
+            return isChanged;
+        }
+
+        private void PostTransactionUpdate(uint currencyID, string currencyName, uint source, TransactionFileCategory category, ulong ID)
+        {
+            OnTransactionsUpdate(EventArgs.Empty);
+            Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
+            /// if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+        }
+
+        public virtual void OnTransactionsUpdate(EventArgs e)
+        {
+            OnCurrencyChanged?.Invoke(this, e);
+        }
+
+        public void UninitializeTracking()
+        {
+            HandlerManager.Uninit();
+            ComponentManager.Uninit();
+
+            Service.Log.Debug("Currency Tracker Deactivated");
         }
 
         public void Dispose()

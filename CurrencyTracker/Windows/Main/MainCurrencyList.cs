@@ -349,24 +349,27 @@ namespace CurrencyTracker.Windows
                 ImGui.SameLine();
                 ImGui.Text(C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) ? currencyName : "Unknown");
 
+                var currencyBarWidth = ImGui.CalcTextSize($"{Service.Lang.GetText("Now")}:").X + 8f + (16f * ImGuiHelpers.GlobalScale) + 8f + ImGui.CalcTextSize(currencyName).X;
+
                 ImGui.Separator();
 
-                RenameCurrencyUI(currencyName);
+                RenameCurrencyUI(currencyName, currencyBarWidth);
 
-                TerrioryRestrictedUI(currencyName);
+                TerrioryRestrictedUI(currencyName, currencyBarWidth);
 
                 ImGui.EndPopup();
             }
         }
 
         // 修改货币本地名称 Rename Currency
-        private void RenameCurrencyUI(string currencyName)
+        private void RenameCurrencyUI(string currencyName, float currencyBarWidth)
         {
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Rename")}:");
 
-            ImGui.SetNextItemWidth(210f);
+            ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 80f, 210f)); // 80f = 2 * 8f (Default Spacing Size of ImGui.SameLine) + 2 * 32f (Default Size of IconButton)
             ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
+            if (!editedCurrencyName.IsNullOrEmpty()) TextTooltip(editedCurrencyName);
 
             ImGui.SameLine();
             if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
@@ -460,7 +463,7 @@ namespace CurrencyTracker.Windows
         }
 
         // 地区限制 Terriories Restricted UI
-        private void TerrioryRestrictedUI(string currencyName)
+        private void TerrioryRestrictedUI(string currencyName, float currencyBarWidth)
         {
             var rules = C.CurrencyRules[selectedCurrencyID];
             var isBlacklist = !rules.RegionRulesMode;
@@ -484,10 +487,10 @@ namespace CurrencyTracker.Windows
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
-            ImGui.SetNextItemWidth(215f);
+            ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 75f, 215f));
             if (ImGui.BeginCombo("##AreaResticted", TerrioryHandler.TerritoryNames.TryGetValue(selectedAreaIDCS, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
-                ImGui.SetNextItemWidth(285f);
+                ImGui.SetNextItemWidth(335f);
                 if (ImGui.InputText("", ref searchFilterCS, 50))
                 {
                     searchTimerCS.Restart();
@@ -521,7 +524,7 @@ namespace CurrencyTracker.Windows
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
 
-            ImGui.SetNextItemWidth(290f);
+            ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 3f, 285f));
             if (ImGui.BeginCombo("##RestictedAreas", rules.RestrictedAreas.Any() ? TerrioryHandler.TerritoryNames[rules.RestrictedAreas.FirstOrDefault()] : "", ImGuiComboFlags.HeightLarge))
             {
                 foreach (var area in rules.RestrictedAreas)

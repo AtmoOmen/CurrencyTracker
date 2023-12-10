@@ -25,12 +25,12 @@ public class TransactionsConvertor
         {
             if (span[i] == ';')
             {
-                parts[partIndex++] = span.Slice(start, i - start).ToString();
+                parts[partIndex++] = new string(span.Slice(start, i - start));
                 start = i + 1;
             }
         }
 
-        parts[partIndex] = span.Slice(start, span.Length - start).ToString();
+        parts[partIndex] = new string(span.Slice(start, span.Length - start));
 
         var transaction = new TransactionsConvertor
         {
@@ -71,7 +71,6 @@ public class TransactionsConvertor
 
         return transactions;
     }
-
 
     // 同步将单个交易记录追加入数据文件 Append a transaction into the data file
     public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
