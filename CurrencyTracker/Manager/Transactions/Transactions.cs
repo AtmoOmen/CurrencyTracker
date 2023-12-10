@@ -67,24 +67,11 @@ namespace CurrencyTracker.Manager
         // 加载全部记录 Load All Transactions
         public static List<TransactionsConvertor> LoadAllTransactions(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
         {
-            var allTransactions = new List<TransactionsConvertor>();
-
-            if (!ValidityCheck(currencyID)) return allTransactions;
-
             var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-            if (!File.Exists(filePath)) return allTransactions;
-
-            try
-            {
-                allTransactions = TransactionsConvertor.FromFile(filePath);
-            }
-            catch (Exception ex)
-            {
-                Service.Log.Debug($"Fail to lode All Transactionsa from the data file: {ex.Message}");
-            }
-
-            return allTransactions;
+            return ValidityCheck(currencyID) && File.Exists(filePath)
+                ? TransactionsConvertor.FromFile(filePath)
+                : new();
         }
 
         // 加载最新一条记录 Load Latest Transaction
@@ -101,9 +88,9 @@ namespace CurrencyTracker.Manager
             if (characterInfo == null && !ValidityCheck(currencyID)) return null;
             if (!File.Exists(filePath)) return null;
 
-            var lastLine = File.ReadLines(filePath).LastOrDefault();
+            var lastLine = File.ReadLines(filePath).Reverse().FirstOrDefault();
 
-            return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine);
+            return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine.AsSpan());
         }
 
         // 加载指定范围内的记录 Load Transactions in Specific Range

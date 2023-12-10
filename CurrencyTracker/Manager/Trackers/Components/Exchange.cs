@@ -23,6 +23,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             { "Materialize", 16 },
             { "ColorantEquipment", 13 },
             { "MiragePrism", 28 },
+            { "HWDSupply", 67 },
         };
 
         private string currentTargetName = string.Empty;

@@ -73,6 +73,7 @@ public partial class Main
     private readonly Timer searchTimer = new(100);
     private readonly Timer searchTimerCCT = new(100);
     private readonly Timer searchTimerMCS = new(100);
+    private readonly Timer searchTimerCS = new(100);
     private float windowWidth;
     private int childWidthOffset = 0;
     private static readonly Dictionary<string, int> columnWidths = new()
@@ -115,6 +116,10 @@ public partial class Main
     private string searchFilterMCS = string.Empty;
     private int currentPageMCS = 0;
     private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
+
+    private string searchFilterCS = string.Empty;
+    private Dictionary<uint, string>? TerritoryNamesCS;
+    private uint selectedAreaIDCS = 0;
 
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
