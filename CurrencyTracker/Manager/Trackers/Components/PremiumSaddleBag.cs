@@ -13,6 +13,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             InventoryType.PremiumSaddleBag1, InventoryType.PremiumSaddleBag1
         };
 
+        private string windowTitle = string.Empty;
         private bool _initialized = false;
         internal static Dictionary<uint, long> InventoryItemCount = new();
 
@@ -30,6 +31,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
             {
                 InventoryItemCount.Add(currency.Key, 0);
             }
+
+            windowTitle = GetWindowTitle(args.Addon, 86);
 
             Service.Framework.Update += PSaddleBagScanner;
         }
@@ -62,7 +65,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private unsafe void PSaddleBagHandler()
         {
             Service.Tracker.CheckAllCurrencies("", "", 0, 21, TransactionFileCategory.PremiumSaddleBag, 0);
-            Service.Tracker.CheckAllCurrencies("", $"(Premium Saddle Bag)", 0, 21, TransactionFileCategory.Inventory, 0);
+            Service.Tracker.CheckAllCurrencies("", $"({windowTitle})", 0, 21, TransactionFileCategory.Inventory, 0);
             InventoryItemCount.Clear();
         }
 
@@ -73,6 +76,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Framework.Update -= PSaddleBagScanner;
 
+            windowTitle = string.Empty;
             InventoryItemCount.Clear();
             _initialized = false;
         }
