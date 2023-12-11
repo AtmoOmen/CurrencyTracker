@@ -786,4 +786,13 @@
   <data name="Whitelist" xml:space="preserve">
     <value>白名单</value>
   </data>
+  <data name="BackupHelp6" xml:space="preserve">
+    <value>设置为 0 以禁用。</value>
+  </data>
+  <data name="BackupHelp7" xml:space="preserve">
+    <value>点击以启用/禁用</value>
+  </data>
+  <data name="MaxBackupFiles" xml:space="preserve">
+    <value>最大备份文件数</value>
+  </data>
 </root>

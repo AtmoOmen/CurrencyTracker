@@ -121,6 +121,8 @@ public partial class Main
     private Dictionary<uint, string>? TerritoryNamesCS;
     private uint selectedAreaIDCS = 0;
 
+    private int maxBackupFilesCount = 10;
+
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
 }

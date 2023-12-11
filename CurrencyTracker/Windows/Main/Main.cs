@@ -22,6 +22,7 @@ public partial class Main : Window, IDisposable
         negativeChangeColor = C.NegativeChangeColor;
         childWidthOffset = C.ChildWidthOffset;
         autoSaveInterval = C.AutoSaveInterval;
+        maxBackupFilesCount = C.MaxBackupFilesCount;
 
         if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
         else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
