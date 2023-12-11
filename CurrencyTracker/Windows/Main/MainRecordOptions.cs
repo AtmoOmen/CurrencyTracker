@@ -327,6 +327,15 @@ namespace CurrencyTracker.Windows
             var backupFolder = Path.Combine(dataFolder, "Backups");
             Directory.CreateDirectory(backupFolder);
 
+            var backupFiles = Directory.GetFiles(backupFolder, "*.zip");
+            var sortedBackupFiles = backupFiles.OrderBy(f => new FileInfo(f).CreationTime).ToList();
+
+            while (sortedBackupFiles.Count >= 10)
+            {
+                File.Delete(sortedBackupFiles[0]);
+                sortedBackupFiles.RemoveAt(0);
+            }
+
             var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempFolder);
 
@@ -352,5 +361,6 @@ namespace CurrencyTracker.Windows
             }
             return zipFilePath;
         }
+
     }
 }
