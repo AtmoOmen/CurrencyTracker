@@ -785,4 +785,13 @@ you need to log in to the target character at least once with this plugin enable
   <data name="Whitelist" xml:space="preserve">
     <value>Whitelist</value>
   </data>
+  <data name="BackupHelp6" xml:space="preserve">
+    <value>Set to 0 to disable</value>
+  </data>
+  <data name="BackupHelp7" xml:space="preserve">
+    <value>Click to enable/disabel</value>
+  </data>
+  <data name="MaxBackupFiles" xml:space="preserve">
+    <value>Max Backup Files</value>
+  </data>
 </root>

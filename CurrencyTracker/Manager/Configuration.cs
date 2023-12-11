@@ -34,6 +34,7 @@ namespace CurrencyTracker
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
+        public int MaxBackupFilesCount { get; set; } = 10;
         public bool AutoSaveMessage { get; set; } = false;
         public int AutoSaveMode { get; set; } = 0; // 0 - Save Current ; 1 - Save All
         public int AutoSaveInterval { get; set; } = 60; // Minutes
