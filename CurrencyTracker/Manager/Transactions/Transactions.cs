@@ -107,49 +107,6 @@ namespace CurrencyTracker.Manager
             return allTransactions.GetRange(startIndex, endIndex - startIndex + 1);
         }
 
-        // 删除最新一条记录 Delete Latest Transaction
-        public static bool DeleteLatestTransaction(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            if (!ValidityCheck(currencyID)) return false;
-
-            var filePath = GetTransactionFilePath(currencyID, category, ID);
-
-            if (!File.Exists(filePath)) return false;
-
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            var buffer = new byte[512];
-            var endPosition = stream.Length - 1;
-            for (var position = endPosition; position >= 0; position--)
-            {
-                stream.Position = position;
-                stream.Read(buffer, 0, 1);
-
-                if (buffer[0] == '\n')
-                {
-                    break;
-                }
-            }
-
-            var lastLine = new StreamReader(stream).ReadLine();
-            return true;
-        }
-
-        // 编辑最新一条记录 Edit Latest Transaction
-        public static void EditLatestTransaction(uint currencyID, string LocationName = "", string Note = "", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            if (!ValidityCheck(currencyID)) return;
-
-            var editedTransaction = LoadLatestSingleTransaction(currencyID, null, category, ID);
-
-            if (editedTransaction == null || (!forceEdit && (DateTime.Now - editedTransaction.TimeStamp).TotalSeconds > timeout) || (onlyEditEmpty && !string.IsNullOrEmpty(editedTransaction.Note))) return;
-
-            if (!DeleteLatestTransaction(currencyID, category, ID)) return;
-
-            AppendTransaction(currencyID, editedTransaction.TimeStamp, editedTransaction.Amount, editedTransaction.Change, LocationName.IsNullOrEmpty() ? editedTransaction.LocationName : LocationName, Note.IsNullOrEmpty() ? editedTransaction.Note : Note, category, ID);
-
-            Plugin.Instance.Main.UpdateTransactions();
-        }
-
         // 编辑指定记录 Edit Specific Transactions
         public static int EditSpecificTransactions(uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "", string noteContent = "", TransactionFileCategory category = 0, ulong ID = 0)
         {
@@ -177,17 +134,6 @@ namespace CurrencyTracker.Manager
             TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
 
             return failCount;
-        }
-
-        // 编辑全部货币最新一条记录 Edit All Currencies Latest Transaction
-        public static void EditAllLatestTransaction(string LocationName = "", string Note = "", bool forceEdit = false, uint timeout = 10, bool onlyEditEmpty = false, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            if (Plugin.Instance.PlayerDataFolder.IsNullOrEmpty()) return;
-
-            foreach (var currency in Plugin.Configuration.AllCurrencies)
-            {
-                EditLatestTransaction(currency.Key, LocationName, Note, forceEdit, timeout, onlyEditEmpty, category, ID);
-            }
         }
 
         // 在数据末尾追加最新一条记录 Append One Transaction
