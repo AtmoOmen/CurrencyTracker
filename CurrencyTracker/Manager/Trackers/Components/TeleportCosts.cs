@@ -53,13 +53,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             try
             {
-                Service.Log.Debug($"{p1} {p2} {p3}");
-
                 if (!AetheryteNames.TryGetValue(p2, out tpDestination))
                 {
                     Service.Log.Warning($"Unknown Aetheryte Name {tpDestination}");
                 }
-
             }
             catch (Exception e)
             {
