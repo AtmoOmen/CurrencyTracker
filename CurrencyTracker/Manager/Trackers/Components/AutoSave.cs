@@ -19,6 +19,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             LastAutoSave = DateTime.Now;
 
+            AutoSaveTimer = new(1000);
             AutoSaveTimer.Elapsed += OnAutoSave;
             AutoSaveTimer.AutoReset = true;
             AutoSaveTimer.Enabled = true;
