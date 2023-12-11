@@ -305,6 +305,7 @@ namespace CurrencyTracker.Windows
             if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
             {
                 C.AutoSaveMessage = !C.AutoSaveMessage;
+                C.Save();
             }
         }
 

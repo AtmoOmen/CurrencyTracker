@@ -61,10 +61,12 @@ public class TransactionsConvertor
             while ((line = sr.ReadLine()) != null)
             {
                 var transaction = FromFileLine(line.AsSpan());
+                /*
                 if (Plugin.Configuration.MaxIgnoreDays != 0 && transaction.TimeStamp < DateTime.Now - TimeSpan.FromDays(Plugin.Configuration.MaxIgnoreDays))
                 {
                     continue;
                 }
+                */
                 transactions.Add(transaction);
             }
         }
