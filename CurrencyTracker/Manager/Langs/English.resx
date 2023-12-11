@@ -794,7 +794,7 @@ you need to log in to the target character at least once with this plugin enable
     <value>Set to 0 to disable</value>
   </data>
   <data name="BackupHelp7" xml:space="preserve">
-    <value>Click to enable/disabel</value>
+    <value>Click to enable/disable</value>
   </data>
   <data name="MaxBackupFiles" xml:space="preserve">
     <value>Max Backup Files</value>

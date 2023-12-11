@@ -200,15 +200,16 @@ namespace CurrencyTracker.Windows
                 AutoBackupUI();
 
                 ImGui.Separator();
-                ImGui.AlignTextToFramePadding();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
+
+                ImGui.SetNextItemWidth(210f);
                 if (ImGui.InputInt("", ref maxBackupFilesCount))
                 {
                     if (maxBackupFilesCount < 0 ) maxBackupFilesCount = 0;
                     C.MaxBackupFilesCount = maxBackupFilesCount;
                     C.Save();
                 }
-                TextTooltip(Service.Lang.GetText("BackupHelp6"));
+                ImGuiComponents.HelpMarker(Service.Lang.GetText("BackupHelp6"));
 
                 ImGui.EndPopup();
             }
