@@ -9,7 +9,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         }
 
         public static DateTime LastAutoSave = DateTime.MinValue;
-        private static Timer? AutoSaveTimer;
+        private static Timer AutoSaveTimer = new(1000);
 
         private bool _initialized = false;
 
