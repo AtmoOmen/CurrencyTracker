@@ -332,12 +332,12 @@ namespace CurrencyTracker.Windows
             var backupFolder = Path.Combine(dataFolder, "Backups");
             Directory.CreateDirectory(backupFolder);
 
-            if (C.MaxBackupFilesCount > 0)
+            if (Plugin.Configuration.MaxBackupFilesCount > 0)
             {
                 var backupFiles = Directory.GetFiles(backupFolder, "*.zip");
                 var sortedBackupFiles = backupFiles.OrderBy(f => new FileInfo(f).CreationTime).ToList();
 
-                while (sortedBackupFiles.Count >= C.MaxBackupFilesCount)
+                while (sortedBackupFiles.Count >= Plugin.Configuration.MaxBackupFilesCount)
                 {
                     File.Delete(sortedBackupFiles[0]);
                     sortedBackupFiles.RemoveAt(0);

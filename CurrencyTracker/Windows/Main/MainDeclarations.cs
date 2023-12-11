@@ -123,6 +123,6 @@ public partial class Main
 
     private int maxBackupFilesCount = 10;
 
-    private static readonly Configuration? C = Plugin.Configuration;
+    private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
 }
