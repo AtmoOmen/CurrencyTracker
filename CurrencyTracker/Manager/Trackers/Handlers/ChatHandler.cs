@@ -34,7 +34,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             if (_isBlocked) return;
             if (!ValidChatTypes.Contains((ushort)type)) return;
 
-            Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
+            Task.Delay(TimeSpan.FromMilliseconds(100)).ContinueWith(t => Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17));
         }
 
         public void Uninit()

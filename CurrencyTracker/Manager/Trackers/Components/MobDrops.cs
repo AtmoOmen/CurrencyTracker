@@ -1,3 +1,5 @@
+using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class MobDrops : ITrackerComponent
@@ -36,7 +38,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        private void OnConditionChange(ConditionFlag flag, bool value)
+        private unsafe void OnConditionChange(ConditionFlag flag, bool value)
         {
             if (Flags.IsBoundByDuty() || Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
 

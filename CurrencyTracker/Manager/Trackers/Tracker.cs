@@ -160,7 +160,7 @@ namespace CurrencyTracker.Manager.Trackers
         {
             OnTransactionsUpdate(EventArgs.Empty);
             Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
-            /// if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
         }
 
         public virtual void OnTransactionsUpdate(EventArgs e)
