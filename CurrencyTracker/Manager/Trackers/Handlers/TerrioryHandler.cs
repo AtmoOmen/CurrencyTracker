@@ -52,7 +52,7 @@ namespace CurrencyTracker.Manager.Trackers
                 .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
                 .ToDictionary(
                     x => x.RowId,
-                    x => $"{x.PlaceName?.Value?.Name}");
+                    x => Plugin.Instance.PluginInterface.Sanitizer.Sanitize(x.PlaceName?.Value?.Name?.ToString()));
 
             _previousLocationID = _currentLocationID = Service.ClientState.TerritoryType;
             _previousLocationName = _currentLocationName = TerritoryNames.TryGetValue(_currentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
