@@ -1,5 +1,3 @@
-
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
