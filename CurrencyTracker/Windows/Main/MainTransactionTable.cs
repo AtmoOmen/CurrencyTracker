@@ -160,7 +160,7 @@ namespace CurrencyTracker.Windows
                 }
 
                 ImGui.AlignTextToFramePadding();
-                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("TransactionsPerPage"));
+                ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("TransactionsPerPage")}:");
 
                 ImGui.SetNextItemWidth(150);
                 ImGui.SameLine();
@@ -306,7 +306,7 @@ namespace CurrencyTracker.Windows
             if (isClusteredByTime)
             {
                 ImGui.SetNextItemWidth(115);
-                if (ImGui.InputInt(Service.Lang.GetText("ClusterInterval"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
+                if (ImGui.InputInt(Service.Lang.GetText("Hours"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
                 {
                     clusterHour = Math.Max(0, clusterHour);
                     searchTimer.Stop();
@@ -900,7 +900,7 @@ namespace CurrencyTracker.Windows
                     return;
                 }
                 var filePath = Transactions.ExportData(selectedTransactions[selectedCurrencyID], "", selectedCurrencyID, C.ExportDataFileType, currentView, currentViewID);
-                Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
+                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")}{filePath}");
             }
         }
 
@@ -933,22 +933,11 @@ namespace CurrencyTracker.Windows
             ImGui.Text($"{Service.Lang.GetText("Note")}:");
             ImGui.SetNextItemWidth(210);
             ImGui.InputText("##MergeNoteContent", ref editedNoteContent, 150);
-            if (ImGui.IsItemHovered())
-            {
-                ImGui.SetTooltip($"{Service.Lang.GetText("MergeNoteHelp")}");
-            }
 
             if (ImGui.SmallButton(Service.Lang.GetText("Confirm")))
             {
-                if (selectedTransactions[selectedCurrencyID].Count < 2)
+                if (selectedTransactions[selectedCurrencyID].Count < 2 || editedLocationName.IsNullOrWhitespace())
                 {
-                    Service.Chat.PrintError(Service.Lang.GetText("MergeTransactionsHelp4"));
-                    return;
-                }
-
-                if (editedLocationName.IsNullOrWhitespace())
-                {
-                    Service.Chat.PrintError(Service.Lang.GetText("EditHelp1"));
                     return;
                 }
 
@@ -993,7 +982,7 @@ namespace CurrencyTracker.Windows
             ImGui.Text($"{Service.Lang.GetText("Location")}:");
 
             ImGui.SetNextItemWidth(210);
-            if (ImGui.InputTextWithHint("##EditLocationName", Service.Lang.GetText("EditHelp"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputTextWithHint("##EditLocationName", Service.Lang.GetText("PressEnterToConfirm"), ref editedLocationName, 80, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 EditLocationName();
             }
@@ -1001,7 +990,7 @@ namespace CurrencyTracker.Windows
             ImGui.Text($"{Service.Lang.GetText("Note")}:");
 
             ImGui.SetNextItemWidth(210);
-            if (ImGui.InputTextWithHint("##EditNoteContent", Service.Lang.GetText("EditHelp"), ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputTextWithHint("##EditNoteContent", Service.Lang.GetText("PressEnterToConfirm"), ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 EditNoteContent();
             }
@@ -1017,7 +1006,6 @@ namespace CurrencyTracker.Windows
         {
             if (editedLocationName.IsNullOrWhitespace())
             {
-                Service.Chat.PrintError(Service.Lang.GetText("EditHelp1"));
                 return;
             }
 
@@ -1031,7 +1019,6 @@ namespace CurrencyTracker.Windows
         {
             if (editedNoteContent.IsNullOrWhitespace())
             {
-                Service.Chat.PrintError(Service.Lang.GetText("EditHelp1"));
                 return;
             }
 
@@ -1045,13 +1032,13 @@ namespace CurrencyTracker.Windows
         {
             if (failCount == 0)
             {
-                Service.Chat.Print($"{Service.Lang.GetText(locationName.IsNullOrEmpty() ? "EditNoteHelp" : "EditLocationHelp", selectedTransactions[selectedCurrencyID].Count)} {(locationName.IsNullOrEmpty() ? noteContent : locationName)}");
+                Service.Chat.Print(Service.Lang.GetText("EditHelp1", selectedTransactions[selectedCurrencyID].Count, locationName.IsNullOrEmpty() ? Service.Lang.GetText("Note") : Service.Lang.GetText("Location")) + " " + (locationName.IsNullOrEmpty() ? noteContent : locationName));
 
                 UpdateTransactions();
             }
             else if (failCount > 0 && failCount < selectedTransactions[selectedCurrencyID].Count)
             {
-                Service.Chat.Print($"{Service.Lang.GetText(locationName.IsNullOrEmpty() ? "EditNoteHelp" : "EditLocationHelp", selectedTransactions[selectedCurrencyID].Count - failCount)} {(locationName.IsNullOrEmpty() ? noteContent : locationName)}");
+                Service.Chat.Print(Service.Lang.GetText("EditHelp1", selectedTransactions[selectedCurrencyID].Count - failCount, locationName.IsNullOrEmpty() ? Service.Lang.GetText("Note") : Service.Lang.GetText("Location")) + " " +(locationName.IsNullOrEmpty() ? noteContent : locationName));
                 Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCount})");
 
                 UpdateTransactions();

@@ -89,7 +89,7 @@ namespace CurrencyTracker.Windows
         // 添加自定义货币 Add Custom Currency
         private void AddCustomCurrencyUI()
         {
-            if (IconButton(FontAwesomeIcon.Plus, Service.Lang.GetText("Add"), "CustomCurrencyAdd"))
+            if (IconButton(FontAwesomeIcon.Plus, "None", "CustomCurrencyAdd"))
             {
                 ImGui.OpenPopup("CustomCurrency");
             }
@@ -98,7 +98,7 @@ namespace CurrencyTracker.Windows
             {
                 if (ItemNames == null) LoadItemsForCCT();
 
-                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("CustomCurrencyTracker"));
+                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
                 ImGuiComponents.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
 
                 ImGui.AlignTextToFramePadding();
@@ -282,7 +282,7 @@ namespace CurrencyTracker.Windows
         {
             if (selectedCurrencyID != 0 && !C.PresetCurrencies.ContainsKey(selectedCurrencyID))
             {
-                IconButton(FontAwesomeIcon.Trash, Service.Lang.GetText("DeleteCurrency"), "ToolsDelete");
+                IconButton(FontAwesomeIcon.Trash, $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})", "ToolsDelete");
                 if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
                 {
                     if (selectedCurrencyID == 0)
@@ -414,7 +414,7 @@ namespace CurrencyTracker.Windows
 
             if (C.AllCurrencies.ContainsValue(editedCurrencyName) || filePaths.Values.Any(x => File.Exists(x)))
             {
-                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp"));
             }
             else if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
             {

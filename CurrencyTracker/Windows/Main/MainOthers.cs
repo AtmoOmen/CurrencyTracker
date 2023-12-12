@@ -61,8 +61,6 @@ namespace CurrencyTracker.Windows
                     LoadMultiCharaData();
                     LoadMultiCharaSearch();
                 }
-                ImGui.SameLine();
-                ImGuiComponents.HelpMarker(Service.Lang.GetText("Main-MultiCharStats-Help"));
 
                 foreach (var characterCurrencyInfo in charactersToShow)
                 {
@@ -176,8 +174,6 @@ namespace CurrencyTracker.Windows
                 {
                     Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
                 }
-                ImGui.SameLine();
-                ImGui.Text($"{Service.Lang.GetText("HelpTranslateHelp")}!");
 
                 ImGui.EndPopup();
             }

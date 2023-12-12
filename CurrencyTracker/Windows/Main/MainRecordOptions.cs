@@ -26,14 +26,14 @@ namespace CurrencyTracker.Windows
         // 按临界值合并记录界面 Merge Transactions By Threshold
         private void MergeTransactionUI()
         {
-            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("MergeTransactionsLabel")))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("Merge")))
             {
                 ImGui.OpenPopup("MergeTransactions");
             }
 
             if (ImGui.BeginPopup("MergeTransactions"))
             {
-                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("MergeTransactionsLabel4"));
+                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("ManualMerge"));
                 ImGui.Text(Service.Lang.GetText("Threshold"));
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(150f);
@@ -42,7 +42,7 @@ namespace CurrencyTracker.Windows
                     mergeThreshold = Math.Max(0, mergeThreshold);
                 }
                 ImGui.SameLine();
-                ImGuiComponents.HelpMarker($"{Service.Lang.GetText("MergeTransactionsHelp3")}{Service.Lang.GetText("TransactionsHelp2")}");
+                ImGuiComponents.HelpMarker($"{Service.Lang.GetText("MergeTransactionsHelp3")}");
 
                 // 双向合并 Two-Way Merge
                 if (ImGui.Button(Service.Lang.GetText("TwoWayMerge")))
@@ -86,45 +86,6 @@ namespace CurrencyTracker.Windows
             return mergeCount;
         }
 
-        // 清除异常记录界面 Clear Exceptional Transactions
-        private void ClearExceptionUI()
-        {
-            /*
-            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ExclamationCircle, Service.Lang.GetText("ClearExTransactionsLabel")))
-            {
-                ImGui.OpenPopup("ClearExceptionNote");
-            }
-
-            if (ImGui.BeginPopup("ClearExceptionNote"))
-            {
-                ImGui.Text($"{Service.Lang.GetText("ClearExTransactionsHelp")}{Service.Lang.GetText("ClearExTransactionsHelp1")}\n{Service.Lang.GetText("TransactionsHelp2")}");
-
-                ImGui.Separator();
-
-                if (ImGui.Button(Service.Lang.GetText("Confirm")))
-                {
-                    if (selectedCurrencyID == 0)
-                    {
-                        Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                        return;
-                    }
-
-                    var removedCount = Transactions.ClearExceptionRecords(selectedCurrencyID);
-                    if (removedCount > 0)
-                    {
-                        Service.Chat.Print($"{Service.Lang.GetText("ClearExTransactionsHelp2", removedCount)}");
-                        UpdateTransactions();
-                    }
-                    else
-                    {
-                        Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
-                    }
-                }
-                ImGui.EndPopup();
-            }
-            */
-        }
-
         // 导出数据界面 Export Transactions
         private void ExportDataUI()
         {
@@ -158,24 +119,18 @@ namespace CurrencyTracker.Windows
                     C.Save();
                 }
 
-                ImGui.SameLine();
-                ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp"));
-
-                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel"));
-                ImGui.SameLine();
-                ImGuiComponents.HelpMarker(Service.Lang.GetText("ExportFileHelp1"));
+                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel") + $"({Service.Lang.GetText("PressEnterToConfirm")})");
 
                 ImGui.SetNextItemWidth(200);
                 if (ImGui.InputText($"_{C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref fileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
                 {
                     if (currentTypeTransactions == null || currentTypeTransactions.Count == 0)
                     {
-                        Service.Chat.PrintError(Service.Lang.GetText("ExportCsvMessage1"));
                         return;
                     }
 
                     var filePath = Transactions.ExportData(currentTypeTransactions, fileName, selectedCurrencyID, exportDataFileType);
-                    Service.Chat.Print($"{Service.Lang.GetText("ExportCsvMessage3")}{filePath}");
+                    Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")}{filePath}");
                 }
 
                 if (ImGui.IsItemHovered())

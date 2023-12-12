@@ -46,7 +46,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 if (textNode != null)
                 {
                     var FateName = textNode->NodeText.ToString();
-                    Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate")} {FateName})", RecordChangeType.All, 23, TransactionFileCategory.Inventory, 0);
+                    Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", FateName)})", RecordChangeType.All, 23, TransactionFileCategory.Inventory, 0);
                 }
             }
         }

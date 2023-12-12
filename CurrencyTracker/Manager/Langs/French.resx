@@ -59,46 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -129,20 +129,17 @@
   <data name="ClusterByTimeHelp1" xml:space="preserve">
     <value>Display transactions in {0} hour(s) interval</value>
   </data>
-  <data name="ClusterInterval" xml:space="preserve">
-    <value>Heures</value>
+  <data name="Hours" xml:space="preserve">
+    <value>Hours</value>
   </data>
-  <data name="ConfigLabel" xml:space="preserve">
-    <value>Options de filtre</value>
+  <data name="Category-RecordOptions" xml:space="preserve">
+    <value>Record Options</value>
   </data>
-  <data name="ConfigLabel1" xml:space="preserve">
-    <value>Options d'enregistrement</value>
+  <data name="Category-Others" xml:space="preserve">
+    <value>Others</value>
   </data>
-  <data name="ConfigLabel2" xml:space="preserve">
-    <value>Autres</value>
-  </data>
-  <data name="ConfigLabelHelp" xml:space="preserve">
-    <value>Cliquez pour développer/réduire</value>
+  <data name="Category-Help" xml:space="preserve">
+    <value>Click to expand/collapse</value>
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
     <value>Note:
@@ -151,8 +148,8 @@
 (If you insist, that's also ok)
 3. Deleting currencies will not delete the existing data files, if necessary, please delete them by yourself.</value>
   </data>
-  <data name="CustomCurrencyTracker" xml:space="preserve">
-    <value>Suivi de devise personnalisé</value>
+  <data name="AddCustomCurrency" xml:space="preserve">
+    <value>Add Custom Currency</value>
   </data>
   <data name="PleaseSelect" xml:space="preserve">
     <value>Sélectionner...</value>
@@ -161,10 +158,10 @@
     <value>Rechercher...</value>
   </data>
   <data name="CustomCurrencyHelp1" xml:space="preserve">
-    <value>Impossible d'ajouter : la devise que vous avez sélectionnée existe déjà</value>
+    <value>Fail to add: the currency you selected has already existed</value>
   </data>
   <data name="CustomCurrencyHelp2" xml:space="preserve">
-    <value>Échec de la suppression : la devise que vous avez sélectionnée n'existe pas</value>
+    <value>Fail to delete: the currency you selected does not exist</value>
   </data>
   <data name="Day" xml:space="preserve">
     <value>D</value>
@@ -172,23 +169,17 @@
   <data name="Delete" xml:space="preserve">
     <value>Supprimer</value>
   </data>
-  <data name="ExportCsvMessage1" xml:space="preserve">
-    <value>Aucune transaction dans la devise sélectionnée.</value>
-  </data>
   <data name="ExportFileCSVHeader" xml:space="preserve">
     <value>Heure, Montant, Monnaie, Lieu, Note</value>
   </data>
-  <data name="ExportCsvMessage3" xml:space="preserve">
+  <data name="ExportFileMessage" xml:space="preserve">
     <value>A file has been exported to: </value>
-  </data>
-  <data name="ExportFileHelp1" xml:space="preserve">
-    <value>Note: The exported transactions will be subject to all the sorting and filtering conditions that are currently enabled (exclude paging).</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>Si laissée vide, le fichier sera nommé :</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
-    <value>Nom du fichier : (Appuyer sur Entrée pour confirmer)</value>
+    <value>File Name:</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>Heure actuelle</value>
@@ -215,18 +206,10 @@
     <value>Merged {0} transactions.</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
-    <value>PLEASE review this, it's shaky. 
+    <value>Merge adjacent transactions of the same location if the Change is below the threshold. If the threshold is 0, all such transactions will be merged.
 
-Fusionner les transactions avec la devise actuellement sélectionnée, au même endroit, adjacentes l'une et l'autre, et avec le seuil de Monnaie &lt; .
-Après la fusion, l'Heure et le Montant de l'enregistrement des fusions sera extrait du dernier enregistrement présent dans les fusions, alors que la Monnaie sera synthétisée.
-Si le seuil est 0, le plugin fusionnera TOUTES les transactions sous la devise actuellement selectionnée, au même endroit, adjacentes l'une à l'autre.
-
-Fusion simple : les Transactions avec la Monnaie (positive/négative) sont calculées séparément lorsque vous fusionnez des Transactions adjacentes.
-
-Fusion double : les Transactions avec la Monnaie (positive/négative) sont calculées ensemble lorsque vous fusionnez des Transactions adjacentes. </value>
-  </data>
-  <data name="MergeTransactionsLabel" xml:space="preserve">
-    <value>Fusionner</value>
+One-Way Merge: Calculate positive and negative Changes separately when merging.
+Two-Way Merge: Calculate positive and negative Changes together when merging.</value>
   </data>
   <data name="Threshold" xml:space="preserve">
     <value>
@@ -238,8 +221,8 @@ Seuil</value>
   <data name="OneWayMerge" xml:space="preserve">
     <value>Fusion simple</value>
   </data>
-  <data name="MergeTransactionsLabel4" xml:space="preserve">
-    <value>Fusion manuelle</value>
+  <data name="ManualMerge" xml:space="preserve">
+    <value>Manual Merge</value>
   </data>
   <data name="NextPage" xml:space="preserve">
     <value>Suivant</value>
@@ -250,16 +233,8 @@ Seuil</value>
   <data name="PreviousPage" xml:space="preserve">
     <value>Précédent</value>
   </data>
-  <data name="ReverseSort" xml:space="preserve">
-    <value>Tri Inversé</value>
-  </data>
   <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
     <value>Record Duty Rewards</value>
-  </data>
-  <data name="DutyRewards-RecordDutyRewardsHelp" xml:space="preserve">
-    <value>The plugin will record the TOTAL rewards obtained during the duty.
-(Include PVP)
-(Exclude Bozja and Eureka)</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>Aucunes transactions correspondantes trouvées.</value>
@@ -267,14 +242,11 @@ Seuil</value>
   <data name="TransactionsHelp1" xml:space="preserve">
     <value>Aucune devise n'est actuellement sélectionnée.</value>
   </data>
-  <data name="TransactionsHelp2" xml:space="preserve">
-    <value>Note : L'opération ne peut pas être annulée. Si nécessaire, veuillez faire une sauvegarde.</value>
-  </data>
   <data name="UnknownCurrency" xml:space="preserve">
     <value>Devise inconnue</value>
   </data>
   <data name="UnknownLocation" xml:space="preserve">
-    <value>Inconnu</value>
+    <value>Unknown Location</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Heure</value>
@@ -289,34 +261,10 @@ Seuil</value>
     <value>Emplacement</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
-    <value>Enregistrements par page :</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>Ajouter</value>
-  </data>
-  <data name="ClearExTransactionsHelp" xml:space="preserve">
-    <value>Essayer de débarrasser touts les transactions exceptionnelles sous la devise actuellement sélectionnée</value>
-  </data>
-  <data name="ClearExTransactionsHelp1" xml:space="preserve">
-    <value>Current judgment criteria:
-Transactions with Change equal to the Amount /with Change equal to 0</value>
-  </data>
-  <data name="ClearExTransactionsLabel" xml:space="preserve">
-    <value>Effacer Ex</value>
-  </data>
-  <data name="Month" xml:space="preserve">
-    <value>M</value>
+    <value>Page Size</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>Y</value>
-  </data>
-  <data name="GraphHelpMessages" xml:space="preserve">
-    <value>Aide</value>
-  </data>
-  <data name="GraphHelpMessages1" xml:space="preserve">
-    <value>-Suggest enabling filters on the main window to reduce the number of transactions shown here.
--You can adjust a plot by clicking on the horizontal or vertical axis.
--This window is still in testing. If you encounter any bugs or have ideas for new features, please submit an issue on my Github page.</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
     <value>Montant des Transactions :</value>
@@ -327,15 +275,6 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="AmountGraph1" xml:space="preserve">
     <value>[Heure - Montant]</value>
   </data>
-  <data name="AmountGraph2" xml:space="preserve">
-    <value>Taux global</value>
-  </data>
-  <data name="AmountGraph3" xml:space="preserve">
-    <value>Dernier Taux</value>
-  </data>
-  <data name="AmountGraph4" xml:space="preserve">
-    <value>* This plot mainly reflects changes in the Amount of the currency over Time.</value>
-  </data>
   <data name="DividedUnitThou" xml:space="preserve">
     <value>(Unité : Milliers)</value>
   </data>
@@ -345,20 +284,11 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="DividedUnitBil" xml:space="preserve">
     <value>(Unité : Milliards)</value>
   </data>
-  <data name="ChangeRateToolTip" xml:space="preserve">
-    <value>(Augmentation)</value>
-  </data>
-  <data name="ChangeRateToolTip1" xml:space="preserve">
-    <value>(Diminution)</value>
-  </data>
   <data name="ChangeGraph" xml:space="preserve">
     <value>Graphique des Monnaies</value>
   </data>
   <data name="ChangeGraph1" xml:space="preserve">
     <value>[Time - Change]</value>
-  </data>
-  <data name="ChangeGraph2" xml:space="preserve">
-    <value>* This plot mainly reflects changes in the Change of the currency over Time.</value>
   </data>
   <data name="LocationGraph" xml:space="preserve">
     <value>Graphique de l'emplacement</value>
@@ -366,43 +296,14 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="LocationGraph1" xml:space="preserve">
     <value> [Emplacement - Fréquence]</value>
   </data>
-  <data name="LocationGraph2" xml:space="preserve">
-    <value>* This plot mainly reflects the frequency of occurrence of each location in the currency transactions.</value>
-  </data>
   <data name="LocationAmountGraph" xml:space="preserve">
     <value>Graphique de changement d'emplacement</value>
   </data>
   <data name="LocationAmountGraph1" xml:space="preserve">
     <value> [Location - Change]</value>
   </data>
-  <data name="LocationAmountGraph2" xml:space="preserve">
-    <value>* This plot mainly reflects the the total amount of Change of each location in the currency transactions.</value>
-  </data>
   <data name="Graphs" xml:space="preserve">
     <value>Graphiques</value>
-  </data>
-  <data name="HideCurrency" xml:space="preserve">
-    <value>Hide
-(Double Right-Click)</value>
-  </data>
-  <data name="OrderChangeHelp" xml:space="preserve">
-    <value>Toutes les devises casquées ont été restaurées !</value>
-  </data>
-  <data name="OrderChangeHelp1" xml:space="preserve">
-    <value>Restauré</value>
-  </data>
-  <data name="OrderChangeHelp2" xml:space="preserve">
-    <value>devises.</value>
-  </data>
-  <data name="OrderChangeLabel" xml:space="preserve">
-    <value>Current Order:</value>
-  </data>
-  <data name="RestoreHidden" xml:space="preserve">
-    <value>Restaurer les éléments cachés
-(Double clic droit)</value>
-  </data>
-  <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>Removed {0} exception transactions.</value>
   </data>
   <data name="Manage" xml:space="preserve">
     <value>Gérer</value>
@@ -417,7 +318,7 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
     <value>Désélectionner</value>
   </data>
   <data name="CopiedToClipboard" xml:space="preserve">
-    <value>Copié dans le presse-papier</value>
+    <value>Copied to clipboard</value>
   </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>Aucunes transactions actuellement sélectionnées.</value>
@@ -431,17 +332,11 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="Export" xml:space="preserve">
     <value>Exporter</value>
   </data>
-  <data name="EditHelp" xml:space="preserve">
-    <value>Appuyer sur Entrée pour valider</value>
+  <data name="PressEnterToConfirm" xml:space="preserve">
+    <value>Press Enter to Confirm</value>
   </data>
   <data name="EditHelp1" xml:space="preserve">
-    <value>Veuillez saisir un nom de lieu.</value>
-  </data>
-  <data name="EditLocationHelp" xml:space="preserve">
-    <value>Changed {0} transactions' Location to</value>
-  </data>
-  <data name="EditNoteHelp" xml:space="preserve">
-    <value>Changed {0} transactions' Note to</value>
+    <value>Changed {0} transactions' {1} to</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Copier</value>
@@ -470,9 +365,6 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="Merge" xml:space="preserve">
     <value>Merge</value>
   </data>
-  <data name="MergeTransactionsHelp4" xml:space="preserve">
-    <value>Please select at least 2 transactions.</value>
-  </data>
   <data name="EndDate" xml:space="preserve">
     <value>Date de fin</value>
   </data>
@@ -493,12 +385,6 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   </data>
   <data name="Note" xml:space="preserve">
     <value>Note</value>
-  </data>
-  <data name="ExportFileHelp" xml:space="preserve">
-    <value>Note : Le choix du type de fichier d'exportation ici sera aussi appliqué ailleurs.</value>
-  </data>
-  <data name="ExportFileHelp2" xml:space="preserve">
-    <value>Type de fichier d'exportation invalide.</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
     <value># Exportation des Transactions -</value>
@@ -522,23 +408,17 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="UnknownContent" xml:space="preserve">
     <value>Contenu inconnu</value>
   </data>
-  <data name="MiniCactpot" xml:space="preserve">
-    <value>Mini Cactpot</value>
-  </data>
   <data name="TripleTriadWith" xml:space="preserve">
     <value>Triple Triad with {0}</value>
   </data>
-  <data name="Content" xml:space="preserve">
-    <value>Contenu</value>
+  <data name="Combat" xml:space="preserve">
+    <value>Combat</value>
   </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>Gold Saucer</value>
   </data>
   <data name="HelpTranslate" xml:space="preserve">
     <value>Aider à traduire</value>
-  </data>
-  <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>Merci beaucoup pour votre contribution</value>
   </data>
   <data name="NeedHelp" xml:space="preserve">
     <value>Besoin d'aide ?</value>
@@ -549,9 +429,6 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   <data name="DutyRewards-RecordContentName" xml:space="preserve">
     <value>Record Content Name</value>
   </data>
-  <data name="DutyRewards-RecordContentNameHelp" xml:space="preserve">
-    <value>The Note section of the duty rewards transaction will be filled with the content name.</value>
-  </data>
   <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
     <value>Record MGP Rewards Source</value>
   </data>
@@ -560,13 +437,6 @@ Transactions with Change equal to the Amount /with Change equal to 0</value>
   </data>
   <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
     <value>Record Teleport Costs</value>
-  </data>
-  <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>The Note section of specific transaction will be filled with Aetheryte/Area you teleport to.
-
-Example:
-Aetheryte option: (Teleport to Falcon's Nest)
-Area option: (Teleport to Coerthas Western Highlands)</value>
   </data>
   <data name="TripleTriad-RecordTTResult" xml:space="preserve">
     <value>Record Triple Triad Result</value>
@@ -577,9 +447,6 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
   <data name="Exchange-RecordExchangeResult" xml:space="preserve">
     <value>Record Exchange Result</value>
   </data>
-  <data name="Exchange-RecordExchangeResultHelp" xml:space="preserve">
-    <value>The plugin will record the TOTAL changes that occur during the exchange.</value>
-  </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Ouvrir la fenêtre principale du plugin</value>
   </data>
@@ -587,12 +454,7 @@ Area option: (Teleport to Coerthas Western Highlands)</value>
     <value>/ct &lt;currencyname&gt;&lt;currencyname&gt; → Ouvre la fenêtre principale avec une devise spécifique.</value>
   </data>
   <data name="EditFailed" xml:space="preserve">
-    <value>Edit Failed.</value>
-  </data>
-  <data name="MergeNoteHelp" xml:space="preserve">
-    <value>If left blank,
-the Note of the merged transaction will be:
-(Merged from X transactions)</value>
+    <value>Edit Failed</value>
   </data>
   <data name="OperationGuide" xml:space="preserve">
     <value>Guide d'opération</value>
@@ -618,22 +480,14 @@ the Note of the merged transaction will be:
   <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
     <value>Record Quest Rewards</value>
   </data>
-  <data name="GoladSaucer-RecordMGPSourceHelp" xml:space="preserve">
-    <value>The Note section of MGP rewards transaction will be filled with source.
-(ONLY effective in Gold Saucer)</value>
-  </data>
-  <data name="TripleTriad-RecordTTResultHelp" xml:space="preserve">
-    <value>The Note section of MGP/cards transaction will be filled with the result.
-(Include win/loss result and the rival name)</value>
-  </data>
   <data name="Trade-RecordTradeTarget" xml:space="preserve">
     <value>Record Trade Target</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
     <value>Trade with {0}</value>
   </data>
-  <data name="DeleteCurrency" xml:space="preserve">
-    <value>Delete (Double Right-Click)</value>
+  <data name="DoubleRightClick" xml:space="preserve">
+    <value>Double Right-Click</value>
   </data>
   <data name="PageComponent" xml:space="preserve">
     <value>{0} / {1}</value>
@@ -641,14 +495,8 @@ the Note of the merged transaction will be:
   <data name="Confirm" xml:space="preserve">
     <value>Confirm</value>
   </data>
-  <data name="CurrencyRenameHelp" xml:space="preserve">
-    <value>Please enter a modified currency name.</value>
-  </data>
   <data name="CurrencyRenameHelp1" xml:space="preserve">
-    <value>Another currency with the same name already exists.</value>
-  </data>
-  <data name="CurrencyRenameHelp2" xml:space="preserve">
-    <value>A data file with the same name already exists: {0}</value>
+    <value>A currency/data file with the same name already exists.</value>
   </data>
   <data name="Rename" xml:space="preserve">
     <value>Rename</value>
@@ -672,7 +520,7 @@ the Note of the merged transaction will be:
     <value>Record Island Result</value>
   </data>
   <data name="Fate" xml:space="preserve">
-    <value>FATE</value>
+    <value>FATE {0}</value>
   </data>
   <data name="SelectedTransactionsInfo" xml:space="preserve">
     <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
@@ -683,37 +531,14 @@ the Note of the merged transaction will be:
   <data name="ChildframeWidthOffset" xml:space="preserve">
     <value>Width Offset</value>
   </data>
-  <data name="FateRewards-RecordFateRewardsHelp" xml:space="preserve">
-    <value>The Note section of rewards-related transaction will be filled with the FATE name.</value>
-  </data>
-  <data name="IslandSanctuary-RecordISResultHelp" xml:space="preserve">
-    <value>The Note section of specific transactions will be filled with the source.
-(Include Workshop, Farm, Pasture, Ganary, Building and Crafting.)</value>
-  </data>
   <data name="MobDrops-RecordMobDrops" xml:space="preserve">
     <value>Record Mob Drops</value>
-  </data>
-  <data name="MobDrops-RecordMobDropsHelp" xml:space="preserve">
-    <value>The Note section of drops-related transaction will be filled with the mobs names.
-(Maybe not very accurate)</value>
-  </data>
-  <data name="QuestRewards-RecordQuestRewardsHelp" xml:space="preserve">
-    <value>The Note section of rewards-related transaction will be filled with the quest name.</value>
   </data>
   <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
     <value>Record Special Exchange Result</value>
   </data>
-  <data name="SpecialExchange-RecordSpecialExchangeResultHelp" xml:space="preserve">
-    <value>Same as above. Just Supplement to the above option.</value>
-  </data>
-  <data name="Trade-RecordTradeTargetHelp" xml:space="preserve">
-    <value>The Note section of specific transaction will be filled with the trade target name.</value>
-  </data>
   <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
     <value>Record Special Teleport Costs</value>
-  </data>
-  <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>Same as above. Just Supplement to the above option.</value>
   </data>
   <data name="MultiCharaStats" xml:space="preserve">
     <value>Multi-Chara Stats</value>
@@ -726,10 +551,6 @@ the Note of the merged transaction will be:
   </data>
   <data name="MobDrops-MobDropsNote" xml:space="preserve">
     <value>Drop from {0}</value>
-  </data>
-  <data name="Main-MultiCharStats-Help" xml:space="preserve">
-    <value>To make your character data appear here,
-you need to log in to the target character at least once with this plugin enabled.</value>
   </data>
   <data name="Inventory" xml:space="preserve">
     <value>Inventory</value>

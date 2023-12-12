@@ -129,19 +129,16 @@
   <data name="ClusterByTimeHelp1" xml:space="preserve">
     <value>以 {0}小时 为间隔显示数据</value>
   </data>
-  <data name="ClusterInterval" xml:space="preserve">
+  <data name="Hours" xml:space="preserve">
     <value>小时</value>
   </data>
-  <data name="ConfigLabel" xml:space="preserve">
-    <value>筛选排序选项</value>
-  </data>
-  <data name="ConfigLabel1" xml:space="preserve">
+  <data name="Category-RecordOptions" xml:space="preserve">
     <value>记录选项</value>
   </data>
-  <data name="ConfigLabel2" xml:space="preserve">
+  <data name="Category-Others" xml:space="preserve">
     <value>其他</value>
   </data>
-  <data name="ConfigLabelHelp" xml:space="preserve">
+  <data name="Category-Help" xml:space="preserve">
     <value>点击以展开/收回</value>
   </data>
   <data name="CustomCurrencyHelp" xml:space="preserve">
@@ -150,8 +147,8 @@
 2.不建议对非货币物品进行追踪, 建议使用其他插件来追踪非货币物品
 3.删除货币并不会删除已有的数据文件，如有需要请自行删除</value>
   </data>
-  <data name="CustomCurrencyTracker" xml:space="preserve">
-    <value>自定义货币追踪</value>
+  <data name="AddCustomCurrency" xml:space="preserve">
+    <value>自定义货币</value>
   </data>
   <data name="PleaseSelect" xml:space="preserve">
     <value>请选择...</value>
@@ -171,23 +168,17 @@
   <data name="Delete" xml:space="preserve">
     <value>删除 </value>
   </data>
-  <data name="ExportCsvMessage1" xml:space="preserve">
-    <value>当前货币下无收支记录</value>
-  </data>
   <data name="ExportFileCSVHeader" xml:space="preserve">
     <value>时间,货币数,收支,地点,备注</value>
   </data>
-  <data name="ExportCsvMessage3" xml:space="preserve">
+  <data name="ExportFileMessage" xml:space="preserve">
     <value>已导出文件至: </value>
-  </data>
-  <data name="ExportFileHelp1" xml:space="preserve">
-    <value>注: 导出的数据将会应用当前所启用的一切排序筛选条件(不包含分页)</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>如果留空，文件名则为:</value>
   </data>
   <data name="FileRenameLabel" xml:space="preserve">
-    <value>文件名: (按 Enter 键确认)</value>
+    <value>文件名:</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>当前时间</value>
@@ -214,16 +205,10 @@
     <value>合并了 {0} 条记录</value>
   </data>
   <data name="MergeTransactionsHelp3" xml:space="preserve">
-    <value>合并当前选中货币下，地点相同、彼此相邻且收支 小于 临界值的记录。
-合并后记录的数量、时间将会取最新一条记录的数据，收支则会取被合并的各记录之和。
-如果临界值为 0，则会合并一切地点相同、彼此相邻的记录。
+    <value>合并地点一致 、位置相邻且收支低于临界值的记录。如果临界值为 0，则尝试合并所有满足条件的记录。
 
-单向合并: 正负数改变量的记录分开计算相邻与合并
-双向合并：正负数改变量的记录一起计算相邻与合并
-</value>
-  </data>
-  <data name="MergeTransactionsLabel" xml:space="preserve">
-    <value>合并记录</value>
+单向合并：正负收支分别计算合并
+双向合并：正负收支一同计算合并</value>
   </data>
   <data name="Threshold" xml:space="preserve">
     <value>临界值</value>
@@ -234,7 +219,7 @@
   <data name="OneWayMerge" xml:space="preserve">
     <value>单项合并</value>
   </data>
-  <data name="MergeTransactionsLabel4" xml:space="preserve">
+  <data name="ManualMerge" xml:space="preserve">
     <value>手动合并</value>
   </data>
   <data name="NextPage" xml:space="preserve">
@@ -246,16 +231,8 @@
   <data name="PreviousPage" xml:space="preserve">
     <value>上一页</value>
   </data>
-  <data name="ReverseSort" xml:space="preserve">
-    <value>倒序排序</value>
-  </data>
   <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
     <value>记录副本奖励</value>
-  </data>
-  <data name="DutyRewards-RecordDutyRewardsHelp" xml:space="preserve">
-    <value>插件会选择记录副本期间产生的总计奖励
-(包括 PVP)
-(不包括 博兹雅 和 优雷卡)</value>
   </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>未找到符合条件的记录。</value>
@@ -263,14 +240,11 @@
   <data name="TransactionsHelp1" xml:space="preserve">
     <value>当前未选择任何货币类型。</value>
   </data>
-  <data name="TransactionsHelp2" xml:space="preserve">
-    <value>注: 操作无法回退，如有需要，请做好数据备份</value>
-  </data>
   <data name="UnknownCurrency" xml:space="preserve">
     <value>未知的货币类型</value>
   </data>
   <data name="UnknownLocation" xml:space="preserve">
-    <value>未知区域</value>
+    <value>未知地点</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>时间</value>
@@ -285,34 +259,10 @@
     <value>地点</value>
   </data>
   <data name="TransactionsPerPage" xml:space="preserve">
-    <value>单页记录数:</value>
-  </data>
-  <data name="Add" xml:space="preserve">
-    <value>添加 </value>
-  </data>
-  <data name="ClearExTransactionsHelp" xml:space="preserve">
-    <value>尝试清除当前选中货币下的所有异常记录
-</value>
-  </data>
-  <data name="ClearExTransactionsHelp1" xml:space="preserve">
-    <value>当前判断标准: 收支等于总金额的记录 / 收支为 0 的记录</value>
-  </data>
-  <data name="ClearExTransactionsLabel" xml:space="preserve">
-    <value>清除异常记录</value>
-  </data>
-  <data name="Month" xml:space="preserve">
-    <value>月</value>
+    <value>单页记录数</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>年</value>
-  </data>
-  <data name="GraphHelpMessages" xml:space="preserve">
-    <value>说明帮助</value>
-  </data>
-  <data name="GraphHelpMessages1" xml:space="preserve">
-    <value>- 建议在主界面启用各类筛选器，减少记录数量
-- 可以通过点击图表的横轴或纵轴使图表界面自适应显示
-- 本界面仍处于测试阶段，如果遇到任何 BUG 或有对新功能的想法，请提交 ISSUE</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
     <value>记录数量:</value>
@@ -323,15 +273,6 @@
   <data name="AmountGraph1" xml:space="preserve">
     <value>[时间 - 数量]</value>
   </data>
-  <data name="AmountGraph2" xml:space="preserve">
-    <value>总体变化率</value>
-  </data>
-  <data name="AmountGraph3" xml:space="preserve">
-    <value>最新变化率</value>
-  </data>
-  <data name="AmountGraph4" xml:space="preserve">
-    <value>* 本图表主要反映时间变化下货币数量发生的变化</value>
-  </data>
   <data name="DividedUnitThou" xml:space="preserve">
     <value>(单位: 千)</value>
   </data>
@@ -341,20 +282,11 @@
   <data name="DividedUnitBil" xml:space="preserve">
     <value>(单位: 十亿)</value>
   </data>
-  <data name="ChangeRateToolTip" xml:space="preserve">
-    <value>(上升中)</value>
-  </data>
-  <data name="ChangeRateToolTip1" xml:space="preserve">
-    <value>(下降中)</value>
-  </data>
   <data name="ChangeGraph" xml:space="preserve">
     <value>收支图表 </value>
   </data>
   <data name="ChangeGraph1" xml:space="preserve">
     <value>[时间 - 收支]</value>
-  </data>
-  <data name="ChangeGraph2" xml:space="preserve">
-    <value>* 本图表主要反映时间变化下货币收支量的变化</value>
   </data>
   <data name="LocationGraph" xml:space="preserve">
     <value>地点图表</value>
@@ -362,42 +294,14 @@
   <data name="LocationGraph1" xml:space="preserve">
     <value> [地点 - 地点频次]</value>
   </data>
-  <data name="LocationGraph2" xml:space="preserve">
-    <value>* 本图表主要反映该货币记录中各地点的出现频次</value>
-  </data>
   <data name="LocationAmountGraph" xml:space="preserve">
     <value>地点收支图表 </value>
   </data>
   <data name="LocationAmountGraph1" xml:space="preserve">
     <value> [地点 - 收支]</value>
   </data>
-  <data name="LocationAmountGraph2" xml:space="preserve">
-    <value>* 本图表主要反映该货币记录中各地点下所产生收支的总额</value>
-  </data>
   <data name="Graphs" xml:space="preserve">
     <value>图表</value>
-  </data>
-  <data name="HideCurrency" xml:space="preserve">
-    <value>隐藏 (双击右键)</value>
-  </data>
-  <data name="OrderChangeHelp" xml:space="preserve">
-    <value>所有隐藏货币均已还原</value>
-  </data>
-  <data name="OrderChangeHelp1" xml:space="preserve">
-    <value>已还原</value>
-  </data>
-  <data name="OrderChangeHelp2" xml:space="preserve">
-    <value>种货币</value>
-  </data>
-  <data name="OrderChangeLabel" xml:space="preserve">
-    <value>当前位置:</value>
-  </data>
-  <data name="RestoreHidden" xml:space="preserve">
-    <value>还原
-(双击右键)</value>
-  </data>
-  <data name="ClearExTransactionsHelp2" xml:space="preserve">
-    <value>清除了 {0}  条异常记录</value>
   </data>
   <data name="Manage" xml:space="preserve">
     <value>管理</value>
@@ -412,7 +316,7 @@
     <value>取消选中</value>
   </data>
   <data name="CopiedToClipboard" xml:space="preserve">
-    <value>已复制到剪贴板</value>
+    <value>已复制至剪贴板</value>
   </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>当前未选中任何记录</value>
@@ -426,17 +330,11 @@
   <data name="Export" xml:space="preserve">
     <value>导出记录</value>
   </data>
-  <data name="EditHelp" xml:space="preserve">
+  <data name="PressEnterToConfirm" xml:space="preserve">
     <value>按 Enter 键确认</value>
   </data>
   <data name="EditHelp1" xml:space="preserve">
-    <value>请输入修改后的地点名称</value>
-  </data>
-  <data name="EditLocationHelp" xml:space="preserve">
-    <value>已修改 {0} 条记录的地名为</value>
-  </data>
-  <data name="EditNoteHelp" xml:space="preserve">
-    <value>已修改 {0} 条记录的备注为</value>
+    <value>已修改 {0} 条记录的 {1} 为</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>复制</value>
@@ -465,9 +363,6 @@
   <data name="Merge" xml:space="preserve">
     <value>合并</value>
   </data>
-  <data name="MergeTransactionsHelp4" xml:space="preserve">
-    <value>请至少选择 2 条记录</value>
-  </data>
   <data name="EndDate" xml:space="preserve">
     <value>结束日期</value>
   </data>
@@ -488,12 +383,6 @@
   </data>
   <data name="Note" xml:space="preserve">
     <value>备注</value>
-  </data>
-  <data name="ExportFileHelp" xml:space="preserve">
-    <value>注: 此处的导出文件类型选择同样会影响其他地方的导出文件格式</value>
-  </data>
-  <data name="ExportFileHelp2" xml:space="preserve">
-    <value>非法的文件导出类型</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
     <value># 货币数据导出 -</value>
@@ -517,23 +406,17 @@
   <data name="UnknownContent" xml:space="preserve">
     <value>未知副本</value>
   </data>
-  <data name="MiniCactpot" xml:space="preserve">
-    <value>仙人微彩</value>
-  </data>
   <data name="TripleTriadWith" xml:space="preserve">
     <value>幻卡对战 - {0}</value>
   </data>
-  <data name="Content" xml:space="preserve">
-    <value>副本</value>
+  <data name="Combat" xml:space="preserve">
+    <value>战斗</value>
   </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>金碟</value>
   </data>
   <data name="HelpTranslate" xml:space="preserve">
     <value>帮忙翻译</value>
-  </data>
-  <data name="HelpTranslateHelp" xml:space="preserve">
-    <value>诚挚感谢你的付出</value>
   </data>
   <data name="NeedHelp" xml:space="preserve">
     <value>需要帮助</value>
@@ -544,9 +427,6 @@
   <data name="DutyRewards-RecordContentName" xml:space="preserve">
     <value>记录副本名称</value>
   </data>
-  <data name="DutyRewards-RecordContentNameHelp" xml:space="preserve">
-    <value>副本奖励相关记录的备注部分将被填入副本名称</value>
-  </data>
   <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
     <value>记录金碟币来源</value>
   </data>
@@ -555,13 +435,6 @@
   </data>
   <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
     <value>记录传送费</value>
-  </data>
-  <data name="TeleportCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>相关记录的备注部分将被填入你传送至的以太之光/区域
-
-例:
-以太之光 选项: (传送至 隼巢)
-区域名 选项: (传送至 库尔札斯西部高地)</value>
   </data>
   <data name="TripleTriad-RecordTTResult" xml:space="preserve">
     <value>记录九宫幻卡结果</value>
@@ -572,9 +445,6 @@
   <data name="Exchange-RecordExchangeResult" xml:space="preserve">
     <value>记录交换结果</value>
   </data>
-  <data name="Exchange-RecordExchangeResultHelp" xml:space="preserve">
-    <value>插件会选择记录交换期间产生的总计收支</value>
-  </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>打开插件主界面</value>
   </data>
@@ -583,11 +453,6 @@
   </data>
   <data name="EditFailed" xml:space="preserve">
     <value>编辑失败</value>
-  </data>
-  <data name="MergeNoteHelp" xml:space="preserve">
-    <value>如果此项留空,
-合并后记录的 备注 部分则为:
-(由 X 条记录合并而成)</value>
   </data>
   <data name="OperationGuide" xml:space="preserve">
     <value>操作指南</value>
@@ -613,22 +478,14 @@
   <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
     <value>记录任务奖励</value>
   </data>
-  <data name="GoladSaucer-RecordMGPSourceHelp" xml:space="preserve">
-    <value>金碟币奖励相关记录的备注部分将被填入奖励来源
-(仅在金碟游乐场生效)</value>
-  </data>
-  <data name="TripleTriad-RecordTTResultHelp" xml:space="preserve">
-    <value>金碟币/幻卡奖励相关记录的备注部分将被填入对局结果
-(包含胜负情况以及对手名称)</value>
-  </data>
   <data name="Trade-RecordTradeTarget" xml:space="preserve">
     <value>记录交易对象</value>
   </data>
   <data name="TradeWith" xml:space="preserve">
     <value>交易自 {0}</value>
   </data>
-  <data name="DeleteCurrency" xml:space="preserve">
-    <value>删除 (双击右键)</value>
+  <data name="DoubleRightClick" xml:space="preserve">
+    <value>双击右键</value>
   </data>
   <data name="PageComponent" xml:space="preserve">
     <value>第 {0} 页 / 共 {1} 页</value>
@@ -636,14 +493,8 @@
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
   </data>
-  <data name="CurrencyRenameHelp" xml:space="preserve">
-    <value>请输入修改后的货币名称</value>
-  </data>
   <data name="CurrencyRenameHelp1" xml:space="preserve">
-    <value>已存在另一同名货币</value>
-  </data>
-  <data name="CurrencyRenameHelp2" xml:space="preserve">
-    <value>已存在同名数据文件: {0}</value>
+    <value>已存在同名货币/数据文件</value>
   </data>
   <data name="Rename" xml:space="preserve">
     <value>重命名</value>
@@ -667,7 +518,7 @@
     <value>记录无人岛相关收支</value>
   </data>
   <data name="Fate" xml:space="preserve">
-    <value>临危受命</value>
+    <value>临危受命 {0}</value>
   </data>
   <data name="SelectedTransactionsInfo" xml:space="preserve">
     <value>计数: {0} 总和:{1} 平均值: {2} 最大值: {3} 最小值: {4} (收支)</value>
@@ -678,37 +529,14 @@
   <data name="ChildframeWidthOffset" xml:space="preserve">
     <value>宽度偏移量</value>
   </data>
-  <data name="FateRewards-RecordFateRewardsHelp" xml:space="preserve">
-    <value>相关记录的备注部分将被填入危命名称</value>
-  </data>
-  <data name="IslandSanctuary-RecordISResultHelp" xml:space="preserve">
-    <value>无人岛相关收支记录的备注部分将被填入其来源
-(包含开拓工房、耕地、牧场、屯货仓库、开拓建造和开拓制作)</value>
-  </data>
   <data name="MobDrops-RecordMobDrops" xml:space="preserve">
     <value>记录怪物掉落物</value>
-  </data>
-  <data name="MobDrops-RecordMobDropsHelp" xml:space="preserve">
-    <value>掉落物相关记录的备注部分将被填入怪物名称
-(可能会不太准确)</value>
-  </data>
-  <data name="QuestRewards-RecordQuestRewardsHelp" xml:space="preserve">
-    <value>任务奖励相关记录的备注部分将被填入任务名称</value>
   </data>
   <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
     <value>记录特殊交换结果</value>
   </data>
-  <data name="SpecialExchange-RecordSpecialExchangeResultHelp" xml:space="preserve">
-    <value>和上面选项功能相同，只是额外的功能补充</value>
-  </data>
-  <data name="Trade-RecordTradeTargetHelp" xml:space="preserve">
-    <value>相关记录的备注部分将被填入交易对象名称</value>
-  </data>
   <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
     <value>记录特殊传送费用</value>
-  </data>
-  <data name="WarpCosts-RecordTPCostsHelp" xml:space="preserve">
-    <value>和上面选项功能相同，只是额外的功能补充</value>
   </data>
   <data name="MultiCharaStats" xml:space="preserve">
     <value>多角色数据</value>
@@ -721,10 +549,6 @@
   </data>
   <data name="MobDrops-MobDropsNote" xml:space="preserve">
     <value>掉落自 {0}</value>
-  </data>
-  <data name="Main-MultiCharStats-Help" xml:space="preserve">
-    <value>要让你的角色数据出现在这里，
-你需要在启用本插件的情况下，至少登录过目标角色一次</value>
   </data>
   <data name="Inventory" xml:space="preserve">
     <value>背包</value>

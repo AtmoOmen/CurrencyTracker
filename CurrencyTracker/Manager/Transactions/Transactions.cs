@@ -320,7 +320,6 @@ namespace CurrencyTracker.Manager
 
             if (exportType != 0 && exportType != 1)
             {
-                Service.Chat.PrintError(Service.Lang.GetText("ExportFileHelp2"));
                 return "Fail";
             }
 

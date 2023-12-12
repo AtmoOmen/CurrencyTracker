@@ -69,9 +69,9 @@ public partial class Main : Window, IDisposable
 
         windowWidth = ImGui.GetWindowWidth();
 
-        DrawCategory(ref showRecordOptions, Service.Lang.GetText("ConfigLabel1"), RecordOptionsUI);
+        DrawCategory(ref showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
         if (!showRecordOptions && !showOthers) ImGui.SameLine();
-        DrawCategory(ref showOthers, Service.Lang.GetText("ConfigLabel2"), OthersUI);
+        DrawCategory(ref showOthers, Service.Lang.GetText("Category-Others"), OthersUI);
 
         ImGui.Spacing();
         ImGui.Separator();
@@ -90,7 +90,7 @@ public partial class Main : Window, IDisposable
         }
         if (ImGui.IsItemHovered())
         {
-            ImGui.SetTooltip(Service.Lang.GetText("ConfigLabelHelp"));
+            ImGui.SetTooltip(Service.Lang.GetText("Category-Help"));
         }
         if (showUI)
         {

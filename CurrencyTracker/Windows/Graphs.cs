@@ -45,8 +45,6 @@ public class Graph : Window, IDisposable
         ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, Main.currentTypeTransactions.Count.ToString());
-        ImGui.SameLine();
-        HelpMessages();
 
         currentTypeTransactions = Main.currentTypeTransactions;
 
@@ -58,9 +56,6 @@ public class Graph : Window, IDisposable
             LocationAmountGraph(currentTypeTransactions);
         }
     }
-
-    private void HelpMessages()
-    { ImGuiComponents.HelpMarker(Service.Lang.GetText("GraphHelpMessages1")); }
 
     private void AmountGraph(List<TransactionsConvertor> currentTypeTransactions)
     {
@@ -88,7 +83,6 @@ public class Graph : Window, IDisposable
                 ImPlot.EndPlot();
             }
 
-            ImGui.TextDisabled(Service.Lang.GetText("AmountGraph4"));
         }
     }
 
@@ -118,7 +112,6 @@ public class Graph : Window, IDisposable
                 ImPlot.EndPlot();
             }
 
-            ImGui.TextDisabled(Service.Lang.GetText("ChangeGraph2"));
         }
     }
 
@@ -150,7 +143,6 @@ public class Graph : Window, IDisposable
                 ImPlot.EndPlot();
             }
 
-            ImGui.TextDisabled(Service.Lang.GetText("LocationGraph2"));
         }
     }
 
@@ -185,7 +177,6 @@ public class Graph : Window, IDisposable
                 ImPlot.EndPlot();
             }
 
-            ImGui.TextDisabled(Service.Lang.GetText("LocationAmountGraph2"));
         }
     }
 

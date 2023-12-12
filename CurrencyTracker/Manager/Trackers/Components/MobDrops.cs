@@ -1,5 +1,3 @@
-using FFXIVClientStructs.FFXIV.Client.Game.Fate;
-
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class MobDrops : ITrackerComponent
