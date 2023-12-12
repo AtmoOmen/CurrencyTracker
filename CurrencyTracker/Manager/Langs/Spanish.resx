@@ -129,39 +129,11 @@
   <data name="ClusterByTimeHelp1" xml:space="preserve">
     <value>Mostrar transacciones en intervalos de {0} hora/s</value>
   </data>
-  <data name="Hours" xml:space="preserve">
-    <value>Hours</value>
-  </data>
-  <data name="Category-RecordOptions" xml:space="preserve">
-    <value>Record Options</value>
-  </data>
-  <data name="Category-Others" xml:space="preserve">
-    <value>Others</value>
-  </data>
-  <data name="Category-Help" xml:space="preserve">
-    <value>Click to expand/collapse</value>
-  </data>
-  <data name="CustomCurrencyHelp" xml:space="preserve">
-    <value>Note:
-1. The 3 preset currencies cannot be deleted.
-2. Not recommend to track not-currency items, there should be another plugin to do that.
-(If you insist, that's also ok)
-3. Deleting currencies will not delete the existing data files, if necessary, please delete them by yourself.</value>
-  </data>
-  <data name="AddCustomCurrency" xml:space="preserve">
-    <value>Add Custom Currency</value>
-  </data>
   <data name="PleaseSelect" xml:space="preserve">
     <value>Seleccionar...</value>
   </data>
   <data name="PleaseSearch" xml:space="preserve">
     <value>Buscar...</value>
-  </data>
-  <data name="CustomCurrencyHelp1" xml:space="preserve">
-    <value>Fail to add: the currency you selected has already existed</value>
-  </data>
-  <data name="CustomCurrencyHelp2" xml:space="preserve">
-    <value>Fail to delete: the currency you selected does not exist</value>
   </data>
   <data name="Day" xml:space="preserve">
     <value>D</value>
@@ -172,14 +144,8 @@
   <data name="ExportFileCSVHeader" xml:space="preserve">
     <value>Hora,Cantidad,Cambio,Ubicación,Nota</value>
   </data>
-  <data name="ExportFileMessage" xml:space="preserve">
-    <value>A file has been exported to: </value>
-  </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>Si se deja en blanco, el nombre del archivo será:</value>
-  </data>
-  <data name="FileRenameLabel" xml:space="preserve">
-    <value>File Name:</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>HoraActual</value>
@@ -205,12 +171,6 @@
   <data name="MergeTransactionsHelp1" xml:space="preserve">
     <value>Se han combinado {0} transacciones.</value>
   </data>
-  <data name="MergeTransactionsHelp3" xml:space="preserve">
-    <value>Merge adjacent transactions of the same location if the Change is below the threshold. If the threshold is 0, all such transactions will be merged.
-
-One-Way Merge: Calculate positive and negative Changes separately when merging.
-Two-Way Merge: Calculate positive and negative Changes together when merging.</value>
-  </data>
   <data name="Threshold" xml:space="preserve">
     <value>Umbral</value>
   </data>
@@ -219,9 +179,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="OneWayMerge" xml:space="preserve">
     <value>Combinación unidireccional</value>
-  </data>
-  <data name="ManualMerge" xml:space="preserve">
-    <value>Manual Merge</value>
   </data>
   <data name="NextPage" xml:space="preserve">
     <value>Siguiente</value>
@@ -232,9 +189,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="PreviousPage" xml:space="preserve">
     <value>Anterior</value>
   </data>
-  <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
-    <value>Record Duty Rewards</value>
-  </data>
   <data name="TransactionsHelp" xml:space="preserve">
     <value>No se han encontrado transacciones coincidentes.</value>
   </data>
@@ -243,9 +197,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="UnknownCurrency" xml:space="preserve">
     <value>Divisa desconocida</value>
-  </data>
-  <data name="UnknownLocation" xml:space="preserve">
-    <value>Unknown Location</value>
   </data>
   <data name="Time" xml:space="preserve">
     <value>Fecha</value>
@@ -258,9 +209,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="Location" xml:space="preserve">
     <value>Ubicación</value>
-  </data>
-  <data name="TransactionsPerPage" xml:space="preserve">
-    <value>Page Size</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>A</value>
@@ -316,9 +264,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Unselect" xml:space="preserve">
     <value>Deseleccionar</value>
   </data>
-  <data name="CopiedToClipboard" xml:space="preserve">
-    <value>Copied to clipboard</value>
-  </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>No hay transacciones seleccionadas actualmente.</value>
   </data>
@@ -330,12 +275,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="Export" xml:space="preserve">
     <value>Exportar</value>
-  </data>
-  <data name="PressEnterToConfirm" xml:space="preserve">
-    <value>Press Enter to Confirm</value>
-  </data>
-  <data name="EditHelp1" xml:space="preserve">
-    <value>Changed {0} transactions' {1} to</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>Copiar</value>
@@ -410,9 +349,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="TripleTriadWith" xml:space="preserve">
     <value>Triple Triad con {0}</value>
   </data>
-  <data name="Combat" xml:space="preserve">
-    <value>Combat</value>
-  </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>Gold Saucer</value>
   </data>
@@ -425,35 +361,17 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Guide" xml:space="preserve">
     <value>Guía</value>
   </data>
-  <data name="DutyRewards-RecordContentName" xml:space="preserve">
-    <value>Record Content Name</value>
-  </data>
-  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
-    <value>Record MGP Rewards Source</value>
-  </data>
   <data name="RecordSettings" xml:space="preserve">
     <value>Ajustes de registro</value>
   </data>
-  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
-    <value>Record Teleport Costs</value>
-  </data>
-  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
-    <value>Record Triple Triad Result</value>
-  </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>Sugerir o Reportar</value>
-  </data>
-  <data name="Exchange-RecordExchangeResult" xml:space="preserve">
-    <value>Record Exchange Result</value>
   </data>
   <data name="CommandHelp" xml:space="preserve">
     <value>Abrir la ventana principal del plguin</value>
   </data>
   <data name="CommandHelp1" xml:space="preserve">
     <value>/cl &lt;currencyname&gt; → Abrir la ventana principal mostrando la divisa especificada.</value>
-  </data>
-  <data name="EditFailed" xml:space="preserve">
-    <value>Edit Failed</value>
   </data>
   <data name="OperationGuide" xml:space="preserve">
     <value>Guía de Operaciones</value>
@@ -476,148 +394,13 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Quest" xml:space="preserve">
     <value>Quest: {0}</value>
   </data>
-  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
-    <value>Record Quest Rewards</value>
-  </data>
-  <data name="Trade-RecordTradeTarget" xml:space="preserve">
-    <value>Record Trade Target</value>
-  </data>
   <data name="TradeWith" xml:space="preserve">
     <value>Intercambio con {0}</value>
-  </data>
-  <data name="DoubleRightClick" xml:space="preserve">
-    <value>Double Right-Click</value>
   </data>
   <data name="PageComponent" xml:space="preserve">
     <value>{0} / {1}</value>
   </data>
   <data name="Confirm" xml:space="preserve">
     <value>Confirmar</value>
-  </data>
-  <data name="CurrencyRenameHelp1" xml:space="preserve">
-    <value>A currency/data file with the same name already exists.</value>
-  </data>
-  <data name="Rename" xml:space="preserve">
-    <value>Rename</value>
-  </data>
-  <data name="Reset" xml:space="preserve">
-    <value>Reset</value>
-  </data>
-  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
-    <value>Record FATE Rewards</value>
-  </data>
-  <data name="IslandFarm" xml:space="preserve">
-    <value>Island Farm</value>
-  </data>
-  <data name="IslandPasture" xml:space="preserve">
-    <value>Island Pasture</value>
-  </data>
-  <data name="IslandWorkshop" xml:space="preserve">
-    <value>Island Workshop</value>
-  </data>
-  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
-    <value>Record Island Result</value>
-  </data>
-  <data name="Fate" xml:space="preserve">
-    <value>FATE {0}</value>
-  </data>
-  <data name="SelectedTransactionsInfo" xml:space="preserve">
-    <value>Count: {0} Sum: {1} Avg: {2} Max: {3} Min: {4} (Change)</value>
-  </data>
-  <data name="Checkbox" xml:space="preserve">
-    <value>Checkbox</value>
-  </data>
-  <data name="ChildframeWidthOffset" xml:space="preserve">
-    <value>Width Offset</value>
-  </data>
-  <data name="MobDrops-RecordMobDrops" xml:space="preserve">
-    <value>Record Mob Drops</value>
-  </data>
-  <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
-    <value>Record Special Exchange Result</value>
-  </data>
-  <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
-    <value>Record Special Teleport Costs</value>
-  </data>
-  <data name="MultiCharaStats" xml:space="preserve">
-    <value>Multi-Chara Stats</value>
-  </data>
-  <data name="TeleportCosts-RecordAetheryteName" xml:space="preserve">
-    <value>Aetheryte</value>
-  </data>
-  <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
-    <value>Area</value>
-  </data>
-  <data name="MobDrops-MobDropsNote" xml:space="preserve">
-    <value>Drop from {0}</value>
-  </data>
-  <data name="Inventory" xml:space="preserve">
-    <value>Inventory</value>
-  </data>
-  <data name="PSaddleBag" xml:space="preserve">
-    <value>Premium Saddle Bag</value>
-  </data>
-  <data name="SaddleBag" xml:space="preserve">
-    <value>Saddle Bag</value>
-  </data>
-  <data name="Backup" xml:space="preserve">
-    <value>Backup</value>
-  </data>
-  <data name="BackupAllCharacter" xml:space="preserve">
-    <value>Backup All</value>
-  </data>
-  <data name="BackupCurrentCharacter" xml:space="preserve">
-    <value>Backup Current</value>
-  </data>
-  <data name="BackupHelp1" xml:space="preserve">
-    <value>Successfully backup for {0} characters</value>
-  </data>
-  <data name="BackupHelp2" xml:space="preserve">
-    <value>, with {0} characters failed to backup</value>
-  </data>
-  <data name="BackupHelp3" xml:space="preserve">
-    <value>Failed characters:</value>
-  </data>
-  <data name="BackupHelp4" xml:space="preserve">
-    <value>Successfully backup current character data to: {0}</value>
-  </data>
-  <data name="ManualBackup" xml:space="preserve">
-    <value>Manual Backup</value>
-  </data>
-  <data name="AutoBackup" xml:space="preserve">
-    <value>Auto Backup</value>
-  </data>
-  <data name="Interval" xml:space="preserve">
-    <value>Interval</value>
-  </data>
-  <data name="Minutes" xml:space="preserve">
-    <value>Minutes</value>
-  </data>
-  <data name="BackupHelp5" xml:space="preserve">
-    <value>Notification in Chat</value>
-  </data>
-  <data name="Blacklist" xml:space="preserve">
-    <value>Blacklist</value>
-  </data>
-  <data name="Main-CS-AreaRestriction" xml:space="preserve">
-    <value>Area Restriction</value>
-  </data>
-  <data name="Main-CS-RestrictedArea" xml:space="preserve">
-    <value>Restricted Area</value>
-  </data>
-  <data name="Main-CS-SelectArea" xml:space="preserve">
-    <value>Select Area</value>
-  </data>
-  <data name="Whitelist" xml:space="preserve">
-    <value>Whitelist</value>
-  </data>
-  <data name="BackupHelp6" xml:space="preserve">
-    <value>Set to 0 to disable</value>
-  </data>
-  <data name="BackupHelp7" xml:space="preserve">
-    <value>Click to enable/disable</value>
-  </data>
-  <data name="MaxBackupFiles" xml:space="preserve">
-    <value>Max Backup Files</value>
   </data>
 </root>

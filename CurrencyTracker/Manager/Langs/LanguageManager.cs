@@ -1,16 +1,9 @@
 namespace CurrencyTracker.Manager
 {
-    // Language Names in Game:
-    // { "Japanese", "日本語" },
-    // { "English", "English" },
-    // { "German", "Deutsch" },
-    // { "French", "Français" },
-    // { "Spanish", "Español" },
-    // { "ChineseSimplified", "简体中文" },
-    // { "ChineseTraditional", "繁體中文" },
     public class LanguageManager
     {
         private readonly ResourceManager? resourceManager;
+        private readonly ResourceManager? fbResourceManager;
 
         public static readonly List<TranslationInfo> LanguageNames = new()
         {
@@ -30,19 +23,26 @@ namespace CurrencyTracker.Manager
             }
 
             var resourceName = "CurrencyTracker.Manager.Langs." + languageName;
+            resourceManager = new(resourceName, typeof(LanguageManager).Assembly);
 
-            resourceManager = new ResourceManager(resourceName, typeof(LanguageManager).Assembly);
+            if (languageName == "ChineseTraditional")
+            {
+                fbResourceManager = new("CurrencyTracker.Manager.Langs.ChineseSimplified", typeof(LanguageManager).Assembly);
+            }
+            else
+            {
+                fbResourceManager = new("CurrencyTracker.Manager.Langs.English", typeof(LanguageManager).Assembly);
+            }
         }
 
         public string GetText(string key, params object[] args)
         {
-            var format = resourceManager.GetString(key);
+            var format = resourceManager.GetString(key) ?? fbResourceManager.GetString(key);
             if (format.IsNullOrEmpty())
             {
                 Service.Log.Error($"Localization String {key} Not Found in Current Language!");
                 return key;
             }
-
             return string.Format(format, args);
         }
     }
