@@ -19,12 +19,17 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006
         };
 
+        private readonly Timer checkTimer = new(100);
+
         private bool _isBlocked = false;
         private bool _initialized = false;
 
         public void Init()
         {
             Service.Chat.ChatMessage += OnChatMessage;
+
+            checkTimer.AutoReset = false;
+            checkTimer.Elapsed += CheckTimerElapsed;
 
             _initialized = true;
         }
@@ -34,12 +39,21 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             if (_isBlocked) return;
             if (!ValidChatTypes.Contains((ushort)type)) return;
 
-            Task.Delay(TimeSpan.FromMilliseconds(100)).ContinueWith(t => Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17));
+            checkTimer.Restart();
+        }
+
+        private void CheckTimerElapsed(object? sender, ElapsedEventArgs e)
+        {
+            Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
         }
 
         public void Uninit()
         {
             Service.Chat.ChatMessage -= OnChatMessage;
+
+            checkTimer.Elapsed -= CheckTimerElapsed;
+            checkTimer.Stop();
+            checkTimer.Dispose();
 
             _initialized = false;
         }
