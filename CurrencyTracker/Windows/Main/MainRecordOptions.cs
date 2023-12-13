@@ -178,7 +178,7 @@ namespace CurrencyTracker.Windows
 
             if (ImGui.Button($"{Service.Lang.GetText("BackupCurrentCharacter")}"))
             {
-                var filePath = BackupHandler(P.PlayerDataFolder);
+                var filePath = Transactions.BackupTransactions(P.PlayerDataFolder, C.MaxBackupFilesCount);
                 Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
             }
 
@@ -186,7 +186,7 @@ namespace CurrencyTracker.Windows
             if (ImGui.Button($"{Service.Lang.GetText("BackupAllCharacter")}"))
             {
                 var failCharacters = C.CurrentActiveCharacter
-                    .Where(character => BackupHandler(Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}")).IsNullOrEmpty())
+                    .Where(character => Transactions.BackupTransactions(Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}"), C.MaxBackupFilesCount).IsNullOrEmpty())
                     .Select(character => $"{character.Name}@{character.Server}")
                     .ToList();
 
@@ -280,50 +280,6 @@ namespace CurrencyTracker.Windows
                 C.AutoSaveMode = mode;
                 C.Save();
             }
-        }
-
-        // 备份数据处理 Backup Handler
-        internal static string BackupHandler(string dataFolder)
-        {
-            var backupFolder = Path.Combine(dataFolder, "Backups");
-            Directory.CreateDirectory(backupFolder);
-
-            if (Plugin.Configuration.MaxBackupFilesCount > 0)
-            {
-                var backupFiles = Directory.GetFiles(backupFolder, "*.zip");
-                var sortedBackupFiles = backupFiles.OrderBy(f => new FileInfo(f).CreationTime).ToList();
-
-                while (sortedBackupFiles.Count >= Plugin.Configuration.MaxBackupFilesCount)
-                {
-                    File.Delete(sortedBackupFiles[0]);
-                    sortedBackupFiles.RemoveAt(0);
-                }
-            }
-
-            var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempFolder);
-
-            var zipFilePath = string.Empty;
-            try
-            {
-                var files = Directory.GetFiles(dataFolder);
-                foreach (var file in files)
-                {
-                    var fileName = Path.GetFileName(file);
-                    var destFile = Path.Combine(tempFolder, fileName);
-                    File.Copy(file, destFile, true);
-                }
-
-                var zipFileName = "Backup_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".zip";
-                zipFilePath = Path.Combine(backupFolder, zipFileName);
-
-                ZipFile.CreateFromDirectory(tempFolder, zipFilePath);
-            }
-            finally
-            {
-                Directory.Delete(tempFolder, true);
-            }
-            return zipFilePath;
         }
     }
 }

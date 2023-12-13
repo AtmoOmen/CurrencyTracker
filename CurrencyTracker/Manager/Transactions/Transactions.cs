@@ -309,5 +309,46 @@ namespace CurrencyTracker.Manager
             }
             return filePath;
         }
+
+        // 备份数据 Backup transactions
+        public static string BackupTransactions(string dataFolder, int maxBackupFilesCount)
+        {
+            var backupFolder = Path.Combine(dataFolder, "Backups");
+            Directory.CreateDirectory(backupFolder);
+
+            if (maxBackupFilesCount > 0)
+            {
+                var backupFiles = Directory.GetFiles(backupFolder, "*.zip")
+                                           .OrderBy(f => new FileInfo(f).CreationTime)
+                                           .ToList();
+
+                while (backupFiles.Count >= maxBackupFilesCount)
+                {
+                    File.Delete(backupFiles[0]);
+                    backupFiles.RemoveAt(0);
+                }
+            }
+
+            var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempFolder);
+
+            var zipFilePath = string.Empty;
+            try
+            {
+                foreach (var file in Directory.GetFiles(dataFolder))
+                {
+                    File.Copy(file, Path.Combine(tempFolder, Path.GetFileName(file)), true);
+                }
+
+                zipFilePath = Path.Combine(backupFolder, $"Backup_{DateTime.Now:yyyyMMddHHmmss}.zip");
+                ZipFile.CreateFromDirectory(tempFolder, zipFilePath);
+            }
+            finally
+            {
+                Directory.Delete(tempFolder, true);
+            }
+            return zipFilePath;
+        }
+
     }
 }

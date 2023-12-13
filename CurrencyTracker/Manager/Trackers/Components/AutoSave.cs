@@ -40,13 +40,13 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (C.AutoSaveMode == 0)
             {
-                var filePath = Main.BackupHandler(Plugin.Instance.PlayerDataFolder);
+                var filePath = Transactions.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
                 if (C.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
             }
             else if (C.AutoSaveMode == 1)
             {
                 var failCharacters = C.CurrentActiveCharacter
-                        .Where(character => Main.BackupHandler(Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}")).IsNullOrEmpty())
+                        .Where(character => Transactions.BackupTransactions(Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}"), Plugin.Configuration.MaxBackupFilesCount).IsNullOrEmpty())
                         .Select(character => $"{character.Name}@{character.Server}")
                         .ToList();
 
