@@ -99,10 +99,21 @@ namespace CurrencyTracker.Windows
         private void LoadMultiCharaSearch()
         {
             charactersToShow = characterCurrencyInfos.Values
-                    .OrderByDescending(characterCurrencyInfo => characterCurrencyInfo.Character.ContentID == P.CurrentCharacter.ContentID)
-                    .Where(characterCurrencyInfo => searchFilterMCS.IsNullOrEmpty() || characterCurrencyInfo.Character.Name.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase) || characterCurrencyInfo.Character.Server.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase))
-                    .Skip(currentPageMCS * itemsPerPageCCT)
-                    .Take(itemsPerPageCCT);
+                .Where(IsMCSMatch)
+                .OrderByDescending(characterCurrencyInfo => characterCurrencyInfo.Character.ContentID == P.CurrentCharacter.ContentID)
+                .Skip(currentPageMCS * itemsPerPageCCT)
+                .Take(itemsPerPageCCT);
+        }
+
+        private bool IsMCSMatch(CharacterCurrencyInfo characterCurrencyInfo)
+        {
+            if (searchFilterMCS.IsNullOrEmpty())
+            {
+                return true;
+            }
+
+            return characterCurrencyInfo.Character.Name.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase)
+                || characterCurrencyInfo.Character.Server.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase);
         }
 
         // 延迟多角色数据搜索 Lagged MCS Searching
