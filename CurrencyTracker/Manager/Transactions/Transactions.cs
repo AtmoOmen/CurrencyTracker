@@ -93,20 +93,6 @@ namespace CurrencyTracker.Manager
             return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine.AsSpan());
         }
 
-        // 加载指定范围内的记录 Load Transactions in Specific Range
-        public static List<TransactionsConvertor> LoadTransactionsInRange(uint currencyID, int startIndex, int endIndex, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            var allTransactions = LoadAllTransactions(currencyID, category, ID);
-
-            if (startIndex < 0 || startIndex >= allTransactions.Count || endIndex < 0 || endIndex >= allTransactions.Count)
-            {
-                Service.Log.Error("Invalid index range");
-                return new();
-            }
-
-            return allTransactions.GetRange(startIndex, endIndex - startIndex + 1);
-        }
-
         // 编辑指定记录 Edit Specific Transactions
         public static int EditSpecificTransactions(uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "", string noteContent = "", TransactionFileCategory category = 0, ulong ID = 0)
         {
@@ -288,24 +274,6 @@ namespace CurrencyTracker.Manager
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
 
             return mergedCount;
-        }
-
-        // 清除异常记录 Clear Exceptional Records
-        public static int ClearExceptionRecords(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
-        {
-            if (!ValidityCheck(currencyID)) return 0;
-
-            var allTransactions = LoadAllTransactions(currencyID, category, ID);
-            var initialCount = allTransactions.Count;
-            var index = 0;
-
-            allTransactions.RemoveAll(transaction =>
-                (index++ != 0 && transaction.Change == transaction.Amount) || transaction.Change == 0);
-
-            if (allTransactions.Count == initialCount) return 0;
-
-            TransactionsConvertor.WriteTransactionsToFile(GetTransactionFilePath(currencyID, category, ID), allTransactions);
-            return initialCount - allTransactions.Count;
         }
 
         // 导出数据 Export Transactions Data
