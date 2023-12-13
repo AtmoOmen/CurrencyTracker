@@ -2,6 +2,7 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
+| 2023/12/13 | 1.3.2.7 | -Modified the logic of the Language Manager module<br/>- Optimized the logic of the Backup feature, now automatically backing up in case of IO exceptions<br/>- Now able to modify the preset note text of most modules in the Record Settings<br/>- Optimized the search speed of the Multi-Chara Stats feature |
 | 2023/12/12 | 1.3.2.6 | -Optimized Language Manager code<br/>- Optimized the frequency of calling certain methods |
 | 2023/12/11 | 1.3.2.5 | \- Fixed an item-width issue. <br/>- Fixed some issues under Auto Backup feature |
 | 2023/12/06 | 1.3.2.4 | - Added tracking for Saddle Bag, Premium Saddle Bag, and Retainer items.<br/>- Optimized the logic of the editing feature. <br/>- Fixed the issue where Currency Renaming feature was not working. <br/>- Optimized the performance of the Multi-Chara Stats interface.<br/>-  Added Backup feature. |
@@ -54,6 +55,7 @@
 
 | 日期           | 版本号  | 更新日志                                                     |
 | -------------- | ------- | ------------------------------------------------------------ |
+| 2023年12月13日 | 1.3.2.7 | - 修改了多语言模块的逻辑<br/>- 优化了 备份 功能的逻辑，现在会在出现 IO 异常时自动进行备份<br/>- 现在可以在 记录设置 中修改大部分模块的预设备注文本<br/>- 优化了 多角色数据 功能的搜索速度 |
 | 2023年12月12日 | 1.3.2.6 | - 优化多语言模块<br/>- 优化了部分方法的调用频率              |
 | 2023年12月11日 | 1.3.2.5 | - 修复了部分输入框长度不足的问题<br/>- 修复了 自动备份 功能下的一些问题 |
 | 2023年12月6日  | 1.3.2.4 | - 新增了对鸟包, 额外鸟包, 雇员 物品的追踪<br/>- 优化了数据表格 编辑 功能的逻辑<br/>- 修复了 货币重命名 功能失效的问题<br/>- 优化了 多角色数据 界面的性能<br/>- 新增了 备份记录 功能 |
