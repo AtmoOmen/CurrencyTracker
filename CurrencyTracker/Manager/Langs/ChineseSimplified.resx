@@ -407,7 +407,7 @@
     <value>未知副本</value>
   </data>
   <data name="TripleTriadWith" xml:space="preserve">
-    <value>幻卡对战 - {0}</value>
+    <value>[{0}]幻卡 - {1}</value>
   </data>
   <data name="Combat" xml:space="preserve">
     <value>战斗</value>
@@ -618,5 +618,44 @@
   </data>
   <data name="MaxBackupFiles" xml:space="preserve">
     <value>最大备份文件数</value>
+  </data>
+  <data name="ParamEP-DestinationName" xml:space="preserve">
+    <value>目的地名称</value>
+  </data>
+  <data name="ParamEP-FateName" xml:space="preserve">
+    <value>临危受命名称</value>
+  </data>
+  <data name="ParamEP-MobNames" xml:space="preserve">
+    <value>野怪名称</value>
+  </data>
+  <data name="ParamEP-QuestName" xml:space="preserve">
+    <value>任务名称</value>
+  </data>
+  <data name="ParamEP-TargetName" xml:space="preserve">
+    <value>目标名称</value>
+  </data>
+  <data name="ParamEP-TTOutcome" xml:space="preserve">
+    <value>胜/平/负</value>
+  </data>
+  <data name="ParamEP-TTRivalName" xml:space="preserve">
+    <value>对手名称</value>
+  </data>
+  <data name="PremiumSaddleBag-RecordPremiumSaddleBag" xml:space="preserve">
+    <value>记录额外鸟包</value>
+  </data>
+  <data name="Retainer-RecordRetainerInventory" xml:space="preserve">
+    <value>记录雇员</value>
+  </data>
+  <data name="SaddleBag-RecordSaddleBag" xml:space="preserve">
+    <value>记录鸟包</value>
+  </data>
+  <data name="TripleTriad-Draw" xml:space="preserve">
+    <value>平</value>
+  </data>
+  <data name="TripleTriad-Loss" xml:space="preserve">
+    <value>负</value>
+  </data>
+  <data name="TripleTriad-Win" xml:space="preserve">
+    <value>胜</value>
   </data>
 </root>

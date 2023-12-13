@@ -2,8 +2,8 @@
 
 | Date       | Version | Update Description                                           |
 | ---------- | ------- | ------------------------------------------------------------ |
-| 2023/12/13 | 1.3.2.7 | -Modified the logic of the Language Manager module<br/>- Optimized the logic of the Backup feature, now automatically backing up in case of IO exceptions<br/>- Now able to modify the preset note text of most modules in the Record Settings<br/>- Optimized the search speed of the Multi-Chara Stats feature |
-| 2023/12/12 | 1.3.2.6 | -Optimized Language Manager code<br/>- Optimized the frequency of calling certain methods |
+| 2023/12/13 | 1.3.2.7 | - Modified the logic of the Language Manager module<br/>- Optimized the logic of the Backup feature, now automatically backing up in case of IO exceptions<br/>- Now able to modify the preset note text of most modules in the Record Settings<br/>- Optimized the search speed of the Multi-Chara Stats feature |
+| 2023/12/12 | 1.3.2.6 | - Optimized Language Manager code<br/>- Optimized the frequency of calling certain methods |
 | 2023/12/11 | 1.3.2.5 | \- Fixed an item-width issue. <br/>- Fixed some issues under Auto Backup feature |
 | 2023/12/06 | 1.3.2.4 | - Added tracking for Saddle Bag, Premium Saddle Bag, and Retainer items.<br/>- Optimized the logic of the editing feature. <br/>- Fixed the issue where Currency Renaming feature was not working. <br/>- Optimized the performance of the Multi-Chara Stats interface.<br/>-  Added Backup feature. |
 | 2023/12/04 | 1.3.2.3 | - Code cleanup<br/>- Try to fix an issue where Multi-Chara Stats feature couldn't show all characters in the popup. |
