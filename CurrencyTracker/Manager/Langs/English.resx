@@ -408,7 +408,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Unknown Content</value>
   </data>
   <data name="TripleTriadWith" xml:space="preserve">
-    <value>Triple Triad with {0}</value>
+    <value>[{0}]Triple Triad with {1}</value>
   </data>
   <data name="Combat" xml:space="preserve">
     <value>Combat</value>
@@ -619,5 +619,44 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="MaxBackupFiles" xml:space="preserve">
     <value>Max Backup Files</value>
+  </data>
+  <data name="ParamEP-DestinationName" xml:space="preserve">
+    <value>Destination Name</value>
+  </data>
+  <data name="ParamEP-FateName" xml:space="preserve">
+    <value>Fate Name</value>
+  </data>
+  <data name="ParamEP-MobNames" xml:space="preserve">
+    <value>Mob Names</value>
+  </data>
+  <data name="ParamEP-QuestName" xml:space="preserve">
+    <value>Quest Name</value>
+  </data>
+  <data name="ParamEP-TargetName" xml:space="preserve">
+    <value>Target Name</value>
+  </data>
+  <data name="ParamEP-TTOutcome" xml:space="preserve">
+    <value>Win/Draw/Loss</value>
+  </data>
+  <data name="ParamEP-TTRivalName" xml:space="preserve">
+    <value>Rival Name</value>
+  </data>
+  <data name="PremiumSaddleBag-RecordPremiumSaddleBag" xml:space="preserve">
+    <value>Record Premium Saddle Bag</value>
+  </data>
+  <data name="Retainer-RecordRetainerInventory" xml:space="preserve">
+    <value>Record Retainer</value>
+  </data>
+  <data name="SaddleBag-RecordSaddleBag" xml:space="preserve">
+    <value>Record Saddle Bag</value>
+  </data>
+  <data name="TripleTriad-Draw" xml:space="preserve">
+    <value>Draw</value>
+  </data>
+  <data name="TripleTriad-Loss" xml:space="preserve">
+    <value>Loss</value>
+  </data>
+  <data name="TripleTriad-Win" xml:space="preserve">
+    <value>Win</value>
   </data>
 </root>

@@ -61,17 +61,17 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (TTRGui != null)
             {
-                var draw = (TTRGui->GetTextNodeById(5))->AtkResNode.NodeFlags.HasFlag(NodeFlags.Visible);
+                var draw = (TTRGui->GetTextNodeById(5))->AtkResNode.IsVisible;
                 var lose = (TTRGui->GetTextNodeById(4))->AtkResNode.IsVisible;
                 var win = (TTRGui->GetTextNodeById(3))->AtkResNode.IsVisible;
 
-                ttResultText = draw ? TTRGui->GetTextNodeById(5)->NodeText.ToString() :
-                             lose ? TTRGui->GetTextNodeById(4)->NodeText.ToString() :
-                             win ? TTRGui->GetTextNodeById(3)->NodeText.ToString() : "";
+                ttResultText = draw ? Service.Lang.GetText("TripleTriad-Draw") :
+                             lose ? Service.Lang.GetText("TripleTriad-Loss") :
+                             win ? Service.Lang.GetText("TripleTriad-Win") : "";
                 Service.Log.Debug(ttResultText);
             }
 
-            Service.Tracker.CheckAllCurrencies("", $"({(!ttResultText.IsNullOrEmpty() ? $"[{ttResultText}]" : "")}{Service.Lang.GetText("TripleTriadWith", ttRivalName)})", RecordChangeType.All, 14);
+            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("TripleTriadWith", ttResultText, ttRivalName)})", RecordChangeType.All, 14);
 
             ttRivalName = ttResultText = string.Empty;
 

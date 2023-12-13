@@ -83,6 +83,7 @@ namespace CurrencyTracker
             { "RecordDesAetheryteName", false },
             { "RecordDesAreaName", true }
         };
+        public Dictionary<string, string> CustomNoteContents { get; set; } = new();
 
 
         [JsonIgnore]

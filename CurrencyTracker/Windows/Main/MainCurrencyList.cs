@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace CurrencyTracker.Windows
 {
     // 货币列表 / 货币列表顶端工具栏 / 添加自定义货币 / 删除自定义货币 / 重命名货币
@@ -238,12 +240,9 @@ namespace CurrencyTracker.Windows
         // 加载自定义货币追踪里的所有物品 Load All Items for CCT
         public static void LoadItemsForCCT()
         {
-            var items = Service.DataManager.GetExcelSheet<Item>()
-                .Select(x => new { x.RowId, Name = x.Name?.ToString() })
-                .Where(x => !x.Name.IsNullOrEmpty() && !filterNamesForCCT.Any(x.Name.Contains))
-                .ToList();
-
-            ItemNames = items.ToDictionary(x => x.RowId, x => $"{x.Name}");
+            ItemNames = Service.DataManager.GetExcelSheet<Item>()
+                .Where(x => !x.Name.ToString().IsNullOrEmpty() && !filterNamesForCCT.Any(x.Name.ToString().Contains))
+                .ToDictionary(x => x.RowId, x => x.Name.ToString());
             itemNamesCCT = ItemNames.Values.ToList();
         }
 

@@ -37,13 +37,21 @@ namespace CurrencyTracker.Manager
 
         public string GetText(string key, params object[] args)
         {
-            var format = resourceManager.GetString(key) ?? fbResourceManager.GetString(key);
+            if (!Plugin.Configuration.CustomNoteContents.TryGetValue(key, out var format))
+            {
+                format = resourceManager.GetString(key) ?? fbResourceManager.GetString(key);
+            }
             if (format.IsNullOrEmpty())
             {
                 Service.Log.Error($"Localization String {key} Not Found in Current Language!");
                 return key;
             }
             return string.Format(format, args);
+        }
+
+        public string GetOrigText(string key)
+        {
+            return resourceManager.GetString(key) ?? fbResourceManager.GetString(key);
         }
     }
 
