@@ -406,6 +406,7 @@ namespace CurrencyTracker.Windows
             if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), $"ResetContent_{key}"))
             {
                 C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
+                C.Save();
             }
         }
 
