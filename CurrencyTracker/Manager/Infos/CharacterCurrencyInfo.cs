@@ -12,34 +12,17 @@ namespace CurrencyTracker.Manager.Infos
                 GetCharacterCurrencyAmount();
             }
         }
+        public ConcurrentDictionary<uint, long> CurrencyAmount => currencyAmount;
 
-        private Dictionary<uint, long> currencyAmount = new();
-
-        public Dictionary<uint, long> CurrencyAmount => currencyAmount;
+        private ConcurrentDictionary<uint, long> currencyAmount = new();
+        private readonly List<uint> currencies = Plugin.Configuration.AllCurrencies.Keys.ToList();
 
         public void GetCharacterCurrencyAmount()
         {
-            foreach (var currency in Plugin.Configuration.AllCurrencies)
+            Parallel.ForEach(currencies, currencyKey =>
             {
-                long amount = 0;
-                var categories = new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
-
-                foreach (var category in categories)
-                {
-                    var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currency.Key, Character, category, 0);
-                    amount += currencyAmount == null ? 0 : (long)currencyAmount;
-                }
-
-                if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var value))
-                {
-                    foreach (var retainer in value)
-                    {
-                        var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currency.Key, Character, TransactionFileCategory.Retainer, retainer.Key);
-                        amount += currencyAmount == null ? 0 : (long)currencyAmount;
-                    }
-                }
-                currencyAmount[currency.Key] = amount;
-            }
+                currencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
+            });
         }
     }
 }

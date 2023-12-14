@@ -152,6 +152,15 @@ namespace CurrencyTracker.Manager
             return result;
         }
 
+        public static bool ColoredCheckbox(string label, ref bool state)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, state ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudWhite);
+            var result = ImGui.Checkbox(label, ref state);
+            ImGui.PopStyleColor();
+
+            return result;
+        }
+
         public static void TextTooltip(string text)
         {
             if (ImGui.IsItemHovered())

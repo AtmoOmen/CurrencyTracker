@@ -11,7 +11,7 @@ namespace CurrencyTracker
         public DalamudPluginInterface PluginInterface { get; init; }
         public Main? Main { get; private set; }
         public Graph? Graph { get; private set; }
-        public RecordSettings? RecordSettings { get; private set; }
+        public Settings? RecordSettings { get; private set; }
 
         public WindowSystem WindowSystem = new("CurrencyTracker");
         public static Configuration? Configuration = null!;
@@ -283,7 +283,7 @@ namespace CurrencyTracker
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
 
-            RecordSettings = new RecordSettings(this);
+            RecordSettings = new Settings(this);
             WindowSystem.AddWindow(RecordSettings);
         }
 

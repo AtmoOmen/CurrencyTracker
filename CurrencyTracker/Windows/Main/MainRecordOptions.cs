@@ -17,7 +17,7 @@ namespace CurrencyTracker.Windows
         // 记录设置界面 Record Settings
         private void RecordSettingsUI()
         {
-            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, Service.Lang.GetText("RecordSettings") + "[DEV]"))
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, Service.Lang.GetText("Settings")))
             {
                 P.RecordSettings.IsOpen = !P.RecordSettings.IsOpen;
             }

@@ -430,8 +430,8 @@
   <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
     <value>记录金碟币来源</value>
   </data>
-  <data name="RecordSettings" xml:space="preserve">
-    <value>记录设置</value>
+  <data name="Record" xml:space="preserve">
+    <value>记录</value>
   </data>
   <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
     <value>记录传送费</value>
@@ -657,5 +657,11 @@
   </data>
   <data name="TripleTriad-Win" xml:space="preserve">
     <value>胜</value>
+  </data>
+  <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
+    <value>在货币一览显示总金币数</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
   </data>
 </root>

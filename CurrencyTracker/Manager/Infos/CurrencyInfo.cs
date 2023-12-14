@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace CurrencyTracker.Manager.Infos;
 
 public static class CurrencyInfo
@@ -40,6 +42,32 @@ public static class CurrencyInfo
         };
     }
 
+    // 获取指定角色指定货币总数量
+    public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
+    {
+        var amount = 0L;
+        var categories = new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
+
+        Parallel.ForEach(categories, category =>
+        {
+            var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, character, category, 0);
+
+            Interlocked.Add(ref amount, currencyAmount == null ? 0 : (long)currencyAmount);
+        });
+
+        if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var value))
+        {
+            Parallel.ForEach(value, retainer =>
+            {
+                var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, character, TransactionFileCategory.Retainer, retainer.Key);
+
+                Interlocked.Add(ref amount, currencyAmount == null ? 0 : (long)currencyAmount);
+            });
+        }
+
+        return amount;
+    }
+
     // 获取数据文件中最新一条数据的货币数量
     public static long? GetCurrencyAmountFromFile(uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -68,10 +96,4 @@ public static class CurrencyInfo
         Service.Log.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
         return null;
     }
-}
-
-public class CurrencyRule
-{
-    public bool RegionRulesMode { get; set; } = false; // false - Blacklist ; true - Whitelist
-    public List<uint> RestrictedAreas { get; set; } = new(); // Area IDs
 }

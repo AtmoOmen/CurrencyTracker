@@ -59,6 +59,7 @@ namespace CurrencyTracker
         public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
         {
             { "AutoSave", false },
+            { "CurrencyUIEdit", true },
             { "DutyRewards", true },
             { "Exchange", true },
             { "FateRewards", true },

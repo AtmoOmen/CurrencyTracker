@@ -431,8 +431,8 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
     <value>Record MGP Rewards Source</value>
   </data>
-  <data name="RecordSettings" xml:space="preserve">
-    <value>Record Settings</value>
+  <data name="Record" xml:space="preserve">
+    <value>Record</value>
   </data>
   <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
     <value>Record Teleport Costs</value>
@@ -658,5 +658,11 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="TripleTriad-Win" xml:space="preserve">
     <value>Win</value>
+  </data>
+  <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
+    <value>Display TOTAL Gil in Currency Interface</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
   </data>
 </root>

@@ -1,6 +1,5 @@
 namespace CurrencyTracker.Manager.Trackers.Components
 {
-    // 与 TeleportCosts / TerrioryHandler / ChatHandler 联动
     public class WarpCosts : ITrackerComponent
     {
         private bool _initialized = false;

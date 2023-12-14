@@ -105,6 +105,7 @@ namespace CurrencyTracker.Windows
                 .Take(itemsPerPageCCT);
         }
 
+        // 多角色搜索规则 Rule for MCS Searching
         private bool IsMCSMatch(CharacterCurrencyInfo characterCurrencyInfo)
         {
             if (searchFilterMCS.IsNullOrEmpty())

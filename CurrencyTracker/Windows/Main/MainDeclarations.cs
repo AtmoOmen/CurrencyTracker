@@ -66,7 +66,7 @@ public partial class Main
     private string? editedLocationName = string.Empty;
     private string editedNoteContent = string.Empty;
     private string editedCurrencyName = string.Empty;
-    private int autoSaveInterval = 30;
+    internal int autoSaveInterval = 30;
 
     // 界面控制相关值 UI Control Related Values
     private readonly bool selectTimeDeco = false; // Always False
@@ -121,7 +121,7 @@ public partial class Main
     private Dictionary<uint, string>? TerritoryNamesCS;
     private uint selectedAreaIDCS = 0;
 
-    private int maxBackupFilesCount = 10;
+    internal int maxBackupFilesCount = 10;
 
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;
