@@ -93,7 +93,7 @@ namespace CurrencyTracker.Windows
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("Features"))
+                if (ImGui.BeginTabItem(Service.Lang.GetText("Features")))
                 {
                     ModuleCheckbox(typeof(CurrencyUIEdit), "CurrencyUIEdit", Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
 
@@ -104,7 +104,7 @@ namespace CurrencyTracker.Windows
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("Plugin"))
+                if (ImGui.BeginTabItem(Service.Lang.GetText("Plugin")))
                 {
                     // 导出文件类型 Export File Type
                     ImGui.AlignTextToFramePadding();
@@ -174,7 +174,7 @@ namespace CurrencyTracker.Windows
                     ImGui.EndTabItem();
                 }
 
-                if (ImGui.BeginTabItem("Information"))
+                if (ImGui.BeginTabItem(Service.Lang.GetText("Info")))
                 {
                     ImGui.TextColored(ImGuiColors.DalamudYellow, $"Author:");
 

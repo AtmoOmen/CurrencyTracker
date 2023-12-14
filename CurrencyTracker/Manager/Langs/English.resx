@@ -662,6 +662,15 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
     <value>Display TOTAL Gil in Currency Interface</value>
   </data>
+  <data name="Features" xml:space="preserve">
+    <value>Features</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>Info</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>Plugin</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>

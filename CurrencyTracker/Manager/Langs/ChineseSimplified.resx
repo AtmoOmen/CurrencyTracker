@@ -661,6 +661,15 @@
   <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
     <value>在货币一览显示总金币数</value>
   </data>
+  <data name="Features" xml:space="preserve">
+    <value>功能</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>信息</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>插件</value>
+  </data>
   <data name="Settings" xml:space="preserve">
     <value>设置</value>
   </data>
