@@ -14,16 +14,7 @@ public partial class Main : Window, IDisposable
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
-        transactionsPerPage = C.RecordsPerPage;
-        isChangeColoring = C.ChangeTextColoring;
-        positiveChangeColor = C.PositiveChangeColor;
-        negativeChangeColor = C.NegativeChangeColor;
-        childWidthOffset = C.ChildWidthOffset;
-        autoSaveInterval = C.AutoSaveInterval;
-        maxBackupFilesCount = C.MaxBackupFilesCount;
-
-        if (filterEndDate.Month == 1 && filterEndDate.Day == 1) filterStartDate = new DateTime(DateTime.Now.Year - 1, 12, 31);
-        else filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
+        filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
 
         searchTimer.Elapsed += SearchTimerElapsed;
         searchTimer.AutoReset = false;
@@ -66,8 +57,6 @@ public partial class Main : Window, IDisposable
     public override void Draw()
     {
         if (!Service.ClientState.IsLoggedIn) return;
-
-        windowWidth = ImGui.GetWindowWidth();
 
         DrawCategory(ref showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
         if (!showRecordOptions && !showOthers) ImGui.SameLine();

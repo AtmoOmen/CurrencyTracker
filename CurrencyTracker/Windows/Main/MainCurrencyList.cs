@@ -1,5 +1,3 @@
-using System.Linq;
-
 namespace CurrencyTracker.Windows
 {
     // 货币列表 / 货币列表顶端工具栏 / 添加自定义货币 / 删除自定义货币 / 重命名货币
@@ -8,7 +6,7 @@ namespace CurrencyTracker.Windows
         // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
         private void CurrencyListboxUI()
         {
-            var childScale = new Vector2(243 + childWidthOffset, ChildframeHeightAdjust());
+            var childScale = new Vector2(243 + C.ChildWidthOffset, ChildframeHeightAdjust());
             if (!ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar)) return;
 
             CurrencyListboxToolUI();

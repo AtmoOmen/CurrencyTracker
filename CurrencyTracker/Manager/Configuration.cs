@@ -46,15 +46,15 @@ namespace CurrencyTracker
         public int ChildWidthOffset { get; set; } = 0;
         public int ExportDataFileType { get; set; } = 0;
         public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = new(); // Content ID - Retainer ID : Retainer Name
-        public Dictionary<string, bool> ColumnVisibility { get; set; } = new()
+        public Dictionary<string, bool> ColumnsVisibility { get; set; } = new()
         {
-            { "ShowTimeColumn", true },
-            { "ShowAmountColumn", true },
-            { "ShowChangeColumn", true },
-            { "ShowLocationColumn", true },
-            { "ShowNoteColumn", true },
-            { "ShowOrderColumn", true },
-            { "ShowCheckboxColumn", true }
+            { "Order", true },
+            { "Time", true },
+            { "Amount", true },
+            { "Change", true },
+            { "Location", true },
+            { "Note", true },
+            { "Checkbox", true }
         };
         public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
         {

@@ -28,9 +28,6 @@ public partial class Main
     private bool endDateEnable;
     private int filterMode;
     private int filterValue = 0;
-    private bool isChangeColoring = false;
-    private Vector4 positiveChangeColor = new(1.0f, 0.0f, 0.0f, 1.0f);
-    private Vector4 negativeChangeColor = new(0.0f, 1.0f, 0.0f, 1.0f);
     private string? searchLocationName = string.Empty;
     private string? searchNoteContent = string.Empty;
 
@@ -52,7 +49,6 @@ public partial class Main
 
     // 数据显示相关值 Data Display Related Values
     private int currentPage;
-    private int transactionsPerPage = 20;
     private int visibleStartIndex;
     private int visibleEndIndex;
     private TransactionFileCategory currentView = TransactionFileCategory.Inventory;
@@ -66,7 +62,6 @@ public partial class Main
     private string? editedLocationName = string.Empty;
     private string editedNoteContent = string.Empty;
     private string editedCurrencyName = string.Empty;
-    internal int autoSaveInterval = 30;
 
     // 界面控制相关值 UI Control Related Values
     private readonly bool selectTimeDeco = false; // Always False
@@ -74,31 +69,15 @@ public partial class Main
     private readonly Timer searchTimerCCT = new(100);
     private readonly Timer searchTimerMCS = new(100);
     private readonly Timer searchTimerCS = new(100);
-    private float windowWidth;
-    private int childWidthOffset = 0;
-    private static readonly Dictionary<string, int> columnWidths = new()
-    {
-        {"Time", 150},
-        {"Amount", 130},
-        {"Change", 100},
-        {"Location", 100},
-        {"Note", 150},
-        {"Checkbox", 30}
-    };
-    private static readonly Dictionary<string, ImGuiTableColumnFlags> columnFlags = new()
-    {
-        {"Order", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize},
-        {"Checkbox", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize}
-    };
     private static readonly Dictionary<string, System.Action> ColumnHeaderActions = new()
     {
-        {"Order", () => Plugin.Instance.Main.OrderColumnHeaderUI()},
-        {"Time", () => Plugin.Instance.Main.TimeColumnHeaderUI()},
-        {"Amount", () => Plugin.Instance.Main.AmountColumnHeaderUI()},
-        {"Change", () => Plugin.Instance.Main.ChangeColumnHeaderUI()},
-        {"Location", () => Plugin.Instance.Main.LocationColumnHeaderUI()},
-        {"Note", () => Plugin.Instance.Main.NoteColumnHeaderUI()},
-        {"Checkbox", () => Plugin.Instance.Main.CheckboxColumnHeaderUI()}
+        {"Order", Plugin.Instance.Main.OrderColumnHeaderUI},
+        {"Time", Plugin.Instance.Main.TimeColumnHeaderUI},
+        {"Amount", Plugin.Instance.Main.AmountColumnHeaderUI},
+        {"Change", Plugin.Instance.Main.ChangeColumnHeaderUI},
+        {"Location", Plugin.Instance.Main.LocationColumnHeaderUI},
+        {"Note", Plugin.Instance.Main.NoteColumnHeaderUI},
+        {"Checkbox", Plugin.Instance.Main.CheckboxColumnHeaderUI}
     };
     private static readonly Dictionary<string, Action<int, bool, TransactionsConvertor>> ColumnCellActions = new()
     {
@@ -120,8 +99,6 @@ public partial class Main
     private string searchFilterCS = string.Empty;
     private Dictionary<uint, string>? TerritoryNamesCS;
     private uint selectedAreaIDCS = 0;
-
-    internal int maxBackupFilesCount = 10;
 
     private readonly Configuration? C = Plugin.Configuration;
     private readonly Plugin? P = Plugin.Instance;

@@ -9,11 +9,12 @@ public class TransactionsConvertor
     public string Note { get; set; } = string.Empty; // 备注 Note
 
 
+    private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
     // 将单行交易记录解析为字符串 Parse a transaction into string
     public string ToFileLine()
     {
-        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
+        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
     }
 
     // 将单行字符串解析为交易记录 Parese string into a transaction
@@ -27,20 +28,19 @@ public class TransactionsConvertor
         {
             if (span[i] == ';')
             {
-                parts[partIndex++] = new string(span.Slice(start, i - start));
+                parts[partIndex++] = span.Slice(start, i - start).ToString();
                 start = i + 1;
             }
         }
-
-        parts[partIndex] = new string(span.Slice(start, span.Length - start));
+        parts[partIndex] = span.Slice(start).ToString();
 
         var transaction = new TransactionsConvertor
         {
-            TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal),
-            Amount = Convert.ToInt64(parts[1]),
-            Change = Convert.ToInt64(parts[2]),
-            LocationName = parts.Length > 3 ? parts[3] : Service.Lang.GetText("UnknownLocation"),
-            Note = parts.Length > 4 ? parts[4] : string.Empty
+            TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", InvariantCulture),
+            Amount = long.Parse(parts[1]),
+            Change = long.Parse(parts[2]),
+            LocationName = parts[3],
+            Note = parts[4]
         };
 
         return transaction;

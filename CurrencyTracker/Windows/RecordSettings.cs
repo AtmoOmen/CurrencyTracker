@@ -139,10 +139,11 @@ namespace CurrencyTracker.Windows
 
                         ImGui.SameLine();
                         ImGui.SetNextItemWidth(140f);
-                        if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref P.Main.autoSaveInterval, 5, 10))
+                        var autoSaveInterval = C.AutoSaveInterval;
+                        if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
                         {
-                            if (P.Main.autoSaveInterval < 5) P.Main.autoSaveInterval = 5;
-                            C.AutoSaveInterval = P.Main.autoSaveInterval;
+                            if (autoSaveInterval < 5) autoSaveInterval = 5;
+                            C.AutoSaveInterval = autoSaveInterval;
                             C.Save();
                         }
 
@@ -164,10 +165,11 @@ namespace CurrencyTracker.Windows
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(150f);
-                    if (ImGui.InputInt("", ref P.Main.maxBackupFilesCount))
+                    var maxBackupFilesCount = C.MaxBackupFilesCount;
+                    if (ImGui.InputInt("", ref maxBackupFilesCount))
                     {
-                        if (P.Main.maxBackupFilesCount < 0) P.Main.maxBackupFilesCount = 0;
-                        C.MaxBackupFilesCount = P.Main.maxBackupFilesCount;
+                        if (maxBackupFilesCount < 0) maxBackupFilesCount = 0;
+                        C.MaxBackupFilesCount = maxBackupFilesCount;
                         C.Save();
                     }
 

@@ -158,9 +158,10 @@ namespace CurrencyTracker.Windows
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
 
                 ImGui.SetNextItemWidth(210f);
+                var maxBackupFilesCount = C.MaxBackupFilesCount;
                 if (ImGui.InputInt("", ref maxBackupFilesCount))
                 {
-                    if (maxBackupFilesCount < 0 ) maxBackupFilesCount = 0;
+                    maxBackupFilesCount = Math.Max(maxBackupFilesCount, 0);
                     C.MaxBackupFilesCount = maxBackupFilesCount;
                     C.Save();
                 }
@@ -254,6 +255,7 @@ namespace CurrencyTracker.Windows
 
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(140f);
+                var autoSaveInterval = C.AutoSaveInterval;
                 if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
                 {
                     if (autoSaveInterval < 5) autoSaveInterval = 5;

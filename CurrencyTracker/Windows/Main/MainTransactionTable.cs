@@ -4,78 +4,56 @@ namespace CurrencyTracker.Windows
     // 序号列功能 (倒序排序) / 时间列功能 (按时间聚类, 按时间筛选) / 收支列功能 (按收支筛选, 按收支正负染色) / 地点列功能 / 备注列功能 / 勾选框列功能
     public partial class Main : Window, IDisposable
     {
-        private static readonly string[] TableColumns = new string[]
-        {
-            "Order", "Time", "Amount", "Change", "Location", "Note", "Checkbox"
-        };
 
         // 收支记录表格 Table used to show transactions
         private void TransactionTableUI()
         {
-            if (selectedCurrencyID == 0)
-                return;
+            if (selectedCurrencyID == 0 || currentTypeTransactions == null || currentTypeTransactions.Count <= 0) return;
 
-            var childFrameHeight = ChildframeHeightAdjust();
-            var childScale = new Vector2(ImGui.GetWindowWidth() - 100 - childWidthOffset, childFrameHeight);
+            var windowWidth = ImGui.GetWindowWidth() - C.ChildWidthOffset - 100;
 
             ImGui.SameLine();
 
-            if (ImGui.BeginChildFrame(1, childScale, ImGuiWindowFlags.AlwaysVerticalScrollbar))
+            if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ChildframeHeightAdjust()), ImGuiWindowFlags.AlwaysVerticalScrollbar))
             {
-                TransactionTablePagingUI();
+                TransactionTablePagingUI(windowWidth);
 
-                var visibleColumns = TableColumns.Where(column => C.ColumnVisibility[$"Show{column}Column"]).ToList();
-                var columnCount = visibleColumns.Count;
+                while (selectedStates[selectedCurrencyID].Count < currentTypeTransactions.Count)
+                {
+                    selectedStates[selectedCurrencyID].Add(false);
+                }
 
+                var orderColumnWidth = (int)ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
+
+                var columnCount = C.ColumnsVisibility.Count(c => c.Value);
                 if (columnCount == 0) return;
 
-                if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(ImGui.GetWindowWidth() - 175, 1)))
+                if (ImGui.BeginTable("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 175, 1)))
                 {
-                    while (selectedStates[selectedCurrencyID].Count <= visibleEndIndex)
+                    foreach (var column in C.ColumnsVisibility)
                     {
-                        selectedStates[selectedCurrencyID].Add(false);
-                    }
-
-                    foreach (var column in visibleColumns)
-                    {
-                        var flags = columnFlags.TryGetValue(column, out var value) ? value : ImGuiTableColumnFlags.None;
-                        var width = columnWidths.TryGetValue(column, out var value2) ? value2 : 0;
-                        if (column == "Order") width = (int)ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
-
-                        ImGui.TableSetupColumn(column, flags, width, 0);
+                        if (!column.Value) continue;
+                        var flags = column.Key == "Order" || column.Key == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
+                        var width = column.Key == "Order" ? ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10 : column.Key == "Checkbox" ? 30 : 150;
+                        ImGui.TableSetupColumn(column.Key, flags, width, 0);
                     }
 
                     ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
-
-                    foreach (var column in visibleColumns)
+                    foreach (var column in C.ColumnsVisibility)
                     {
+                        if (!column.Value) continue;
                         ImGui.TableNextColumn();
-                        if (ColumnHeaderActions.TryGetValue(column, out var value))
-                        {
-                            value.Invoke();
-                        }
+                        if (ColumnHeaderActions.TryGetValue(column.Key, out var headerAction)) headerAction.Invoke();
                     }
 
                     ImGui.TableNextRow();
-
-                    if (currentTypeTransactions.Count <= 0)
-                    {
-                        ImGui.EndTable();
-                        return;
-                    }
-
                     for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                     {
-                        var transaction = currentTypeTransactions[i];
-                        var selected = selectedStates[selectedCurrencyID][i];
-
-                        foreach (var column in visibleColumns)
+                        foreach (var column in C.ColumnsVisibility)
                         {
+                            if (!column.Value) continue;
                             ImGui.TableNextColumn();
-                            if (ColumnCellActions.TryGetValue(column, out var value))
-                            {
-                                value.Invoke(i, selected, transaction);
-                            }
+                            if (ColumnCellActions.TryGetValue(column.Key, out var cellAction)) cellAction.Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
                         }
                         ImGui.TableNextRow();
                     }
@@ -89,24 +67,17 @@ namespace CurrencyTracker.Windows
         }
 
         // 表格翻页组件 Table Paging Components
-        private void TransactionTablePagingUI()
+        private void TransactionTablePagingUI(float windowWidth)
         {
-            var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / transactionsPerPage) : 0;
+            var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage) : 0;
             currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
-            if (pageCount == 0)
-            {
-                if (P.Graph.IsOpen) P.Graph.IsOpen = false;
-            }
-
-            // 图表 Graphs
-            ImGui.SetCursorPosX((ImGui.GetWindowWidth() - 360) / 2 - 57 - ImGui.CalcTextSize("    ").X);
+            // 视图切换 Table View Switch
+            ImGui.SetCursorPosX((windowWidth / 3));
             TableViewSwitchUI();
 
             // 首页 First Page
-            var pageButtonPosX = ((ImGui.GetWindowWidth() - 360) / 2) - 40;
             ImGui.SameLine();
-            ImGui.SetCursorPosX(pageButtonPosX);
             if (IconButton(FontAwesomeIcon.Backward)) currentPage = 0;
 
             // 上一页 Last Page
@@ -125,33 +96,34 @@ namespace CurrencyTracker.Windows
             ImGui.SameLine();
             if (IconButton(FontAwesomeIcon.Forward) && currentPage >= 0) currentPage = pageCount;
 
-            // 表格外观
+            // 表格外观 Table Appearence
             ImGui.SameLine();
-            if (IconButton(FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), "TableAppearance"))
-                ImGui.OpenPopup("TableAppearence");
+            if (IconButton(FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), "TableAppearance")) ImGui.OpenPopup("TableAppearence");
 
             if (ImGui.BeginPopup("TableAppearence"))
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
 
-                ColumnDisplayCheckbox("ShowTimeColumn", "Time");
+                ColumnDisplayCheckbox("Time");
                 ImGui.SameLine();
-                ColumnDisplayCheckbox("ShowAmountColumn", "Amount");
+                ColumnDisplayCheckbox("Amount");
                 ImGui.SameLine();
-                ColumnDisplayCheckbox("ShowChangeColumn", "Change");
-                ColumnDisplayCheckbox("ShowOrderColumn", "Order");
+                ColumnDisplayCheckbox("Change");
+
+                ColumnDisplayCheckbox("Order");
                 ImGui.SameLine();
-                ColumnDisplayCheckbox("ShowLocationColumn", "Location");
+                ColumnDisplayCheckbox("Location");
                 ImGui.SameLine();
-                ColumnDisplayCheckbox("ShowNoteColumn", "Note");
+                ColumnDisplayCheckbox("Note");
                 ImGui.SameLine();
-                ColumnDisplayCheckbox("ShowCheckboxColumn", "Checkbox");
+                ColumnDisplayCheckbox("Checkbox");
 
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ChildframeWidthOffset")}:");
 
-                ImGui.SetNextItemWidth(150);
+                ImGui.SetNextItemWidth(150f);
                 ImGui.SameLine();
+                var childWidthOffset = C.ChildWidthOffset;
                 if (ImGui.InputInt("##ChildframesWidthOffset", ref childWidthOffset, 10))
                 {
                     childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
@@ -164,6 +136,7 @@ namespace CurrencyTracker.Windows
 
                 ImGui.SetNextItemWidth(150);
                 ImGui.SameLine();
+                var transactionsPerPage = C.RecordsPerPage;
                 if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
                 {
                     transactionsPerPage = Math.Max(transactionsPerPage, 1);
@@ -174,8 +147,8 @@ namespace CurrencyTracker.Windows
                 ImGui.EndPopup();
             }
 
-            visibleStartIndex = currentPage * transactionsPerPage;
-            visibleEndIndex = Math.Min(visibleStartIndex + transactionsPerPage, currentTypeTransactions.Count);
+            visibleStartIndex = currentPage * C.RecordsPerPage;
+            visibleEndIndex = Math.Min(visibleStartIndex + C.RecordsPerPage, currentTypeTransactions.Count);
 
             // 鼠标滚轮控制 Logic controlling Mouse Wheel Filpping
             {
@@ -205,6 +178,7 @@ namespace CurrencyTracker.Windows
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, 0, 0));
                 }
+
                 foreach(var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
                 {
                     if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI, ImGuiSelectableFlags.DontClosePopups))
@@ -212,12 +186,14 @@ namespace CurrencyTracker.Windows
                         currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
                     }
                 }
+
                 if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
                     currentView = TransactionFileCategory.SaddleBag;
                     currentViewID = 0;
                 }
+
                 if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
@@ -227,12 +203,12 @@ namespace CurrencyTracker.Windows
         }
 
         // 显示列勾选框 Displayed Column Checkbox
-        private void ColumnDisplayCheckbox(string boolName, string text)
+        private void ColumnDisplayCheckbox(string boolName)
         {
-            var isShowColumn = C.ColumnVisibility[boolName];
-            if (ImGui.Checkbox($"{Service.Lang.GetText(text)}##Display{text}Column", ref isShowColumn))
+            var isShowColumn = C.ColumnsVisibility[boolName];
+            if (ImGui.Checkbox($"{Service.Lang.GetText(boolName)}##Display{boolName}Column", ref isShowColumn))
             {
-                C.ColumnVisibility[boolName] = isShowColumn;
+                C.ColumnsVisibility[boolName] = isShowColumn;
                 C.Save();
             }
         }
@@ -577,14 +553,18 @@ namespace CurrencyTracker.Windows
         // 按收支正负染色 Coloring Text by Change
         private void ColoringByChangeUI()
         {
+            var isChangeColoring = C.ChangeTextColoring;
             if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
             {
                 C.ChangeTextColoring = isChangeColoring;
                 C.Save();
             }
 
-            if (isChangeColoring)
+            if (C.ChangeTextColoring)
             {
+                var positiveChangeColor = C.PositiveChangeColor;
+                var negativeChangeColor = C.NegativeChangeColor;
+
                 ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor, color => C.PositiveChangeColor = color);
                 ImGui.SameLine();
                 ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor, color => C.NegativeChangeColor = color);
@@ -605,8 +585,7 @@ namespace CurrencyTracker.Windows
             {
                 if (ImGui.ColorPicker4("", ref color))
                 {
-                    isChangeColoring = true;
-                    C.ChangeTextColoring = isChangeColoring;
+                    C.ChangeTextColoring = true;
                     saveColorAction(color);
                     C.Save();
                 }
@@ -617,28 +596,13 @@ namespace CurrencyTracker.Windows
         // 收支列单元格 Change Column Cell
         private void ChangeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
         {
-            if (isChangeColoring)
-            {
-                if (transaction.Change > 0)
-                {
-                    ImGui.PushStyleColor(ImGuiCol.Text, positiveChangeColor);
-                }
-                else if (transaction.Change == 0)
-                {
-                    ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(1.0f, 1.0f, 1.0f, 1.0f));
-                }
-                else
-                {
-                    ImGui.PushStyleColor(ImGuiCol.Text, negativeChangeColor);
-                }
+            var textColor = C.ChangeTextColoring
+                ? transaction.Change > 0 ? C.PositiveChangeColor : transaction.Change < 0 ? C.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
-                SelectableClickToCopy(transaction.Change.ToString("+ #,##0;- #,##0;0"), null, i);
-                ImGui.PopStyleColor();
-            }
-            else
-            {
-                SelectableClickToCopy(transaction.Change.ToString("+ #,##0;- #,##0;0"), null, i);
-            }
+            ImGui.PushStyleColor(ImGuiCol.Text, textColor);
+            SelectableClickToCopy(transaction.Change.ToString("+ #,##0;- #,##0;0"), null, i);
+            ImGui.PopStyleColor();
         }
 
         // 地点列标题栏 Location Column Header
