@@ -42,7 +42,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 if (!C.PresetCurrencies.ContainsKey(currency.Key))
                 {
-                    var currencyName = CurrencyInfo.CurrencyLocalName(currency.Key);
+                    var currencyName = CurrencyInfo.GetCurrencyLocalName(currency.Key);
                     if (!currencyName.IsNullOrEmpty())
                     {
                         C.PresetCurrencies.Add(currency.Key, currencyName);
@@ -58,7 +58,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd)
                 {
-                    var currencyName = CurrencyInfo.CurrencyLocalName(currencyID);
+                    var currencyName = CurrencyInfo.GetCurrencyLocalName(currencyID);
 
                     if (currencyName.IsNullOrEmpty()) continue;
 
@@ -84,7 +84,6 @@ namespace CurrencyTracker.Manager.Trackers
 
         public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
-            if (!C.AllCurrencies.TryGetValue(currencyID, out var currencyName)) return false;
             if (!CheckCurrencyRules(currencyID)) return false;
 
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
@@ -107,7 +106,7 @@ namespace CurrencyTracker.Manager.Trackers
                 {
                     Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName, noteContent, category, ID);
                 }
-                PostTransactionUpdate(currencyID, currencyName, source, category, ID);
+                PostTransactionUpdate(currencyID, source, category, ID);
                 return true;
             }
             return false;
@@ -156,8 +155,10 @@ namespace CurrencyTracker.Manager.Trackers
             return isChanged;
         }
 
-        private void PostTransactionUpdate(uint currencyID, string currencyName, uint source, TransactionFileCategory category, ulong ID)
+        private void PostTransactionUpdate(uint currencyID, uint source, TransactionFileCategory category, ulong ID)
         {
+            var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
+
             OnTransactionsUpdate(EventArgs.Empty);
             Service.Log.Debug($"{currencyName}({currencyID}) Changed: Update Transactions Data");
             if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");

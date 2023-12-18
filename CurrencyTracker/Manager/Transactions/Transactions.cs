@@ -21,7 +21,8 @@ namespace CurrencyTracker.Manager
         public static string GetTransactionFilePath(uint CurrencyID, TransactionFileCategory category, ulong ID = 0)
         {
             var suffix = GetTransactionFileSuffix(category, ID);
-            var path = Path.Combine(Plugin.Instance.PlayerDataFolder, $"{Plugin.Configuration.AllCurrencies[CurrencyID]}{suffix}.txt");
+            var currencyName = CurrencyInfo.GetCurrencyName(CurrencyID);
+            var path = Path.Join(Plugin.Instance.PlayerDataFolder, $"{currencyName}{suffix}.txt");
             return path;
         }
 
@@ -54,12 +55,6 @@ namespace CurrencyTracker.Manager
                 return false;
             }
 
-            if (!Plugin.Configuration.AllCurrencies.ContainsKey(currencyID))
-            {
-                Service.Log.Error("Currency Missed");
-                return false;
-            }
-
             return true;
         }
 
@@ -82,7 +77,7 @@ namespace CurrencyTracker.Manager
                 : Plugin.Instance.PlayerDataFolder;
 
             var filePath = characterInfo != null
-                ? Path.Join(playerDataFolder, $"{Plugin.Configuration.AllCurrencies[currencyID]}{GetTransactionFileSuffix(category, ID)}.txt")
+                ? Path.Join(playerDataFolder, $"{CurrencyInfo.GetCurrencyName(currencyID)}{GetTransactionFileSuffix(category, ID)}.txt")
                 : GetTransactionFilePath(currencyID, category, ID);
 
             if (characterInfo == null && !ValidityCheck(currencyID)) return null;
@@ -142,7 +137,7 @@ namespace CurrencyTracker.Manager
             });
         }
 
-        // 新建一条数据记录 Create One New Transaction
+        // 新建一条数据记录 Create a New Transaction File with a transaction
         public static void AddTransaction(uint currencyID, DateTime TimeStamp, long Amount, long Change, string LocationName, string Note, TransactionFileCategory category = 0, ulong ID = 0)
         {
             if (!ValidityCheck(currencyID)) return;
@@ -324,7 +319,10 @@ namespace CurrencyTracker.Manager
 
                 while (backupFiles.Count >= maxBackupFilesCount)
                 {
-                    File.Delete(backupFiles[0]);
+                    if (!IsFileLocked(new FileInfo(backupFiles[0])))
+                    {
+                        File.Delete(backupFiles[0]);
+                    }
                     backupFiles.RemoveAt(0);
                 }
             }
@@ -349,6 +347,5 @@ namespace CurrencyTracker.Manager
             }
             return zipFilePath;
         }
-
     }
 }

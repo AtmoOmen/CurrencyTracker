@@ -9,7 +9,6 @@ public static class CurrencyInfo
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
 
-    // 存储一般货币的ID的字典（这里的string非货币名）
     public static readonly Dictionary<uint, string> PresetCurrencies = new()
     {
         { 1, "Gil" },
@@ -17,8 +16,17 @@ public static class CurrencyInfo
         { GetSpecialTomestoneId(3), "LimitedTomestone"}
     };
 
-    // 传入货币ID后，获取货币于当前语言环境的名称
-    public static string CurrencyLocalName(uint currencyID)
+    /// <summary>
+    /// Try to get currency name from configuration, if not exists, get the local name from the game client.
+    /// </summary>
+    /// <param name="currencyID"></param>
+    /// <returns></returns>
+    public static string GetCurrencyName(uint currencyID)
+    {
+        return Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName) ? currencyName : GetCurrencyLocalName(currencyID);
+    }
+
+    public static string GetCurrencyLocalName(uint currencyID)
     {
         if (LuminaCache<Item>.Instance.GetRow(currencyID) is { } currencyItem)
         {
@@ -29,7 +37,6 @@ public static class CurrencyInfo
         else return "Unknown";
     }
 
-    // 传入货币ID后，获取货币当前的数量
     public static unsafe long GetCurrencyAmount(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
     {
         return category switch
@@ -42,7 +49,6 @@ public static class CurrencyInfo
         };
     }
 
-    // 获取指定角色指定货币总数量
     public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
     {
         var amount = 0L;
@@ -68,7 +74,6 @@ public static class CurrencyInfo
         return amount;
     }
 
-    // 获取数据文件中最新一条数据的货币数量
     public static long? GetCurrencyAmountFromFile(uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var latestTransaction = LoadLatestSingleTransaction(currencyID, character, category, ID);
@@ -93,7 +98,7 @@ public static class CurrencyInfo
             return Service.TextureProvider.GetIcon(iconId, iconFlags);
         }
 
-        Service.Log.Warning($"Failed to get {currencyID} {CurrencyLocalName(currencyID)} icon");
+        Service.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
         return null;
     }
 }

@@ -2,7 +2,8 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class HandlerManager
     {
-        public static List<ITrackerHandler> Handlers = new();
+        public static HashSet<ITrackerHandler> Handlers = new();
+        public static ChatHandler? ChatHandler;
 
         public HandlerManager()
         {
@@ -11,12 +12,16 @@ namespace CurrencyTracker.Manager.Trackers
 
             foreach (var type in types)
             {
+                if (type.Name.Contains("InventoryHandler")) continue;
+
                 var instance = Activator.CreateInstance(type);
                 if (instance is ITrackerHandler handler)
                 {
                     Handlers.Add(handler);
                 }
             }
+
+            ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
         }
 
         public static void Init()
@@ -35,36 +40,14 @@ namespace CurrencyTracker.Manager.Trackers
             }
         }
 
-        public static void Load<T>() where T : ITrackerHandler, new()
+        public static void Nullify<T>(ref T handler) where T : ITrackerHandler?
         {
-            if (!Handlers.OfType<T>().Any())
-            {
-                var handler = new T();
+            if (handler == null) return;
 
-                if (!handler.Initialized)
-                {
-                    handler.Init();
-                    Handlers.Add(handler);
-                    Service.Log.Debug($"Loaded {typeof(T).Name} handler");
-                }
-                else
-                {
-                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
-                }
-            }
+            handler.Uninit();
+            handler = default;
         }
-
-        public static void Unload<T>() where T : ITrackerHandler
-        {
-            var handler = Handlers.OfType<T>().FirstOrDefault();
-            if (handler != null)
-            {
-                handler.Uninit();
-                Handlers.Remove(handler);
-            }
-            Service.Log.Debug($"Unloaded {typeof(T).Name} module");
-        }
-
+        
         public static void Uninit()
         {
             foreach (var handler in Handlers)
