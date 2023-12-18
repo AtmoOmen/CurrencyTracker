@@ -2,17 +2,8 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
 {
     public class ChatHandler : ITrackerHandler
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
-
-        public bool isBlocked
-        {
-            get { return _isBlocked; }
-            set { _isBlocked = value; }
-        }
+        public bool Initialized { get; set; } = false;
+        public bool isBlocked { get; set; } = false;
 
         private static readonly ushort[] ValidChatTypes = new ushort[9]
         {
@@ -21,8 +12,6 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
 
         private readonly Timer checkTimer = new(100);
 
-        private bool _isBlocked = false;
-        private bool _initialized = false;
 
         public void Init()
         {
@@ -31,12 +20,12 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             checkTimer.AutoReset = false;
             checkTimer.Elapsed += CheckTimerElapsed;
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private void OnChatMessage(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
         {
-            if (_isBlocked) return;
+            if (isBlocked) return;
             if (!ValidChatTypes.Contains((ushort)type)) return;
 
             checkTimer.Restart();
@@ -55,7 +44,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
             checkTimer.Stop();
             checkTimer.Dispose();
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

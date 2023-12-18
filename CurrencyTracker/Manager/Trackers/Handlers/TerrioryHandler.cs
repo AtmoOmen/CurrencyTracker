@@ -2,48 +2,13 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class TerrioryHandler : ITrackerHandler
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; }
+        public bool isBlocked { get; set; }
+        public static string CurrentLocationName { get; set; } = string.Empty;
+        public static uint CurrentLocationID { get; set; } = 0;
+        public static string PreviousLocationName { get; set; } = string.Empty;
+        public static uint PreviousLocationID { get; set; } = 0;
 
-        public bool isBlocked
-        {
-            get { return _isBlocked; }
-            set { _isBlocked = value; }
-        }
-
-        public static string CurrentLocationName
-        {
-            get { return _currentLocationName; }
-            set { _currentLocationName = value; }
-        }
-
-        public static uint CurrentLocationID
-        {
-            get { return _currentLocationID; }
-            set { _currentLocationID = value; }
-        }
-
-        public static string PreviousLocationName
-        {
-            get { return _previousLocationName; }
-            set { _previousLocationName = value; }
-        }
-
-        public static uint PreviousLocationID
-        {
-            get { return _previousLocationID; }
-            set { _previousLocationID = value; }
-        }
-
-        private bool _initialized = false;
-        private bool _isBlocked = false;
-        private static string _currentLocationName = string.Empty;
-        private static uint _currentLocationID = 0;
-        private static string _previousLocationName = string.Empty;
-        private static uint _previousLocationID = 0;
         internal static Dictionary<uint, string> TerritoryNames = new();
 
         public void Init()
@@ -54,23 +19,23 @@ namespace CurrencyTracker.Manager.Trackers
                     x => x.RowId,
                     x => Plugin.Instance.PluginInterface.Sanitizer.Sanitize(x.PlaceName?.Value?.Name?.ToString()));
 
-            _previousLocationID = _currentLocationID = Service.ClientState.TerritoryType;
-            _previousLocationName = _currentLocationName = TerritoryNames.TryGetValue(_currentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+            PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
+            PreviousLocationName = CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private void OnZoneChange(ushort obj)
         {
-            if (_isBlocked) return;
+            if (isBlocked) return;
 
-            _previousLocationID = _currentLocationID;
-            _previousLocationName = _currentLocationName;
+            PreviousLocationID = CurrentLocationID;
+            PreviousLocationName = CurrentLocationName;
 
-            _currentLocationID = Service.ClientState.TerritoryType;
-            _currentLocationName = TerritoryNames.TryGetValue(_currentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
+            CurrentLocationID = Service.ClientState.TerritoryType;
+            CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation) ? currentLocation : Service.Lang.GetText("UnknownLocation");
         }
 
         public void Uninit()
@@ -78,10 +43,10 @@ namespace CurrencyTracker.Manager.Trackers
             Service.ClientState.TerritoryChanged -= OnZoneChange;
 
             TerritoryNames.Clear();
-            _previousLocationID = _currentLocationID = 0;
-            _previousLocationName = _currentLocationName = string.Empty;
+            PreviousLocationID = CurrentLocationID = 0;
+            PreviousLocationName = CurrentLocationName = string.Empty;
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }
