@@ -218,12 +218,12 @@ namespace CurrencyTracker.Windows
 
                     selectedStates.Add(currencyIDCCT, new());
                     selectedTransactions.Add(currencyIDCCT, new());
-                    selectedOptionIndex = C.OrderedOptions.Count;
                     selectedCurrencyID = currencyIDCCT;
                     ReloadOrderedOptions();
+                    selectedOptionIndex = C.OrderedOptions.IndexOf(currencyIDCCT);
 
-                    Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 1);
-                    currentTypeTransactions = Transactions.LoadAllTransactions(selectedCurrencyID);
+                    Service.Tracker.CheckCurrency(currencyIDCCT, "", "", RecordChangeType.All, 1);
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
 
                     searchFilterCCT = string.Empty;
                     itemNamesCCT.Remove(selected);
@@ -257,7 +257,7 @@ namespace CurrencyTracker.Windows
             }
             else
             {
-                var currencyNames = C.AllCurrencies.Keys.Select(CurrencyInfo.CurrencyLocalName).ToHashSet();
+                var currencyNames = C.AllCurrencies.Keys.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
                 var items = ItemNames.Values
                     .Where(itemName => !currencyNames.Contains(itemName))
                     .ToList();
@@ -292,6 +292,9 @@ namespace CurrencyTracker.Windows
                         Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp2"));
                         return;
                     }
+
+                    var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
+                    if (C.AllCurrencies[selectedCurrencyID] != localName) RenameCurrencyHandler(localName);
 
                     C.CustomCurrencies.Remove(selectedCurrencyID);
                     C.isUpdated = true;
@@ -385,7 +388,7 @@ namespace CurrencyTracker.Windows
             ImGui.SameLine();
             if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), "RenameCurrencyReset"))
             {
-                RenameCurrencyHandler(CurrencyInfo.CurrencyLocalName(selectedCurrencyID));
+                RenameCurrencyHandler(CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID));
             }
         }
 
@@ -394,35 +397,24 @@ namespace CurrencyTracker.Windows
         {
             var filePaths = new Dictionary<string, string>();
             var categories = new List<TransactionFileCategory> { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
+            categories.AddRange(C.CharacterRetainers[P.CurrentCharacter.ContentID].Keys.Select(x => TransactionFileCategory.Retainer));
+
             foreach (var category in categories)
             {
-                var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(category, 0)}.txt");
-                var selectedFilePath = Transactions.GetTransactionFilePath(selectedCurrencyID, category, 0);
+                var key = category == TransactionFileCategory.Retainer ? C.CharacterRetainers[P.CurrentCharacter.ContentID].First().Key : 0;
+                var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(category, key)}.txt");
+                var selectedFilePath = Transactions.GetTransactionFilePath(selectedCurrencyID, category, key);
                 filePaths[selectedFilePath] = editedFilePath;
-                Service.Log.Debug($"{selectedFilePath} | {editedFilePath}");
-            }
-            foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
-            {
-                var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(TransactionFileCategory.Retainer, retainer.Key)}.txt");
-                var selectedFilePath = Transactions.GetTransactionFilePath(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key);
-                filePaths[selectedFilePath] = editedFilePath;
-                Service.Log.Debug($"{selectedFilePath} | {editedFilePath}");
             }
 
-            if (C.AllCurrencies.ContainsValue(editedCurrencyName) || filePaths.Values.Any(x => File.Exists(x)))
+            if (C.AllCurrencies.ContainsValue(editedCurrencyName) || filePaths.Values.Any(File.Exists))
             {
-                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp"));
+                Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             }
             else if (C.PresetCurrencies.TryGetValue(selectedCurrencyID, out var currencyName) || C.CustomCurrencies.TryGetValue(selectedCurrencyID, out currencyName))
             {
-                if (C.PresetCurrencies.ContainsKey(selectedCurrencyID))
-                {
-                    C.PresetCurrencies[selectedCurrencyID] = editedCurrencyName;
-                }
-                else
-                {
-                    C.CustomCurrencies[selectedCurrencyID] = editedCurrencyName;
-                }
+                var targetCurrency = C.PresetCurrencies.ContainsKey(selectedCurrencyID) ? C.PresetCurrencies : C.CustomCurrencies;
+                targetCurrency[selectedCurrencyID] = editedCurrencyName;
                 C.isUpdated = true;
                 C.Save();
 

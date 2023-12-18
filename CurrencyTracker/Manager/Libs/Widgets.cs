@@ -71,6 +71,26 @@ namespace CurrencyTracker.Manager
             }
         }
 
+        public static bool IsFileLocked(FileInfo file)
+        {
+            FileStream? stream = null;
+
+            try
+            {
+                stream = file.Open(FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            }
+            catch (IOException)
+            {
+                return true;
+            }
+            finally
+            {
+                stream?.Close();
+            }
+
+            return false;
+        }
+
         public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
         {
             ImGui.PushFont(UiBuilder.IconFont);
@@ -107,19 +127,6 @@ namespace CurrencyTracker.Manager
                 ImGui.SetClipboardText(textCopy ?? "");
                 Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {textCopy}");
             }
-        }
-
-        public static unsafe ImFontPtr GetFont(float size)
-        {
-            var style = new Dalamud.Interface.GameFonts.GameFontStyle(Dalamud.Interface.GameFonts.GameFontStyle.GetRecommendedFamilyAndSize(Dalamud.Interface.GameFonts.GameFontFamily.Axis, size));
-            var font = Plugin.Instance.PluginInterface.UiBuilder.GetGameFontHandle(style).ImFont;
-
-            if ((IntPtr)font.NativePtr == IntPtr.Zero)
-            {
-                return ImGui.GetFont();
-            }
-            font.Scale = size / style.BaseSizePt;
-            return font;
         }
 
         public static unsafe bool SelectableButton(string name, string str_id = "None", string tooltip = "", Vector2 size = default)
