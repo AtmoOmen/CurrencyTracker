@@ -2,86 +2,83 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class MobDrops : ITrackerComponent
     {
-        private bool _initialized = false;
+        public bool Initialized { get; set; } = false;
 
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        private HashSet<string> enemiesList = new();
 
-        private bool inCombat = false;
-        private List<string> enemiesList = new();
+        private InventoryHandler? inventoryHandler = null;
 
         public void Init()
         {
             Service.Condition.ConditionChange += OnConditionChange;
 
-            _initialized = true;
-        }
-
-        private void OnFrameworkUpdate(IFramework framework)
-        {
-            if (!inCombat) return;
-
-            var target = Service.TargetManager.Target;
-
-            if (target != null)
-            {
-                if (target.ObjectKind != ObjectKind.BattleNpc && target.ObjectKind != ObjectKind.EventNpc) return;
-
-                if (enemiesList.Contains(target.Name.TextValue)) return;
-
-                enemiesList.Add(target.Name.TextValue);
-            }
+            Initialized = true;
         }
 
         private unsafe void OnConditionChange(ConditionFlag flag, bool value)
         {
-            if (Flags.IsBoundByDuty() || Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
+            if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty() || FateManager.Instance()->CurrentFate != null) return;
 
-            if (flag == ConditionFlag.InCombat && value)
+            if (value)
             {
-                inCombat = true;
                 BeginMobDropsHandler();
             }
-            else if (flag == ConditionFlag.InCombat && !value)
+            else
             {
                 Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
             }
+
         }
 
         private void BeginMobDropsHandler()
         {
-            inCombat = true;
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+            HandlerManager.ChatHandler.isBlocked = true;
+            inventoryHandler = new();
 
             Service.Framework.Update += OnFrameworkUpdate;
+        }
+
+        private void OnFrameworkUpdate(IFramework framework)
+        {
+            var target = Service.TargetManager.Target;
+
+            if (target != null)
+            {
+                if (target.ObjectKind != ObjectKind.BattleNpc) return;
+                var battleNPC = (BattleNpc)target;
+                if ((battleNPC.StatusFlags & (StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut)) == 0) return;
+
+                if (!enemiesList.Contains(battleNPC.Name.TextValue))
+                {
+                    enemiesList.Add(battleNPC.Name.TextValue);
+                    Service.Log.Debug($"{battleNPC.Name.TextValue}");
+                }
+            }
         }
 
         private void EndMobDropsHandler()
         {
             if (Service.Condition[ConditionFlag.InCombat]) return;
-            Service.Framework.Update -= OnFrameworkUpdate;
+
             Service.Log.Debug($"Combat Ends, Currency Change Check Starts.");
+            Service.Framework.Update -= OnFrameworkUpdate;
 
-            Service.Tracker.CheckAllCurrencies("",  $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
+            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "",  $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
 
-            inCombat = false;
             enemiesList.Clear();
+            HandlerManager.ChatHandler.isBlocked = false;
+            HandlerManager.Nullify(ref inventoryHandler);
 
             Service.Log.Debug("Currency Change Check Completes.");
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
         }
 
         public void Uninit()
         {
-            inCombat = false;
-
             Service.Condition.ConditionChange -= OnConditionChange;
             Service.Framework.Update -= OnFrameworkUpdate;
-            _initialized = false;
+            HandlerManager.Nullify(ref inventoryHandler);
+
+            Initialized = false;
         }
     }
 }

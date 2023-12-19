@@ -16,6 +16,7 @@ global using Dalamud.Game.ClientState.Conditions;
 global using Dalamud.Game.ClientState.Objects;
 global using Dalamud.Game.Command;
 global using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+global using Dalamud.Game.ClientState.Objects.Types;
 global using Dalamud.Game.Inventory;
 global using Dalamud.Game.Inventory.InventoryEventArgTypes;
 global using Dalamud.Game.Text;
