@@ -95,11 +95,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
-
             Service.AddonEventManager.RemoveEvent(mouseoverHandle);
             Service.AddonEventManager.RemoveEvent(mouseooutHandle);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
 
             _initialized = false;
         }
