@@ -1,21 +1,17 @@
 namespace CurrencyTracker.Manager.Trackers.Components
 {
+    // 过时，需要重写 Outdate, Need Rewrite
     public class FateRewards : ITrackerComponent
     {
-        private bool _initialized = false;
-
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
-            _initialized = true;
+
+            Initialized = true;
         }
 
         private void FateHandler(AddonEvent type, AddonArgs args)
@@ -23,7 +19,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             switch (type)
             {
                 case AddonEvent.PreSetup:
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+                    HandlerManager.ChatHandler.isBlocked = true;
                     break;
                 case AddonEvent.PostSetup:
                     BeginFateHandler(args);
@@ -31,7 +27,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 case AddonEvent.PreFinalize:
                     if (!Flags.OccupiedInEvent())
                     {
-                        HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
+                        HandlerManager.ChatHandler.isBlocked = false;
                     }
                     break;
             }
@@ -56,7 +52,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
-            _initialized = false;
+
+            Initialized = false;
         }
     }
 }

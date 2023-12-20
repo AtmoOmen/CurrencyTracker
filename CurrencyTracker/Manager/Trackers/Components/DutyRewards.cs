@@ -2,18 +2,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class DutyRewards : ITrackerComponent
     {
-        private bool _initialized = false;
+        public bool Initialized { get; set; } = false;
 
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        private static Dictionary<uint, string> ContentNames = new();  // Territory ID - ContentName
 
-        // Territory ID - ContentName
-        private static Dictionary<uint, string> ContentNames = new();
-
-        // Contents that Should be Ignored
         private static readonly uint[] IgnoredContents =
         {
             // Triple Triad Related
@@ -26,6 +18,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private bool isDutyStarted;
         private string contentName = string.Empty;
+
+        private InventoryHandler? inventoryHandler = null;
 
         public void Init()
         {
@@ -43,7 +37,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
 
             Service.ClientState.TerritoryChanged += OnZoneChange;
-            _initialized = true;
+
+            Initialized = true;
         }
 
         private void CheckDutyStart()
@@ -52,10 +47,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (ContentNames.TryGetValue(TerrioryHandler.CurrentLocationID, out var dutyName))
             {
-                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-
                 isDutyStarted = true;
-                contentName = !dutyName.IsNullOrEmpty() ? dutyName : Service.Lang.GetText("UnknownContent");
+                contentName = dutyName;
+                HandlerManager.ChatHandler.isBlocked = true;
+                inventoryHandler = new();
 
                 Service.Log.Debug($"Duty {dutyName} Starts");
             }
@@ -79,22 +74,24 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckAllCurrencies(PreviousLocationName, Plugin.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
+            Service.Tracker.CheckCurrencies(inventoryHandler.Items, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
 
             isDutyStarted = false;
             contentName = string.Empty;
+            HandlerManager.ChatHandler.isBlocked = false;
+            HandlerManager.Nullify(ref inventoryHandler);
 
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
             Service.Log.Debug("Currency Change Check Completes.");
         }
 
         public void Uninit()
         {
+            Service.ClientState.TerritoryChanged -= OnZoneChange;
+            HandlerManager.Nullify(ref inventoryHandler);
             isDutyStarted = false;
             contentName = string.Empty;
 
-            Service.ClientState.TerritoryChanged -= OnZoneChange;
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

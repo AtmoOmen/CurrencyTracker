@@ -2,16 +2,9 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class SpecialExchange : ITrackerComponent
     {
-        private bool _initialized = false;
+        public bool Initialized { get; set; } = false;
 
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
-
-        // Addon Name - Window Node ID
-        private static readonly Dictionary<string, uint> UI = new()
+        private static readonly Dictionary<string, uint> UI = new()  // Addon Name - Window Node ID
         {
             { "GrandCompanySupplyList", 27 },
             { "WeeklyBingoResult", 99 },
@@ -21,65 +14,37 @@ namespace CurrencyTracker.Manager.Trackers.Components
         internal static bool isOnExchange = false;
         private string windowName = string.Empty;
 
+        private InventoryHandler? inventoryHandler = null;
+
         public void Init()
         {
-            if (!isOnExchange || !Exchange.isOnExchange)
-            {
-                var exchange = UI.Keys.FirstOrDefault(ex => Service.GameGui.GetAddonByName(ex) != nint.Zero);
-                if (exchange != null)
-                {
-                    BeginExchangeHandler(exchange);
-                }
-            }
-
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private void BeginExchange(AddonEvent type, AddonArgs args)
         {
             if (isOnExchange || Exchange.isOnExchange) return;
 
-            BeginExchangeHandler(args);
-        }
+            HandlerManager.ChatHandler.isBlocked = true;
 
-        private void BeginExchangeHandler(AddonArgs args)
-        {
-            if (isOnExchange || Exchange.isOnExchange) return;
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
             isOnExchange = true;
             windowName = GetWindowTitle(args, UI[args.AddonName]) ?? string.Empty;
+            inventoryHandler = new();
 
             Service.Framework.Update += OnFrameworkUpdate;
-            Service.Log.Debug("Exchange Starts");
-        }
-
-        private void BeginExchangeHandler(string addonName)
-        {
-            if (isOnExchange || Exchange.isOnExchange) return;
-
-            if (!addonName.IsNullOrEmpty()) return;
-
-            var addon = Service.GameGui.GetAddonByName(addonName);
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-            isOnExchange = true;
-            windowName = GetWindowTitle(addon, UI[addonName]) ?? string.Empty;
-
-            Service.Framework.Update += OnFrameworkUpdate;
-            Service.Log.Debug("Exchange Starts");
         }
 
         private void OnFrameworkUpdate(IFramework framework)
         {
+            if (Flags.OccupiedInEvent()) return;
+
             if (!isOnExchange && !Exchange.isOnExchange)
             {
                 Service.Framework.Update -= OnFrameworkUpdate;
                 return;
             }
-
-            if (Flags.OccupiedInEvent()) return;
 
             EndExchangeHandler();
         }
@@ -88,26 +53,30 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (Exchange.isOnExchange) return;
 
+            Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
+
+            Service.Framework.Update -= OnFrameworkUpdate;
             isOnExchange = false;
 
-            Service.Tracker.CheckAllCurrencies("", $"({windowName})", RecordChangeType.All, 10);
+            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({windowName})", RecordChangeType.All, 10);
 
             windowName = string.Empty;
+            HandlerManager.ChatHandler.isBlocked = false;
+            HandlerManager.Nullify(ref inventoryHandler);
 
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.Framework.Update -= OnFrameworkUpdate;
-            Service.Log.Debug("Exchange Completes");
+            Service.Log.Debug("Currency Change Check Completes.");
         }
 
         public void Uninit()
         {
+            Service.Framework.Update -= OnFrameworkUpdate;
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
+            HandlerManager.Nullify(ref inventoryHandler);
             isOnExchange = false;
             windowName = string.Empty;
 
-            Service.Framework.Update -= OnFrameworkUpdate;
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
-
-            _initialized = false;
+            Initialized = false;
         }
+
     }
 }

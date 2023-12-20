@@ -2,21 +2,13 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class Exchange : ITrackerComponent
     {
-        private bool _initialized = false;
-
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         private static readonly string[] UI = new string[]
         {
             "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency", "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "TripleTriadCoinExchange", "FreeCompanyChest", "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback"
         };
-
-        // Addon Name - Window Node ID
-        private static readonly Dictionary<string, uint> WindowUI = new()
+        private static readonly Dictionary<string, uint> WindowUI = new()  // Addon Name - Window Node ID
         {
             { "Repair", 38 },
             { "PvpReward", 125 },
@@ -30,146 +22,56 @@ namespace CurrencyTracker.Manager.Trackers.Components
         internal static bool isOnExchange = false;
         private string windowName = string.Empty;
 
+        private InventoryHandler? inventoryHandler = null;
+
         public void Init()
         {
-            var allUI = new List<IEnumerable<string>> { UI, WindowUI.Keys };
-            foreach (var ui in allUI)
-            {
-                var foundUI = ui.FirstOrDefault(exchange => Service.GameGui.GetAddonByName(exchange) != nint.Zero);
-                if (foundUI == null) continue;
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
 
-                EndExchangeHandler();
-                if (ui == UI)
-                {
-                    BeginExchangeHandler();
-                }
-                else if (ui == WindowUI.Keys)
-                {
-                    Service.Log.Debug(foundUI);
-                    BeginExchangeWindowHandler(foundUI);
-                    Service.Log.Debug(foundUI);
-                }
-                break;
-            }
-
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI, BeginExchange);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI, EndExchange);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, WindowUI.Keys, BeginExchange);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, WindowUI.Keys, EndExchange);
-            _initialized = true;
+            Initialized = true;
         }
 
         private void BeginExchange(AddonEvent type, AddonArgs? args)
         {
             if (isOnExchange || SpecialExchange.isOnExchange) return;
 
-            if (WindowUI.ContainsKey(args.AddonName))
+            isOnExchange = true;
+            HandlerManager.ChatHandler.isBlocked = true;
+            inventoryHandler = new();
+
+            if (args != null && WindowUI.TryGetValue(args.AddonName, out var value))
             {
-                BeginExchangeWindowHandler(args);
+                windowName = GetWindowTitle(args, value, args.AddonName == "PvpReward" ? new uint[] { 4, 5 } : null) ?? string.Empty;
             }
             else
             {
-                BeginExchangeHandler();
+                currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
             }
-        }
-
-        private void BeginExchangeHandler()
-        {
-            if (isOnExchange || SpecialExchange.isOnExchange) return;
-
-            isOnExchange = true;
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-            currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
-            Service.Log.Debug("Exchange Starts");
-        }
-
-        private void BeginExchangeWindowHandler(AddonArgs args)
-        {
-            if (isOnExchange || SpecialExchange.isOnExchange) return;
-
-            isOnExchange = true;
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-
-            if (args.AddonName == "PvpReward")
-            {
-                windowName = GetWindowTitle(args, WindowUI[args.AddonName], new uint[] { 4, 5 }) ?? string.Empty;
-            }
-            else
-            {
-                windowName = GetWindowTitle(args, WindowUI[args.AddonName]) ?? string.Empty;
-            }
-            Service.Log.Debug("Exchange Starts");
-        }
-
-        private void BeginExchangeWindowHandler(string addonName)
-        {
-            if (isOnExchange || SpecialExchange.isOnExchange) return;
-
-            if (!addonName.IsNullOrEmpty())
-            {
-                return;
-            }
-
-            var addon = Service.GameGui.GetAddonByName(addonName);
-            isOnExchange = true;
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
-            if (addonName == "PvpReward")
-            {
-                windowName = GetWindowTitle(addon, WindowUI[addonName], new uint[] { 4, 5 }) ?? string.Empty;
-            }
-            else
-            {
-                windowName = GetWindowTitle(addon, WindowUI[addonName]) ?? string.Empty;
-            }
-            Service.Log.Debug("Exchange Starts");
         }
 
         private void EndExchange(AddonEvent type, AddonArgs args)
         {
             if (SpecialExchange.isOnExchange) return;
 
-            if (WindowUI.ContainsKey(args.AddonName))
-            {
-                EndExchangeWindowHandler();
-            }
-            else
-            {
-                EndExchangeHandler();
-            }
-        }
+            Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
-        private void EndExchangeHandler()
-        {
-            isOnExchange = false;
+            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : (Service.Lang.GetText("ExchangeWith", currentTargetName)))})", RecordChangeType.All, 3);
 
-            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("ExchangeWith", currentTargetName)})", RecordChangeType.All, 3);
+            windowName = currentTargetName = string.Empty;
+            HandlerManager.ChatHandler.isBlocked = isOnExchange = false;
+            HandlerManager.Nullify(ref inventoryHandler);
 
-            currentTargetName = string.Empty;
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.Log.Debug("Exchange Completes");
-        }
-
-        private void EndExchangeWindowHandler()
-        {
-            isOnExchange = false;
-
-            Service.Tracker.CheckAllCurrencies("", $"({windowName})", RecordChangeType.All, 4);
-
-            windowName = string.Empty;
-
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-            Service.Log.Debug("Exchange Completes");
+            Service.Log.Debug("Currency Change Check Completes.");
         }
 
         public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI, BeginExchange);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, UI, EndExchange);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
+            HandlerManager.Nullify(ref inventoryHandler);
 
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, WindowUI.Keys, BeginExchange);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, WindowUI.Keys, EndExchange);
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

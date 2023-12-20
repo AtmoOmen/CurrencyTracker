@@ -2,16 +2,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class AutoSave : ITrackerComponent
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         public static DateTime LastAutoSave = DateTime.MinValue;
         private static Timer AutoSaveTimer = new(1000);
-
-        private bool _initialized = false;
 
         Configuration? C = Plugin.Configuration;
 
@@ -24,7 +18,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             AutoSaveTimer.AutoReset = true;
             AutoSaveTimer.Enabled = true;
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private void OnAutoSave(object? sender, ElapsedEventArgs e)
@@ -75,7 +69,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             AutoSaveTimer.Dispose();
             LastAutoSave = DateTime.MinValue;
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

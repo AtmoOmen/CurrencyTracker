@@ -2,13 +2,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class WarpCosts : ITrackerComponent
     {
-        private bool _initialized = false;
-
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
         private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
@@ -35,7 +29,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
@@ -54,7 +48,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
             {
                 isReadyWarpTP = true;
-                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+                HandlerManager.ChatHandler.isBlocked = true;
 
                 Service.Framework.Update += OnFrameworkUpdate;
             }
@@ -81,33 +75,24 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (warpTPBetweenAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})" : "", RecordChangeType.Negative, 15))
-                {
-                    ResetStates();
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-                    Service.Log.Debug($"Teleport from {PreviousLocationName} to {CurrentLocationName}");
-                }
+                Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})" : "", RecordChangeType.Negative, 15);
             }
             else if (warpTPInAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, CurrentLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 16))
-                {
-                    ResetStates();
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-                }
+                Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, CurrentLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 16);
             }
 
             if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
             {
                 ResetStates();
-                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
+                HandlerManager.ChatHandler.isBlocked = false;
             }
         }
 
         private void ResetStates()
         {
-            isReadyWarpTP = warpTPBetweenAreas = warpTPInAreas = false;
             Service.Framework.Update -= OnFrameworkUpdate;
+            isReadyWarpTP = warpTPBetweenAreas = warpTPInAreas = false;
         }
 
         public void Uninit()
@@ -115,7 +100,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             ValidGilWarpTerriories.Clear();
             ResetStates();
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

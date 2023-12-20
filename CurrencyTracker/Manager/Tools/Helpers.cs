@@ -91,6 +91,11 @@ namespace CurrencyTracker.Manager.Tools
             return false;
         }
 
+        public static unsafe bool IsAddonNodesReady(AtkUnitBase* UI)
+        {
+            return UI != null && UI->RootNode != null && UI->RootNode->ChildNode != null && UI->UldManager.NodeList != null;
+        }
+
         public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
         {
             textNodeIDs ??= new uint[] { 3, 4 };

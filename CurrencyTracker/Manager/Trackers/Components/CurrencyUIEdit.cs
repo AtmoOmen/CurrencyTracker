@@ -2,13 +2,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class CurrencyUIEdit : ITrackerComponent
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
-
-        private bool _initialized = false;
+        public bool Initialized { get; set; } = false;
 
         private unsafe IAddonEventHandle? mouseoverHandle;
         private unsafe IAddonEventHandle? mouseooutHandle;
@@ -18,7 +12,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private void OnCurrencyUI(AddonEvent type, AddonArgs args)
@@ -100,7 +94,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

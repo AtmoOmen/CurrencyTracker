@@ -1,21 +1,17 @@
 namespace CurrencyTracker.Manager.Trackers.Components
 {
+    // 过时，需要重写 Outdate, Need Rewrite
     public class GoldSaucer : ITrackerComponent
     {
-        private bool _initialized = false;
-
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         public void Init()
         {
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "GoldSaucerReward", GoldSaucerHandler);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
             Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
-            _initialized = true;
+
+            Initialized = true;
         }
 
         private void GoldSaucerHandler(AddonEvent type, AddonArgs args)
@@ -23,7 +19,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             switch (type)
             {
                 case AddonEvent.PreSetup:
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+                    HandlerManager.ChatHandler.isBlocked = true;
                     break;
                 case AddonEvent.PostSetup:
                     BeginGoldSaucerHandler(args);
@@ -31,7 +27,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 case AddonEvent.PreFinalize:
                     if (!Flags.OccupiedInEvent())
                     {
-                        HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
+                        HandlerManager.ChatHandler.isBlocked = false;
                     }
                     break;
             }
@@ -48,10 +44,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
                     var GameName = textNode->NodeText.ToString();
                     if (!GameName.IsNullOrEmpty())
                     {
-                        if (Plugin.Configuration.CustomCurrencies.ContainsKey(29))
-                        {
-                            Service.Tracker.CheckCurrency(29, "", $"({GameName})", RecordChangeType.All, 23, TransactionFileCategory.Inventory, 0);
-                        }
+                        Service.Tracker.CheckCurrency(29, "", $"({GameName})", RecordChangeType.All, 23, TransactionFileCategory.Inventory, 0);
                     }
                 }
             }
@@ -63,7 +56,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
 
-            _initialized = false;
+            Initialized = false;
         }
     }
 }

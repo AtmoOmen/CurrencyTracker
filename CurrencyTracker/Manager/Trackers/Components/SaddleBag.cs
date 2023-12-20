@@ -1,84 +1,65 @@
+
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class SaddleBag : ITrackerComponent
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         public static readonly InventoryType[] SaddleBagInventories = new InventoryType[]
         {
             InventoryType.SaddleBag1, InventoryType.SaddleBag2
         };
 
-        private string windowTitle = string.Empty;
-        private bool _initialized = false;
         internal static Dictionary<uint, long> InventoryItemCount = new();
+        private string windowTitle = string.Empty;
 
         public void Init()
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", BeginSaddleBag);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", EndSaddleBag);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
+            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
 
-            _initialized = true;
+            Initialized = true;
         }
 
-        private void BeginSaddleBag(AddonEvent type, AddonArgs args)
+        private void OnSaddleBag(AddonEvent type, AddonArgs args)
         {
-            foreach(var currency in Plugin.Configuration.AllCurrencies)
+            switch (type)
             {
-                InventoryItemCount.Add(currency.Key, 0);
+                case AddonEvent.PostSetup:
+                    {
+                        windowTitle = GetWindowTitle(args.Addon, 86);
+                        Service.Framework.Update += SaddleBagScanner;
+
+                        break;
+                    }
+                case AddonEvent.PreFinalize:
+                    {
+                        Service.Framework.Update -= SaddleBagScanner;
+
+                        Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21, TransactionFileCategory.SaddleBag, 0);
+                        Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21, TransactionFileCategory.Inventory, 0);
+
+                        InventoryItemCount.Clear();
+
+                        break;
+                    }
             }
-
-            windowTitle = GetWindowTitle(args.Addon, 86);
-
-            Service.Framework.Update += SaddleBagScanner;
-        }
-
-        private void EndSaddleBag(AddonEvent type, AddonArgs args)
-        {
-            Service.Framework.Update -= SaddleBagScanner;
-
-            SaddleBagHandler();
         }
 
         private unsafe void SaddleBagScanner(IFramework framework)
         {
-            var inventoryManager = InventoryManager.Instance();
-
-            if (inventoryManager != null)
-            {
-                Parallel.ForEach(Plugin.Configuration.AllCurrencies, currency =>
-                {
-                    long itemCount = 0;
-                    Parallel.ForEach(SaddleBagInventories, inventory =>
-                    {
-                        itemCount += inventoryManager->GetItemCountInContainer(currency.Key, inventory);
-                    });
-                    InventoryItemCount[currency.Key] = itemCount;
-                });
-            }
-        }
-
-        private unsafe void SaddleBagHandler()
-        {
-            Service.Tracker.CheckAllCurrencies("", "", 0, 21, TransactionFileCategory.SaddleBag, 0);
-            Service.Tracker.CheckAllCurrencies("", $"({windowTitle})", 0, 21, TransactionFileCategory.Inventory, 0);
-            InventoryItemCount.Clear();
+            InventoryScanner(SaddleBagInventories, ref InventoryItemCount);
         }
 
         public void Uninit()
         {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", BeginSaddleBag);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", EndSaddleBag);
-
             Service.Framework.Update -= SaddleBagScanner;
-
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
+            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
             windowTitle = string.Empty;
             InventoryItemCount.Clear();
-            _initialized = false;
+
+            Initialized = false;
         }
     }
 }

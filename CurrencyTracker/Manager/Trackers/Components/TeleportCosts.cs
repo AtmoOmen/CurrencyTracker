@@ -2,11 +2,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class TeleportCosts : ITrackerComponent
     {
-        public bool Initialized
-        {
-            get { return _initialized; }
-            set { _initialized = value; }
-        }
+        public bool Initialized { get; set; } = false;
 
         private const string ActorControlSig = "E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64";
         private delegate void ActorControlSelfDelegate(uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6, ulong targetId, byte param7);
@@ -18,7 +14,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private static Dictionary<uint, string> AetheryteNames = new();
 
-        private bool _initialized = false;
+        private static readonly uint[] tpCostCurrencies = new uint[] { 1, 7569 };
+
         private bool isReadyTP = false;
         private bool tpBetweenAreas = false;
         private bool tpInAreas = false;
@@ -36,7 +33,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             teleportActionSelfHook = Service.Hook.HookFromAddress<TeleportActionSelfDelegate>(teleportActionSelfPtr, TeleportActionSelf);
             teleportActionSelfHook.Enable();
 
-            _initialized = true;
+            Initialized = true;
         }
 
         private static void GetAetherytes()
@@ -90,7 +87,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         public void TeleportWithCost()
         {
-            HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = true;
+            HandlerManager.ChatHandler.isBlocked = true;
 
             isReadyTP = true;
 
@@ -118,42 +115,34 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (tpBetweenAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})" ))
-                {
-                    ResetStates();
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-                }
+                Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
             }
             else if (tpInAreas)
             {
-                if (Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})" : $"{Service.Lang.GetText("TeleportWithinArea")}"))
-                {
-                    ResetStates();
-                    HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
-                }
+                Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})" : $"{Service.Lang.GetText("TeleportWithinArea")}");
             }
 
             if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
             {
                 ResetStates();
-                HandlerManager.Handlers.OfType<ChatHandler>().FirstOrDefault().isBlocked = false;
+                HandlerManager.ChatHandler.isBlocked = false;
             }
         }
 
         private void ResetStates()
         {
+            Service.Framework.Update -= OnFrameworkUpdate;
             isReadyTP = tpBetweenAreas = tpInAreas = false;
             tpDestination = string.Empty;
-            Service.Framework.Update -= OnFrameworkUpdate;
         }
 
         public void Uninit()
         {
             ResetStates();
-
             actorControlSelfHook.Dispose();
             teleportActionSelfHook.Dispose();
-            _initialized = false;
+
+            Initialized = false;
         }
     }
 }
