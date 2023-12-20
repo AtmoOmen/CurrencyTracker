@@ -8,7 +8,7 @@ namespace CurrencyTracker.Windows
         // 收支记录表格 Table used to show transactions
         private void TransactionTableUI()
         {
-            if (selectedCurrencyID == 0 || currentTypeTransactions == null || currentTypeTransactions.Count <= 0) return;
+            if (selectedCurrencyID == 0) return;
 
             var windowWidth = ImGui.GetWindowWidth() - C.ChildWidthOffset - 100;
 
@@ -17,6 +17,8 @@ namespace CurrencyTracker.Windows
             if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ChildframeHeightAdjust()), ImGuiWindowFlags.AlwaysVerticalScrollbar))
             {
                 TransactionTablePagingUI(windowWidth);
+
+                if (currentTypeTransactions == null || currentTypeTransactions.Count <= 0) return;
 
                 while (selectedStates[selectedCurrencyID].Count < currentTypeTransactions.Count)
                 {
@@ -161,6 +163,8 @@ namespace CurrencyTracker.Windows
                         currentPage++;
                 }
             }
+
+            if (currentTypeTransactions == null || currentTypeTransactions.Count <= 0) ImGui.Separator();
         }
 
         // 切换数据表格视图 Switch the view of the transaction table
