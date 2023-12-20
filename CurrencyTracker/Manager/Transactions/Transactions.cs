@@ -219,6 +219,7 @@ namespace CurrencyTracker.Manager
             }
 
             TransactionsConvertor.WriteTransactionsToFile(GetTransactionFilePath(currencyID, category, ID), mergedTransactions);
+            ReorderTransactions(currencyID, category, ID);
 
             return mergedCount;
         }
@@ -267,6 +268,7 @@ namespace CurrencyTracker.Manager
 
             allTransactions.Add(finalTransaction);
             TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+            ReorderTransactions(currencyID, category, ID);
 
             return mergedCount;
         }

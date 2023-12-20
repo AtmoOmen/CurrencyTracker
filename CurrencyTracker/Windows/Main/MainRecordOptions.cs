@@ -82,7 +82,7 @@ namespace CurrencyTracker.Windows
             else
                 Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
-            UpdateTransactions();
+            UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
             return mergeCount;
         }
 

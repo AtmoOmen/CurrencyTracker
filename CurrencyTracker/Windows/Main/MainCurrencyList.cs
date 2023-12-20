@@ -426,7 +426,7 @@ namespace CurrencyTracker.Windows
                         File.Move(path.Key, path.Value);
                     }
                 }
-                UpdateTransactions();
+                UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
             }
         }
 

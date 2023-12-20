@@ -278,7 +278,6 @@ namespace CurrencyTracker
 
             Main = new Main(this);
             WindowSystem.AddWindow(Main);
-            Service.Tracker.OnCurrencyChanged += Main.UpdateTransactionsEvent;
 
             Graph = new Graph(this);
             WindowSystem.AddWindow(Graph);
@@ -311,7 +310,6 @@ namespace CurrencyTracker
             Graph.Dispose();
             RecordSettings.Dispose();
 
-            Service.Tracker.OnCurrencyChanged -= Main.UpdateTransactionsEvent;
             Service.Tracker.Dispose();
             Service.ClientState.Login -= HandleLogin;
             Service.ClientState.Logout -= HandleLogout;

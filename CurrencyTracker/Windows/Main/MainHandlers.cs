@@ -160,7 +160,7 @@ public partial class Main
     // 延迟加载收支记录 Used to handle too-fast transactions loading
     private void SearchTimerElapsed(object? sender, ElapsedEventArgs e)
     {
-        UpdateTransactions();
+        UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
     }
 
     // 调整列表框和表格高度用 Used to adjust the height of listbox and chart
@@ -206,30 +206,20 @@ public partial class Main
     }
 
     // 用于在记录新增时更新记录 Used to update transactions when transactions added
-    public void UpdateTransactionsEvent(object sender, EventArgs e)
+    public void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        UpdateTransactions();
+        UpdateTransactions(currencyID, category, ID);
     }
 
-    // 用于在筛选时更新记录 Used to update transactions
-    public void UpdateTransactions(int ifClearSelectedStates = 1)
+    // 用于在更新主界面记录 Used to update transactions
+    public void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (currentTypeTransactions == null || selectedCurrencyID == 0)
-        {
-            return;
-        }
+        if (!IsOpen || selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
 
-        if (ifClearSelectedStates == 1)
-        {
-            selectedStates[selectedCurrencyID].Clear();
-            selectedTransactions[selectedCurrencyID].Clear();
-        }
+        selectedStates[selectedCurrencyID].Clear();
+        selectedTransactions[selectedCurrencyID].Clear();
 
-        if (C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
-        {
-            Transactions.ReorderTransactions(selectedCurrencyID, currentView, currentViewID);
-            currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
-        }
+        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
 
         ImGui.CloseCurrentPopup();
     }

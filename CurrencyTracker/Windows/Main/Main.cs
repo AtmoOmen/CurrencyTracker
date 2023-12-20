@@ -14,6 +14,8 @@ public partial class Main : Window, IDisposable
     // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
+        Service.Tracker.CurrencyChanged += OnCurrencyChanged;
+
         filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
 
         searchTimer.Elapsed += SearchTimerElapsed;
@@ -89,6 +91,8 @@ public partial class Main : Window, IDisposable
 
     public void Dispose()
     {
+        Service.Tracker.CurrencyChanged -= OnCurrencyChanged;
+
         searchTimer.Elapsed -= SearchTimerElapsed;
         searchTimer.Stop();
         searchTimer.Dispose();
