@@ -657,7 +657,7 @@ namespace CurrencyTracker.Windows
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "", currentView, currentViewID);
+                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
 
                     if (failCount == 0)
                     {
@@ -720,7 +720,7 @@ namespace CurrencyTracker.Windows
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, "", editedNoteContent, currentView, currentViewID);
+                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, "None", editedNoteContent, currentView, currentViewID);
 
                     if (failCount == 0)
                     {
@@ -978,7 +978,7 @@ namespace CurrencyTracker.Windows
                 return;
             }
 
-            var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], editedLocationName, "", currentView, currentViewID);
+            var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], editedLocationName, "None", currentView, currentViewID);
 
             EditResultHandler(failCount, editedLocationName, "");
         }
@@ -991,7 +991,7 @@ namespace CurrencyTracker.Windows
                 return;
             }
 
-            var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], "", editedNoteContent, currentView, currentViewID);
+            var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], "None", editedNoteContent, currentView, currentViewID);
 
             EditResultHandler(failCount, "", editedNoteContent);
         }

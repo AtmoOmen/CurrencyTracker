@@ -89,7 +89,7 @@ namespace CurrencyTracker.Manager
         }
 
         // 编辑指定记录 Edit Specific Transactions
-        public static int EditSpecificTransactions(uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "", string noteContent = "", TransactionFileCategory category = 0, ulong ID = 0)
+        public static int EditSpecificTransactions(uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "None", string noteContent = "None", TransactionFileCategory category = 0, ulong ID = 0)
         {
             if (!selectedTransactions.Any()) return selectedTransactions.Count;
 
@@ -108,8 +108,8 @@ namespace CurrencyTracker.Manager
                     continue;
                 }
 
-                editedTransactions[index].LocationName = locationName.IsNullOrEmpty() ? editedTransactions[index].LocationName : locationName;
-                editedTransactions[index].Note = noteContent.IsNullOrEmpty() ? editedTransactions[index].Note : noteContent;
+                editedTransactions[index].LocationName = locationName == "None" ? editedTransactions[index].LocationName : locationName;
+                editedTransactions[index].Note = noteContent == "None" ? editedTransactions[index].Note : noteContent;
             }
 
             TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
