@@ -308,6 +308,8 @@ namespace CurrencyTracker.Manager
         // 备份数据 Backup transactions
         public static string BackupTransactions(string dataFolder, int maxBackupFilesCount)
         {
+            if (dataFolder.IsNullOrEmpty()) return "Fail";
+
             var backupFolder = Path.Combine(dataFolder, "Backups");
             Directory.CreateDirectory(backupFolder);
 
