@@ -5,12 +5,12 @@ namespace CurrencyTracker.Manager.Trackers.Handlers
         public bool Initialized { get; set; } = false;
         public bool isBlocked { get; set; } = false;
 
-        private static readonly ushort[] ValidChatTypes = new ushort[9]
+        private static readonly HashSet<ushort> ValidChatTypes = new()
         {
             0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006
         };
 
-        private readonly Timer checkTimer = new(100);
+        private readonly Timer checkTimer = new(500);
 
 
         public void Init()

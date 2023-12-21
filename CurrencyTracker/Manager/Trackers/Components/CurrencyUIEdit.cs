@@ -43,10 +43,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private unsafe void UITooltipEdit(AddonArgs args)
         {
             var UI = (AtkUnitBase*)args.Addon;
-            if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null) return;
+            if (!IsAddonNodesReady(UI)) return;
 
-            var gilNode = (AtkComponentBase*)UI->GetComponentNodeById(12);
-            var gilTextNode = gilNode->GetTextNodeById(5);
+            var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
+            if (gilTextNode == null) return;
 
             gilTextNode->NodeFlags |= NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision;
 
@@ -87,10 +87,19 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
         }
 
-        public void Uninit()
+        public unsafe void Uninit()
         {
             Service.AddonEventManager.RemoveEvent(mouseoverHandle);
             Service.AddonEventManager.RemoveEvent(mouseooutHandle);
+
+            var UI = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
+            if (IsAddonNodesReady(UI))
+            {
+                var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
+                if (gilTextNode == null) return;
+                gilTextNode->NodeFlags &= ~(NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision);
+            }
+
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
             Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
 

@@ -21,7 +21,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
             if (value)
                 BeginMobDropsHandler();
             else
+            {
+                if (inventoryHandler == null) return;
                 Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
+            }
         }
 
         private void BeginMobDropsHandler()
