@@ -140,7 +140,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (!currencies.Any()) return false;
 
             var isChanged = false;
-            foreach (var currency in currencies)
+            foreach (var currency in currencies.Concat(C.CustomCurrencies.Keys))
             {
                 if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };

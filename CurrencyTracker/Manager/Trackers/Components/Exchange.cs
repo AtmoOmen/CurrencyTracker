@@ -36,18 +36,18 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (isOnExchange || SpecialExchange.isOnExchange) return;
 
-            isOnExchange = true;
-            HandlerManager.ChatHandler.isBlocked = true;
-            inventoryHandler = new();
-
-            if (args != null && WindowUI.TryGetValue(args.AddonName, out var value))
+            if (args != null && WindowUI.TryGetValue(args.AddonName, out var windowNode))
             {
-                windowName = GetWindowTitle(args, value, args.AddonName == "PvpReward" ? new uint[] { 4, 5 } : null) ?? string.Empty;
+                windowName = GetWindowTitle(args, windowNode, args.AddonName == "PvpReward" ? new uint[] { 4, 5 } : null) ?? string.Empty;
             }
             else
             {
                 currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
             }
+
+            isOnExchange = true;
+            inventoryHandler = new();
+            HandlerManager.ChatHandler.isBlocked = true;
         }
 
         private void EndExchange(AddonEvent type, AddonArgs args)
