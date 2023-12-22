@@ -6,7 +6,7 @@ public partial class Main
     private void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
-        var allCurrenciesSet = new HashSet<uint>(C.AllCurrencies.Keys);
+        var allCurrenciesSet = new HashSet<uint>(C.AllCurrencyID);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {

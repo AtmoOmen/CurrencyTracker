@@ -5,16 +5,14 @@ namespace CurrencyTracker.Manager.Infos;
 
 public static class CurrencyInfo
 {
-    public static readonly List<uint> defaultCurrenciesToAdd = new()
+    public static readonly uint[] DefaultCustomCurrencies = new uint[15]
     {
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
 
-    public static readonly Dictionary<uint, string> PresetCurrencies = new()
+    public static readonly uint[] PresetCurrencies = new uint[3]
     {
-        { 1, "Gil" },
-        { GetSpecialTomestoneId(2), "NonLimitedTomestone"},
-        { GetSpecialTomestoneId(3), "LimitedTomestone"}
+        1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3),
     };
 
     /// <summary>

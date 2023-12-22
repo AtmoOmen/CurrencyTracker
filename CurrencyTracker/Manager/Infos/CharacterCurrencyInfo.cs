@@ -15,11 +15,10 @@ namespace CurrencyTracker.Manager.Infos
         public ConcurrentDictionary<uint, long> CurrencyAmount => currencyAmount;
 
         private ConcurrentDictionary<uint, long> currencyAmount = new();
-        private readonly List<uint> currencies = Plugin.Configuration.AllCurrencies.Keys.ToList();
 
         public void GetCharacterCurrencyAmount()
         {
-            Parallel.ForEach(currencies, currencyKey =>
+            Parallel.ForEach(Plugin.Configuration.AllCurrencyID, currencyKey =>
             {
                 currencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
             });

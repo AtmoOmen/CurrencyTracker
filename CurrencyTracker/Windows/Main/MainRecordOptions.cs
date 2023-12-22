@@ -68,7 +68,7 @@ namespace CurrencyTracker.Windows
         // 合并交易记录 Simplified merging transactions code
         private int MergeTransactionHandler(bool oneWay)
         {
-            if (!C.AllCurrencies.ContainsKey(selectedCurrencyID))
+            if (!C.AllCurrencyID.Contains(selectedCurrencyID))
             {
                 Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                 return 0;

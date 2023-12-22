@@ -208,7 +208,7 @@ namespace CurrencyTracker.Windows
                         return;
                     }
 
-                    if (C.AllCurrencies.ContainsValue(selected) || C.AllCurrencies.ContainsKey(currencyIDCCT))
+                    if (C.AllCurrencies.ContainsValue(selected) || C.AllCurrencyID.Contains(currencyIDCCT))
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                         return;
@@ -259,7 +259,7 @@ namespace CurrencyTracker.Windows
             }
             else
             {
-                var currencyNames = C.AllCurrencies.Keys.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
+                var currencyNames = C.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
                 var items = ItemNames.Values
                     .Where(itemName => !currencyNames.Contains(itemName))
                     .ToList();
@@ -289,7 +289,7 @@ namespace CurrencyTracker.Windows
                         Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                         return;
                     }
-                    if (!C.AllCurrencies.ContainsKey(selectedCurrencyID))
+                    if (!C.AllCurrencyID.Contains(selectedCurrencyID))
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp2"));
                         return;

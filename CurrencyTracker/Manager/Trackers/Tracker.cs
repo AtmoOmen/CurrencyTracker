@@ -40,23 +40,23 @@ namespace CurrencyTracker.Manager.Trackers
         {
             foreach (var currency in CurrencyInfo.PresetCurrencies)
             {
-                if (!C.PresetCurrencies.ContainsKey(currency.Key))
+                if (!C.PresetCurrencies.ContainsKey(currency))
                 {
-                    var currencyName = CurrencyInfo.GetCurrencyLocalName(currency.Key);
+                    var currencyName = CurrencyInfo.GetCurrencyLocalName(currency);
                     if (!currencyName.IsNullOrEmpty())
                     {
-                        C.PresetCurrencies.Add(currency.Key, currencyName);
+                        C.PresetCurrencies.Add(currency, currencyName);
                     }
                 }
             }
 
-            C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.ContainsKey(kv.Key))
+            C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
                                        .ToDictionary(kv => kv.Key, kv => kv.Value);
             C.Save();
 
             if (C.FisrtOpen)
             {
-                foreach (var currencyID in CurrencyInfo.defaultCurrenciesToAdd)
+                foreach (var currencyID in CurrencyInfo.DefaultCustomCurrencies)
                 {
                     var currencyName = CurrencyInfo.GetCurrencyLocalName(currencyID);
 
@@ -140,19 +140,23 @@ namespace CurrencyTracker.Manager.Trackers
             if (!currencies.Any()) return false;
 
             var isChanged = false;
-            foreach (var currency in currencies.Concat(C.CustomCurrencies.Keys))
+            foreach (var currency in currencies)
             {
                 if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };
+            foreach(var currency in C.AllCurrencyID)
+            {
+                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
+            }
             return isChanged;
         }
 
         public bool CheckAllCurrencies(string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
             var isChanged = false;
-            foreach (var currency in C.AllCurrencies)
+            foreach (var currency in C.AllCurrencyID)
             {
-                if (CheckCurrency(currency.Key, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
+                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };
             return isChanged;
         }

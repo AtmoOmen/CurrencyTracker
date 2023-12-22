@@ -42,7 +42,7 @@ namespace CurrencyTracker
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-        // public uint MaxIgnoreDays { get; set; } = 30;  Days
+        public uint MaxIgnoreDays { get; set; } = 0;  // Days
         public int ChildWidthOffset { get; set; } = 0;
         public int ExportDataFileType { get; set; } = 0;
         public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = new(); // Content ID - Retainer ID : Retainer Name
@@ -110,13 +110,29 @@ namespace CurrencyTracker
                 {
                     allCurrencies = GetAllCurrencies();
                     GetAllCurrencyIcons();
+                    allCurrencyID = allCurrencies.Keys.ToArray();
                 }
                 return allCurrencies;
+            }
+        }
+        [JsonIgnore]
+        public uint[] AllCurrencyID
+        {
+            get
+            {
+                if (allCurrencies == null || allCurrencyID == null || isUpdated)
+                {
+                    allCurrencies = GetAllCurrencies();
+                    GetAllCurrencyIcons();
+                    allCurrencyID = allCurrencies.Keys.ToArray();
+                }
+                return allCurrencyID;
             }
         }
 
         private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = new();
         private Dictionary<uint, string>? allCurrencies = new();
+        private uint[]? allCurrencyID;
         private Dictionary<uint, string> presetCurrencies = new();
         private Dictionary<uint, string> customCurrencies = new();
 

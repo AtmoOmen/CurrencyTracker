@@ -49,12 +49,14 @@ public class TransactionsConvertor
     // 解析整个数据文件 Parse a data file
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
-        var transactions = new List<TransactionsConvertor>();
-
         if (!File.Exists(filePath))
         {
-            return transactions;
+            return new();
         }
+
+        var transactions = new List<TransactionsConvertor>();
+        var maxIgnoreDays = TimeSpan.FromDays(Plugin.Configuration.MaxIgnoreDays);
+        var now = DateTime.Now;
 
         try
         {
@@ -63,12 +65,7 @@ public class TransactionsConvertor
             while ((line = sr.ReadLine()) != null)
             {
                 var transaction = FromFileLine(line.AsSpan());
-                /*
-                if (Plugin.Configuration.MaxIgnoreDays != 0 && transaction.TimeStamp < DateTime.Now - TimeSpan.FromDays(Plugin.Configuration.MaxIgnoreDays))
-                {
-                    continue;
-                }
-                */
+                if (Plugin.Configuration.MaxIgnoreDays != 0 && transaction.TimeStamp < now - maxIgnoreDays) continue;
                 transactions.Add(transaction);
             }
         }
@@ -80,6 +77,7 @@ public class TransactionsConvertor
 
         return transactions;
     }
+
 
     // 将单个交易记录追加入数据文件 Append a transaction into the data file
     public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
