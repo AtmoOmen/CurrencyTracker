@@ -148,7 +148,7 @@ namespace CurrencyTracker.Windows
 
                             // 备份 Backup
                             ImGui.Separator();
-                            ModuleCheckbox(typeof(AutoSave), "AutoSave", Service.Lang.GetText("AutoBackup"));
+                            ModuleCheckbox(typeof(AutoSave), Service.Lang.GetText("AutoBackup"));
                             if (C.ComponentEnabled["AutoSave"])
                             {
                                 SecondaryRadioButtons("AutoSaveMode", Service.Lang.GetText("BackupCurrentCharacter"), Service.Lang.GetText("BackupAllCharacter"));
@@ -186,15 +186,33 @@ namespace CurrencyTracker.Windows
                             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
 
                             ImGui.SameLine();
-                            ImGui.SetNextItemWidth(150f);
+                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X);
                             var maxBackupFilesCount = C.MaxBackupFilesCount;
-                            if (ImGui.InputInt("", ref maxBackupFilesCount))
+                            if (ImGui.InputInt("##MaxBackupFilesCount", ref maxBackupFilesCount))
                             {
                                 if (maxBackupFilesCount < 0) maxBackupFilesCount = 0;
                                 C.MaxBackupFilesCount = maxBackupFilesCount;
                                 C.Save();
                             }
+                            ImGui.PopItemWidth();
 
+                            // 最大忽略天数 Max Ignore Days
+                            ImGui.Separator();
+                            ImGui.AlignTextToFramePadding();
+                            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxIgnoreDays")}:");
+
+                            var maxIgnoreDays = (int)C.MaxIgnoreDays;
+                            ImGui.SameLine();
+                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X);
+                            if (ImGui.InputInt("", ref maxIgnoreDays))
+                            {
+                                if (maxIgnoreDays < 0) maxIgnoreDays = 0;
+                                C.MaxIgnoreDays = (uint)maxIgnoreDays;
+                                C.Save();
+                            }
+                            TextTooltip(Service.Lang.GetText("BackupHelp6"));
+
+                            ImGui.PopItemWidth();
                         }
                     }
 

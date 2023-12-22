@@ -80,10 +80,11 @@
     </ItemGroup>
     <ItemGroup>
       <EmbeddedResource Update="Manager\Langs\ChineseSimplified.resx">
-        <Generator></Generator>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
       <EmbeddedResource Update="Manager\Langs\English.resx">
         <Generator></Generator>
+        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>

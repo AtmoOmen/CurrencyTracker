@@ -686,4 +686,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Trade" xml:space="preserve">
     <value>Trade</value>
   </data>
+  <data name="MaxIgnoreDays" xml:space="preserve">
+    <value>Max Ignore Days</value>
+  </data>
 </root>
