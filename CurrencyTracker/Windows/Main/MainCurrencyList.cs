@@ -1,3 +1,5 @@
+using Lumina.Excel.GeneratedSheets;
+
 namespace CurrencyTracker.Windows
 {
     // 货币列表 / 货币列表顶端工具栏 / 添加自定义货币 / 删除自定义货币 / 重命名货币

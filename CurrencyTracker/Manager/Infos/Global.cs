@@ -37,7 +37,6 @@ global using FFXIVClientStructs.FFXIV.Component.GUI;
 global using ImGuiNET;
 global using ImPlotNET;
 global using Lumina.Excel;
-global using Lumina.Excel.GeneratedSheets;
 global using Newtonsoft.Json;
 global using Newtonsoft.Json.Linq;
 global using System;

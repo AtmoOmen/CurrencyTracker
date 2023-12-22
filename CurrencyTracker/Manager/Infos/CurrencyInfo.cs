@@ -1,4 +1,5 @@
 using System.Threading;
+using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyTracker.Manager.Infos;
 

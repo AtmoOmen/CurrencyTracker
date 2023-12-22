@@ -1,3 +1,5 @@
+using Lumina.Excel.GeneratedSheets;
+
 namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class WarpCosts : ITrackerComponent
