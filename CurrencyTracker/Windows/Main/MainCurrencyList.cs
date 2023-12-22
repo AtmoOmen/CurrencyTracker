@@ -479,11 +479,15 @@ namespace CurrencyTracker.Windows
             ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 75f, 215f));
             if (ImGui.BeginCombo("##AreaResticted", TerrioryHandler.TerritoryNames.TryGetValue(selectedAreaIDCS, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
             {
-                ImGui.SetNextItemWidth(335f);
+                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X - 8f);
+                ImGui.TextUnformatted("");
+                ImGui.SameLine(8f, 0);
                 if (ImGui.InputText("", ref searchFilterCS, 50))
                 {
                     searchTimerCS.Restart();
                 }
+                ImGui.PopItemWidth();
+
                 foreach (var area in TerritoryNamesCS)
                 {
                     if (ImGui.Selectable($"{area.Key} | {area.Value}"))
