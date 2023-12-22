@@ -674,4 +674,16 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="LetterAttachments-LetterFrom" xml:space="preserve">
+    <value>Letter from {0}</value>
+  </data>
+  <data name="LetterAttachments-RecordMailAttachments" xml:space="preserve">
+    <value>Record Mail Attachments</value>
+  </data>
+  <data name="ParamEP-SenderName" xml:space="preserve">
+    <value>Sender Name</value>
+  </data>
+  <data name="Trade" xml:space="preserve">
+    <value>Trade</value>
+  </data>
 </root>

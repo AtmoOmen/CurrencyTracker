@@ -407,7 +407,7 @@
     <value>未知副本</value>
   </data>
   <data name="TripleTriadWith" xml:space="preserve">
-    <value>[{0}]幻卡 - {1}</value>
+    <value>[{0}]幻卡对局 - {1}</value>
   </data>
   <data name="Combat" xml:space="preserve">
     <value>战斗</value>
@@ -672,5 +672,17 @@
   </data>
   <data name="Settings" xml:space="preserve">
     <value>设置</value>
+  </data>
+  <data name="LetterAttachments-LetterFrom" xml:space="preserve">
+    <value>信件 - {0}</value>
+  </data>
+  <data name="LetterAttachments-RecordMailAttachments" xml:space="preserve">
+    <value>记录邮件附件物品</value>
+  </data>
+  <data name="ParamEP-SenderName" xml:space="preserve">
+    <value>寄件人名称</value>
+  </data>
+  <data name="Trade" xml:space="preserve">
+    <value>交易</value>
   </data>
 </root>
