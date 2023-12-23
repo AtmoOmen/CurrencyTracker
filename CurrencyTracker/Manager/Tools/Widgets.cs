@@ -2,15 +2,13 @@ namespace CurrencyTracker.Manager.Tools
 {
     public static class Widgets
     {
-        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "None", string str_id = "None", Vector2 size = default)
+        public static bool IconButton(FontAwesomeIcon icon, string tooltip = "", string str_id = "", Vector2 size = default)
         {
             ImGui.PushFont(UiBuilder.IconFont);
-
             var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{str_id}", size);
             ImGui.PopFont();
 
-            if (tooltip != null && tooltip != "None")
-                TextTooltip(tooltip);
+            if (!tooltip.IsNullOrEmpty()) HoverTooltip(tooltip);
 
             return result;
         }
@@ -19,6 +17,22 @@ namespace CurrencyTracker.Manager.Tools
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
             ImGui.TextUnformatted(text);
+        }
+
+        public static void HelpMaker(string text)
+        {
+            ImGui.SameLine();
+            ImGui.PushFont(UiBuilder.IconFont);
+            ImGui.TextDisabled(FontAwesomeIcon.InfoCircle.ToIconString());
+            ImGui.PopFont();
+            if (ImGui.IsItemHovered())
+            {
+                ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 20f);
+                ImGui.TextUnformatted(text);
+                ImGui.PopTextWrapPos();
+                ImGui.EndTooltip();
+            }
         }
 
         public static bool SelectableCentered(string text, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None)
@@ -49,7 +63,7 @@ namespace CurrencyTracker.Manager.Tools
             ImGui.PopStyleColor(3);
 
             if (!tooltip.IsNullOrEmpty())
-                TextTooltip(tooltip);
+                HoverTooltip(tooltip);
 
             return result;
         }
@@ -65,7 +79,7 @@ namespace CurrencyTracker.Manager.Tools
             ImGui.PopStyleColor(3);
 
             if (!tooltip.IsNullOrEmpty())
-                TextTooltip(tooltip);
+                HoverTooltip(tooltip);
 
             return result;
         }
@@ -79,12 +93,14 @@ namespace CurrencyTracker.Manager.Tools
             return result;
         }
 
-        public static void TextTooltip(string text)
+        public static void HoverTooltip(string text)
         {
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
+                ImGui.PushTextWrapPos(ImGui.GetFontSize() * 20f);
                 ImGui.TextUnformatted(text);
+                ImGui.PopTextWrapPos();
                 ImGui.EndTooltip();
             }
         }

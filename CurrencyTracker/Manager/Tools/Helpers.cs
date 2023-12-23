@@ -184,5 +184,15 @@ namespace CurrencyTracker.Manager.Tools
             timer.Stop();
             timer.Start();
         }
+
+        public static UpdateDictionary<TKey, TValue> ToUpdateDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs, Func<KeyValuePair<TKey, TValue>, TKey> keySelector, Func<KeyValuePair<TKey, TValue>, TValue> valueSelector) where TKey : notnull
+        {
+            var updateDictionary = new UpdateDictionary<TKey, TValue>();
+            foreach (var pair in pairs)
+            {
+                updateDictionary.Add(keySelector(pair), valueSelector(pair));
+            }
+            return updateDictionary;
+        }
     }
 }

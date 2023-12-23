@@ -6,7 +6,7 @@ namespace CurrencyTracker
         public int Version { get; set; } = 0;
         public bool FisrtOpen { get; set; } = true;
         public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
-        public Dictionary<uint, string> PresetCurrencies
+        public UpdateDictionary<uint, string> PresetCurrencies
         {
             set
             {
@@ -18,7 +18,7 @@ namespace CurrencyTracker
                 return presetCurrencies;
             }
         }
-        public Dictionary<uint, string> CustomCurrencies
+        public UpdateDictionary<uint, string> CustomCurrencies
         {
             set
             {
@@ -88,7 +88,7 @@ namespace CurrencyTracker
 
 
         [JsonIgnore]
-        public bool isUpdated;
+        public bool isUpdated = true;
         [JsonIgnore]
         public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
         {
@@ -133,8 +133,8 @@ namespace CurrencyTracker
         private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = new();
         private Dictionary<uint, string>? allCurrencies = new();
         private uint[]? allCurrencyID;
-        private Dictionary<uint, string> presetCurrencies = new();
-        private Dictionary<uint, string> customCurrencies = new();
+        internal UpdateDictionary<uint, string> presetCurrencies = new();
+        internal UpdateDictionary<uint, string> customCurrencies = new();
 
         [NonSerialized]
         private DalamudPluginInterface? pluginInterface;
@@ -164,6 +164,14 @@ namespace CurrencyTracker
         public void Initialize(DalamudPluginInterface pluginInterface)
         {
             this.pluginInterface = pluginInterface;
+            presetCurrencies.Update += () => isUpdated = true;
+            customCurrencies.Update += () => isUpdated = true;
+        }
+
+        public void Uninitialize()
+        {
+            presetCurrencies.Update -= () => isUpdated = true;
+            customCurrencies.Update -= () => isUpdated = true;
         }
 
         public void Save()

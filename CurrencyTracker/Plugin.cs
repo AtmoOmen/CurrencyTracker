@@ -315,6 +315,8 @@ namespace CurrencyTracker
             Service.ClientState.Logout -= HandleLogout;
 
             Service.CommandManager.RemoveHandler(CommandName);
+
+            Configuration.Uninitialize();
         }
     }
 }
