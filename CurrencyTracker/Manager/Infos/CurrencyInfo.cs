@@ -41,12 +41,17 @@ public static class CurrencyInfo
         return category switch
         {
             TransactionFileCategory.Inventory => InventoryManager.Instance()->GetInventoryItemCount(currencyID),
-            TransactionFileCategory.SaddleBag => SaddleBag.InventoryItemCount[currencyID],
-            TransactionFileCategory.PremiumSaddleBag => PremiumSaddleBag.InventoryItemCount[currencyID],
-            TransactionFileCategory.Retainer => Retainer.InventoryItemCount[ID][currencyID],
+            TransactionFileCategory.SaddleBag =>
+                SaddleBag.InventoryItemCount.TryGetValue(currencyID, out var amount) ? amount : 0,
+            TransactionFileCategory.PremiumSaddleBag =>
+                PremiumSaddleBag.InventoryItemCount.TryGetValue(currencyID, out var amount) ? amount : 0,
+            TransactionFileCategory.Retainer =>
+                Retainer.InventoryItemCount.TryGetValue(ID, out var ratiner) && ratiner.TryGetValue(currencyID, out long retainerAmount) ? retainerAmount : 0,
+
             _ => 0,
         };
     }
+
 
     public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
     {
