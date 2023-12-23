@@ -129,11 +129,36 @@
   <data name="ClusterByTimeHelp1" xml:space="preserve">
     <value>以 {0}小時 為間隔顯示數據</value>
   </data>
+  <data name="Hours" xml:space="preserve">
+    <value>小時</value>
+  </data>
+  <data name="Category-RecordOptions" xml:space="preserve">
+    <value>記錄選項</value>
+  </data>
+  <data name="Category-Others" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="Category-Help" xml:space="preserve">
+    <value>按一下展開或摺疊。</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>註:
+1.插件預設的3種貨幣無法刪除，只可以隱藏它們
+2.不建議對非貨幣物品進行追蹤，應使用其他插件來追蹤非貨幣物品
+(但你仍然可以堅持這樣做)
+3.刪除貨幣並不會刪除已有的資料文件，如有需要請自行刪除</value>
+  </data>
   <data name="PleaseSelect" xml:space="preserve">
     <value>請選擇...</value>
   </data>
   <data name="PleaseSearch" xml:space="preserve">
     <value>搜尋...</value>
+  </data>
+  <data name="CustomCurrencyHelp1" xml:space="preserve">
+    <value>新增失敗: 貨幣已存在</value>
+  </data>
+  <data name="CustomCurrencyHelp2" xml:space="preserve">
+    <value>刪除失敗: 你所選擇的貨幣不存在</value>
   </data>
   <data name="Day" xml:space="preserve">
     <value>日</value>
@@ -146,6 +171,9 @@
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>若留空，檔名則為:</value>
+  </data>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>檔案名稱：</value>
   </data>
   <data name="FileRenameLabel2" xml:space="preserve">
     <value>目前時間</value>
@@ -180,6 +208,9 @@
   <data name="OneWayMerge" xml:space="preserve">
     <value>單項合併</value>
   </data>
+  <data name="ManualMerge" xml:space="preserve">
+    <value>手動合併</value>
+  </data>
   <data name="NextPage" xml:space="preserve">
     <value>下一頁</value>
   </data>
@@ -198,6 +229,9 @@
   <data name="UnknownCurrency" xml:space="preserve">
     <value>未知的貨幣類型</value>
   </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>未知位置</value>
+  </data>
   <data name="Time" xml:space="preserve">
     <value>時間</value>
   </data>
@@ -209,6 +243,9 @@
   </data>
   <data name="Location" xml:space="preserve">
     <value>地點</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>頁面大小</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>年</value>
@@ -264,6 +301,9 @@
   <data name="Unselect" xml:space="preserve">
     <value>取消選取</value>
   </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>已複製到剪貼簿</value>
+  </data>
   <data name="NoTransactionsSelected" xml:space="preserve">
     <value>目前未選取任何記錄</value>
   </data>
@@ -275,6 +315,9 @@
   </data>
   <data name="Export" xml:space="preserve">
     <value>匯出</value>
+  </data>
+  <data name="PressEnterToConfirm" xml:space="preserve">
+    <value>按 Enter 鍵確認</value>
   </data>
   <data name="Copy" xml:space="preserve">
     <value>複製</value>
@@ -346,9 +389,6 @@
   <data name="UnknownContent" xml:space="preserve">
     <value>未知副本</value>
   </data>
-  <data name="TripleTriadWith" xml:space="preserve">
-    <value>幻卡對戰 - {0}</value>
-  </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>金碟</value>
   </data>
@@ -361,8 +401,17 @@
   <data name="Guide" xml:space="preserve">
     <value>指南 </value>
   </data>
-  <data name="RecordSettings" xml:space="preserve">
-    <value>記錄設定</value>
+  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
+    <value>記錄金碟幣來源</value>
+  </data>
+  <data name="Record" xml:space="preserve">
+    <value>記錄</value>
+  </data>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>紀錄傳送開銷</value>
+  </data>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>記錄九宮幻卡結果</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>建議或回饋</value>
