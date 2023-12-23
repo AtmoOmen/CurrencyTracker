@@ -51,7 +51,7 @@ namespace CurrencyTracker.Manager.Trackers
             }
 
             C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
-                                       .ToDictionary(kv => kv.Key, kv => kv.Value);
+                                       .ToUpdateDictionary(kv => kv.Key, kv => kv.Value);
             C.Save();
 
             if (C.FisrtOpen)

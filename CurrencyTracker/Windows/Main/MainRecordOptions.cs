@@ -215,7 +215,7 @@ namespace CurrencyTracker.Windows
             var autoBackupText = autoSaveEnabled ? $"{Service.Lang.GetText("AutoBackup")} ({time.ToString(timeFormat)})" : Service.Lang.GetText("AutoBackup");
 
             ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
-            TextTooltip(Service.Lang.GetText("BackupHelp7"));
+            HoverTooltip(Service.Lang.GetText("BackupHelp7"));
             if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
             {
                 C.ComponentEnabled["AutoSave"] = !C.ComponentEnabled["AutoSave"];

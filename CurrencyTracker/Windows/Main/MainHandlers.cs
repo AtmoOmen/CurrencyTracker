@@ -216,8 +216,8 @@ public partial class Main
     {
         if (!IsOpen || selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
 
-        selectedStates[selectedCurrencyID].Clear();
-        selectedTransactions[selectedCurrencyID].Clear();
+        selectedStates.Clear();
+        selectedTransactions.Clear();
 
         currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
 

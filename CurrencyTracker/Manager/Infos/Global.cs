@@ -1,5 +1,6 @@
 global using CurrencyTracker.Manager;
 global using CurrencyTracker.Manager.Infos;
+global using CurrencyTracker.Manager.Tools;
 global using CurrencyTracker.Manager.Trackers;
 global using CurrencyTracker.Manager.Trackers.Components;
 global using CurrencyTracker.Manager.Trackers.Handlers;

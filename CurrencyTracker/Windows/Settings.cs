@@ -210,7 +210,7 @@ namespace CurrencyTracker.Windows
                                 C.MaxIgnoreDays = (uint)maxIgnoreDays;
                                 C.Save();
                             }
-                            TextTooltip(Service.Lang.GetText("BackupHelp6"));
+                            HoverTooltip(Service.Lang.GetText("BackupHelp6"));
 
                             ImGui.PopItemWidth();
                         }

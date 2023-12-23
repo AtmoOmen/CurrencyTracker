@@ -31,22 +31,6 @@ public partial class Main
     private string? searchLocationName = string.Empty;
     private string? searchNoteContent = string.Empty;
 
-    // 自定义货币追踪相关值 CCT Related Values
-    private static string searchFilterCCT = string.Empty;
-    private uint currencyIDCCT = uint.MaxValue;
-    private const int itemsPerPageCCT = 10;
-    private int currentItemPageCCT = 0;
-    private uint itemCountsCCT = 0;
-    private static Dictionary<uint, string>? ItemNames; // 原生拉取的值 Original Pull
-    private static List<string>? itemNamesCCT;
-    private static readonly string[] filterNamesForCCT = new string[]
-    {
-        // 过期物品 Dated items
-        "†", "过期", "Dated", "Ex-" ,
-        // 腰带类物品 Belt
-        "腰带", "ベルト", "Gürtel", "gürtel", "Ceinture"
-    };
-
     // 数据显示相关值 Data Display Related Values
     private int currentPage;
     private int visibleStartIndex;
@@ -67,9 +51,8 @@ public partial class Main
     private readonly bool selectTimeDeco = false; // Always False
     private readonly Timer searchTimer = new(100);
     private readonly Timer searchTimerCCT = new(100);
-    private readonly Timer searchTimerMCS = new(100);
     private readonly Timer searchTimerCS = new(100);
-    private static readonly Dictionary<string, System.Action> ColumnHeaderActions = new()
+    private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
     {
         {"Order", Plugin.Instance.Main.OrderColumnHeaderUI},
         {"Time", Plugin.Instance.Main.TimeColumnHeaderUI},
@@ -89,12 +72,6 @@ public partial class Main
         {"Note", Plugin.Instance.Main.NoteColumnCellUI},
         {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
     };
-    
-    // 多角色数据相关值 Multi-Chara Stats Related Values
-    private Dictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
-    private string searchFilterMCS = string.Empty;
-    private int currentPageMCS = 0;
-    private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
 
     private string searchFilterCS = string.Empty;
     private Dictionary<uint, string>? TerritoryNamesCS;
