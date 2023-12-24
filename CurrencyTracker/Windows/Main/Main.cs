@@ -21,7 +21,7 @@ public partial class Main : Window, IDisposable
         searchTimer.Elapsed += SearchTimerElapsed;
         searchTimer.AutoReset = false;
 
-        searchTimerCCT.Elapsed += SearchTimerCCTElapsed;
+        searchTimerCCT.Elapsed += SearchTimerACCElapsed;
         searchTimerCCT.AutoReset = false;
 
         searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
@@ -30,30 +30,7 @@ public partial class Main : Window, IDisposable
         searchTimerCS.Elapsed += SearchTimerCSElapsed;
         searchTimerCS.AutoReset = false;
 
-        LoadOptions();
-    }
-
-    // 将预置货币类型、玩家自定义的货币类型加入选项列表 Add preset currencies and player-customed currencies to the list of options
-    private void LoadOptions()
-    {
-        foreach (var currencyKey in C.AllCurrencyID)
-        {
-            if (!selectedStates.ContainsKey(currencyKey))
-            {
-                selectedStates.Add(currencyKey, new());
-                selectedTransactions.Add(currencyKey, new());
-            }
-        }
-
-        if (C.OrderedOptions == null || C.OrderedOptions.Count == 0)
-        {
-            C.OrderedOptions = C.AllCurrencyID.ToList();
-            C.Save();
-        }
-        else
-        {
-            ReloadOrderedOptions();
-        }
+        ReloadOrderedOptions();
     }
 
     public override void Draw()
@@ -97,7 +74,7 @@ public partial class Main : Window, IDisposable
         searchTimer.Stop();
         searchTimer.Dispose();
 
-        searchTimerCCT.Elapsed -= SearchTimerCCTElapsed;
+        searchTimerCCT.Elapsed -= SearchTimerACCElapsed;
         searchTimerCCT.Stop();
         searchTimerCCT.Dispose();
 

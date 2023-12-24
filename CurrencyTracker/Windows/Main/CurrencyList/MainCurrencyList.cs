@@ -1,5 +1,3 @@
-using Lumina.Excel.GeneratedSheets;
-
 namespace CurrencyTracker.Windows
 {
     // 货币列表 / 货币列表顶端工具栏 / 添加自定义货币 / 删除自定义货币 / 重命名货币
@@ -8,6 +6,8 @@ namespace CurrencyTracker.Windows
         // 存储可用货币名称选项的列表框 Listbox Containing Available Currencies' Name
         private void CurrencyListboxUI()
         {
+            selectedOptionIndex = C.OrderedOptions.IndexOf(selectedCurrencyID);
+
             var childScale = new Vector2(243 + C.ChildWidthOffset, ChildframeHeightAdjust());
             if (!ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar)) return;
 
@@ -24,33 +24,27 @@ namespace CurrencyTracker.Windows
             for (var i = 0; i < C.OrderedOptions.Count; i++)
             {
                 var option = C.OrderedOptions[i];
+                var currencyName = C.AllCurrencies[option];
                 if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
                 {
-                    selectedOptionIndex = i;
                     selectedCurrencyID = option;
                     currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
                     currentView = TransactionFileCategory.Inventory;
                     currentViewID = 0;
                 }
 
-                if (ImGui.IsItemHovered() && ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+                if (ImGui.IsItemHovered())
                 {
-                    ImGui.SetTooltip(C.AllCurrencies[option]);
+                    ImGui.SetTooltip(currencyName);
                 }
 
                 ImGui.SameLine(3.0f);
                 ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
                 var currencyIcon = C.AllCurrencyIcons[option];
-                if (currencyIcon == null)
-                {
-                    C.GetAllCurrencyIcons();
-                }
-                else
-                {
-                    ImGui.Image(currencyIcon.ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
-                }
+                ImGui.Image(currencyIcon.ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+
                 ImGui.SameLine();
-                ImGui.Text(C.AllCurrencies[option]);
+                ImGui.Text(currencyName);
             }
 
             ImGui.PopStyleColor(2);
@@ -62,219 +56,20 @@ namespace CurrencyTracker.Windows
         {
             CenterCursorFor(184);
 
-            ImGui.BeginGroup();
             AddCustomCurrencyUI();
 
             ImGui.SameLine();
-            if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up) && selectedOptionIndex > 0)
-            {
-                SwapOptions(selectedOptionIndex, selectedOptionIndex - 1);
-                selectedOptionIndex--;
-            }
+            if (ImGui.ArrowButton("UpArrow", ImGuiDir.Up)) SwapOptions(selectedOptionIndex, selectedOptionIndex - 1);
 
             ImGui.SameLine();
             DeleteCustomCurrencyUI();
 
             ImGui.SameLine();
-            if (ImGui.ArrowButton("DownArrow", ImGuiDir.Down) && selectedOptionIndex < C.OrderedOptions.Count - 1 && selectedOptionIndex > -1)
-            {
-                SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
-                selectedOptionIndex++;
-            }
+            if (ImGui.ArrowButton("DownArrow", ImGuiDir.Down)) SwapOptions(selectedOptionIndex, selectedOptionIndex + 1);
 
             ImGui.SameLine();
             CurrencySettingsUI();
-
-            ImGui.EndGroup();
-        }
-
-        // 添加自定义货币 Add Custom Currency
-        private void AddCustomCurrencyUI()
-        {
-            if (IconButton(FontAwesomeIcon.Plus, "None", "CustomCurrencyAdd"))
-            {
-                ImGui.OpenPopup("CustomCurrency");
-            }
-
-            if (ImGui.BeginPopup("CustomCurrency", ImGuiWindowFlags.AlwaysAutoResize))
-            {
-                if (ItemNames == null) LoadItemsForCCT();
-
-                ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
-                ImGuiComponents.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
-
-                ImGui.AlignTextToFramePadding();
-                ImGui.Text($"{Service.Lang.GetText("Now")}:");
-                ImGui.SameLine();
-
-                // currencyIDCCT -> ID, selected -> Name
-                ImGui.SetNextItemWidth(210);
-                if (ImGui.BeginCombo("", ItemNames.TryGetValue(currencyIDCCT, out var selected) ? selected : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
-                {
-                    var startIndex = currentItemPageCCT * itemsPerPageCCT;
-                    var endIndex = Math.Min(startIndex + itemsPerPageCCT, itemNamesCCT.Count);
-
-                    ImGui.SetNextItemWidth(200f);
-                    if (ImGui.InputTextWithHint("##selectflts", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100))
-                    {
-                        searchTimerCCT.Restart();
-                    }
-
-                    ImGui.SameLine();
-
-                    // 首页 First Page
-                    if (IconButton(FontAwesomeIcon.Backward, "None", "CCTFirstPage")) currentItemPageCCT = 0; ImGui.SameLine();
-
-                    // 上一页 Previous Page
-                    if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentItemPageCCT > 0) currentItemPageCCT--; ImGui.SameLine();
-
-                    // 下一页 Next Page
-                    if (itemNamesCCT.Any())
-                    {
-                        if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1)
-                        {
-                            currentItemPageCCT++;
-                        }
-                    }
-                    else
-                    {
-                        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                        ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right);
-                        ImGui.PopStyleVar();
-                    }
-                    ImGui.SameLine();
-
-                    // 尾页 Last Page
-                    if (itemNamesCCT.Any())
-                    {
-                        if (IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage"))
-                        {
-                            currentItemPageCCT = (itemNamesCCT.Count / itemsPerPageCCT) - 1;
-                        }
-                    }
-                    else
-                    {
-                        ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                        IconButton(FontAwesomeIcon.Forward, "None", "CCTLastPage");
-                        ImGui.PopStyleVar();
-                    }
-
-                    // 鼠标滚轮控制翻页 Mouse wheel control for flipping pages
-                    if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentItemPageCCT > 0) currentItemPageCCT--;
-                    if (itemNamesCCT.Any() && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentItemPageCCT < (itemNamesCCT.Count / itemsPerPageCCT) - 1) currentItemPageCCT++;
-
-                    ImGui.Separator();
-
-                    if (itemNamesCCT.Any())
-                    {
-                        foreach (var itemName in itemNamesCCT.Skip(startIndex).Take(endIndex - startIndex))
-                        {
-                            var itemKeyPair = ItemNames.FirstOrDefault(x => x.Value == itemName);
-                            if (ImGui.Selectable(itemName))
-                            {
-                                currencyIDCCT = itemKeyPair.Key;
-                            }
-
-                            if (ImGui.IsWindowAppearing() && currencyIDCCT == itemKeyPair.Key)
-                            {
-                                ImGui.SetScrollHereY();
-                            }
-                        }
-                    }
-
-                    ImGui.EndCombo();
-                }
-
-                if (ImGui.IsItemClicked())
-                {
-                    if (ItemNames == null)
-                    {
-                        LoadItemsForCCT();
-                    }
-
-                    if (itemNamesCCT.Count == 0 || itemNamesCCT == null || itemNamesCCT.Count != itemCountsCCT)
-                    {
-                        itemNamesCCT = ApplyCCTFilter();
-                    }
-                }
-
-                ImGui.SameLine();
-
-                if (IconButton(FontAwesomeIcon.Plus, "None", "AddCustomCurrency"))
-                {
-                    if (selected.IsNullOrEmpty())
-                    {
-                        Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                        return;
-                    }
-
-                    if (C.AllCurrencies.ContainsValue(selected) || C.AllCurrencyID.Contains(currencyIDCCT))
-                    {
-                        Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
-                        return;
-                    }
-
-                    C.CustomCurrencies.Add(currencyIDCCT, selected);
-                    C.isUpdated = true;
-                    C.Save();
-
-                    selectedStates.Add(currencyIDCCT, new());
-                    selectedTransactions.Add(currencyIDCCT, new());
-                    selectedCurrencyID = currencyIDCCT;
-                    ReloadOrderedOptions();
-                    selectedOptionIndex = C.OrderedOptions.IndexOf(currencyIDCCT);
-
-                    Service.Tracker.CheckCurrency(currencyIDCCT, "", "", RecordChangeType.All, 1);
-                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
-
-                    searchFilterCCT = string.Empty;
-                    itemNamesCCT.Remove(selected);
-                    currencyIDCCT = 0;
-
-                    ImGui.CloseCurrentPopup();
-                }
-                ImGui.EndPopup();
-            }
-        }
-
-        // 加载自定义货币追踪里的所有物品 Load All Items for CCT
-        public static void LoadItemsForCCT()
-        {
-            ItemNames = Service.DataManager.GetExcelSheet<Item>()
-                .Where(x => !x.Name.ToString().IsNullOrEmpty() && !filterNamesForCCT.Any(x.Name.ToString().Contains))
-                .ToDictionary(x => x.RowId, x => x.Name.ToString());
-            itemNamesCCT = ItemNames.Values.ToList();
-        }
-
-        // 按搜索结果显示自定义货币追踪里的物品 Show On-Demand Items Based On Filter
-        private List<string> ApplyCCTFilter(string searchFilterCCT = "")
-        {
-            if (!searchFilterCCT.IsNullOrEmpty())
-            {
-                var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
-                return itemNamesCCT
-                    .Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)
-                        || (isChineseSimplified && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)))
-                    .ToList();
-            }
-            else
-            {
-                var currencyNames = C.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
-                var items = ItemNames.Values
-                    .Where(itemName => !currencyNames.Contains(itemName))
-                    .ToList();
-
-                itemCountsCCT = (uint)items.Count;
-                return items;
-            }
-        }
-
-        // 延迟加载搜索结果 Used to handle too-fast CCT items loading
-        private void SearchTimerCCTElapsed(object? sender, ElapsedEventArgs e)
-        {
-            itemNamesCCT = ApplyCCTFilter(searchFilterCCT);
-            currentItemPageCCT = 0;
-        }
+        }        
 
         // 删除自定义货币 Delete Custom Currency
         private void DeleteCustomCurrencyUI()
@@ -296,14 +91,11 @@ namespace CurrencyTracker.Windows
                     }
 
                     var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
-                    if (C.AllCurrencies[selectedCurrencyID] != localName) RenameCurrencyHandler(localName);
+                    if (C.CustomCurrencies[selectedCurrencyID] != localName) RenameCurrencyHandler(localName);
 
                     C.CustomCurrencies.Remove(selectedCurrencyID);
-                    C.isUpdated = true;
                     C.Save();
 
-                    selectedStates.Remove(selectedCurrencyID);
-                    selectedTransactions.Remove(selectedCurrencyID);
                     selectedCurrencyID = 0;
                     ReloadOrderedOptions();
                 }
@@ -322,12 +114,12 @@ namespace CurrencyTracker.Windows
             if (selectedCurrencyID == 0)
             {
                 ImGui.PushStyleVar(ImGuiStyleVar.Alpha, 0.5f);
-                IconButton(FontAwesomeIcon.Edit, "None", "CurrencySettings");
+                IconButton(FontAwesomeIcon.Edit, "", "CurrencySettings");
                 ImGui.PopStyleVar();
             }
             else
             {
-                if (IconButton(FontAwesomeIcon.Edit, "None", "CurrencySettings"))
+                if (IconButton(FontAwesomeIcon.Edit, "", "CurrencySettings"))
                 {
                     ImGui.OpenPopup("CurrencySettings");
                     if (C.AllCurrencies.TryGetValue(selectedCurrencyID, out var currencyName))
@@ -337,7 +129,7 @@ namespace CurrencyTracker.Windows
                 }
             }
 
-            if (ImGui.BeginPopup("CurrencySettings", ImGuiWindowFlags.AlwaysAutoResize))
+            if (ImGui.BeginPopup("CurrencySettings"))
             {
                 if (ItemNames == null) LoadTerrioriesNamesCS();
 
@@ -371,7 +163,7 @@ namespace CurrencyTracker.Windows
 
             ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 80f, 210f)); // 80f = 2 * 8f (Default Spacing Size of ImGui.SameLine) + 2 * 32f (Default Size of IconButton)
             ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
-            if (!editedCurrencyName.IsNullOrEmpty()) TextTooltip(editedCurrencyName);
+            if (!editedCurrencyName.IsNullOrEmpty()) HoverTooltip(editedCurrencyName);
 
             ImGui.SameLine();
             if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
@@ -499,17 +291,17 @@ namespace CurrencyTracker.Windows
                 }
                 ImGui.EndCombo();
             }
-            if (!selectedAreaName.IsNullOrEmpty()) TextTooltip(selectedAreaName);
+            if (!selectedAreaName.IsNullOrEmpty()) HoverTooltip(selectedAreaName);
 
             ImGui.SameLine();
-            if (IconButton(FontAwesomeIcon.Plus, "None", "AddRestrictedAreas") && !rules.RestrictedAreas.Contains(selectedAreaIDCS))
+            if (IconButton(FontAwesomeIcon.Plus, "", "AddRestrictedAreas") && !rules.RestrictedAreas.Contains(selectedAreaIDCS))
             {
                 rules.RestrictedAreas.Add(selectedAreaIDCS);
                 selectedAreaIDCS = 0;
                 C.Save();
             }
             ImGui.SameLine();
-            if (IconButton(FontAwesomeIcon.TrashAlt, "None", "DeleteRestrictedAreas") && rules.RestrictedAreas.Contains(selectedAreaIDCS))
+            if (IconButton(FontAwesomeIcon.TrashAlt, "", "DeleteRestrictedAreas") && rules.RestrictedAreas.Contains(selectedAreaIDCS))
             {
                 rules.RestrictedAreas.Remove(selectedAreaIDCS);
                 selectedAreaIDCS = 0;

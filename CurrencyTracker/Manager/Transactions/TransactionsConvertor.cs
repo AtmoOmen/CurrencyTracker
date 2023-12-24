@@ -8,7 +8,6 @@ public class TransactionsConvertor
     public string LocationName { get; set; } = string.Empty; // 地名 Location Name
     public string Note { get; set; } = string.Empty; // 备注 Note
 
-
     private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
     // 将单行交易记录解析为字符串 Parse a transaction into string
@@ -55,6 +54,7 @@ public class TransactionsConvertor
         }
 
         var transactions = new List<TransactionsConvertor>();
+        var isFilterOutdated = Plugin.Configuration.MaxIgnoreDays != 0;
         var maxIgnoreDays = TimeSpan.FromDays(Plugin.Configuration.MaxIgnoreDays);
         var now = DateTime.Now;
 
@@ -65,7 +65,7 @@ public class TransactionsConvertor
             while ((line = sr.ReadLine()) != null)
             {
                 var transaction = FromFileLine(line.AsSpan());
-                if (Plugin.Configuration.MaxIgnoreDays != 0 && transaction.TimeStamp < now - maxIgnoreDays) continue;
+                if (isFilterOutdated && transaction.TimeStamp < now - maxIgnoreDays) continue;
                 transactions.Add(transaction);
             }
         }
@@ -77,7 +77,6 @@ public class TransactionsConvertor
 
         return transactions;
     }
-
 
     // 将单个交易记录追加入数据文件 Append a transaction into the data file
     public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)

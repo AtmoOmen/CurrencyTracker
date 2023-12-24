@@ -4,7 +4,6 @@ namespace CurrencyTracker.Windows
     // 序号列功能 (倒序排序) / 时间列功能 (按时间聚类, 按时间筛选) / 收支列功能 (按收支筛选, 按收支正负染色) / 地点列功能 / 备注列功能 / 勾选框列功能
     public partial class Main : Window, IDisposable
     {
-
         // 收支记录表格 Table used to show transactions
         private void TransactionTableUI()
         {
@@ -14,60 +13,81 @@ namespace CurrencyTracker.Windows
 
             ImGui.SameLine();
 
-            if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ChildframeHeightAdjust()), ImGuiWindowFlags.AlwaysVerticalScrollbar))
+            if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ChildframeHeightAdjust())))
             {
                 TransactionTablePagingUI(windowWidth);
 
-                var orderColumnWidth = (int)ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
-
-                var columnCount = C.ColumnsVisibility.Count(c => c.Value);
+                var columns = C.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+                var columnCount = columns?.Length ?? 0;
                 if (columnCount == 0) return;
 
-                using(var table = ImRaii.Table("Transactions", columnCount, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 175, 1)))
+                var tableFlags = ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable;
+                var tableSize = new Vector2(windowWidth - 175, 1);
+
+                using (var table = ImRaii.Table("Transactions", columnCount, tableFlags, tableSize))
                 {
                     if (table)
                     {
-                        foreach (var column in C.ColumnsVisibility)
+                        var orderColumnWidth = ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
+
+                        foreach (var column in columns)
                         {
-                            if (!column.Value) continue;
-                            var flags = column.Key == "Order" || column.Key == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
-                            var width = column.Key == "Order" ? ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10 : column.Key == "Checkbox" ? 30 : 150;
-                            ImGui.TableSetupColumn(column.Key, flags, width, 0);
+                            var flags = column == "Order" || column == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
+                            var width = column == "Order" ? orderColumnWidth : column == "Checkbox" ? 30 : 150;
+                            ImGui.TableSetupColumn(column, flags, width, 0);
                         }
 
                         ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
-                        foreach (var column in C.ColumnsVisibility)
+                        foreach (var column in columns)
                         {
-                            if (!column.Value) continue;
                             ImGui.TableNextColumn();
-                            if (ColumnHeaderActions.TryGetValue(column.Key, out var headerAction)) headerAction.Invoke();
+                            ColumnHeaderActions[column].Invoke();
                         }
 
-                        if (currentTypeTransactions != null && currentTypeTransactions.Any())
+                        if (currentTypeTransactions?.Any() ?? false)
                         {
-                            while (selectedStates[selectedCurrencyID].Count < currentTypeTransactions.Count)
-                            {
-                                selectedStates[selectedCurrencyID].Add(false);
-                            }
+                            SelectedStatesWatcher();
 
                             ImGui.TableNextRow();
                             for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                             {
-                                foreach (var column in C.ColumnsVisibility)
+                                foreach (var column in columns)
                                 {
-                                    if (!column.Value) continue;
                                     ImGui.TableNextColumn();
-                                    if (ColumnCellActions.TryGetValue(column.Key, out var cellAction)) cellAction.Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
+                                    ColumnCellActions[column].Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
                                 }
                                 ImGui.TableNextRow();
                             }
 
-                            TransactionTableInfoBarUI();
                         }
                     }
                 }
 
+                TransactionTableInfoBarUI();
+
                 ImGui.EndChildFrame();
+            }
+        }
+
+        // 监控选中状态 Watch selected states
+        private void SelectedStatesWatcher()
+        {
+            if (!selectedStates.TryGetValue(selectedCurrencyID, out var stateList))
+            {
+                stateList = new();
+                selectedStates.Add(selectedCurrencyID, stateList);
+            }
+
+            if (!selectedTransactions.TryGetValue(selectedCurrencyID, out var transactionList))
+            {
+                transactionList = new();
+                selectedTransactions.Add(selectedCurrencyID, transactionList);
+            }
+
+            var itemsToAdd = currentTypeTransactions.Count - stateList.Count;
+            if (itemsToAdd > 0)
+            {
+                stateList.AddRange(Enumerable.Repeat(false, itemsToAdd));
             }
         }
 
@@ -171,7 +191,7 @@ namespace CurrencyTracker.Windows
         // 切换数据表格视图 Switch the view of the transaction table
         private void TableViewSwitchUI()
         {
-            if (IconButton(FontAwesomeIcon.Bars, "None"))
+            if (IconButton(FontAwesomeIcon.Bars, ""))
             {
                 ImGui.OpenPopup("TableViewSwitch");
             }
@@ -221,10 +241,15 @@ namespace CurrencyTracker.Windows
         // 表格信息栏 Table Info Bar
         private void TransactionTableInfoBarUI()
         {
-            if (selectedCurrencyID != 0 && selectedTransactions[selectedCurrencyID].Any())
+            if (selectedTransactions.TryGetValue(selectedCurrencyID, out var transactions) && transactions.Any())
             {
-                var transactions = selectedTransactions[selectedCurrencyID];
-                ImGui.TextColored(ImGuiColors.DalamudGrey, Service.Lang.GetText("SelectedTransactionsInfo", transactions.Count, transactions.Sum(x => x.Change), Math.Round(transactions.Average(x => x.Change), 2), transactions.Max(x => x.Change), transactions.Min(x => x.Change)));
+                var count = transactions.Count;
+                var sum = transactions.Sum(x => x.Change);
+                var avg = Math.Round((double)sum / count, 2);
+                var max = transactions.Max(x => x.Change);
+                var min = transactions.Min(x => x.Change);
+
+                ImGui.TextDisabled(Service.Lang.GetText("SelectedTransactionsInfo", count, sum, avg, max, min));
             }
         }
 
@@ -345,7 +370,7 @@ namespace CurrencyTracker.Windows
 
                 // 上一年 Last Year
                 ImGui.SetCursorPosX((ImGui.GetWindowWidth()) / 8);
-                if (IconButton(FontAwesomeIcon.Backward, "None", "LastYear"))
+                if (IconButton(FontAwesomeIcon.Backward, "", "LastYear"))
                 {
                     currentDate = currentDate.AddYears(-1);
                     searchTimer.Restart();
@@ -372,7 +397,7 @@ namespace CurrencyTracker.Windows
 
                 // 下一年 Next Year
                 ImGui.SameLine();
-                if (IconButton(FontAwesomeIcon.Forward, "None", "NextYear"))
+                if (IconButton(FontAwesomeIcon.Forward, "", "NextYear"))
                 {
                     currentDate = currentDate.AddYears(1);
                     searchTimer.Restart();
@@ -639,7 +664,7 @@ namespace CurrencyTracker.Windows
 
             if (!transaction.LocationName.IsNullOrEmpty())
             {
-                TextTooltip(transaction.LocationName);
+                HoverTooltip(transaction.LocationName);
             }
 
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
@@ -702,7 +727,7 @@ namespace CurrencyTracker.Windows
 
             if (!transaction.Note.IsNullOrEmpty())
             {
-                TextTooltip(transaction.Note);
+                HoverTooltip(transaction.Note);
             }
 
             if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
@@ -742,6 +767,7 @@ namespace CurrencyTracker.Windows
         {
             if (IconButton(FontAwesomeIcon.EllipsisH))
             {
+                if (!currentTypeTransactions.Any()) return;
                 ImGui.OpenPopup("TableTools");
             }
 
