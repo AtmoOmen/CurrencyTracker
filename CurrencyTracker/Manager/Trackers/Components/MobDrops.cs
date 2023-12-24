@@ -21,10 +21,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
             if (value)
                 BeginMobDropsHandler();
             else
-            {
-                if (inventoryHandler == null) return;
                 Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
-            }
         }
 
         private void BeginMobDropsHandler()
@@ -51,7 +48,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
             Service.Framework.Update -= OnFrameworkUpdate;
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
 
             enemiesList.Clear();
             HandlerManager.ChatHandler.isBlocked = false;

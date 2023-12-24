@@ -21,7 +21,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private bool isDutyStarted;
         private string contentName = string.Empty;
 
-        private InventoryHandler? inventoryHandler = null;
+        private InventoryHandler? inventoryHandler;
 
         public void Init()
         {
@@ -76,7 +76,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordContentName"] ? $"({contentName})" : "", RecordChangeType.All, 2);
 
             isDutyStarted = false;
             contentName = string.Empty;

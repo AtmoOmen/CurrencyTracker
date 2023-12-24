@@ -8,17 +8,13 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
         private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
+        private static readonly uint[] tpCostCurrencies = new uint[] { 1, 7569 };
 
         // 包含金币传送点的区域 Terriories that Have a Gil-Cost Warp
         private List<uint> ValidGilWarpTerriories = new();
 
-        // 是否准备进行 NPC 传送 Is Ready to Have a Warp Teleportation
         private bool isReadyWarpTP;
-
-        // 区域间 NPC 传送 Warp Teleportation Between Areas
         private bool warpTPBetweenAreas;
-
-        // 区域内 NPC 传送 Warp Teleportation Within Areas
         private bool warpTPInAreas;
 
         public void Init()
@@ -36,15 +32,12 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
         {
-            if (!ValidGilWarpTerriories.Any(x => Service.ClientState.TerritoryType == x))
-            {
-                return;
-            }
+            if (!ValidGilWarpTerriories.Any(x => Service.ClientState.TerritoryType == x)) return;
 
-            var SYN = args.Addon;
-            if (SYN == nint.Zero) return;
+            var SYN = (AtkUnitBase*)args.Addon;
+            if (!IsAddonNodesReady(SYN)) return;
 
-            var text = ((AddonSelectYesno*)SYN)->PromptText->NodeText.ToString();
+            var text = SYN->GetTextNodeById(2)->NodeText.ToString();
             if (text.IsNullOrEmpty()) return;
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
@@ -77,11 +70,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             if (warpTPBetweenAreas)
             {
-                Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, PreviousLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})" : "", RecordChangeType.Negative, 15);
+                Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName, $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})", RecordChangeType.Negative, 15);
             }
             else if (warpTPInAreas)
             {
-                Service.Tracker.CheckCurrencies(new uint[] { 1, 7569 }, CurrentLocationName, Plugin.Configuration.ComponentProp["RecordDesAreaName"] ? $"({Service.Lang.GetText("TeleportWithinArea")})" : "", RecordChangeType.Negative, 16);
+                Service.Tracker.CheckCurrencies(tpCostCurrencies, CurrentLocationName, $"({Service.Lang.GetText("TeleportWithinArea")})", RecordChangeType.Negative, 16);
             }
 
             if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())

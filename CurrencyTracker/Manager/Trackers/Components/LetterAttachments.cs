@@ -34,7 +34,6 @@ namespace CurrencyTracker.Manager.Trackers.Components
             }
             else if (type == AddonEvent.PreFinalize)
             {
-                if (inventoryHandler == null) return;
                 Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(t => EndLetterAttachments());
             }
         }
@@ -43,7 +42,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", LetterSender)})", RecordChangeType.All, 24, TransactionFileCategory.Inventory, 0);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", LetterSender)})", RecordChangeType.All, 24, TransactionFileCategory.Inventory, 0);
 
             HandlerManager.Nullify(ref inventoryHandler);
             HandlerManager.ChatHandler.isBlocked = false;

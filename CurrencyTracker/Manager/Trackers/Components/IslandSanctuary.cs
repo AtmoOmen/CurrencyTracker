@@ -60,7 +60,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (Flags.OccupiedInEvent()) return;
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
 
             HandlerManager.ChatHandler.isBlocked = false;
             HandlerManager.Nullify(ref inventoryHandler);
@@ -77,7 +78,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
         {
             if (Flags.OccupiedInEvent()) return;
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({windowTitle})", RecordChangeType.All, 6);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
 
             HandlerManager.ChatHandler.isBlocked = false;
             HandlerManager.Nullify(ref inventoryHandler);
@@ -102,7 +104,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 if (currentTarget?.DataId != prevTarget.DataId)
                 {
                     isOnWorkshop = false;
-                    Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("IslandWorkshop")})", RecordChangeType.All, 7);
+
+                    var items = inventoryHandler?.Items ?? new();
+                    Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})", RecordChangeType.All, 7);
+
                     HandlerManager.Nullify(ref inventoryHandler);
                     HandlerManager.ChatHandler.isBlocked = false;
                 }

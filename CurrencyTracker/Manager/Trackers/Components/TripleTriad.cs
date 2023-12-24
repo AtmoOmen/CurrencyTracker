@@ -53,7 +53,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug($"Triple Triad Match Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("TripleTriadWith", ttResultText, ttRivalName)})", RecordChangeType.All, 14);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TripleTriadWith", ttResultText, ttRivalName)})", RecordChangeType.All, 14);
 
             ttRivalName = ttResultText = string.Empty;
             HandlerManager.Nullify(ref inventoryHandler);

@@ -137,17 +137,18 @@ namespace CurrencyTracker.Manager.Trackers
 
         public bool CheckCurrencies(IEnumerable<uint> currencies, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
-            if (!currencies.Any()) return false;
-
             var isChanged = false;
+            foreach (var currency in C.AllCurrencyID)
+            {
+                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
+            }
+
+            if (!currencies.Any()) return false;
             foreach (var currency in currencies)
             {
                 if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
             };
-            foreach(var currency in C.AllCurrencyID)
-            {
-                if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID)) isChanged = true;
-            }
+            
             return isChanged;
         }
 
@@ -167,7 +168,7 @@ namespace CurrencyTracker.Manager.Trackers
 
             CurrencyChanged?.Invoke(currencyID, category, ID);
             Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-            // if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
         }
 
         public void UninitializeTracking()

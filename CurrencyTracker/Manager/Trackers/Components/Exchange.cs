@@ -22,7 +22,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         internal static bool isOnExchange = false;
         private string windowName = string.Empty;
 
-        private InventoryHandler? inventoryHandler = null;
+        private InventoryHandler? inventoryHandler;
 
         public void Init()
         {
@@ -56,7 +56,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : (Service.Lang.GetText("ExchangeWith", currentTargetName)))})", RecordChangeType.All, 3);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : (Service.Lang.GetText("ExchangeWith", currentTargetName)))})", RecordChangeType.All, 3);
 
             windowName = currentTargetName = string.Empty;
             HandlerManager.ChatHandler.isBlocked = isOnExchange = false;

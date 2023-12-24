@@ -58,7 +58,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             isReadyFinish = false;
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("Quest", questName)})", RecordChangeType.All, 9);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})", RecordChangeType.All, 9);
 
             ResetQuestState();
 

@@ -44,7 +44,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
             Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
-            Service.Tracker.CheckCurrencies(inventoryHandler.Items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
+            var items = inventoryHandler?.Items ?? new();
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
             tradeTargetName = string.Empty;
             HandlerManager.ChatHandler.isBlocked = false;
             HandlerManager.Nullify(ref inventoryHandler);
