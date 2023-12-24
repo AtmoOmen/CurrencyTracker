@@ -16,19 +16,19 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private unsafe void OnConditionChange(ConditionFlag flag, bool value)
         {
-            if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty() || FateManager.Instance()->CurrentFate != null) return;
+            if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty()) return;
 
             if (value)
-                BeginMobDropsHandler();
+            {
+                if (FateManager.Instance()->CurrentFate != null || inventoryHandler != null) return;
+                HandlerManager.ChatHandler.isBlocked = true;
+                inventoryHandler = new();
+                Service.Framework.Update += OnFrameworkUpdate;
+            }
             else
+            {
                 Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
-        }
-
-        private void BeginMobDropsHandler()
-        {
-            HandlerManager.ChatHandler.isBlocked = true;
-            inventoryHandler = new();
-            Service.Framework.Update += OnFrameworkUpdate;
+            }
         }
 
         private void OnFrameworkUpdate(IFramework framework)
@@ -43,7 +43,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndMobDropsHandler()
         {
-            if (Service.Condition[ConditionFlag.InCombat] || Flags.IsBoundByDuty() || Flags.BetweenAreas()) return;
+            if (Service.Condition[ConditionFlag.InCombat]) 
+            {
+                Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
+                return;
+            };
 
             Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
             Service.Framework.Update -= OnFrameworkUpdate;

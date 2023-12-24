@@ -7,7 +7,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         public bool Initialized { get; set; } = false;
 
         // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
-        private static readonly string[] ValidWarpText = { "Gils", "Gil", "金币", "ギル" };
+        private static readonly HashSet<string> ValidWarpText = new() { "Gils", "Gil", "金币", "金幣", "ギル" };
         private static readonly uint[] tpCostCurrencies = new uint[] { 1, 7569 };
 
         // 包含金币传送点的区域 Terriories that Have a Gil-Cost Warp

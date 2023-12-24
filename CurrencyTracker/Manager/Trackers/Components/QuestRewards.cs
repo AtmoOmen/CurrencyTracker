@@ -52,7 +52,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndQuestHandler()
         {
-            if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
+            if (Flags.OccupiedInEvent() || Flags.BetweenAreas())
+            {
+                Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndQuestHandler());
+                return;
+            };
 
             Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
 

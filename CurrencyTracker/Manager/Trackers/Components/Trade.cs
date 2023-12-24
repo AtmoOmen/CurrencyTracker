@@ -40,7 +40,11 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private void EndTrade()
         {
-            if (Service.Condition[ConditionFlag.TradeOpen]) return;
+            if (Service.Condition[ConditionFlag.TradeOpen])
+            {
+                Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndTrade());
+                return;
+            }
 
             Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
