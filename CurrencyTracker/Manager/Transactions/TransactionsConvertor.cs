@@ -54,9 +54,6 @@ public class TransactionsConvertor
         }
 
         var transactions = new List<TransactionsConvertor>();
-        var isFilterOutdated = Plugin.Configuration.MaxIgnoreDays != 0;
-        var maxIgnoreDays = TimeSpan.FromDays(Plugin.Configuration.MaxIgnoreDays);
-        var now = DateTime.Now;
 
         try
         {
@@ -65,7 +62,6 @@ public class TransactionsConvertor
             while ((line = sr.ReadLine()) != null)
             {
                 var transaction = FromFileLine(line.AsSpan());
-                if (isFilterOutdated && transaction.TimeStamp < now - maxIgnoreDays) continue;
                 transactions.Add(transaction);
             }
         }
