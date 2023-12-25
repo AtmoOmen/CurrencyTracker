@@ -195,24 +195,6 @@ namespace CurrencyTracker.Windows
                                 C.Save();
                             }
                             ImGui.PopItemWidth();
-
-                            // 最大忽略天数 Max Ignore Days
-                            ImGui.Separator();
-                            ImGui.AlignTextToFramePadding();
-                            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxIgnoreDays")}:");
-
-                            var maxIgnoreDays = (int)C.MaxIgnoreDays;
-                            ImGui.SameLine();
-                            ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X);
-                            if (ImGui.InputInt("", ref maxIgnoreDays))
-                            {
-                                if (maxIgnoreDays < 0) maxIgnoreDays = 0;
-                                C.MaxIgnoreDays = (uint)maxIgnoreDays;
-                                C.Save();
-                            }
-                            HoverTooltip(Service.Lang.GetText("BackupHelp6"));
-
-                            ImGui.PopItemWidth();
                         }
                     }
 

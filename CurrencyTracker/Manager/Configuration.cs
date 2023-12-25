@@ -42,7 +42,6 @@ namespace CurrencyTracker
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
         public Vector4 NegativeChangeColor { get; set; } = new Vector4(1.0f, 0.0f, 0.0f, 1.0f);
-        public uint MaxIgnoreDays { get; set; } = 0;  // Days
         public int ChildWidthOffset { get; set; } = 0;
         public int ExportDataFileType { get; set; } = 0;
         public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = new(); // Content ID - Retainer ID : Retainer Name
