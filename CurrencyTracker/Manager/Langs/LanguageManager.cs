@@ -7,12 +7,12 @@ namespace CurrencyTracker.Manager
 
         public static readonly List<TranslationInfo> LanguageNames = new()
         {
-            new TranslationInfo { Language = "English", DisplayName = "English", Translators = "AtmoOmen" },
-            new TranslationInfo { Language = "Spanish", DisplayName = "Español", Translators = "Risu"},
-            new TranslationInfo { Language = "German", DisplayName = "Deutsch", Translators = "vyrnius"},
-            new TranslationInfo { Language = "French", DisplayName = "Français", Translators = "Khyne Cael, Lexideru"},
-            new TranslationInfo { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = "AtmoOmen"},
-            new TranslationInfo { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = "Fluxus"}
+            new TranslationInfo { Language = "English", DisplayName = "English", Translators = new string[1] { "AtmoOmen" } },
+            new TranslationInfo { Language = "Spanish", DisplayName = "Español", Translators = new string[1] { "Risu" } },
+            new TranslationInfo { Language = "German", DisplayName = "Deutsch", Translators = new string[1] { "vyrnius" }},
+            new TranslationInfo { Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" } },
+            new TranslationInfo { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" }},
+            new TranslationInfo { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[1] { "Fluxus" }}
         };
 
         public LanguageManager(string languageName)
@@ -59,6 +59,6 @@ namespace CurrencyTracker.Manager
     {
         public string Language { get; set; } = null!;
         public string DisplayName { get; set; } = null!;
-        public string Translators { get; set; } = null!;
+        public string[] Translators { get; set; } = null!;
     }
 }

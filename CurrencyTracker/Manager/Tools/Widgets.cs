@@ -19,7 +19,7 @@ namespace CurrencyTracker.Manager.Tools
             ImGui.TextUnformatted(text);
         }
 
-        public static void HelpMaker(string text)
+        public static void HelpMarker(string text)
         {
             ImGui.SameLine();
             ImGui.PushFont(UiBuilder.IconFont);
@@ -41,7 +41,7 @@ namespace CurrencyTracker.Manager.Tools
             return ImGui.Selectable(text, selected, flags);
         }
 
-        public static void SelectableClickToCopy(string text, string? textCopy = null, int? order = null)
+        public static bool SelectableClickToCopy(string text, string? textCopy = null, int? order = null)
         {
             textCopy ??= text;
 
@@ -52,6 +52,8 @@ namespace CurrencyTracker.Manager.Tools
                 ImGui.SetClipboardText(textCopy ?? "");
                 Service.Chat.Print($"{Service.Lang.GetText("CopiedToClipboard")}: {textCopy}");
             }
+
+            return true;
         }
 
         public static unsafe bool SelectableButton(string name, string str_id = "None", string tooltip = "", Vector2 size = default)

@@ -195,4 +195,29 @@ namespace CurrencyTracker.Manager.Tools
             return updateDictionary;
         }
     }
+
+    public class TransactionComparer : IEqualityComparer<TransactionsConvertor>
+    {
+        public bool Equals(TransactionsConvertor? x, TransactionsConvertor? y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
+
+            return IsTransactionEqual(x, y);
+        }
+
+        public int GetHashCode(TransactionsConvertor obj)
+        {
+            if (obj is null) return 0;
+
+            var hashTimeStamp = obj.TimeStamp.GetHashCode();
+            var hashAmount = obj.Amount.GetHashCode();
+            var hashChange = obj.Change.GetHashCode();
+            var hashLocationName = obj.LocationName == null ? 0 : obj.LocationName.GetHashCode();
+            var hashNote = obj.Note == null ? 0 : obj.Note.GetHashCode();
+
+            return hashTimeStamp ^ hashAmount ^ hashChange ^ hashLocationName ^ hashNote;
+        }
+    }
+
 }

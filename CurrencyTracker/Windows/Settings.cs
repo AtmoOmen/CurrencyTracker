@@ -30,7 +30,7 @@ namespace CurrencyTracker.Windows
                                     {
                                         if (item1)
                                         {
-                                            // 邮件附件
+                                            // 邮件附件 Letter Attachments
                                             ModuleCheckbox(typeof(LetterAttachments), Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
                                             if (C.ComponentEnabled["LetterAttachments"]) NoteContentInputText("LetterAttachments-LetterFrom", new string[1] { Service.Lang.GetText("ParamEP-SenderName") });
 
@@ -249,16 +249,14 @@ namespace CurrencyTracker.Windows
                                 }
 
                                 ImGui.SameLine();
-                                ImGui.Text($"{languageInfo.Translators}");
+                                ImGui.Text($"{string.Join(", ", languageInfo.Translators)}");
                             }
 
                             ImGui.AlignTextToFramePadding();
                             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("HelpTranslate")}:");
+
                             ImGui.SameLine();
-                            if (ImGui.Button("Crowdin"))
-                            {
-                                Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
-                            }
+                            if (ImGui.Button("Crowdin")) Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
                         }
                     }
                 }

@@ -2,13 +2,6 @@ namespace CurrencyTracker.Manager.Trackers
 {
     public class Tracker : IDisposable
     {
-        public enum RecordChangeType
-        {
-            All = 0,
-            Positive = 1,
-            Negative = 2
-        }
-
         public delegate void CurrencyChangedDelegate(uint currencyID, TransactionFileCategory category, ulong ID);
         public event CurrencyChangedDelegate? CurrencyChanged;
 

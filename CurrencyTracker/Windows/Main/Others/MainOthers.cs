@@ -98,7 +98,7 @@ namespace CurrencyTracker.Windows
                             C.Save();
                         }
 
-                        HoverTooltip($"By: {languageInfo.Translators}");
+                        HoverTooltip($"By: {string.Join(", ", languageInfo.Translators)}");
                     }
                 }
             }

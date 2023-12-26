@@ -2,6 +2,12 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
 {
+    private readonly Configuration? C = Plugin.Configuration;
+    private readonly Plugin? P = Plugin.Instance;
+
+    private bool showRecordOptions = true;
+    private bool showOthers = true;
+
     public Main(Plugin plugin) : base("Currency Tracker")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
@@ -11,24 +17,21 @@ public partial class Main : Window, IDisposable
         Initialize(plugin);
     }
 
-    // 初始化 Initialize
     private void Initialize(Plugin plugin)
     {
         Service.Tracker.CurrencyChanged += OnCurrencyChanged;
 
-        filterStartDate = filterStartDate = filterEndDate.AddDays(-1);
-
         searchTimer.Elapsed += SearchTimerElapsed;
         searchTimer.AutoReset = false;
 
-        searchTimerCCT.Elapsed += SearchTimerACCElapsed;
-        searchTimerCCT.AutoReset = false;
+        searchTimerACC.Elapsed += SearchTimerACCElapsed;
+        searchTimerACC.AutoReset = false;
 
         searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
         searchTimerMCS.AutoReset = false;
 
-        searchTimerCS.Elapsed += SearchTimerCSElapsed;
-        searchTimerCS.AutoReset = false;
+        searchTimerTRRC.Elapsed += SearchTimerTRRCElapsed;
+        searchTimerTRRC.AutoReset = false;
 
         ReloadOrderedOptions();
     }
@@ -74,12 +77,16 @@ public partial class Main : Window, IDisposable
         searchTimer.Stop();
         searchTimer.Dispose();
 
-        searchTimerCCT.Elapsed -= SearchTimerACCElapsed;
-        searchTimerCCT.Stop();
-        searchTimerCCT.Dispose();
+        searchTimerACC.Elapsed -= SearchTimerACCElapsed;
+        searchTimerACC.Stop();
+        searchTimerACC.Dispose();
 
         searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
         searchTimerMCS.Stop();
         searchTimerMCS.Dispose();
+
+        searchTimerTRRC.Elapsed -= SearchTimerTRRCElapsed;
+        searchTimerTRRC.Stop();
+        searchTimerTRRC.Dispose();
     }
 }

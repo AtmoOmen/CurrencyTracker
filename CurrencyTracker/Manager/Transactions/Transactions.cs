@@ -7,13 +7,7 @@ namespace CurrencyTracker.Manager
         // Retainer - {CurrencyName}_{RetainerID}.txt
         // Saddle Bag - {CurrencyName}_SB.txt
         // Premium Saddle Bag - {CurrencyName}_PSB.txt
-        public enum TransactionFileCategory
-        {
-            Inventory = 0,
-            Retainer = 1,
-            SaddleBag = 2,
-            PremiumSaddleBag = 3,
-        }
+        
 
         /// <summary>
         /// Returns a file path that includes PlayerDataFolder

@@ -80,7 +80,7 @@ public static class CurrencyInfo
 
     public static long? GetCurrencyAmountFromFile(uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
-        var latestTransaction = LoadLatestSingleTransaction(currencyID, character, category, ID);
+        var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyID, character, category, ID);
 
         return latestTransaction?.Amount;
     }

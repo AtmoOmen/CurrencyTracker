@@ -5,6 +5,7 @@ namespace CurrencyTracker.Windows;
 public partial class Main : Window, IDisposable
 {
     private Dictionary<string, uint>? ItemNames;
+    private readonly Timer searchTimerACC = new(100);
     private string[]? itemNamesACC;
     private uint[]? currenciesACC;
     private string searchFilterCCT = string.Empty;
@@ -25,7 +26,7 @@ public partial class Main : Window, IDisposable
             if (popup)
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
-                HelpMaker(Service.Lang.GetText("CustomCurrencyHelp"));
+                HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
 
                 ImGui.Separator();
                 ImGui.AlignTextToFramePadding();
@@ -41,7 +42,7 @@ public partial class Main : Window, IDisposable
                         var endIndex = Math.Min(startIndex + 10, itemNamesACC.Length);
 
                         ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
-                        if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100)) searchTimerCCT.Restart();
+                        if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100)) searchTimerACC.Restart();
 
                         ImGui.SameLine();
                         if (IconButton(FontAwesomeIcon.Backward, "", "CCTFirstPage")) currentPageACC = 0;

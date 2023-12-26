@@ -2,7 +2,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    // 用于处理选项增减 Used to handle options changes.
     private void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
@@ -15,22 +14,33 @@ public partial class Main
         }
     }
 
-    // 用于处理选项位置变化 Used to handle option's position change.
-    private void SwapOptions(int index1, int index2)
+    internal List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
     {
-        if (index1 < 0 || index1 >= C.OrderedOptions.Count || index2 < 0 || index2 >= C.OrderedOptions.Count) return;
+        IEnumerable<TransactionsConvertor> filteredTransactions = currentTypeTransactions;
 
-        (C.OrderedOptions[index2], C.OrderedOptions[index1]) = (C.OrderedOptions[index1], C.OrderedOptions[index2]);
-        C.Save();
+        if (isClusteredByTime && clusterHour > 0)
+            filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(clusterHour));
+
+        if (isChangeFilterEnabled)
+            filteredTransactions = ApplyChangeFilter(filteredTransactions);
+
+        if (isTimeFilterEnabled)
+            filteredTransactions = ApplyDateTimeFilter(filteredTransactions);
+
+        if (isLocationFilterEnabled)
+            filteredTransactions = ApplyLocationFilter(filteredTransactions, searchLocationName);
+
+        if (isNoteFilterEnabled)
+            filteredTransactions = ApplyNoteFilter(filteredTransactions, searchNoteContent);
+
+        return (C.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
     }
 
-    // 按收支隐藏不符合要求的交易记录 Hide Unmatched Transactions By Change
     private IEnumerable<TransactionsConvertor> ApplyChangeFilter(IEnumerable<TransactionsConvertor> transactions)
     {
         return transactions.Where(transaction => filterMode == 0 ? transaction.Change > filterValue : transaction.Change < filterValue);
     }
 
-    // 按时间间隔聚类交易记录 Cluster Transactions By Interval
     private static IEnumerable<TransactionsConvertor> ClusterTransactionsByTime(IEnumerable<TransactionsConvertor> transactions, TimeSpan interval)
     {
         var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
@@ -85,14 +95,12 @@ public partial class Main
         return clusteredTransactions.Values;
     }
 
-    // 按时间显示交易记录 Hide Unmatched Transactions By Time
     private IEnumerable<TransactionsConvertor> ApplyDateTimeFilter(IEnumerable<TransactionsConvertor> transactions)
     {
         var nextDay = filterEndDate.AddDays(1);
         return transactions.Where(transaction => transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= nextDay);
     }
 
-    // 按地点名显示交易记录 Hide Unmatched Transactions By Location
     private IEnumerable<TransactionsConvertor> ApplyLocationFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
         if (query.IsNullOrEmpty())
@@ -126,7 +134,6 @@ public partial class Main
         });
     }
 
-    // 按备注显示交易记录 Hide Unmatched Transactions By Note
     private IEnumerable<TransactionsConvertor> ApplyNoteFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
         if (query.IsNullOrEmpty())
@@ -160,36 +167,11 @@ public partial class Main
         });
     }
 
-    // 应用筛选器 Apply Filters
-    internal List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
-    {
-        IEnumerable<TransactionsConvertor> filteredTransactions = currentTypeTransactions;
-
-        if (isClusteredByTime && clusterHour > 0)
-            filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(clusterHour));
-
-        if (isChangeFilterEnabled)
-            filteredTransactions = ApplyChangeFilter(filteredTransactions);
-
-        if (isTimeFilterEnabled)
-            filteredTransactions = ApplyDateTimeFilter(filteredTransactions);
-
-        if (isLocationFilterEnabled)
-            filteredTransactions = ApplyLocationFilter(filteredTransactions, searchLocationName);
-
-        if (isNoteFilterEnabled)
-            filteredTransactions = ApplyNoteFilter(filteredTransactions, searchNoteContent);
-
-        return (C.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
-    }
-
-    // 用于在记录新增时更新记录 Used to update transactions when transactions added
     public void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
     {
         UpdateTransactions(currencyID, category, ID);
     }
 
-    // 用于在更新主界面记录 Used to update transactions
     public void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
         if (!IsOpen || selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
@@ -202,13 +184,11 @@ public partial class Main
         ImGui.CloseCurrentPopup();
     }
 
-    // 延迟加载收支记录 Used to handle too-fast transactions loading
     private void SearchTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
     }
 
-    // 调整列表框和表格高度用 Used to adjust the height of listbox and chart
     private float ChildframeHeightAdjust()
     {
         var trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions);
