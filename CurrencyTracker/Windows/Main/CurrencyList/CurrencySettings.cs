@@ -121,6 +121,7 @@ public partial class Main : Window, IDisposable
 
         var targetCurrency = C.PresetCurrencies.ContainsKey(currencyId) ? C.PresetCurrencies : C.CustomCurrencies;
         targetCurrency[currencyId] = newName;
+        C.isUpdated = true;
         C.Save();
 
         return true;
@@ -180,8 +181,8 @@ public partial class Main : Window, IDisposable
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
 
-        ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 3f, 285f));
-        using (var combo = ImRaii.Combo("##RestictedAreas", rules.RestrictedAreas.Any() ? TerrioryHandler.TerritoryNames[rules.RestrictedAreas.FirstOrDefault()] : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+        ImGui.SetNextItemWidth(Math.Max(currencyBarWidth - 3f, 253f));
+        using (var combo = ImRaii.Combo("##RestictedAreas", rules.RestrictedAreas.Any() ? TerrioryHandler.TerritoryNames[rules.RestrictedAreas.FirstOrDefault()] : "", ImGuiComboFlags.HeightLarge))
         {
             if (combo)
             {
