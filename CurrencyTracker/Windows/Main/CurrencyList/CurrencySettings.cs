@@ -44,6 +44,7 @@ public partial class Main : Window, IDisposable
 
             RenameCurrencyUI(currencyName, currencyBarWidth);
 
+            ImGui.Separator();
             TerrioryRestrictedUI(currencyName, currencyBarWidth);
 
             ImGui.EndPopup();
@@ -155,7 +156,7 @@ public partial class Main : Window, IDisposable
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - 8f);
             if (ImGui.InputText("", ref searchFilterTRRC, 50)) searchTimerTRRC.Restart();
 
-            foreach (var area in TerritoryNamesTRRC) if (ImGui.Selectable($"{area.Key} | {area.Value}")) selectedAreaIDTRRC = area.Key;
+            foreach (var area in TerritoryNamesTRRC ?? TerrioryHandler.TerritoryNames) if (ImGui.Selectable($"{area.Key} | {area.Value}")) selectedAreaIDTRRC = area.Key;
             ImGui.EndCombo();
         }
 
