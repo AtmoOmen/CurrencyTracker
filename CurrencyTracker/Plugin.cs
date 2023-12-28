@@ -12,6 +12,7 @@ public sealed class Plugin : IDalamudPlugin
     public Main? Main { get; private set; }
     public Graph? Graph { get; private set; }
     public Settings? Settings { get; private set; }
+    public CurrencySettings? CurrencySettings { get; private set; }
 
     public WindowSystem WindowSystem = new("CurrencyTracker");
     public static Configuration? Configuration = null!;
@@ -282,6 +283,9 @@ public sealed class Plugin : IDalamudPlugin
 
         Settings = new Settings(this);
         WindowSystem.AddWindow(Settings);
+
+        CurrencySettings = new CurrencySettings(this);
+        WindowSystem.AddWindow(CurrencySettings);
     }
 
     private void DrawUI()
@@ -307,6 +311,7 @@ public sealed class Plugin : IDalamudPlugin
         Main.Dispose();
         Graph.Dispose();
         Settings.Dispose();
+        CurrencySettings.Dispose();
 
         Service.Tracker.Dispose();
         Service.ClientState.Login -= HandleLogin;

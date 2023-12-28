@@ -2,7 +2,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
 {
-    private readonly ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
+    public readonly ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
     private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
 
     private readonly Timer searchTimerMCS = new(100);
@@ -23,34 +23,39 @@ public partial class Main : Window, IDisposable
         {
             if (popup)
             {
+                ImGui.BeginGroup();
                 ImGui.SetNextItemWidth(240f);
-                if (ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100))
+                if (ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100)) searchTimerMCS.Restart();
+
+                ImGui.SameLine();
+                if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left))
                 {
-                    searchTimerMCS.Restart();
+                    if (currentPageMCS > 0)
+                    {
+                        currentPageMCS--;
+                        LoadSearchResultMCS();
+                    }
                 }
 
                 ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentPageMCS > 0)
+                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right))
                 {
-                    currentPageMCS--;
-                    LoadSearchResultMCS();
+                    if (currentPageMCS < (characterCurrencyInfos.Count - 1) / 10)
+                    {
+                        currentPageMCS++;
+                        LoadSearchResultMCS();
+                    }
                 }
 
                 ImGui.SameLine();
-                if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && currentPageMCS < (characterCurrencyInfos.Count - 1) / 10)
-                {
-                    currentPageMCS++;
-                    LoadSearchResultMCS();
-                }
+                if (IconButton(FontAwesomeIcon.Sync, "", "MCSRefresh")) searchTimerMCS.Restart();
+                ImGui.EndGroup();
 
-                ImGui.SameLine();
-                if (IconButton(FontAwesomeIcon.Sync, "", "MCSRefresh"))
-                {
-                    searchTimerMCS.Restart();
-                }
+                var itemWidth = (int)ImGui.GetItemRectSize().X;
 
                 foreach (var characterCurrencyInfo in charactersToShow)
                 {
+                    ImGui.SetNextItemWidth(itemWidth);
                     if (ImGui.BeginCombo($"##{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", $"{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", ImGuiComboFlags.HeightLarge))
                     {
                         foreach (var currency in C.AllCurrencies)
@@ -68,7 +73,7 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    private void LoadDataMCS()
+    internal void LoadDataMCS()
     {
         Parallel.ForEach(C.CurrentActiveCharacter, character =>
         {
@@ -97,7 +102,6 @@ public partial class Main : Window, IDisposable
             .Skip(skipCount)
             .Take(10);
     }
-
 
     private void SearchTimerMCSElapsed(object? sender, ElapsedEventArgs e)
     {

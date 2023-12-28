@@ -30,7 +30,6 @@ namespace CurrencyTracker
                 return customCurrencies;
             }
         }
-        public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = new();
         public List<uint> OrderedOptions { get; set; } = new();
         public bool ReverseSort { get; set; } = false;
         public string SelectedLanguage { get; set; } = string.Empty;
@@ -38,6 +37,7 @@ namespace CurrencyTracker
         public bool AutoSaveMessage { get; set; } = false;
         public int AutoSaveMode { get; set; } = 0; // 0 - Save Current ; 1 - Save All
         public int AutoSaveInterval { get; set; } = 60; // Minutes
+        public bool AlertNotificationChat { get; set; } = false;
         public int RecordsPerPage { get; set; } = 20;
         public bool ChangeTextColoring { get; set; } = true;
         public Vector4 PositiveChangeColor { get; set; } = new Vector4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -84,6 +84,7 @@ namespace CurrencyTracker
             { "RecordDesAreaName", true }
         };
         public Dictionary<string, string> CustomNoteContents { get; set; } = new();
+        public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = new();
 
 
         [JsonIgnore]

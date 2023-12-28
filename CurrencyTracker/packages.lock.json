@@ -8,6 +8,12 @@
         "resolved": "2.1.12",
         "contentHash": "Sc0PVxvgg4NQjcI8n10/VfUQBAS4O+Fw2pZrAqBdRMbthYGeogzu5+xmIGCGmsEZ/ukMOBuAqiNiB5qA3MRalg=="
       },
+      "IntervalUtility": {
+        "type": "Direct",
+        "requested": "[1.0.0, )",
+        "resolved": "1.0.0",
+        "contentHash": "3/7cz5Y0U5QCX/K1j8IRGDwQVsFVpXdjDhIVoJ1RnRkaTjmjr8nuyIEwkFjhXFs8ORykFLlrCXIt4f+AEsUXVA=="
+      },
       "TinyPinyin.Net": {
         "type": "Direct",
         "requested": "[1.0.2, )",

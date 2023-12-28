@@ -30,9 +30,6 @@ public partial class Main : Window, IDisposable
         searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
         searchTimerMCS.AutoReset = false;
 
-        searchTimerTRRC.Elapsed += SearchTimerTRRCElapsed;
-        searchTimerTRRC.AutoReset = false;
-
         ReloadOrderedOptions();
     }
 
@@ -84,9 +81,5 @@ public partial class Main : Window, IDisposable
         searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
         searchTimerMCS.Stop();
         searchTimerMCS.Dispose();
-
-        searchTimerTRRC.Elapsed -= SearchTimerTRRCElapsed;
-        searchTimerTRRC.Stop();
-        searchTimerTRRC.Dispose();
     }
 }

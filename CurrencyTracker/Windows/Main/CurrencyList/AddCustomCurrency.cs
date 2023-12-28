@@ -1,5 +1,3 @@
-using Lumina.Excel.GeneratedSheets;
-
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
@@ -48,13 +46,31 @@ public partial class Main : Window, IDisposable
                         if (IconButton(FontAwesomeIcon.Backward, "", "CCTFirstPage")) currentPageACC = 0;
 
                         ImGui.SameLine();
-                        if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left) && currentPageACC > 0) currentPageACC--;
+                        if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left)) 
+                        {
+                            if (currentPageACC > 0)
+                            {
+                                currentPageACC--;
+                            }
+                        }
 
                         ImGui.SameLine();
-                        if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && itemNamesACC.Any() && currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++;
+                        if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && itemNamesACC.Any())
+                        {
+                            if (currentPageACC < (itemNamesACC.Length / 10) - 1)
+                            {
+                                currentPageACC++;
+                            }
+                        }
 
                         ImGui.SameLine();
-                        if (IconButton(FontAwesomeIcon.Forward, "", "CCTLastPage") && itemNamesACC.Any()) currentPageACC = (itemNamesACC.Length / 10) - 1;
+                        if (IconButton(FontAwesomeIcon.Forward, "", "CCTLastPage")) 
+                        {
+                            if (itemNamesACC.Any())
+                            {
+                                currentPageACC = (itemNamesACC.Length / 10) - 1;
+                            }
+                        }
 
                         if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentPageACC > 0) currentPageACC--;
                         if (itemNamesACC.Any() && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++;
@@ -117,9 +133,9 @@ public partial class Main : Window, IDisposable
         var currencyNames = C.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
         currenciesACC = C.AllCurrencyID;
 
-        ItemNames = Service.DataManager.GetExcelSheet<Item>()
-            .Where(x => x.ItemSortCategory.Row != 5 && x.IsUnique == false && !x.Name.RawString.IsNullOrEmpty() && !currencyNames.Contains(x.Name.RawString))
-            .ToDictionary(x => x.Name.RawString, x => x.RowId);
+        ItemNames = ItemHandler.ItemNames
+            .Where(x => !currencyNames.Contains(x.Key))
+            .ToDictionary(x => x.Key, x => x.Value);
 
         itemNamesACC = ItemNames.Keys.ToArray();
     }

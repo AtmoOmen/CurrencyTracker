@@ -58,21 +58,19 @@ public static class CurrencyInfo
         var amount = 0L;
         var categories = new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag };
 
-        Parallel.ForEach(categories, category =>
+        foreach (var category in categories)
         {
             var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, character, category, 0);
-
-            Interlocked.Add(ref amount, currencyAmount == null ? 0 : (long)currencyAmount);
-        });
+            amount += currencyAmount == null ? 0 : (long)currencyAmount;
+        }
 
         if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var value))
         {
-            Parallel.ForEach(value, retainer =>
+            foreach (var retainer in value)
             {
                 var currencyAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, character, TransactionFileCategory.Retainer, retainer.Key);
-
-                Interlocked.Add(ref amount, currencyAmount == null ? 0 : (long)currencyAmount);
-            });
+                amount += currencyAmount == null ? 0 : (long)currencyAmount;
+            }
         }
 
         return amount;

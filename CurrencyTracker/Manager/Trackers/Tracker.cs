@@ -1,3 +1,5 @@
+using IntervalUtility;
+
 namespace CurrencyTracker.Manager.Trackers
 {
     public class Tracker : IDisposable
@@ -77,7 +79,7 @@ namespace CurrencyTracker.Manager.Trackers
 
         public bool CheckCurrency(uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0, uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
         {
-            if (!CheckCurrencyRules(currencyID)) return false;
+            if (!CheckCurrencyRules1(currencyID)) return false;
 
             var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
             var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, P.CurrentCharacter, category, ID);
@@ -85,7 +87,7 @@ namespace CurrencyTracker.Manager.Trackers
             if (previousAmount == null && currencyAmount <= 0) return false;
 
             var currencyChange = currencyAmount - (previousAmount ?? 0);
-            if (currencyChange == 0) return false;
+            if (currencyChange == 0 || !CheckCurrencyRules2(currencyID, (int)currencyAmount, (int)currencyChange, category, ID)) return false;
 
             locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
 
@@ -105,8 +107,10 @@ namespace CurrencyTracker.Manager.Trackers
             return false;
         }
 
-        public bool CheckCurrencyRules(uint currencyID)
+        public bool CheckCurrencyRules1(uint currencyID)
         {
+            if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
+
             if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
             {
                 C.CurrencyRules.Add(currencyID, rule = new());
@@ -124,6 +128,38 @@ namespace CurrencyTracker.Manager.Trackers
                     if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
                 }
             }
+
+            return true;
+        }
+
+        public bool CheckCurrencyRules2(uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
+        {
+            if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
+            {
+                C.CurrencyRules.Add(currencyID, rule = new());
+                C.Save();
+                return true;
+            }
+
+            var util = new IntervalUtil();
+
+            void CheckIntervals(List<Interval<int>> intervals, int value, string type)
+            {
+                foreach (var interval in intervals)
+                {
+                    if (util.InRange(interval, value, true))
+                    {
+                        var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"), SeString.CreateItemLink(1, false), GetSelectedViewName(category, ID), interval.ToIntervalString());
+                        Service.Chat.PrintError(message);
+                    }
+                }
+            }
+
+            // 数量 Amount
+            CheckIntervals(CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
+
+            // 收支 Change
+            CheckIntervals(CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange, "Change");
 
             return true;
         }

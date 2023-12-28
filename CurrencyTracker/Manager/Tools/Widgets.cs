@@ -118,8 +118,7 @@ namespace CurrencyTracker.Manager.Tools
 
         public static void CenterCursorFor(int itemWidth)
         {
-            var num = (int)ImGui.GetWindowWidth();
-            ImGui.SetCursorPosX((num / 2) - (itemWidth / 2));
+            ImGui.SetCursorPosX((int)((ImGui.GetWindowWidth() - itemWidth) / 2f));
         }
     }
 }

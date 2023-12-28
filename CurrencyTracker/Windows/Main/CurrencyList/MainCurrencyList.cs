@@ -4,19 +4,19 @@ public partial class Main : Window, IDisposable
 {
     internal uint selectedCurrencyID = 0;
     internal int selectedOptionIndex = -1;
+    private int currencyListboxWidth = 150;
 
     private void CurrencyListboxUI()
     {
         selectedOptionIndex = C.OrderedOptions.IndexOf(selectedCurrencyID);
 
-        var childScale = new Vector2(243 + C.ChildWidthOffset, ChildframeHeightAdjust());
+        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + C.ChildWidthOffset, ImGui.GetContentRegionAvail().Y);
         if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar)) 
         {
             CurrencyListboxToolUI();
 
             ImGui.Separator();
 
-            ImGui.SetNextItemWidth(235);
             var style = ImGui.GetStyle();
             ImGui.PushStyleColor(ImGuiCol.HeaderHovered, style.Colors[(int)ImGuiCol.HeaderHovered] with { W = 0.2f });
             ImGui.PushStyleColor(ImGuiCol.Header, style.Colors[(int)ImGuiCol.Header] with { W = 0.2f });
@@ -48,8 +48,8 @@ public partial class Main : Window, IDisposable
 
     private void CurrencyListboxToolUI()
     {
-        CenterCursorFor(184);
-
+        CenterCursorFor(currencyListboxWidth);
+        ImGui.BeginGroup();
         AddCustomCurrencyUI();
 
         ImGui.SameLine();
@@ -63,6 +63,9 @@ public partial class Main : Window, IDisposable
 
         ImGui.SameLine();
         CurrencySettingsUI();
+        ImGui.EndGroup();
+
+        currencyListboxWidth = (int)ImGui.GetItemRectSize().X;
     }
 
     private void SwapOptions(int index1, int index2)
@@ -84,7 +87,7 @@ public partial class Main : Window, IDisposable
         if (isDeleteValid && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
             var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
-            if (C.CustomCurrencies[selectedCurrencyID] != localName) RenameCurrencyHandler(localName);
+            if (C.CustomCurrencies[selectedCurrencyID] != localName) P.CurrencySettings.RenameCurrencyHandler(localName);
 
             C.CustomCurrencies.Remove(selectedCurrencyID);
             C.Save();
@@ -92,5 +95,19 @@ public partial class Main : Window, IDisposable
             selectedCurrencyID = 0;
             ReloadOrderedOptions();
         }
-    }        
+    }
+
+    private void CurrencySettingsUI()
+    {
+        using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, selectedCurrencyID != 0 ? 1f : 0.5f))
+        {
+            if (IconButton(FontAwesomeIcon.Edit, "", "CurrencySettings"))
+            {
+                if (selectedCurrencyID != 0)
+                {
+                    P.CurrencySettings.IsOpen = true;
+                }
+            }
+        }
+    }
 }

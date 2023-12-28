@@ -4,6 +4,7 @@ public partial class Main : Window, IDisposable
 {
     private bool isOnMergingTT = false;
     private bool isOnEdit = false;
+    internal int checkboxColumnWidth = 22;
 
     private void CheckboxColumnHeaderUI()
     {
@@ -309,5 +310,7 @@ public partial class Main : Window, IDisposable
                 selectedTransactions[selectedCurrencyID].RemoveAll(t => IsTransactionEqual(t, transaction));
             }
         }
+
+        checkboxColumnWidth = (int)ImGui.GetItemRectSize().X;
     }
 }

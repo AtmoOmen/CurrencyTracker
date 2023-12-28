@@ -31,18 +31,19 @@ public partial class Main : Window, IDisposable
     private int currentPage;
     private int visibleStartIndex;
     private int visibleEndIndex;
-    private TransactionFileCategory currentView = TransactionFileCategory.Inventory;
-    private ulong currentViewID = 0;
+    internal TransactionFileCategory currentView = TransactionFileCategory.Inventory;
+    internal ulong currentViewID = 0;
+    private int tablePagingComponentsWidth = 300;
 
     private void TransactionTableUI()
     {
         if (selectedCurrencyID == 0) return;
 
-        var windowWidth = ImGui.GetWindowWidth() - C.ChildWidthOffset - 100;
+        var windowWidth = ImGui.GetContentRegionAvail().X - C.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
 
         ImGui.SameLine();
 
-        if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ChildframeHeightAdjust())))
+        if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y), ImGuiWindowFlags.NoScrollbar))
         {
             TransactionTablePagingUI(windowWidth);
 
@@ -51,7 +52,7 @@ public partial class Main : Window, IDisposable
             if (columnCount == 0) return;
 
             var tableFlags = ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable;
-            var tableSize = new Vector2(windowWidth - 175, 1);
+            var tableSize = new Vector2(windowWidth - 10, 1);
 
             using (var table = ImRaii.Table("Transactions", columnCount, tableFlags, tableSize))
             {
@@ -63,7 +64,7 @@ public partial class Main : Window, IDisposable
                     foreach (var column in columns)
                     {
                         var flags = column == "Order" || column == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
-                        var width = column == "Order" ? orderColumnWidth : column == "Checkbox" ? 30 : 150;
+                        var width = column == "Order" ? orderColumnWidth : column == "Checkbox" ? checkboxColumnWidth : 150;
                         ImGui.TableSetupColumn(column, flags, width, 0);
                     }
 
@@ -113,8 +114,10 @@ public partial class Main : Window, IDisposable
         var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage) : 0;
         currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
+        CenterCursorFor(tablePagingComponentsWidth);
+        ImGui.BeginGroup();
+
         // 视图切换 Table View Switch
-        ImGui.SetCursorPosX((windowWidth / 3));
         TableViewSwitchUI();
 
         // 首页 First Page
@@ -123,7 +126,10 @@ public partial class Main : Window, IDisposable
 
         // 上一页 Last Page
         ImGui.SameLine();
-        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left) && currentPage > 0) currentPage--;
+        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left))
+        {
+            if (currentPage > 0) currentPage--;
+        }
 
         // 页数显示 Pages
         ImGui.SameLine();
@@ -131,115 +137,136 @@ public partial class Main : Window, IDisposable
 
         // 下一页 Next Page
         ImGui.SameLine();
-        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right) && currentPage < pageCount - 1) currentPage++;
+        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right))
+        {
+            if (currentPage < pageCount - 1) currentPage++;
+        }
 
         // 尾页 Final Page
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Forward) && currentPage >= 0) currentPage = pageCount;
+        if (IconButton(FontAwesomeIcon.Forward))
+        {
+            if (currentPage >= 0) currentPage = pageCount;
+        }
 
         // 表格外观 Table Appearence
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), "TableAppearance")) ImGui.OpenPopup("TableAppearence");
+        TableAppearenceUI(windowWidth);
 
-        if (ImGui.BeginPopup("TableAppearence"))
-        {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
-
-            ColumnDisplayCheckbox("Time");
-            ImGui.SameLine();
-            ColumnDisplayCheckbox("Amount");
-            ImGui.SameLine();
-            ColumnDisplayCheckbox("Change");
-
-            ColumnDisplayCheckbox("Order");
-            ImGui.SameLine();
-            ColumnDisplayCheckbox("Location");
-            ImGui.SameLine();
-            ColumnDisplayCheckbox("Note");
-            ImGui.SameLine();
-            ColumnDisplayCheckbox("Checkbox");
-
-            ImGui.AlignTextToFramePadding();
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ChildframeWidthOffset")}:");
-
-            ImGui.SetNextItemWidth(150f);
-            ImGui.SameLine();
-            var childWidthOffset = C.ChildWidthOffset;
-            if (ImGui.InputInt("##ChildframesWidthOffset", ref childWidthOffset, 10))
-            {
-                childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
-                C.ChildWidthOffset = childWidthOffset;
-                C.Save();
-            }
-
-            ImGui.AlignTextToFramePadding();
-            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("TransactionsPerPage")}:");
-
-            ImGui.SetNextItemWidth(150);
-            ImGui.SameLine();
-            var transactionsPerPage = C.RecordsPerPage;
-            if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
-            {
-                transactionsPerPage = Math.Max(transactionsPerPage, 1);
-                C.RecordsPerPage = transactionsPerPage;
-                C.Save();
-            }
-
-            ImGui.EndPopup();
-        }
+        ImGui.EndGroup();
+        tablePagingComponentsWidth = (int)ImGui.GetItemRectSize().X;
 
         visibleStartIndex = currentPage * C.RecordsPerPage;
         visibleEndIndex = Math.Min(visibleStartIndex + C.RecordsPerPage, currentTypeTransactions.Count);
 
         // 鼠标滚轮控制 Logic controlling Mouse Wheel Filpping
+        if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
         {
-            if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
-            {
-                if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentPage > 0)
-                    currentPage--;
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentPage > 0)
+                currentPage--;
 
-                if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPage < pageCount - 1)
-                    currentPage++;
-            }
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPage < pageCount - 1)
+                currentPage++;
         }
     }
 
     private void TableViewSwitchUI()
     {
-        if (IconButton(FontAwesomeIcon.Bars, ""))
-        {
-            ImGui.OpenPopup("TableViewSwitch");
-        }
+        if (IconButton(FontAwesomeIcon.Bars, "", "TableViewSwitch")) ImGui.OpenPopup("TableViewSwitch");
 
-        if (ImGui.BeginPopup("TableViewSwitch"))
+        using (var popup = ImRaii.Popup("TableViewSwitch"))
         {
-            var boolUI = false;
-            if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+            if (popup)
             {
-                currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, 0, 0));
-            }
-
-            foreach(var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
-            {
-                if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                var boolUI = false;
+                if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
-                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, 0, 0));
+                }
+
+                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+                {
+                    if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                    {
+                        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                    }
+                }
+
+                if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
+                    currentView = TransactionFileCategory.SaddleBag;
+                    currentViewID = 0;
+                }
+
+                if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+                {
+                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
                 }
             }
-
-            if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            {
-                currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
-                currentView = TransactionFileCategory.SaddleBag;
-                currentViewID = 0;
-            }
-
-            if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            {
-                currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
-            }
-            ImGui.EndPopup();
         }
+    }
+
+    private void TableAppearenceUI(float windowWidth)
+    {
+        if (IconButton(FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), "TableAppearance")) ImGui.OpenPopup("TableAppearence");
+
+        using (var popup = ImRaii.Popup("TableAppearence"))
+        {
+            if (popup)
+            {
+                ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
+
+                ImGui.BeginGroup();
+                using (var table = ImRaii.Table("##ColumnsDisplay", 4, ImGuiTableFlags.NoBordersInBody))
+                {
+                    if (table)
+                    {
+                        foreach (var column in C.ColumnsVisibility.Keys)
+                        {
+                            ImGui.TableNextColumn();
+                            ColumnDisplayCheckbox(column);
+                        }
+                    }
+                }
+                ImGui.EndGroup();
+
+                var tablewidth = ImGui.GetItemRectSize().X;
+                var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
+                var widthWidthOffset = tablewidth - ImGui.CalcTextSize(textWidthOffset).X;
+                var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
+                var widthPerPage = tablewidth - ImGui.CalcTextSize(textPerPage).X;
+
+                ImGui.Separator();
+
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextColored(ImGuiColors.DalamudYellow, textWidthOffset);
+
+                var childWidthOffset = C.ChildWidthOffset;
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(widthWidthOffset);
+                if (ImGui.InputInt("##ChildframeWidthOffset", ref childWidthOffset, 10))
+                {
+                    childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
+                    C.ChildWidthOffset = childWidthOffset;
+                    C.Save();
+                }
+
+                ImGui.AlignTextToFramePadding();
+                ImGui.TextColored(ImGuiColors.DalamudYellow, textPerPage);
+
+                var transactionsPerPage = C.RecordsPerPage;
+                ImGui.SetNextItemWidth(widthPerPage);
+                ImGui.SameLine();
+                if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
+                {
+                    transactionsPerPage = Math.Max(transactionsPerPage, 1);
+                    C.RecordsPerPage = transactionsPerPage;
+                    C.Save();
+                }
+            }
+        }
+
     }
 
     private void ColumnDisplayCheckbox(string boolName)

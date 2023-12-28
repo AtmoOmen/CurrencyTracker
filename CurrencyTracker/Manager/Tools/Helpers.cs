@@ -91,6 +91,27 @@ namespace CurrencyTracker.Manager.Tools
             return false;
         }
 
+        public static string GetSelectedViewName(TransactionFileCategory category, ulong ID)
+        {
+            var text = string.Empty;
+            switch (category)
+            {
+                case TransactionFileCategory.Inventory:
+                    text = Service.Lang.GetText("Inventory");
+                    break;
+                case TransactionFileCategory.SaddleBag:
+                    text = Service.Lang.GetText("SaddleBag");
+                    break;
+                case TransactionFileCategory.PremiumSaddleBag:
+                    text = Service.Lang.GetText("PSaddleBag");
+                    break;
+                case TransactionFileCategory.Retainer:
+                    text = Plugin.Configuration.CharacterRetainers[Plugin.Instance.CurrentCharacter.ContentID][ID];
+                    break;
+            }
+            return text;
+        }
+
         public static unsafe bool IsAddonNodesReady(AtkUnitBase* UI)
         {
             return UI != null && UI->RootNode != null && UI->RootNode->ChildNode != null && UI->UldManager.NodeList != null;
@@ -183,6 +204,11 @@ namespace CurrencyTracker.Manager.Tools
         {
             timer.Stop();
             timer.Start();
+        }
+
+        public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable
+        {
+            return $"{(interval.Start == null ? "(-∞" : $"[{interval.Start}")},{(interval.End == null ? "+∞)" : $"{interval.End}]")}";
         }
 
         public static UpdateDictionary<TKey, TValue> ToUpdateDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs, Func<KeyValuePair<TKey, TValue>, TKey> keySelector, Func<KeyValuePair<TKey, TValue>, TValue> valueSelector) where TKey : notnull

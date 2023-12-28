@@ -180,6 +180,12 @@ public partial class Main
         selectedTransactions.Clear();
 
         currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
+        if (!characterCurrencyInfos.Any()) LoadDataMCS();
+        else
+        {
+            var existingInfo = characterCurrencyInfos.GetOrAdd(P.CurrentCharacter, new CharacterCurrencyInfo { Character = P.CurrentCharacter });
+            existingInfo.GetCharacterCurrencyAmount();
+        }
 
         ImGui.CloseCurrentPopup();
     }
@@ -187,13 +193,5 @@ public partial class Main
     private void SearchTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
-    }
-
-    private float ChildframeHeightAdjust()
-    {
-        var trueCount = Convert.ToInt32(showOthers) + Convert.ToInt32(showRecordOptions);
-        var windowHeight = ImGui.GetWindowHeight();
-
-        return windowHeight - (trueCount == 2 ? 185 : trueCount == 1 ? 150 : 85);
     }
 }
