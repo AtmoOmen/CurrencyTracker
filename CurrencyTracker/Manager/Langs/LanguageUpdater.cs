@@ -2,7 +2,7 @@ using System.Net.Http;
 
 namespace CurrencyTracker.Manager;
 
-public class LanguageUpdater()
+public class LanguageUpdater
 {
     public static async Task DownloadLanguageFilesAsync()
     {
