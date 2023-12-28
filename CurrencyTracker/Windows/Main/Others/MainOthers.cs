@@ -3,6 +3,9 @@ namespace CurrencyTracker.Windows
     // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换 / 测试功能
     public partial class Main : Window, IDisposable
     {
+        internal bool isLangDownloading = false;
+        internal bool isLangDownloaded = false;
+
         private void OthersUI()
         {
             OpenDataFolderUI();
@@ -83,25 +86,61 @@ namespace CurrencyTracker.Windows
             {
                 if (popup)
                 {
-                    foreach (var languageInfo in LanguageManager.LanguageNames)
+                    var singleItemHeight = 0f;
+                    ImGui.BeginGroup();
+                    for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
                     {
-                        if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != C.SelectedLanguage)
+                        var languageInfo = LanguageManager.LanguageNames[i];
+                        if (ImGui.Selectable(languageInfo.DisplayName, C.SelectedLanguage == languageInfo.Language))
                         {
-                            C.SelectedLanguage = languageInfo.Language;
-                            Service.Lang = new LanguageManager(C.SelectedLanguage);
-                            Service.CommandManager.RemoveHandler(Plugin.CommandName);
-                            Service.CommandManager.AddHandler(Plugin.CommandName, new CommandInfo(P.OnCommand)
-                            {
-                                HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
-                            });
-
-                            C.Save();
+                            LanguageSwitchHandler(languageInfo.Language);
                         }
-
+                        singleItemHeight = ImGui.GetItemRectSize().Y;
                         HoverTooltip($"By: {string.Join(", ", languageInfo.Translators)}");
+
+                        if (i + 1 != LanguageManager.LanguageNames.Length) ImGui.Separator();
+                    }
+                    ImGui.EndGroup();
+
+                    var itemWidth = ImGui.GetItemRectSize().X;
+                    ImGui.Separator();
+                    ImGui.Separator();
+                    if (SelectableIconButton(isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt, "Update Translations", "UpdateTranslationFiles", new Vector2(itemWidth, singleItemHeight)))
+                    {
+                        if (!isLangDownloading)
+                        {
+                            isLangDownloading = true;
+                            isLangDownloaded = false;
+                            Task.Run(async () =>
+                            {
+                                await LanguageUpdater.DownloadLanguageFilesAsync();
+                                isLangDownloading = false;
+                                isLangDownloaded = true;
+                                LanguageSwitchHandler(C.SelectedLanguage);
+                            });
+                        }
+                    }
+
+                    ImGui.Separator();
+                    if (SelectableIconButton(FontAwesomeIcon.Language, $"{Service.Lang.GetText("HelpTranslate")}!", "HelpTranslate", new Vector2(itemWidth, singleItemHeight)))
+                    {
+                        Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
                     }
                 }
             }
+        }
+
+        internal void LanguageSwitchHandler(string languageName)
+        {
+            C.SelectedLanguage = languageName;
+            Service.Lang = new LanguageManager(C.SelectedLanguage);
+            Service.CommandManager.RemoveHandler(Plugin.CommandName);
+            Service.CommandManager.AddHandler(Plugin.CommandName, new CommandInfo(P.OnCommand)
+            {
+                HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
+            });
+
+            C.Save();
         }
 
         private unsafe void TestingFeaturesUI()
