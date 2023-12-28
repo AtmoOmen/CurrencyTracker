@@ -594,7 +594,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Minutes</value>
   </data>
   <data name="BackupHelp5" xml:space="preserve">
-    <value>Notification in Chat</value>
+    <value>Chat Notification</value>
   </data>
   <data name="Blacklist" xml:space="preserve">
     <value>Blacklist</value>
@@ -688,5 +688,44 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="MaxIgnoreDays" xml:space="preserve">
     <value>Max Ignore Days</value>
+  </data>
+  <data name="AlertIntervalHelp" xml:space="preserve">
+    <value>Intervals in all types will effect and alert, so feel free to create and combine.</value>
+  </data>
+  <data name="AlertIntervalHelp1" xml:space="preserve">
+    <value>-1 will be equivalent to Infinity/Infinitesimal.</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>Alert Type</value>
+  </data>
+  <data name="ContainerType" xml:space="preserve">
+    <value>Container Type</value>
+  </data>
+  <data name="IntervalInput" xml:space="preserve">
+    <value>Interval Input</value>
+  </data>
+  <data name="IntervalList" xml:space="preserve">
+    <value>Interval List</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Max</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>Min</value>
+  </data>
+  <data name="AlertIntervalMessage" xml:space="preserve">
+    <value>{0} ({1}) of {2} in {3} has reached the alert range of {4}.</value>
+  </data>
+  <data name="BackupHelp8" xml:space="preserve">
+    <value>Overlay Notification</value>
+  </data>
+  <data name="NotificationType" xml:space="preserve">
+    <value>Notification Type</value>
+  </data>
+  <data name="ParamEP-CurrencyName" xml:space="preserve">
+    <value>Currency Name</value>
+  </data>
+  <data name="ParamEP-Value" xml:space="preserve">
+    <value>Value</value>
   </data>
 </root>

@@ -593,7 +593,7 @@
     <value>分钟</value>
   </data>
   <data name="BackupHelp5" xml:space="preserve">
-    <value>备份后发送提示信息</value>
+    <value>游戏消息通知</value>
   </data>
   <data name="Blacklist" xml:space="preserve">
     <value>黑名单</value>
@@ -687,5 +687,44 @@
   </data>
   <data name="MaxIgnoreDays" xml:space="preserve">
     <value>最大忽略天数</value>
+  </data>
+  <data name="AlertIntervalHelp" xml:space="preserve">
+    <value>无论本页面的当前选择类型是什么，所有已创建区间都会进行警报提醒，请自由创建与组合</value>
+  </data>
+  <data name="AlertIntervalHelp1" xml:space="preserve">
+    <value>-1 将等价于 无限大/小</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>警报类型</value>
+  </data>
+  <data name="ContainerType" xml:space="preserve">
+    <value>物品栏类型</value>
+  </data>
+  <data name="IntervalInput" xml:space="preserve">
+    <value>输入区间</value>
+  </data>
+  <data name="IntervalList" xml:space="preserve">
+    <value>区间列表</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>最大值</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>最小值</value>
+  </data>
+  <data name="AlertIntervalMessage" xml:space="preserve">
+    <value>{3} 中的 {2} 的 {0} ({1}) 达到预警区间 {4}</value>
+  </data>
+  <data name="BackupHelp8" xml:space="preserve">
+    <value>游戏窗口通知</value>
+  </data>
+  <data name="NotificationType" xml:space="preserve">
+    <value>通知类型</value>
+  </data>
+  <data name="ParamEP-CurrencyName" xml:space="preserve">
+    <value>货币名称</value>
+  </data>
+  <data name="ParamEP-Value" xml:space="preserve">
+    <value>值</value>
   </data>
 </root>

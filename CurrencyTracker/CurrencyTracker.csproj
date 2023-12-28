@@ -40,9 +40,19 @@
    <ItemGroup>
      <Compile Remove="Manager\TransactionsConvertor1.cs" />
    </ItemGroup>
+ 
+   <ItemGroup>
+     <EmbeddedResource Remove="Manager\Langs\ChineseSimplified.resx" />
+     <EmbeddedResource Remove="Manager\Langs\ChineseTraditional.resx" />
+     <EmbeddedResource Remove="Manager\Langs\English.resx" />
+     <EmbeddedResource Remove="Manager\Langs\French.resx" />
+     <EmbeddedResource Remove="Manager\Langs\German.resx" />
+     <EmbeddedResource Remove="Manager\Langs\Spanish.resx" />
+   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DalamudPackager" Version="2.1.12" />
+    <PackageReference Include="IntervalUtility" Version="1.0.0" />
     <PackageReference Include="TinyPinyin.Net" Version="1.0.2" />
     <Reference Include="FFXIVClientStructs">
       <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
@@ -79,13 +89,25 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
-      <EmbeddedResource Update="Manager\Langs\ChineseSimplified.resx">
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <EmbeddedResource Update="Manager\Langs\English.resx">
+      <None Include="Manager\Langs\ChineseSimplified.resx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="Manager\Langs\ChineseTraditional.resx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="Manager\Langs\English.resx">
         <Generator></Generator>
-        <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      </EmbeddedResource>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="Manager\Langs\French.resx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="Manager\Langs\German.resx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Include="Manager\Langs\Spanish.resx">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
     <ItemGroup>
       <None Update="CurrencyTracker.json">
