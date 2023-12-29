@@ -23,6 +23,7 @@ public partial class Main : Window, IDisposable
         {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
     };
 
+    internal static string[] visibleColumns = Array.Empty<string>();
     internal ConcurrentDictionary<uint, List<bool>>? selectedStates = new();
     internal ConcurrentDictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
     internal List<TransactionsConvertor> currentTypeTransactions = new();
@@ -42,47 +43,26 @@ public partial class Main : Window, IDisposable
         var windowWidth = ImGui.GetContentRegionAvail().X - C.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
 
         ImGui.SameLine();
-
         if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y), ImGuiWindowFlags.NoScrollbar))
         {
             TransactionTablePagingUI(windowWidth);
 
-            var columns = C.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
-            var columnCount = columns?.Length ?? 0;
-            if (columnCount == 0) return;
+            if (visibleColumns.Length == 0) return;
 
-            var tableFlags = ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable;
-            var tableSize = new Vector2(windowWidth - 10, 1);
-
-            using (var table = ImRaii.Table("Transactions", columnCount, tableFlags, tableSize))
+            using (var table = ImRaii.Table("Transactions", visibleColumns.Length, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
             {
                 if (table)
                 {
-                    var transactionCount = currentTypeTransactions.Count;
-                    var orderColumnWidth = ImGui.CalcTextSize((transactionCount + 1).ToString()).X + 10;
+                    SetupTableColumns(visibleColumns);
 
-                    foreach (var column in columns)
+                    if (currentTypeTransactions.Count > 0)
                     {
-                        var flags = column == "Order" || column == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
-                        var width = column == "Order" ? orderColumnWidth : column == "Checkbox" ? checkboxColumnWidth : 150;
-                        ImGui.TableSetupColumn(column, flags, width, 0);
-                    }
-
-                    ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
-                    foreach (var column in columns)
-                    {
-                        ImGui.TableNextColumn();
-                        ColumnHeaderActions[column].Invoke();
-                    }
-
-                    if (transactionCount > 0)
-                    {
-                        SelectedStatesWatcher(transactionCount);
+                        SelectedStatesWatcher(currentTypeTransactions.Count);
 
                         ImGui.TableNextRow();
                         for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                         {
-                            foreach (var column in columns)
+                            foreach (var column in visibleColumns)
                             {
                                 ImGui.TableNextColumn();
                                 ColumnCellActions[column].Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
@@ -97,6 +77,30 @@ public partial class Main : Window, IDisposable
             TransactionTableInfoBarUI();
 
             ImGui.EndChildFrame();
+        }
+    }
+
+    private void SetupTableColumns(string[] columns)
+    {
+        var orderColumnWidth = ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
+
+        foreach (var column in columns)
+        {
+            var flags = column == "Order" || column == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
+            var width = column switch
+            {
+                "Order" => orderColumnWidth,
+                "Checkbox" => checkboxColumnWidth,
+                _ => 150
+            };
+            ImGui.TableSetupColumn(column, flags, width, 0);
+        }
+
+        ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
+        foreach (var column in columns)
+        {
+            ImGui.TableNextColumn();
+            ColumnHeaderActions[column].Invoke();
         }
     }
 
@@ -276,8 +280,16 @@ public partial class Main : Window, IDisposable
         {
             C.ColumnsVisibility[boolName] = isShowColumn;
             C.Save();
+
+            var tempList = new List<string>();
+            foreach (var column in C.ColumnsVisibility)
+            {
+                if (column.Value) tempList.Add(column.Key);
+            }
+            visibleColumns = tempList.ToArray();
         }
     }
+
 
     private void TransactionTableInfoBarUI()
     {

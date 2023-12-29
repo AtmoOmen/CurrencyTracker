@@ -198,6 +198,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public void OnCommand(string command, string args)
     {
+        if (Main.visibleColumns == Array.Empty<string>()) Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
         if (args.IsNullOrEmpty())
         {
             Main.IsOpen = !Main.IsOpen;
@@ -296,10 +297,9 @@ public sealed class Plugin : IDalamudPlugin
     public void DrawConfigUI()
     {
         var currentCharacter = GetCurrentCharacter();
-        if (currentCharacter == null)
-        {
-            return;
-        }
+        if (currentCharacter == null) return;
+
+        if (Main.visibleColumns == Array.Empty<string>()) Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
         Main.IsOpen = !Main.IsOpen;
     }

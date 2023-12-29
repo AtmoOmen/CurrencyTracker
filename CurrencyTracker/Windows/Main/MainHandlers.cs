@@ -2,7 +2,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private void ReloadOrderedOptions()
+    internal void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
         var allCurrenciesSet = new HashSet<uint>(C.AllCurrencyID);
