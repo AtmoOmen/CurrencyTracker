@@ -51,6 +51,7 @@ public partial class CurrencySettings : Window, IDisposable
             }
 
             M.UpdateTransactions(selectedCurrencyID, M.currentView, M.currentViewID);
+            M.ReloadOrderedOptions();
         }
     }
 
