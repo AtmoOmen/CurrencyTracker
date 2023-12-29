@@ -138,7 +138,7 @@ public partial class Main : Window, IDisposable
             }
 
             var filePath = Transactions.ExportData(selectedTransactions[selectedCurrencyID], "", selectedCurrencyID, C.ExportDataFileType, currentView, currentViewID);
-            Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")}{filePath}");
+            Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }
     }
 

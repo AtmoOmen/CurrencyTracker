@@ -147,7 +147,7 @@ namespace CurrencyTracker.Manager.Trackers
             {
                 foreach (var interval in intervals)
                 {
-                    if (util.InRange(interval, value, true))
+                    if (util.InRange(interval, value, true) && C.AlertNotificationChat)
                     {
                         var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"), SeString.CreateItemLink(1, false), GetSelectedViewName(category, ID), interval.ToIntervalString());
                         Service.Chat.PrintError(message);

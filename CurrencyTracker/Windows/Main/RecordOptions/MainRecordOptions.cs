@@ -113,7 +113,7 @@ public partial class Main : Window, IDisposable
                 {
                     if (currentTypeTransactions == null || currentTypeTransactions.Count == 0) return;
 
-                    Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")}{Transactions.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
+                    Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {Transactions.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
                 }
 
                 HoverTooltip($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");

@@ -198,9 +198,6 @@
   <data name="Less" xml:space="preserve">
     <value>小于</value>
   </data>
-  <data name="MergeTransactionsHelp" xml:space="preserve">
-    <value>请输入临界值</value>
-  </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
     <value>合并了 {0} 条记录</value>
   </data>
@@ -421,9 +418,6 @@
   <data name="NeedHelp" xml:space="preserve">
     <value>需要帮助</value>
   </data>
-  <data name="Guide" xml:space="preserve">
-    <value>指南</value>
-  </data>
   <data name="DutyRewards-RecordContentName" xml:space="preserve">
     <value>记录副本名称</value>
   </data>
@@ -453,9 +447,6 @@
   </data>
   <data name="EditFailed" xml:space="preserve">
     <value>编辑失败</value>
-  </data>
-  <data name="OperationGuide" xml:space="preserve">
-    <value>操作指南</value>
   </data>
   <data name="UnknownLang" xml:space="preserve">
     <value>未知语言</value>
@@ -684,9 +675,6 @@
   </data>
   <data name="Trade" xml:space="preserve">
     <value>交易</value>
-  </data>
-  <data name="MaxIgnoreDays" xml:space="preserve">
-    <value>最大忽略天数</value>
   </data>
   <data name="AlertIntervalHelp" xml:space="preserve">
     <value>无论本页面的当前选择类型是什么，所有已创建区间都会进行警报提醒，请自由创建与组合</value>

@@ -198,9 +198,6 @@
   <data name="Less" xml:space="preserve">
     <value>En dessous</value>
   </data>
-  <data name="MergeTransactionsHelp" xml:space="preserve">
-    <value>Veuillez entrer un seuil</value>
-  </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
     <value>{0} transactions fusionnées.</value>
   </data>
@@ -422,9 +419,6 @@ Seuil</value>
   <data name="NeedHelp" xml:space="preserve">
     <value>Besoin d'aide ?</value>
   </data>
-  <data name="Guide" xml:space="preserve">
-    <value>Guide</value>
-  </data>
   <data name="DutyRewards-RecordContentName" xml:space="preserve">
     <value>Enregistrer le nom du contenu</value>
   </data>
@@ -454,9 +448,6 @@ Seuil</value>
   </data>
   <data name="EditFailed" xml:space="preserve">
     <value>Echec de la modification</value>
-  </data>
-  <data name="OperationGuide" xml:space="preserve">
-    <value>Guide d'opération</value>
   </data>
   <data name="UnknownLang" xml:space="preserve">
     <value>Langue inconnue</value>

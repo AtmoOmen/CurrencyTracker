@@ -167,13 +167,13 @@
     <value>D</value>
   </data>
   <data name="Delete" xml:space="preserve">
-    <value>Delete </value>
+    <value>Delete</value>
   </data>
   <data name="ExportFileCSVHeader" xml:space="preserve">
     <value>Time,Amount,Change,Location,Note</value>
   </data>
   <data name="ExportFileMessage" xml:space="preserve">
-    <value>A file has been exported to: </value>
+    <value>A file has been exported to:</value>
   </data>
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>If left blank, the file name will be:</value>
@@ -198,9 +198,6 @@
   </data>
   <data name="Less" xml:space="preserve">
     <value>Below</value>
-  </data>
-  <data name="MergeTransactionsHelp" xml:space="preserve">
-    <value>Please enter a threshold</value>
   </data>
   <data name="MergeTransactionsHelp1" xml:space="preserve">
     <value>Merged {0} transactions.</value>
@@ -380,7 +377,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Teleport within area</value>
   </data>
   <data name="MergedSpecificHelp" xml:space="preserve">
-    <value>Merged from {0} transactions</value>
+    <value>Merged from {0} transactions.</value>
   </data>
   <data name="Note" xml:space="preserve">
     <value>Note</value>
@@ -422,9 +419,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="NeedHelp" xml:space="preserve">
     <value>Need Help</value>
   </data>
-  <data name="Guide" xml:space="preserve">
-    <value>Guide</value>
-  </data>
   <data name="DutyRewards-RecordContentName" xml:space="preserve">
     <value>Record Content Name</value>
   </data>
@@ -455,9 +449,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="EditFailed" xml:space="preserve">
     <value>Edit Failed</value>
   </data>
-  <data name="OperationGuide" xml:space="preserve">
-    <value>Operation Guide</value>
-  </data>
   <data name="UnknownLang" xml:space="preserve">
     <value>Unknown Language</value>
   </data>
@@ -465,7 +456,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Multi currencies found</value>
   </data>
   <data name="CommandHelp3" xml:space="preserve">
-    <value>No Currency Found</value>
+    <value>No currency found!</value>
   </data>
   <data name="ExchangeWith" xml:space="preserve">
     <value>Exchange with {0}</value>
@@ -573,7 +564,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Successfully backup for {0} characters</value>
   </data>
   <data name="BackupHelp2" xml:space="preserve">
-    <value>, with {0} characters failed to backup</value>
+    <value>, with {0} characters failed to backup.</value>
   </data>
   <data name="BackupHelp3" xml:space="preserve">
     <value>Failed characters:</value>
@@ -685,9 +676,6 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="Trade" xml:space="preserve">
     <value>Trade</value>
-  </data>
-  <data name="MaxIgnoreDays" xml:space="preserve">
-    <value>Max Ignore Days</value>
   </data>
   <data name="AlertIntervalHelp" xml:space="preserve">
     <value>Intervals in all types will effect and alert, so feel free to create and combine.</value>
