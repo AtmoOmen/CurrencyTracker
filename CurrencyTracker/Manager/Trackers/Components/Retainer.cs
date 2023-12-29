@@ -13,6 +13,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private bool isOnRetainer = false;
         private ulong currentRetainerID = 0;
         private string retainerWindowName = string.Empty;
+        private readonly static uint[] retainerCurrencies = new uint[2] { 1, 21072 }; // Gil and Venture
 
         internal static Dictionary<ulong, Dictionary<uint, long>> InventoryItemCount = new(); // Retainer ID - Currency ID : Amount
 
@@ -71,8 +72,8 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 itemCount[1] = retainerGil;
 
                 retainerWindowName = GetWindowTitle(args.Addon, 28);
-                Service.Tracker.CheckCurrency(1, CurrentLocationName, "", RecordChangeType.All, 22, TransactionFileCategory.Retainer, retainerID);
-                Service.Tracker.CheckCurrency(1, CurrentLocationName, $"({retainerWindowName} {retainerName})", RecordChangeType.All, 22, TransactionFileCategory.Inventory, retainerID);
+                Service.Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName, "", RecordChangeType.All, 22, TransactionFileCategory.Retainer, retainerID);
+                Service.Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName, $"({retainerWindowName} {retainerName})", RecordChangeType.All, 22, TransactionFileCategory.Inventory, retainerID);
             }
             C.Save();
 
