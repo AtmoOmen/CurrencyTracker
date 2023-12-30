@@ -286,7 +286,7 @@ public class Settings : Window, IDisposable
     private void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
     {
         var boolName = type.Name;
-        var cbool = C.ComponentEnabled[boolName];
+        if (!C.ComponentEnabled.TryGetValue(boolName, out var cbool)) return;
 
         if (!typeof(ITrackerComponent).IsAssignableFrom(type))
         {

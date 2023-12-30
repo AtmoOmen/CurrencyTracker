@@ -63,6 +63,7 @@ namespace CurrencyTracker
             { "Exchange", true },
             { "FateRewards", true },
             { "GoldSaucer", true },
+            { "LetterAttachments", true },
             { "IslandSanctuary", true },
             { "MobDrops", true },
             { "PremiumSaddleBag", true },
