@@ -43,41 +43,45 @@ public partial class Main : Window, IDisposable
         var windowWidth = ImGui.GetContentRegionAvail().X - C.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
 
         ImGui.SameLine();
-        if (ImGui.BeginChildFrame(1, new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y), ImGuiWindowFlags.NoScrollbar))
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
+        using (var child = ImRaii.Child("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y), false, ImGuiWindowFlags.NoScrollbar))
         {
-            TransactionTablePagingUI(windowWidth);
-
-            if (visibleColumns.Length == 0) return;
-
-            using (var table = ImRaii.Table("Transactions", visibleColumns.Length, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
+            if (child)
             {
-                if (table)
+                TransactionTablePagingUI(windowWidth);
+
+                if (visibleColumns.Length == 0) return;
+
+                ImGui.SetCursorPosX(5);
+                using (var table = ImRaii.Table("Transactions", visibleColumns.Length, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
                 {
-                    SetupTableColumns(visibleColumns);
-
-                    if (currentTypeTransactions.Count > 0)
+                    if (table)
                     {
-                        SelectedStatesWatcher(currentTypeTransactions.Count);
+                        SetupTableColumns(visibleColumns);
 
-                        ImGui.TableNextRow();
-                        for (var i = visibleStartIndex; i < visibleEndIndex; i++)
+                        if (currentTypeTransactions.Count > 0)
                         {
-                            foreach (var column in visibleColumns)
-                            {
-                                ImGui.TableNextColumn();
-                                ColumnCellActions[column].Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
-                            }
-                            ImGui.TableNextRow();
-                        }
+                            SelectedStatesWatcher(currentTypeTransactions.Count);
 
+                            ImGui.TableNextRow();
+                            for (var i = visibleStartIndex; i < visibleEndIndex; i++)
+                            {
+                                foreach (var column in visibleColumns)
+                                {
+                                    ImGui.TableNextColumn();
+                                    ColumnCellActions[column].Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
+                                }
+                                ImGui.TableNextRow();
+                            }
+
+                        }
                     }
                 }
+
+                TransactionTableInfoBarUI();
             }
-
-            TransactionTableInfoBarUI();
-
-            ImGui.EndChildFrame();
         }
+        ImGui.PopStyleColor();
     }
 
     private void SetupTableColumns(string[] columns)

@@ -10,40 +10,43 @@ public partial class Main : Window, IDisposable
     {
         selectedOptionIndex = C.OrderedOptions.IndexOf(selectedCurrencyID);
 
+        var style = ImGui.GetStyle();
         var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + C.ChildWidthOffset, ImGui.GetContentRegionAvail().Y);
-        if (ImGui.BeginChildFrame(2, childScale, ImGuiWindowFlags.NoScrollbar)) 
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, style.Colors[(int)ImGuiCol.FrameBg]);
+        using (var child = ImRaii.Child("CurrencyList", childScale, false, ImGuiWindowFlags.NoScrollbar))
         {
-            CurrencyListboxToolUI();
-
-            ImGui.Separator();
-
-            var style = ImGui.GetStyle();
-            ImGui.PushStyleColor(ImGuiCol.HeaderHovered, style.Colors[(int)ImGuiCol.HeaderHovered] with { W = 0.2f });
-            ImGui.PushStyleColor(ImGuiCol.Header, style.Colors[(int)ImGuiCol.Header] with { W = 0.2f });
-            for (var i = 0; i < C.OrderedOptions.Count; i++)
+            if (child)
             {
-                var option = C.OrderedOptions[i];
-                var currencyName = C.AllCurrencies[option];
-                if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
+                CurrencyListboxToolUI();
+
+                ImGui.Separator();
+
+                ImGui.PushStyleColor(ImGuiCol.HeaderHovered, style.Colors[(int)ImGuiCol.HeaderHovered] with { W = 0.2f });
+                ImGui.PushStyleColor(ImGuiCol.Header, style.Colors[(int)ImGuiCol.Header] with { W = 0.2f });
+                for (var i = 0; i < C.OrderedOptions.Count; i++)
                 {
-                    selectedCurrencyID = option;
-                    currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
-                    currentView = TransactionFileCategory.Inventory;
-                    currentViewID = 0;
+                    var option = C.OrderedOptions[i];
+                    var currencyName = C.AllCurrencies[option];
+                    if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
+                    {
+                        selectedCurrencyID = option;
+                        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
+                        currentView = TransactionFileCategory.Inventory;
+                        currentViewID = 0;
+                    }
+
+                    HoverTooltip(currencyName);
+
+                    ImGui.SameLine(3.0f);
+                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
+                    ImGui.Image(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
+
+                    ImGui.SameLine();
+                    ImGui.Text(currencyName);
                 }
-
-                HoverTooltip(currencyName);
-
-                ImGui.SameLine(3.0f);
-                ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
-                ImGui.Image(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
-
-                ImGui.SameLine();
-                ImGui.Text(currencyName);
             }
-            ImGui.PopStyleColor(2);
-            ImGui.EndChildFrame();
         }
+        ImGui.PopStyleColor(3);
     }
 
     private void CurrencyListboxToolUI()
@@ -101,7 +104,7 @@ public partial class Main : Window, IDisposable
     {
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, selectedCurrencyID != 0 ? 1f : 0.5f))
         {
-            if (IconButton(FontAwesomeIcon.Edit, "", "CurrencySettings"))
+            if (IconButton(FontAwesomeIcon.Cog, "", "CurrencySettings"))
             {
                 if (selectedCurrencyID != 0)
                 {
