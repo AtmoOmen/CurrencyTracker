@@ -35,6 +35,44 @@ namespace CurrencyTracker.Manager.Tools
             }
         }
 
+        public static bool IconButtonWithTextVertical(FontAwesomeIcon icon, string text)
+        {
+            ImGui.PushID(text);
+            ImGui.PushFont(UiBuilder.IconFont);
+            var iconSize = ImGui.CalcTextSize(icon.ToIconString());
+            ImGui.PopFont();
+            var textSize = ImGui.CalcTextSize(text);
+            var windowDrawList = ImGui.GetWindowDrawList();
+            var cursorScreenPos = ImGui.GetCursorScreenPos();
+            var padding = ImGui.GetStyle().FramePadding.X;
+            var spacing = 3f * ImGuiHelpers.GlobalScale;
+            var buttonWidth = Math.Max(iconSize.X, textSize.X) + (padding * 2);
+            var buttonHeight = iconSize.Y + textSize.Y + (padding * 2) + spacing;
+
+            var result = ImGui.Button(string.Empty, new Vector2(buttonWidth, buttonHeight));
+
+            var iconPos = new Vector2(
+                cursorScreenPos.X + ((buttonWidth - iconSize.X) / 2),
+                cursorScreenPos.Y + padding
+            );
+
+            var textPos = new Vector2(
+                cursorScreenPos.X + ((buttonWidth - textSize.X) / 2),
+                iconPos.Y + iconSize.Y + spacing
+            );
+
+            ImGui.PushFont(UiBuilder.IconFont);
+            windowDrawList.AddText(iconPos, ImGui.GetColorU32(ImGuiCol.Text), icon.ToIconString());
+            ImGui.PopFont();
+            windowDrawList.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), text);
+
+            ImGui.PopID();
+
+            return result;
+        }
+
+
+
         public static bool SelectableCentered(string text, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None)
         {
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + ImGui.GetContentRegionAvail().X / 2 - ImGui.CalcTextSize(text).X / 2);
