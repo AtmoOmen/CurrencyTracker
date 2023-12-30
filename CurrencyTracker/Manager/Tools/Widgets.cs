@@ -71,6 +71,29 @@ namespace CurrencyTracker.Manager.Tools
             return result;
         }
 
+        public static bool ImageSelectableWithText(string id, nint imageHandle, string text, bool isSelected, Vector2 imageSize)
+        {
+            ImGui.PushID(id);
+
+            var windowDrawList = ImGui.GetWindowDrawList();
+            var cursorPos = ImGui.GetCursorScreenPos();
+            var textSize = ImGui.CalcTextSize(text);
+            var totalHeight = Math.Max(imageSize.Y, textSize.Y);
+            var selectableSize = new Vector2(ImGui.GetContentRegionAvail().X, totalHeight);
+
+            var result = ImGui.Selectable($"##{id}", isSelected, ImGuiSelectableFlags.AllowDoubleClick, selectableSize);
+
+            var imagePos = new Vector2(cursorPos.X, cursorPos.Y + ((totalHeight - imageSize.Y) / 2) + 3f);
+            windowDrawList.AddImage(imageHandle, imagePos, new Vector2(imagePos.X + imageSize.X, imagePos.Y + imageSize.Y));
+
+            var textPos = new Vector2(cursorPos.X + imageSize.X + ImGui.GetStyle().ItemSpacing.X, cursorPos.Y + ((totalHeight - textSize.Y) / 2) + 2f);
+            windowDrawList.AddText(textPos, ImGui.GetColorU32(ImGuiCol.Text), text);
+
+            ImGui.PopID();
+
+            return result;
+        }
+
 
 
         public static bool SelectableCentered(string text, bool selected = false, ImGuiSelectableFlags flags = ImGuiSelectableFlags.None)
