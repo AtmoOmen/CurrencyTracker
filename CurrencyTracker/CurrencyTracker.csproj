@@ -19,13 +19,13 @@
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
   </PropertyGroup>
 
   <PropertyGroup>
     <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
   </PropertyGroup>
  
    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
@@ -88,11 +88,13 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-    <ItemGroup>
-        <Content Include="..\Assets\icon.png" Link="images\icon.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
+    
+  <ItemGroup>
+      <Content Include="..\Assets\icon.png" Link="images\icon.png">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+  </ItemGroup>
+
     <ItemGroup>
       <None Include="Manager\Langs\ChineseSimplified.resx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -113,6 +115,10 @@
       <None Include="Manager\Langs\Spanish.resx">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\OmenTools\OmenTools.csproj" />
     </ItemGroup>
     <ItemGroup>
       <None Update="CurrencyTracker.json">

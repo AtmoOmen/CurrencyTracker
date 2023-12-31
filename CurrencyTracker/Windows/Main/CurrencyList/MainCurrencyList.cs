@@ -21,13 +21,11 @@ public partial class Main : Window, IDisposable
 
                 ImGui.Separator();
 
-                ImGui.PushStyleColor(ImGuiCol.HeaderHovered, style.Colors[(int)ImGuiCol.HeaderHovered] with { W = 0.2f });
-                ImGui.PushStyleColor(ImGuiCol.Header, style.Colors[(int)ImGuiCol.Header] with { W = 0.2f });
                 for (var i = 0; i < C.OrderedOptions.Count; i++)
                 {
                     var option = C.OrderedOptions[i];
                     var currencyName = C.AllCurrencies[option];
-                    if (ImGui.Selectable($"##{option}", i == selectedOptionIndex))
+                    if (ImageSelectableWithText(option.ToString(), C.AllCurrencyIcons[option].ImGuiHandle, currencyName, i == selectedOptionIndex, ImGuiHelpers.ScaledVector2(20f)))
                     {
                         selectedCurrencyID = option;
                         currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
@@ -37,16 +35,12 @@ public partial class Main : Window, IDisposable
 
                     HoverTooltip(currencyName);
 
-                    ImGui.SameLine(3.0f);
-                    ImGui.SetCursorPosY(ImGui.GetCursorPosY() - 3.0f);
-                    ImGui.Image(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20.0f));
-
                     ImGui.SameLine();
                     ImGui.Text(currencyName);
                 }
             }
         }
-        ImGui.PopStyleColor(3);
+        ImGui.PopStyleColor();
     }
 
     private void CurrencyListboxToolUI()

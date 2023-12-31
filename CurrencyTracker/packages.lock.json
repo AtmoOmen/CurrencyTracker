@@ -19,6 +19,9 @@
         "requested": "[1.0.2, )",
         "resolved": "1.0.2",
         "contentHash": "dbQcaukn7DEOsgFJn4YFQT0zfbALWHZiZMIvsvLOaMQRnCnOfYPE5Fq4PoIqCgGMnPt21NsLxEuXYRq4QQSnDA=="
+      },
+      "omentools": {
+        "type": "Project"
       }
     }
   }

@@ -4,7 +4,7 @@ public partial class Main : Window, IDisposable
 {
     private bool isClusteredByTime = false;
     private bool isTimeFilterEnabled = false;
-    private readonly bool selectTimeDeco = false; // Always False
+    private bool selectTimeDeco = false; // Always False
 
     private int clusterHour = 0;
     private DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
@@ -12,7 +12,8 @@ public partial class Main : Window, IDisposable
     private DateTime filterViewDate = DateTime.Now;
     private bool startDateEnable;
     private bool endDateEnable;
-    private int datePickerWidth = 250;
+    private Vector2 datePickerRegion = new(400);
+    private int datePickerPagingWidth = 250;
 
     private void TimeColumnHeaderUI()
     {
@@ -22,7 +23,7 @@ public partial class Main : Window, IDisposable
             ImGui.OpenPopup("TimeFunctions");
         }
 
-        using (var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar))
+        using (var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar))
         {
             if (popup)
             {
@@ -65,12 +66,12 @@ public partial class Main : Window, IDisposable
 
         if (startDateEnable)
         {
-            DatePicker(ref filterStartDate, ref filterViewDate, true, new Vector2(320, 215));
+            DatePicker(ref filterStartDate, ref filterViewDate, true);
         }
 
         if (endDateEnable)
         {
-            DatePicker(ref filterEndDate, ref filterViewDate, false, new Vector2(320, 215));
+            DatePicker(ref filterEndDate, ref filterViewDate, false);
         }
     }
 
@@ -86,15 +87,16 @@ public partial class Main : Window, IDisposable
         ImGui.Text(Service.Lang.GetText(label));
     }
 
-    private void DatePicker(ref DateTime currentDate, ref DateTime viewDate, bool selectMode, Vector2 childframeSize)
+    private void DatePicker(ref DateTime currentDate, ref DateTime viewDate, bool selectMode)
     {
-        using (var child = ImRaii.Child($"DatePicker {selectMode}", childframeSize, false, ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar))
+        using (var child = ImRaii.Child($"DatePicker {selectMode}", datePickerRegion, false, ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar))
         {
             if (child)
             {
+                ImGui.BeginGroup();
                 ImGui.Separator();
 
-                CenterCursorFor(datePickerWidth);
+                CenterCursorFor(datePickerPagingWidth);
                 ImGui.BeginGroup();
                 if (IconButton(FontAwesomeIcon.Backward, "", "LastYear")) viewDate = viewDate.AddYears(-1);
 
@@ -110,7 +112,7 @@ public partial class Main : Window, IDisposable
                 ImGui.SameLine();
                 if (IconButton(FontAwesomeIcon.Forward, "", "NextYear")) viewDate = viewDate.AddYears(1);
                 ImGui.EndGroup();
-                datePickerWidth = (int)ImGui.GetItemRectSize().X;
+                datePickerPagingWidth = (int)ImGui.GetItemRectSize().X;
 
                 using (var table = ImRaii.Table("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
                 {
@@ -164,6 +166,9 @@ public partial class Main : Window, IDisposable
                         }
                     }
                 }
+
+                ImGui.EndGroup();
+                datePickerRegion = ImGui.GetItemRectSize();
             }
         }
     }

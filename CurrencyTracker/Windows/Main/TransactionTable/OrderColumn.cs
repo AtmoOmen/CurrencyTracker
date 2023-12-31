@@ -17,7 +17,6 @@ public partial class Main : Window, IDisposable
     private void OrderColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
         var displayText = C.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString();
-        ImGui.SetCursorPosX(SetColumnCenterAligned(displayText, 0, 8));
-        ImGui.Text(displayText);
+        TextCentered(displayText);
     }
 }

@@ -13,7 +13,7 @@ namespace CurrencyTracker.Manager.Trackers.Components
         private bool isOnRetainer = false;
         private ulong currentRetainerID = 0;
         private string retainerWindowName = string.Empty;
-        private readonly static uint[] retainerCurrencies = new uint[2] { 1, 21072 }; // Gil and Venture
+        private static readonly uint[] retainerCurrencies = new uint[2] { 1, 21072 }; // Gil and Venture
 
         internal static Dictionary<ulong, Dictionary<uint, long>> InventoryItemCount = new(); // Retainer ID - Currency ID : Amount
 

@@ -113,7 +113,8 @@ public partial class Main : Window, IDisposable
 
         using (ImRaii.PushColor(ImGuiCol.Text, textColor))
         {
-            SelectableClickToCopy(transaction.Change.ToString("+ #,##0;- #,##0;0"), null, i);
+            var text = transaction.Change.ToString("+ #,##0;- #,##0;0");
+            SelectableClickToCopy(text, null, i);
         }
     }
 }

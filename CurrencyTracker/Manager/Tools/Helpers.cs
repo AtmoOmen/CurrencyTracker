@@ -91,24 +91,17 @@ namespace CurrencyTracker.Manager.Tools
             return false;
         }
 
-        public static string GetSelectedViewName(TransactionFileCategory category, ulong ID)
+        public static string GetSelectedViewName(TransactionFileCategory category, ulong id)
         {
-            var text = string.Empty;
-            switch (category)
+            var text = category switch
             {
-                case TransactionFileCategory.Inventory:
-                    text = Service.Lang.GetText("Inventory");
-                    break;
-                case TransactionFileCategory.SaddleBag:
-                    text = Service.Lang.GetText("SaddleBag");
-                    break;
-                case TransactionFileCategory.PremiumSaddleBag:
-                    text = Service.Lang.GetText("PSaddleBag");
-                    break;
-                case TransactionFileCategory.Retainer:
-                    text = Plugin.Configuration.CharacterRetainers[Plugin.Instance.CurrentCharacter.ContentID][ID];
-                    break;
-            }
+                TransactionFileCategory.Inventory => Service.Lang.GetText("Inventory"),
+                TransactionFileCategory.SaddleBag => Service.Lang.GetText("SaddleBag"),
+                TransactionFileCategory.PremiumSaddleBag => Service.Lang.GetText("PSaddleBag"),
+                TransactionFileCategory.Retainer => Plugin.Configuration.CharacterRetainers[
+                    Plugin.Instance.CurrentCharacter.ContentID][id],
+                _ => string.Empty
+            };
             return text;
         }
 
@@ -232,15 +225,15 @@ namespace CurrencyTracker.Manager.Tools
             return IsTransactionEqual(x, y);
         }
 
-        public int GetHashCode(TransactionsConvertor obj)
+        public int GetHashCode(TransactionsConvertor? obj)
         {
             if (obj is null) return 0;
 
             var hashTimeStamp = obj.TimeStamp.GetHashCode();
             var hashAmount = obj.Amount.GetHashCode();
             var hashChange = obj.Change.GetHashCode();
-            var hashLocationName = obj.LocationName == null ? 0 : obj.LocationName.GetHashCode();
-            var hashNote = obj.Note == null ? 0 : obj.Note.GetHashCode();
+            var hashLocationName = obj.LocationName.GetHashCode();
+            var hashNote = obj.Note.GetHashCode();
 
             return hashTimeStamp ^ hashAmount ^ hashChange ^ hashLocationName ^ hashNote;
         }
