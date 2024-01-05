@@ -4,22 +4,29 @@ public partial class Main
 {
     private bool isClusteredByTime;
     private bool isTimeFilterEnabled;
-    private const bool SelectTimeDeco = false; // Always False
 
-    private int clusterHour;
     private DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
     private DateTime filterEndDate = DateTime.Now;
-    private DateTime filterViewDate = DateTime.Now;
+    private DatePicker startDatePicker = new(Service.Lang.GetText("WeekDays"));
+    private DatePicker endDatePicker = new(Service.Lang.GetText("WeekDays"));
+
+    private string lastLangTF = string.Empty;
+
+    private int clusterHour;
     private bool startDateEnable;
     private bool endDateEnable;
-    private Vector2 datePickerRegion = new(400);
-    private int datePickerPagingWidth = 250;
 
     private void TimeColumnHeaderUI()
     {
         ImGui.Selectable($" {Service.Lang.GetText("Time")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
+            if (lastLangTF != Service.Lang.Language)
+            {
+                startDatePicker = new(Service.Lang.GetText("WeekDays"));
+                endDatePicker = new(Service.Lang.GetText("WeekDays"));
+                lastLangTF = Service.Lang.Language;
+            }
             ImGui.OpenPopup("TimeFunctions");
         }
 
@@ -35,10 +42,7 @@ public partial class Main
 
     private void ClusterByTimeUI()
     {
-        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref isClusteredByTime))
-        {
-            searchTimer.Restart();
-        }
+        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref isClusteredByTime)) OnDateSelected();
 
         if (isClusteredByTime)
         {
@@ -46,7 +50,7 @@ public partial class Main
             if (ImGui.InputInt(Service.Lang.GetText("Hours"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 clusterHour = Math.Max(0, clusterHour);
-                searchTimer.Restart();
+                OnDateSelected();
             }
 
             ImGui.SameLine();
@@ -56,121 +60,43 @@ public partial class Main
 
     private void FilterByTimeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled))
-        {
-            searchTimer.Restart();
-        }
+        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled)) OnDateSelected();
 
         DateInput(ref filterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
         DateInput(ref filterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
 
+        ImGui.Separator();
+
         if (startDateEnable)
         {
-            DatePicker(ref filterStartDate, ref filterViewDate, true);
+            startDatePicker.Draw(ref filterStartDate);
         }
 
         if (endDateEnable)
         {
-            DatePicker(ref filterEndDate, ref filterViewDate, false);
-        }
-    }
-
-    private static void DateInput(ref DateTime date, string label, ref bool bool1, ref bool bool2)
-    {
-        if (ImGui.Button($"{date:yyyy-MM-dd}"))
-        {
-            bool1 = !bool1;
-            bool2 = false;
+            endDatePicker.Draw(ref filterEndDate);
         }
 
-        ImGui.SameLine();
-        ImGui.Text(Service.Lang.GetText(label));
-    }
+        return;
 
-    private void DatePicker(ref DateTime currentDate, ref DateTime viewDate, bool selectMode)
-    {
-        using (var child = ImRaii.Child($"DatePicker {selectMode}", datePickerRegion, false, ImGuiWindowFlags.NoBackground | ImGuiWindowFlags.NoScrollbar))
+        void DateInput(ref DateTime date, string label, ref bool bool1, ref bool bool2)
         {
-            if (child)
+            if (ImGui.Button($"{date:yyyy-MM-dd}"))
             {
-                ImGui.BeginGroup();
-                ImGui.Separator();
+                bool1 = !bool1;
+                bool2 = false;
 
-                ImGuiOm.CenterAlignFor(datePickerPagingWidth);
-                ImGui.BeginGroup();
-                if (ImGuiOm.ButtonIcon("LastYear", FontAwesomeIcon.Backward)) viewDate = viewDate.AddYears(-1);
-
-                ImGui.SameLine();
-                if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left)) viewDate = viewDate.AddMonths(-1);
-
-                ImGui.SameLine();
-                ImGui.Text($"{viewDate:yyyy.MM}");
-
-                ImGui.SameLine();
-                if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right)) viewDate = viewDate.AddMonths(1);
-
-                ImGui.SameLine();
-                if (ImGuiOm.ButtonIcon("NextYear", FontAwesomeIcon.Forward)) viewDate = viewDate.AddYears(1);
-                ImGui.EndGroup();
-                datePickerPagingWidth = (int)ImGui.GetItemRectSize().X;
-
-                using (var table = ImRaii.Table("DatePicker", 7, ImGuiTableFlags.NoBordersInBody))
-                {
-                    if (table)
-                    {
-                        var weekDays = Service.Lang.GetText("WeekDays").Split(',');
-                        foreach (var day in weekDays)
-                        {
-                            ImGui.TableNextColumn();
-                            ImGuiOm.TextCentered($"{day}_{viewDate}", day);
-                        }
-
-                        ImGui.TableNextRow(ImGuiTableRowFlags.None);
-                        var firstDayOfMonth = new DateTime(viewDate.Year, viewDate.Month, 1);
-                        var firstDayOfWeek = (int)firstDayOfMonth.DayOfWeek;
-                        var daysInMonth = DateTime.DaysInMonth(viewDate.Year, viewDate.Month);
-
-                        for (var i = 0; i < firstDayOfWeek; i++)
-                        {
-                            ImGui.TableNextColumn();
-                            ImGuiOm.TextCentered($"{i}_{viewDate}", "");
-                        }
-
-                        for (var day = 1; day <= daysInMonth; day++)
-                        {
-                            ImGui.TableNextColumn();
-                            var currentDay = new DateTime(viewDate.Year, viewDate.Month, day);
-                            var isCurrentDate = currentDate.Year == viewDate.Year && currentDate.Month == viewDate.Month && currentDate.Day == day;
-                            var isSelectable = selectMode ? currentDay >= filterEndDate : currentDay <= filterStartDate;
-
-                            if (isCurrentDate)
-                            {
-                                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
-                                if (ImGuiOm.SelectableTextCentered(day.ToString(), SelectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
-                                {
-                                    currentDate = currentDay;
-                                }
-                                ImGui.PopStyleColor();
-                            }
-                            else if (isSelectable)
-                            {
-                                ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                                ImGuiOm.TextCentered(day.ToString(), day.ToString());
-                                ImGui.PopStyleColor();
-                            }
-                            else if (ImGuiOm.SelectableTextCentered(day.ToString(), SelectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
-                            {
-                                currentDate = currentDay;
-                                searchTimer.Restart();
-                            }
-                        }
-                    }
-                }
-
-                ImGui.EndGroup();
-                datePickerRegion = ImGui.GetItemRectSize();
+                if (!isTimeFilterEnabled) isTimeFilterEnabled = true;
             }
+
+            ImGui.SameLine();
+            ImGui.Text(Service.Lang.GetText(label));
         }
+    }
+
+    private void OnDateSelected()
+    {
+        searchTimer.Restart();
     }
 
     private void TimeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)

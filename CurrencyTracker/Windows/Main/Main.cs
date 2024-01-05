@@ -30,6 +30,11 @@ public partial class Main : Window, IDisposable
         searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
         searchTimerMCS.AutoReset = false;
 
+        startDatePicker.DateSelected += OnDateSelected;
+        endDatePicker.DateSelected += OnDateSelected;
+
+        lastLangTF = Service.Lang.Language;
+
         ReloadOrderedOptions();
     }
 
@@ -81,5 +86,8 @@ public partial class Main : Window, IDisposable
         searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
         searchTimerMCS.Stop();
         searchTimerMCS.Dispose();
+
+        startDatePicker.DateSelected -= OnDateSelected;
+        endDatePicker.DateSelected -= OnDateSelected;
     }
 }

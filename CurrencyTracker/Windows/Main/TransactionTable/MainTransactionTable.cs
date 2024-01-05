@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
     {
@@ -293,7 +293,6 @@ public partial class Main : Window, IDisposable
             visibleColumns = tempList.ToArray();
         }
     }
-
 
     private void TransactionTableInfoBarUI()
     {
