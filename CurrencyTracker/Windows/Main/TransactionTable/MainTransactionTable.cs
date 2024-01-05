@@ -217,7 +217,7 @@ public partial class Main
 
     private void TableAppearenceUI(float windowWidth)
     {
-        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"))) ImGui.OpenPopup("TableAppearence");
+        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"))) ImGui.OpenPopup("TableAppearance");
 
         using (var popup = ImRaii.Popup("TableAppearance"))
         {
