@@ -716,4 +716,7 @@
   <data name="ParamEP-Value" xml:space="preserve">
     <value>值</value>
   </data>
+  <data name="UpdateTranslations" xml:space="preserve">
+    <value>更新翻譯檔案</value>
+  </data>
 </root>
