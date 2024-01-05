@@ -102,7 +102,7 @@ public partial class Main
             {
                 if (selectedCurrencyID != 0)
                 {
-                    P.CurrencySettings.IsOpen = true;
+                    P.CurrencySettings.IsOpen = !P.CurrencySettings.IsOpen;
                 }
             }
         }
