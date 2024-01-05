@@ -1,8 +1,8 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    internal uint selectedCurrencyID = 0;
+    internal uint selectedCurrencyID;
     internal int selectedOptionIndex = -1;
     private int currencyListboxWidth = 150;
 
@@ -25,7 +25,7 @@ public partial class Main : Window, IDisposable
                 {
                     var option = C.OrderedOptions[i];
                     var currencyName = C.AllCurrencies[option];
-                    if (ImageSelectableWithText(option.ToString(), C.AllCurrencyIcons[option].ImGuiHandle, currencyName, i == selectedOptionIndex, ImGuiHelpers.ScaledVector2(20f)))
+                    if (ImGuiOm.SelectableImageWithText(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20f), currencyName, i == selectedOptionIndex))
                     {
                         selectedCurrencyID = option;
                         currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
@@ -33,7 +33,7 @@ public partial class Main : Window, IDisposable
                         currentViewID = 0;
                     }
 
-                    HoverTooltip(currencyName);
+                    ImGuiOm.TooltipHover(currencyName);
 
                     ImGui.SameLine();
                     ImGui.Text(currencyName);
@@ -45,7 +45,7 @@ public partial class Main : Window, IDisposable
 
     private void CurrencyListboxToolUI()
     {
-        CenterCursorFor(currencyListboxWidth);
+        ImGuiOm.CenterAlignFor(currencyListboxWidth);
         ImGui.BeginGroup();
         AddCustomCurrencyUI();
 
@@ -79,7 +79,7 @@ public partial class Main : Window, IDisposable
 
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, !isDeleteValid))
         {
-            IconButton(FontAwesomeIcon.Trash, isDeleteValid ? $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})" : "", "ToolsDelete");
+            ImGuiOm.ButtonIcon("ToolsDelete", FontAwesomeIcon.Trash, isDeleteValid ? $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})" : "");
         }
         if (isDeleteValid && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
@@ -98,7 +98,7 @@ public partial class Main : Window, IDisposable
     {
         using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, selectedCurrencyID != 0 ? 1f : 0.5f))
         {
-            if (IconButton(FontAwesomeIcon.Cog, "", "CurrencySettings"))
+            if (ImGuiOm.ButtonIcon("CurrencySettings", FontAwesomeIcon.Cog))
             {
                 if (selectedCurrencyID != 0)
                 {

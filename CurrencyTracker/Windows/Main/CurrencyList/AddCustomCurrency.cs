@@ -13,7 +13,7 @@ public partial class Main : Window, IDisposable
 
     private void AddCustomCurrencyUI()
     {
-        if (IconButton(FontAwesomeIcon.Plus, "", "AddCustomCurrency"))
+        if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
         {
             if (ItemNames == null) LoadDataACC();
             ImGui.OpenPopup("AddCustomCurrency");
@@ -24,7 +24,7 @@ public partial class Main : Window, IDisposable
             if (popup)
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
-                HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
+                ImGuiOm.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
 
                 ImGui.Separator();
                 ImGui.AlignTextToFramePadding();
@@ -43,7 +43,7 @@ public partial class Main : Window, IDisposable
                         if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100)) searchTimerACC.Restart();
 
                         ImGui.SameLine();
-                        if (IconButton(FontAwesomeIcon.Backward, "", "CCTFirstPage")) currentPageACC = 0;
+                        if (ImGuiOm.ButtonIcon("CCTFirstPage", FontAwesomeIcon.Backward)) currentPageACC = 0;
 
                         ImGui.SameLine();
                         if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left)) 
@@ -64,7 +64,7 @@ public partial class Main : Window, IDisposable
                         }
 
                         ImGui.SameLine();
-                        if (IconButton(FontAwesomeIcon.Forward, "", "CCTLastPage")) 
+                        if (ImGuiOm.ButtonIcon("CCTLastPage", FontAwesomeIcon.Forward)) 
                         {
                             if (itemNamesACC.Any())
                             {
@@ -96,7 +96,7 @@ public partial class Main : Window, IDisposable
                 if (ImGui.IsItemClicked() && !currenciesACC.SequenceEqual(C.AllCurrencyID)) LoadDataACC();
 
                 ImGui.SameLine();
-                if (IconButton(FontAwesomeIcon.Plus, "", "AddCustomCurrency"))
+                if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
                 {
                     if (currencyNameAAC.IsNullOrEmpty())
                     {

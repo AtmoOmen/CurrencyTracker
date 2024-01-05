@@ -60,6 +60,5 @@ global using Dalamud.Game.ClientState.Objects.Enums;
 global using TinyPinyin;
 global using IntervalUtility;
 global using OmenTools.ImGuiOm;
-global using static CurrencyTracker.Manager.Tools.Widgets;
 global using static CurrencyTracker.Manager.Tools.Helpers;
 global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;

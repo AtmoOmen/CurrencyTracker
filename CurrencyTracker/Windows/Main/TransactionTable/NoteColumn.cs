@@ -32,7 +32,7 @@ public partial class Main : Window, IDisposable
     {
         ImGui.Selectable($"{transaction.Note}##_{i}");
 
-        if (!transaction.Note.IsNullOrEmpty()) HoverTooltip(transaction.Note);
+        if (!transaction.Note.IsNullOrEmpty()) ImGuiOm.TooltipHover(transaction.Note);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
         {

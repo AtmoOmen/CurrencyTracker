@@ -1,10 +1,9 @@
 namespace CurrencyTracker.Windows
 {
-    // 打开数据文件夹 / 打开 GitHub / 帮助页面 / 多语言切换 / 测试功能
-    public partial class Main : Window, IDisposable
+    public partial class Main
     {
-        internal bool isLangDownloading = false;
-        internal bool isLangDownloaded = false;
+        internal bool isLangDownloading;
+        internal bool isLangDownloaded;
 
         private void OthersUI()
         {
@@ -96,7 +95,7 @@ namespace CurrencyTracker.Windows
                             LanguageSwitchHandler(languageInfo.Language);
                         }
                         singleItemHeight = ImGui.GetItemRectSize().Y;
-                        HoverTooltip($"By: {string.Join(", ", languageInfo.Translators)}");
+                        ImGuiOm.TooltipHover($"By: {string.Join(", ", languageInfo.Translators)}");
 
                         if (i + 1 != LanguageManager.LanguageNames.Length) ImGui.Separator();
                     }
@@ -105,7 +104,7 @@ namespace CurrencyTracker.Windows
                     var itemWidth = ImGui.GetItemRectSize().X;
                     ImGui.Separator();
                     ImGui.Separator();
-                    if (SelectableIconButton(isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt, "Update Translations", "UpdateTranslationFiles", new Vector2(itemWidth, singleItemHeight)))
+                    if (ImGuiOm.ButtonIconSelectable("UpdateTranslations", isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt))
                     {
                         if (!isLangDownloading)
                         {
@@ -122,7 +121,7 @@ namespace CurrencyTracker.Windows
                     }
 
                     ImGui.Separator();
-                    if (SelectableIconButton(FontAwesomeIcon.Language, $"{Service.Lang.GetText("HelpTranslate")}!", "HelpTranslate", new Vector2(itemWidth, singleItemHeight)))
+                    if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language))
                     {
                         Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
                     }
@@ -143,7 +142,7 @@ namespace CurrencyTracker.Windows
             C.Save();
         }
 
-        private unsafe void TestingFeaturesUI()
+        private void TestingFeaturesUI()
         {
         }
     }

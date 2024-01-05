@@ -294,7 +294,7 @@ public class Settings : Window, IDisposable
             return;
         }
 
-        if (ColoredCheckbox($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
+        if (ImGuiOm.CheckboxColored($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
         {
             C.ComponentEnabled[boolName] = !C.ComponentEnabled[boolName];
             var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
@@ -445,7 +445,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), $"ResetContent_{key}"))
+        if (ImGuiOm.ButtonIcon($"ResetContext_{key}", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
         {
             C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
             C.Save();

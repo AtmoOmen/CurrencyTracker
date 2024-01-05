@@ -51,10 +51,10 @@ public partial class CurrencySettings : Window, IDisposable
             ImGui.EndCombo();
         }
 
-        if (!selectedAreaName.IsNullOrEmpty()) HoverTooltip(selectedAreaName);
+        if (!selectedAreaName.IsNullOrEmpty()) ImGuiOm.TooltipHover(selectedAreaName);
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Plus, "", "AddRestrictedAreas") && !rules.RestrictedAreas.Contains(selectedAreaIDTR))
+        if (ImGuiOm.ButtonIcon("AddRestrictedAreas", FontAwesomeIcon.Plus) && !rules.RestrictedAreas.Contains(selectedAreaIDTR))
         {
             rules.RestrictedAreas.Add(selectedAreaIDTR);
             selectedAreaIDTR = 0;
@@ -64,13 +64,13 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
 
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
-        using (var combo = ImRaii.Combo("##RestictedAreas", selectedAreaIDDeleteTR != 0 ? TerrioryHandler.TerritoryNames[selectedAreaIDDeleteTR] : "", ImGuiComboFlags.HeightLarge))
+        using (var combo = ImRaii.Combo("##RestrictedAreas", selectedAreaIDDeleteTR != 0 ? TerrioryHandler.TerritoryNames[selectedAreaIDDeleteTR] : "", ImGuiComboFlags.HeightLarge))
         {
             if (combo) foreach (var area in rules.RestrictedAreas) if (ImGui.Selectable($"{area} | {TerrioryHandler.TerritoryNames[area]}")) selectedAreaIDDeleteTR = area;
         }
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.TrashAlt, "", "DeleteRestrictedAreas"))
+        if (ImGuiOm.ButtonIcon("DeleteRestrictedAreas", FontAwesomeIcon.TrashAlt))
         {
             if (rules.RestrictedAreas.Contains(selectedAreaIDDeleteTR))
             {

@@ -33,7 +33,7 @@ public partial class Main : Window, IDisposable
     private int visibleStartIndex;
     private int visibleEndIndex;
     internal TransactionFileCategory currentView = TransactionFileCategory.Inventory;
-    internal ulong currentViewID = 0;
+    internal ulong currentViewID;
     private int tablePagingComponentsWidth = 300;
 
     private void TransactionTableUI()
@@ -90,7 +90,7 @@ public partial class Main : Window, IDisposable
 
         foreach (var column in columns)
         {
-            var flags = column == "Order" || column == "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
+            var flags = column is "Order" or "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
             var width = column switch
             {
                 "Order" => orderColumnWidth,
@@ -122,7 +122,7 @@ public partial class Main : Window, IDisposable
         var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage) : 0;
         currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
-        CenterCursorFor(tablePagingComponentsWidth);
+        ImGuiOm.CenterAlignFor(tablePagingComponentsWidth);
         ImGui.BeginGroup();
 
         // 视图切换 Table View Switch
@@ -130,7 +130,7 @@ public partial class Main : Window, IDisposable
 
         // 首页 First Page
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Backward)) currentPage = 0;
+        if (ImGuiOm.ButtonIcon("FirstPageTransactionTable", FontAwesomeIcon.Backward)) currentPage = 0;
 
         // 上一页 Last Page
         ImGui.SameLine();
@@ -152,12 +152,12 @@ public partial class Main : Window, IDisposable
 
         // 尾页 Final Page
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Forward))
+        if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward))
         {
             if (currentPage >= 0) currentPage = pageCount;
         }
 
-        // 表格外观 Table Appearence
+        // 表格外观 Table Appearance
         ImGui.SameLine();
         TableAppearenceUI(windowWidth);
 
@@ -180,7 +180,7 @@ public partial class Main : Window, IDisposable
 
     private void TableViewSwitchUI()
     {
-        if (IconButton(FontAwesomeIcon.Bars, "", "TableViewSwitch")) ImGui.OpenPopup("TableViewSwitch");
+        if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars)) ImGui.OpenPopup("TableViewSwitch");
 
         using (var popup = ImRaii.Popup("TableViewSwitch"))
         {
@@ -217,9 +217,9 @@ public partial class Main : Window, IDisposable
 
     private void TableAppearenceUI(float windowWidth)
     {
-        if (IconButton(FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), "TableAppearance")) ImGui.OpenPopup("TableAppearence");
+        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"))) ImGui.OpenPopup("TableAppearence");
 
-        using (var popup = ImRaii.Popup("TableAppearence"))
+        using (var popup = ImRaii.Popup("TableAppearance"))
         {
             if (popup)
             {

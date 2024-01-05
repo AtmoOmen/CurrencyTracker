@@ -47,7 +47,7 @@ public partial class Main : Window, IDisposable
                 if (ImGui.InputInt("##MergeThreshold", ref mergeThreshold, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue)) mergeThreshold = Math.Max(0, mergeThreshold);
 
                 ImGui.SameLine();
-                HelpMarker($"{Service.Lang.GetText("MergeTransactionsHelp3")}");
+                ImGuiOm.HelpMarker($"{Service.Lang.GetText("MergeTransactionsHelp3")}");
 
                 if (ImGui.Button(Service.Lang.GetText("TwoWayMerge"))) MergeTransactionHandler(false);
 
@@ -116,7 +116,7 @@ public partial class Main : Window, IDisposable
                     Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {Transactions.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
                 }
 
-                HoverTooltip($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
+                ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");
             }
         }
     }

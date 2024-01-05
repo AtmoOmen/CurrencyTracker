@@ -48,7 +48,7 @@ public partial class Main : Window, IDisposable
                 }
 
                 ImGui.SameLine();
-                if (IconButton(FontAwesomeIcon.Sync, "", "MCSRefresh")) searchTimerMCS.Restart();
+                if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync)) searchTimerMCS.Restart();
                 ImGui.EndGroup();
 
                 var itemWidth = (int)ImGui.GetItemRectSize().X;

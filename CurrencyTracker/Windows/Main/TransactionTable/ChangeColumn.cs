@@ -42,7 +42,7 @@ public partial class Main : Window, IDisposable
             ImGui.SetNextItemWidth(130);
             if (ImGui.InputInt($"##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue)) searchTimer.Restart();
 
-            HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
+            ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
         }
     }
 
@@ -114,7 +114,8 @@ public partial class Main : Window, IDisposable
         using (ImRaii.PushColor(ImGuiCol.Text, textColor))
         {
             var text = transaction.Change.ToString("+ #,##0;- #,##0;0");
-            SelectableClickToCopy(text, null, i);
+            ImGui.Selectable($"{text}##{i}");
+            ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
         }
     }
 }

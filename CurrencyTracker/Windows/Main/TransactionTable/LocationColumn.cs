@@ -34,7 +34,7 @@ public partial class Main : Window, IDisposable
 
         ImGui.Selectable($"{locationName}##_{i}");
 
-        if (!locationName.IsNullOrEmpty()) HoverTooltip(locationName);
+        if (!locationName.IsNullOrEmpty()) ImGuiOm.TooltipHover(locationName);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
         {

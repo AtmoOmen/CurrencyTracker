@@ -67,7 +67,7 @@ public partial class Main : Window, IDisposable
             : Service.Lang.GetText("AutoBackup");
 
         ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
-        HoverTooltip(Service.Lang.GetText("BackupHelp7"));
+        ImGuiOm.TooltipHover(Service.Lang.GetText("BackupHelp7"));
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
@@ -143,6 +143,6 @@ public partial class Main : Window, IDisposable
             C.Save();
         }
 
-        HelpMarker(Service.Lang.GetText("BackupHelp6"));
+        ImGuiOm.HelpMarker(Service.Lang.GetText("BackupHelp6"));
     }
 }

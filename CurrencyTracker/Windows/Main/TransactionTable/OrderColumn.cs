@@ -1,11 +1,11 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     private void OrderColumnHeaderUI()
     {
-        ImGui.SetCursorPosX(1f);
-        if (SelectableIconButton(C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown, "", "OrderControl", new Vector2(ImGui.GetContentRegionAvail().X + 10f, 20.0f * ImGuiHelpers.GlobalScale)))
+        var icon = C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
+        if (ImGuiOm.SelectableIconCentered("ReverseSort", icon))
         {
             C.ReverseSort = !C.ReverseSort;
             C.Save();
@@ -16,7 +16,6 @@ public partial class Main : Window, IDisposable
 
     private void OrderColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
-        var displayText = C.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString();
-        TextCentered(displayText);
+        ImGuiOm.TextCentered(i.ToString(), C.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString());
     }
 }

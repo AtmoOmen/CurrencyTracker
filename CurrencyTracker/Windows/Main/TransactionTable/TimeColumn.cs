@@ -1,12 +1,12 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private bool isClusteredByTime = false;
-    private bool isTimeFilterEnabled = false;
-    private bool selectTimeDeco = false; // Always False
+    private bool isClusteredByTime;
+    private bool isTimeFilterEnabled;
+    private const bool SelectTimeDeco = false; // Always False
 
-    private int clusterHour = 0;
+    private int clusterHour;
     private DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
     private DateTime filterEndDate = DateTime.Now;
     private DateTime filterViewDate = DateTime.Now;
@@ -50,7 +50,7 @@ public partial class Main : Window, IDisposable
             }
 
             ImGui.SameLine();
-            Widgets.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ClusterByTimeHelp1", clusterHour)}");
+            ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ClusterByTimeHelp1", clusterHour)}");
         }
     }
 
@@ -96,9 +96,9 @@ public partial class Main : Window, IDisposable
                 ImGui.BeginGroup();
                 ImGui.Separator();
 
-                CenterCursorFor(datePickerPagingWidth);
+                ImGuiOm.CenterAlignFor(datePickerPagingWidth);
                 ImGui.BeginGroup();
-                if (IconButton(FontAwesomeIcon.Backward, "", "LastYear")) viewDate = viewDate.AddYears(-1);
+                if (ImGuiOm.ButtonIcon("LastYear", FontAwesomeIcon.Backward)) viewDate = viewDate.AddYears(-1);
 
                 ImGui.SameLine();
                 if (ImGui.ArrowButton("LastMonth", ImGuiDir.Left)) viewDate = viewDate.AddMonths(-1);
@@ -110,7 +110,7 @@ public partial class Main : Window, IDisposable
                 if (ImGui.ArrowButton("NextMonth", ImGuiDir.Right)) viewDate = viewDate.AddMonths(1);
 
                 ImGui.SameLine();
-                if (IconButton(FontAwesomeIcon.Forward, "", "NextYear")) viewDate = viewDate.AddYears(1);
+                if (ImGuiOm.ButtonIcon("NextYear", FontAwesomeIcon.Forward)) viewDate = viewDate.AddYears(1);
                 ImGui.EndGroup();
                 datePickerPagingWidth = (int)ImGui.GetItemRectSize().X;
 
@@ -122,7 +122,7 @@ public partial class Main : Window, IDisposable
                         foreach (var day in weekDays)
                         {
                             ImGui.TableNextColumn();
-                            TextCentered(day);
+                            ImGuiOm.TextCentered($"{day}_{viewDate}", day);
                         }
 
                         ImGui.TableNextRow(ImGuiTableRowFlags.None);
@@ -133,7 +133,7 @@ public partial class Main : Window, IDisposable
                         for (var i = 0; i < firstDayOfWeek; i++)
                         {
                             ImGui.TableNextColumn();
-                            TextCentered("");
+                            ImGuiOm.TextCentered($"{i}_{viewDate}", "");
                         }
 
                         for (var day = 1; day <= daysInMonth; day++)
@@ -146,7 +146,7 @@ public partial class Main : Window, IDisposable
                             if (isCurrentDate)
                             {
                                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.2f, 0.6f, 1.0f, 1.0f));
-                                if (SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                                if (ImGuiOm.SelectableTextCentered(day.ToString(), SelectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
                                 {
                                     currentDate = currentDay;
                                 }
@@ -155,10 +155,10 @@ public partial class Main : Window, IDisposable
                             else if (isSelectable)
                             {
                                 ImGui.PushStyleColor(ImGuiCol.Text, new Vector4(0.5f, 0.5f, 0.5f, 1.0f));
-                                TextCentered(day.ToString());
+                                ImGuiOm.TextCentered(day.ToString(), day.ToString());
                                 ImGui.PopStyleColor();
                             }
-                            else if (SelectableCentered(day.ToString(), selectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
+                            else if (ImGuiOm.SelectableTextCentered(day.ToString(), SelectTimeDeco, ImGuiSelectableFlags.DontClosePopups))
                             {
                                 currentDate = currentDay;
                                 searchTimer.Restart();
@@ -180,7 +180,7 @@ public partial class Main : Window, IDisposable
         var flag = (isLeftCtrl || isRightMouse) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
         var timeString = transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
-        if ((!isLeftCtrl) ? SelectableClickToCopy(timeString, null, i) : ImGui.Selectable($"{timeString}##_{i}", ref selected, flag))
+        if ((!isLeftCtrl) ? ImGui.Selectable($"{timeString}##{i}") : ImGui.Selectable($"{timeString}##_{i}", ref selected, flag))
         {
             if (isLeftCtrl && !isRightMouse)
             {
@@ -199,19 +199,23 @@ public partial class Main : Window, IDisposable
                 CheckAndUpdateSelectedStates(selected, transaction);
             }
         }
-    }
 
-    private void CheckAndUpdateSelectedStates(bool selected, TransactionsConvertor transaction)
-    {
-        var selectedList = selectedTransactions[selectedCurrencyID];
+        ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
 
-        if (selected)
+        return;
+
+        void CheckAndUpdateSelectedStates(bool selected, TransactionsConvertor transaction)
         {
-            if (!selectedList.Any(t => IsTransactionEqual(t, transaction))) selectedList.Add(transaction);
-        }
-        else
-        {
-            selectedList.RemoveAll(t => IsTransactionEqual(t, transaction));
+            var selectedList = selectedTransactions[selectedCurrencyID];
+
+            if (selected)
+            {
+                if (!selectedList.Any(t => IsTransactionEqual(t, transaction))) selectedList.Add(transaction);
+            }
+            else
+            {
+                selectedList.RemoveAll(t => IsTransactionEqual(t, transaction));
+            }
         }
     }
 }

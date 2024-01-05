@@ -23,7 +23,7 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("AlertType")}:");
 
         ImGui.SameLine();
-        HelpMarker(Service.Lang.GetText("AlertIntervalHelp"));
+        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp"));
 
         if (ImGui.RadioButton(Service.Lang.GetText("Amount"), ref alertMode, 0)) selectedInterval = null;
         ImGui.SameLine();
@@ -70,7 +70,7 @@ public partial class CurrencySettings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.TrashAlt, "", "DeleteInterval"))
+        if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt))
         {
             if (selectedInterval == null) return;
             RemoveIntervalHandler(selectedCurrencyID, selectedInterval.Start, selectedInterval.End);
@@ -80,7 +80,7 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalInput")}:");
 
         ImGui.SameLine();
-        HelpMarker(Service.Lang.GetText("AlertIntervalHelp1"));
+        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp1"));
 
         ImGui.BeginGroup();
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
@@ -98,7 +98,7 @@ public partial class CurrencySettings : Window, IDisposable
         alertIntervalWidth = ImGui.GetItemRectSize();
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Plus, "", "AddInterval", new Vector2(48, alertIntervalWidth.Y)))
+        if (ImGuiOm.ButtonIcon("AddInterval", FontAwesomeIcon.Plus))
         {
             AddIntervalHandler(selectedCurrencyID, intervalStart, intervalEnd);
             C.Save();
@@ -150,7 +150,7 @@ public partial class CurrencySettings : Window, IDisposable
             }
 
             ImGui.SameLine();
-            if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), $"ResetContent_{key}"))
+            if (ImGuiOm.ButtonIcon($"ResetContent_{key}", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
             {
                 C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
                 C.Save();

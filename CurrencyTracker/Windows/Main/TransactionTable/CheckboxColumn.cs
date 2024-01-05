@@ -1,14 +1,14 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private bool isOnMergingTT = false;
-    private bool isOnEdit = false;
+    private bool isOnMergingTT;
+    private bool isOnEdit;
     internal int checkboxColumnWidth = 22;
 
     private void CheckboxColumnHeaderUI()
     {
-        if (IconButton(FontAwesomeIcon.EllipsisH))
+        if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH))
         {
             if (!currentTypeTransactions.Any()) return;
             ImGui.OpenPopup("TableTools");

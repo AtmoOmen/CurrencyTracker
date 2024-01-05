@@ -13,10 +13,10 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.SetNextItemWidth(currencyInfoGroupWidth - (2 * M.checkboxColumnWidth) - 24);
         ImGui.InputText($"##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
 
-        if (!editedCurrencyName.IsNullOrEmpty()) HoverTooltip(editedCurrencyName);
+        if (!editedCurrencyName.IsNullOrEmpty()) ImGuiOm.TooltipHover(editedCurrencyName);
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Check, Service.Lang.GetText("Confirm"), "RenameCurrencyConfirm"))
+        if (ImGuiOm.ButtonIcon("RenameCurrencyConfirm", FontAwesomeIcon.Check, Service.Lang.GetText("Confirm")))
         {
             if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
             {
@@ -25,7 +25,7 @@ public partial class CurrencySettings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (IconButton(FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), "RenameCurrencyReset"))
+        if (ImGuiOm.ButtonIcon("RenameCurrencyReset", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
         {
             RenameCurrencyHandler(CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID));
         }
