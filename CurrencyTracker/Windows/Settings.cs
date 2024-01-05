@@ -248,10 +248,7 @@ public class Settings : Window, IDisposable
 
                         ImGui.Separator();
 
-                        if (ImGui.Button(Service.Lang.GetText("HelpTranslate"))) Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
-
-                        ImGui.SameLine();
-                        if (ImGui.Button("Update Translations"))
+                        if (ImGuiOm.ButtonIconSelectable("UpdateTranslations", P.Main.isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt, Service.Lang.GetText("UpdateTranslations")))
                         {
                             if (!P.Main.isLangDownloading)
                             {
@@ -267,7 +264,18 @@ public class Settings : Window, IDisposable
                             }
                         }
 
-                        if (ImGui.Button("Local Langs Directory")) OpenDirectory(LanguageManager.LangsDirectory);
+                        if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language, Service.Lang.GetText("HelpTranslate")))
+                        {
+                            Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
+                        }
+                    }
+                }
+
+                using (var item0 = ImRaii.TabItem("Dev"))
+                {
+                    if (item0)
+                    {
+                        if (ImGui.Button("Open Local Language Files Directory")) OpenDirectory(LanguageManager.LangsDirectory);
 
                         ImGui.InputTextWithHint("##LoadDevLangFile", "Dev Lang File Path (.resx)", ref devLangFilePath, 1000);
 

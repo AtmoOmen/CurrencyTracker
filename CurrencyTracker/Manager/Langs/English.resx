@@ -716,4 +716,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="ParamEP-Value" xml:space="preserve">
     <value>Value</value>
   </data>
+  <data name="UpdateTranslations" xml:space="preserve">
+    <value>Update Translations</value>
+  </data>
 </root>

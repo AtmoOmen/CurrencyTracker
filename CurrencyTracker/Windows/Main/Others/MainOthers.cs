@@ -85,7 +85,6 @@ namespace CurrencyTracker.Windows
             {
                 if (popup)
                 {
-                    var singleItemHeight = 0f;
                     ImGui.BeginGroup();
                     for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
                     {
@@ -94,17 +93,15 @@ namespace CurrencyTracker.Windows
                         {
                             LanguageSwitchHandler(languageInfo.Language);
                         }
-                        singleItemHeight = ImGui.GetItemRectSize().Y;
                         ImGuiOm.TooltipHover($"By: {string.Join(", ", languageInfo.Translators)}");
 
                         if (i + 1 != LanguageManager.LanguageNames.Length) ImGui.Separator();
                     }
                     ImGui.EndGroup();
 
-                    var itemWidth = ImGui.GetItemRectSize().X;
                     ImGui.Separator();
                     ImGui.Separator();
-                    if (ImGuiOm.ButtonIconSelectable("UpdateTranslations", isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt))
+                    if (ImGuiOm.ButtonIconSelectable("UpdateTranslations", isLangDownloading ? FontAwesomeIcon.Spinner : FontAwesomeIcon.CloudDownloadAlt, Service.Lang.GetText("UpdateTranslations")))
                     {
                         if (!isLangDownloading)
                         {
@@ -121,7 +118,7 @@ namespace CurrencyTracker.Windows
                     }
 
                     ImGui.Separator();
-                    if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language))
+                    if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language, Service.Lang.GetText("HelpTranslate")))
                     {
                         Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
                     }
