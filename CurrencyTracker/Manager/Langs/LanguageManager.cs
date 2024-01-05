@@ -3,6 +3,7 @@ namespace CurrencyTracker.Manager;
 public class LanguageManager
 {
     public static string LangsDirectory { get; private set; } = null!;
+    public string Language { get; private set; } = null!;
 
     private readonly Dictionary<string, string>? resourceData;
     private readonly Dictionary<string, string>? fbResourceData;
@@ -27,7 +28,7 @@ public class LanguageManager
         }
         else
         {
-            if (!LanguageNames.Any(x => x.Language == languageName))
+            if (LanguageNames.All(x => x.Language != languageName))
             {
                 languageName = "English";
             }
@@ -42,6 +43,8 @@ public class LanguageManager
             : Path.Join(LangsDirectory, "English.resx");
 
         fbResourceData = LoadResourceFile(fbResourcePath);
+
+        Language = languageName;
     }
 
     private Dictionary<string, string> LoadResourceFile(string filePath)
