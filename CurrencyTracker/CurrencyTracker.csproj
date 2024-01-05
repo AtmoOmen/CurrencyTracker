@@ -29,8 +29,7 @@
         <DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
     </PropertyGroup>
 
-    <PropertyGroup
-        Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
+    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
         <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
     </PropertyGroup>
 
@@ -120,8 +119,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\OmenTools\OmenTools.csproj" />
+      <ProjectReference Include="..\OmenTools\OmenTools.csproj" />
     </ItemGroup>
+    
     <ItemGroup>
         <None Update="CurrencyTracker.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
