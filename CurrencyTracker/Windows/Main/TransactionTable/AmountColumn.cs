@@ -1,8 +1,8 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private void AmountColumnHeaderUI() => ImGui.Text($" {Service.Lang.GetText("Amount")}");
+    private void AmountColumnHeaderUI() => ImGuiOm.Text(Service.Lang.GetText("Amount"));
 
     private void AmountColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {

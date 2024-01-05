@@ -16,6 +16,6 @@ public partial class Main
 
     private void OrderColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
-        ImGuiOm.TextCentered(i.ToString(), C.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString());
+        ImGuiOm.TextCentered(C.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString());
     }
 }

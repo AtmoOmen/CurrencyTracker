@@ -2,17 +2,17 @@ using System.Threading;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private bool isChangeFilterEnabled = false;
+    private bool isChangeFilterEnabled;
 
-    private int filterMode = 0;
-    private int filterValue = 0;
+    private int filterMode;
+    private int filterValue;
     private CancellationTokenSource? colorSaveCancelTokenSource;
 
     private void ChangeColumnHeaderUI()
     {
-        ImGui.Selectable($" {Service.Lang.GetText("Change")}");
+        ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("ChangeFunctions");

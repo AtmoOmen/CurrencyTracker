@@ -1,14 +1,14 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private bool isNoteFilterEnabled = false;
+    private bool isNoteFilterEnabled;
     private string? searchNoteContent = string.Empty;
     private string editedNoteContent = string.Empty;
 
     private void NoteColumnHeaderUI()
     {
-        ImGui.Selectable($" {Service.Lang.GetText("Note")}");
+        ImGuiOm.SelectableFillCell(Service.Lang.GetText("Note"));
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("NoteSearch");

@@ -1,14 +1,14 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
-    private bool isLocationFilterEnabled = false;
+    private bool isLocationFilterEnabled;
     private string? searchLocationName = string.Empty;
     private string? editedLocationName = string.Empty;
 
     private void LocationColumnHeaderUI()
     {
-        ImGui.Selectable($" {Service.Lang.GetText("Location")}");
+        ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("LocationSearch");

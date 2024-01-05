@@ -18,7 +18,7 @@ public partial class Main
 
     private void TimeColumnHeaderUI()
     {
-        ImGui.Selectable($" {Service.Lang.GetText("Time")}");
+        ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             if (lastLangTF != Service.Lang.Language)
@@ -106,7 +106,7 @@ public partial class Main
         var flag = (isLeftCtrl || isRightMouse) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
         var timeString = transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
-        if ((!isLeftCtrl) ? ImGui.Selectable($"{timeString}##{i}") : ImGui.Selectable($"{timeString}##_{i}", ref selected, flag))
+        if ((!isLeftCtrl) ? ImGuiOm.Selectable($"{timeString}##{i}") : ImGuiOm.Selectable($"{timeString}##{i}", ref selected, flag))
         {
             if (isLeftCtrl && !isRightMouse)
             {
