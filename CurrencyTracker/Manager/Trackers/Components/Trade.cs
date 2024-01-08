@@ -2,8 +2,9 @@ namespace CurrencyTracker.Manager.Trackers.Components
 {
     public class Trade : ITrackerComponent
     {
-        public bool Initialized { get; set; } = false;
+        public bool Initialized { get; set; }
 
+        private bool isOnTrade;
         private string tradeTargetName = string.Empty;
         private InventoryHandler? inventoryHandler;
 
@@ -16,6 +17,10 @@ namespace CurrencyTracker.Manager.Trackers.Components
 
         private unsafe void StartTrade(AddonEvent type, AddonArgs args)
         {
+            if (isOnTrade) return;
+
+            isOnTrade = true;
+
             var TGUI = (AtkUnitBase*)args.Addon;
             if (TGUI == null) return;
 
@@ -49,10 +54,12 @@ namespace CurrencyTracker.Manager.Trackers.Components
             Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
             var items = inventoryHandler?.Items ?? new();
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})", RecordChangeType.All, 13);
+            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
+                                            RecordChangeType.All, 13);
             tradeTargetName = string.Empty;
             HandlerManager.ChatHandler.isBlocked = false;
             HandlerManager.Nullify(ref inventoryHandler);
+            isOnTrade = false;
 
             Service.Log.Debug("Currency Change Check Completes.");
         }
