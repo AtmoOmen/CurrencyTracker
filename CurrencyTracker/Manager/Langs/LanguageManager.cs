@@ -3,35 +3,34 @@ namespace CurrencyTracker.Manager;
 public class LanguageManager
 {
     public static string LangsDirectory { get; private set; } = null!;
-    public string Language { get; private set; } = null!;
+    public string Language { get; private set; }
 
     private readonly Dictionary<string, string>? resourceData;
     private readonly Dictionary<string, string>? fbResourceData;
 
-    public static readonly TranslationInfo[] LanguageNames = new TranslationInfo[]
+    public static readonly TranslationInfo[] LanguageNames =
     {
         new() { Language = "English", DisplayName = "English", Translators = new string[1] { "AtmoOmen" } },
         new() { Language = "Spanish", DisplayName = "Español", Translators = new string[1] { "Risu" } },
-        new() { Language = "German", DisplayName = "Deutsch", Translators = new string[1] { "vyrnius" }},
-        new() { Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" } },
-        new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" }},
-        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[1] { "Fluxus" }}
+        new() { Language = "German", DisplayName = "Deutsch", Translators = new string[1] { "vyrnius" } },
+        new()
+        {
+            Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" }
+        },
+        new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" } },
+        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[1] { "Fluxus" } }
     };
 
     public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")
     {
-        LangsDirectory = Path.Join(Path.GetDirectoryName(Plugin.Instance.PluginInterface.AssemblyLocation.FullName), "Manager", "Langs");
+        LangsDirectory = Path.Join(Path.GetDirectoryName(Plugin.Instance.PluginInterface.AssemblyLocation.FullName),
+                                   "Manager", "Langs");
 
         if (isDev)
-        {
             resourceData = LoadResourceFile(devLangPath);
-        }
         else
         {
-            if (LanguageNames.All(x => x.Language != languageName))
-            {
-                languageName = "English";
-            }
+            if (LanguageNames.All(x => x.Language != languageName)) languageName = "English";
 
             var resourcePath = Path.Join(LangsDirectory, languageName + ".resx");
             if (!File.Exists(resourcePath)) LanguageUpdater.DownloadLanguageFilesAsync().GetAwaiter().GetResult();
@@ -39,8 +38,8 @@ public class LanguageManager
         }
 
         var fbResourcePath = languageName == "ChineseTraditional"
-            ? Path.Join(LangsDirectory, "ChineseSimplified.resx")
-            : Path.Join(LangsDirectory, "English.resx");
+                                 ? Path.Join(LangsDirectory, "ChineseSimplified.resx")
+                                 : Path.Join(LangsDirectory, "English.resx");
 
         fbResourceData = LoadResourceFile(fbResourcePath);
 
@@ -63,10 +62,7 @@ public class LanguageManager
         {
             var name = element.Attribute("name")?.Value;
             var value = element.Element("value")?.Value;
-            if (!string.IsNullOrEmpty(name) && value != null)
-            {
-                data[name] = value;
-            }
+            if (!string.IsNullOrEmpty(name) && value != null) data[name] = value;
         }
 
         return data;
@@ -75,9 +71,8 @@ public class LanguageManager
     public string GetText(string key, params object[] args)
     {
         if (!Plugin.Configuration.CustomNoteContents.TryGetValue(key, out var format))
-        {
-            format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.TryGetValue(key, out var fbResValue) ? fbResValue : null;
-        }
+            format = resourceData.TryGetValue(key, out var resValue) ? resValue :
+                     fbResourceData.GetValueOrDefault(key);
 
         if (string.IsNullOrEmpty(format))
         {
@@ -90,15 +85,15 @@ public class LanguageManager
 
     public string GetOrigText(string key)
     {
-        return resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.TryGetValue(key, out var fbResValue) ? fbResValue : key;
+        return resourceData.TryGetValue(key, out var resValue) ? resValue :
+               fbResourceData.GetValueOrDefault(key, key);
     }
 
     public SeString GetSeString(string key, params object[] args)
     {
         if (!Plugin.Configuration.CustomNoteContents.TryGetValue(key, out var format))
-        {
-            format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.TryGetValue(key, out var fbResValue) ? fbResValue : null;
-        }
+            format = resourceData.TryGetValue(key, out var resValue) ? resValue :
+                     fbResourceData.GetValueOrDefault(key);
 
         var ssb = new SeStringBuilder();
         var regex = new Regex(@"\{(\d+)\}");
@@ -114,13 +109,9 @@ public class LanguageManager
             {
                 var arg = args[argIndex];
                 if (arg is SeString seStringArg)
-                {
                     ssb.Append(seStringArg);
-                }
                 else
-                {
                     ssb.AddText(arg.ToString());
-                }
             }
 
             lastIndex = match.Index + match.Length;

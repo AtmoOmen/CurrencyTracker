@@ -24,15 +24,10 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
     public T? GetRow(uint id)
     {
         if (cache.TryGetValue(id, out var value))
-        {
             return value;
-        }
-        else
-        {
-            if (searchAction(id) is not { } result) return null;
+        if (searchAction(id) is not { } result) return null;
 
-            return cache[id] = result;
-        }
+        return cache[id] = result;
     }
 
     public T? GetRow(uint row, uint subRow)
@@ -40,18 +35,19 @@ public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow
         var targetRow = new Tuple<uint, uint>(row, subRow);
 
         if (subRowCache.TryGetValue(targetRow, out var value))
-        {
             return value;
-        }
-        else
-        {
-            if (Service.DataManager.GetExcelSheet<T>()!.GetRow(row, subRow) is not { } result) return null;
+        if (Service.DataManager.GetExcelSheet<T>()!.GetRow(row, subRow) is not { } result) return null;
 
-            return subRowCache[targetRow] = result;
-        }
+        return subRowCache[targetRow] = result;
     }
 
-    public IEnumerator<T> GetEnumerator() => Service.DataManager.GetExcelSheet<T>()!.GetEnumerator();
+    public IEnumerator<T> GetEnumerator()
+    {
+        return Service.DataManager.GetExcelSheet<T>()!.GetEnumerator();
+    }
 
-    IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }

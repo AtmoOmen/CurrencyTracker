@@ -1,77 +1,76 @@
-namespace CurrencyTracker.Manager.Trackers.Components
+namespace CurrencyTracker.Manager.Trackers.Components;
+
+public class Trade : ITrackerComponent
 {
-    public class Trade : ITrackerComponent
+    public bool Initialized { get; set; }
+
+    private bool isOnTrade;
+    private string tradeTargetName = string.Empty;
+    private InventoryHandler? inventoryHandler;
+
+    public void Init()
     {
-        public bool Initialized { get; set; }
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
 
-        private bool isOnTrade;
-        private string tradeTargetName = string.Empty;
-        private InventoryHandler? inventoryHandler;
+        Initialized = true;
+    }
 
-        public void Init()
+    private unsafe void StartTrade(AddonEvent type, AddonArgs args)
+    {
+        if (isOnTrade) return;
+
+        isOnTrade = true;
+
+        var TGUI = (AtkUnitBase*)args.Addon;
+        if (TGUI == null) return;
+
+        var textNode = TGUI->GetTextNodeById(17);
+        if (textNode == null) return;
+
+        tradeTargetName = textNode->NodeText.ToString();
+        inventoryHandler = new InventoryHandler();
+        Service.Framework.Update += OnFrameworkUpdate;
+        HandlerManager.ChatHandler.isBlocked = true;
+
+        Service.Log.Debug($"Trade Starts with {tradeTargetName}");
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        if (Service.Condition[ConditionFlag.TradeOpen]) return;
+
+        Service.Framework.Update -= OnFrameworkUpdate;
+        Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndTrade());
+    }
+
+    private void EndTrade()
+    {
+        if (Service.Condition[ConditionFlag.TradeOpen])
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
-
-            Initialized = true;
-        }
-
-        private unsafe void StartTrade(AddonEvent type, AddonArgs args)
-        {
-            if (isOnTrade) return;
-
-            isOnTrade = true;
-
-            var TGUI = (AtkUnitBase*)args.Addon;
-            if (TGUI == null) return;
-
-            var textNode = TGUI->GetTextNodeById(17);
-            if (textNode == null) return;
-
-            tradeTargetName = textNode->NodeText.ToString();
-            inventoryHandler = new();
-            Service.Framework.Update += OnFrameworkUpdate;
-            HandlerManager.ChatHandler.isBlocked = true;
-
-            Service.Log.Debug($"Trade Starts with {tradeTargetName}");
-        }
-
-        private void OnFrameworkUpdate(IFramework framework)
-        {
-            if (Service.Condition[ConditionFlag.TradeOpen]) return;
-
-            Service.Framework.Update -= OnFrameworkUpdate;
             Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndTrade());
+            return;
         }
 
-        private void EndTrade()
-        {
-            if (Service.Condition[ConditionFlag.TradeOpen])
-            {
-                Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndTrade());
-                return;
-            }
+        Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
-            Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
+        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
+                                        RecordChangeType.All, 13);
+        tradeTargetName = string.Empty;
+        HandlerManager.ChatHandler.isBlocked = false;
+        HandlerManager.Nullify(ref inventoryHandler);
+        isOnTrade = false;
 
-            var items = inventoryHandler?.Items ?? new();
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
-                                            RecordChangeType.All, 13);
-            tradeTargetName = string.Empty;
-            HandlerManager.ChatHandler.isBlocked = false;
-            HandlerManager.Nullify(ref inventoryHandler);
-            isOnTrade = false;
+        Service.Log.Debug("Currency Change Check Completes.");
+    }
 
-            Service.Log.Debug("Currency Change Check Completes.");
-        }
+    public void Uninit()
+    {
+        Service.Framework.Update -= OnFrameworkUpdate;
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+        HandlerManager.Nullify(ref inventoryHandler);
+        tradeTargetName = string.Empty;
 
-        public void Uninit()
-        {
-            Service.Framework.Update -= OnFrameworkUpdate;
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
-            HandlerManager.Nullify(ref inventoryHandler);
-            tradeTargetName = string.Empty;
-
-            Initialized = false;
-        }
+        Initialized = false;
     }
 }

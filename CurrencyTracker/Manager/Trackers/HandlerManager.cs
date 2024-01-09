@@ -1,60 +1,53 @@
-namespace CurrencyTracker.Manager.Trackers
+namespace CurrencyTracker.Manager.Trackers;
+
+public class HandlerManager
 {
-    public class HandlerManager
+    public static HashSet<ITrackerHandler> Handlers = new();
+    public static ChatHandler? ChatHandler;
+
+    public HandlerManager()
     {
-        public static HashSet<ITrackerHandler> Handlers = new();
-        public static ChatHandler? ChatHandler;
+        var types = Assembly.GetExecutingAssembly().GetTypes()
+                            .Where(t => t.GetInterfaces().Contains(typeof(ITrackerHandler)) &&
+                                        t.GetConstructor(Type.EmptyTypes) != null);
 
-        public HandlerManager()
+        foreach (var type in types)
         {
-            var types = Assembly.GetExecutingAssembly().GetTypes()
-                .Where(t => t.GetInterfaces().Contains(typeof(ITrackerHandler)) && t.GetConstructor(Type.EmptyTypes) != null);
+            if (type.Name.Contains("InventoryHandler")) continue;
 
-            foreach (var type in types)
-            {
-                if (type.Name.Contains("InventoryHandler")) continue;
-
-                var instance = Activator.CreateInstance(type);
-                if (instance is ITrackerHandler handler)
-                {
-                    Handlers.Add(handler);
-                }
-            }
-
-            ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
+            var instance = Activator.CreateInstance(type);
+            if (instance is ITrackerHandler handler) Handlers.Add(handler);
         }
 
-        public static void Init()
-        {
-            foreach (var handler in Handlers)
+        ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
+    }
+
+    public static void Init()
+    {
+        foreach (var handler in Handlers)
+            if (!handler.Initialized)
             {
-                if (!handler.Initialized)
-                {
-                    handler.Init();
-                    Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
-                }
-                else
-                {
-                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
-                }
+                handler.Init();
+                Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
             }
-        }
+            else
+                Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
+    }
 
-        public static void Nullify<T>(ref T handler) where T : ITrackerHandler?
+    public static void Nullify<T>(ref T handler) where T : ITrackerHandler?
+    {
+        if (handler == null) return;
+
+        handler.Uninit();
+        handler = default;
+    }
+
+    public static void Uninit()
+    {
+        foreach (var handler in Handlers)
         {
-            if (handler == null) return;
-
             handler.Uninit();
-            handler = default;
-        }
-        
-        public static void Uninit()
-        {
-            foreach (var handler in Handlers)
-            {
-                handler.Uninit();
-                Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
-            }
+            Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
         }
     }
 }

@@ -1,23 +1,25 @@
-namespace CurrencyTracker.Manager.Trackers.Components
+namespace CurrencyTracker.Manager.Trackers.Components;
+
+public class LetterAttachments : ITrackerComponent
 {
-    public class LetterAttachments : ITrackerComponent
+    public bool Initialized { get; set; }
+
+    private string LetterSender = string.Empty;
+    private InventoryHandler? inventoryHandler;
+
+    public void Init()
     {
-        public bool Initialized { get; set; } = false;
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
 
-        private string LetterSender = string.Empty;
-        private InventoryHandler? inventoryHandler;
+        Initialized = true;
+    }
 
-        public void Init()
+    private unsafe void OnLetterViewer(AddonEvent type, AddonArgs args)
+    {
+        switch (type)
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
-
-            Initialized = true;
-        }
-
-        private unsafe void OnLetterViewer(AddonEvent type, AddonArgs args)
-        {
-            if (type == AddonEvent.PostSetup)
+            case AddonEvent.PostSetup:
             {
                 var UI = (AtkUnitBase*)args.Addon;
                 if (!IsAddonNodesReady(UI)) return;
@@ -29,36 +31,38 @@ namespace CurrencyTracker.Manager.Trackers.Components
                 if (textNode == null) return;
 
                 LetterSender = textNode->NodeText.ToString();
-                inventoryHandler = new();
+                inventoryHandler = new InventoryHandler();
                 HandlerManager.ChatHandler.isBlocked = true;
+                break;
             }
-            else if (type == AddonEvent.PreFinalize)
-            {
+            case AddonEvent.PreFinalize:
                 Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(t => EndLetterAttachments());
-            }
+                break;
         }
+    }
 
-        private void EndLetterAttachments()
-        {
-            Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
+    private void EndLetterAttachments()
+    {
+        Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
 
-            var items = inventoryHandler?.Items ?? new();
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", LetterSender)})", RecordChangeType.All, 24, TransactionFileCategory.Inventory, 0);
+        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        Service.Tracker.CheckCurrencies(
+            items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", LetterSender)})", RecordChangeType.All,
+            24);
 
-            HandlerManager.Nullify(ref inventoryHandler);
-            HandlerManager.ChatHandler.isBlocked = false;
-            LetterSender = string.Empty;
+        HandlerManager.Nullify(ref inventoryHandler);
+        HandlerManager.ChatHandler.isBlocked = false;
+        LetterSender = string.Empty;
 
-            Service.Log.Debug("Currency Change Check Completes.");
-        }
+        Service.Log.Debug("Currency Change Check Completes.");
+    }
 
-        public void Uninit()
-        {
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
-            HandlerManager.Nullify(ref inventoryHandler);
+    public void Uninit()
+    {
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
+        HandlerManager.Nullify(ref inventoryHandler);
 
-            Initialized = false;
-        }
+        Initialized = false;
     }
 }

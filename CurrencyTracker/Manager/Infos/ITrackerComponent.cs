@@ -1,11 +1,10 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public interface ITrackerComponent
 {
-    public interface ITrackerComponent
-    {
-        void Init();
+    void Init();
 
-        void Uninit();
+    void Uninit();
 
-        bool Initialized { get; set; }
-    }
+    bool Initialized { get; set; }
 }

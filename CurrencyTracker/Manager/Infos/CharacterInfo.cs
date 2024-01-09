@@ -1,9 +1,8 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public class CharacterInfo
 {
-    public class CharacterInfo
-    {
-        public string Name { get; set; } = null!;
-        public string Server { get; set; } = null!;
-        public ulong ContentID { get; set; }
-    }
+    public string Name { get; set; } = null!;
+    public string Server { get; set; } = null!;
+    public ulong ContentID { get; set; }
 }

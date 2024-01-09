@@ -1,9 +1,8 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public enum RecordChangeType
 {
-    public enum RecordChangeType
-    {
-        All = 0,
-        Positive = 1,
-        Negative = 2
-    }
+    All = 0,
+    Positive = 1,
+    Negative = 2
 }

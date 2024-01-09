@@ -2,11 +2,11 @@ namespace CurrencyTracker.Manager;
 
 public class TransactionsConvertor
 {
-    public DateTime TimeStamp { get; set; } // 时间戳 TimeStamp
-    public long Change { get; set; } // 收支 Change
-    public long Amount { get; set; } // 总金额 Currency Amount
+    public DateTime TimeStamp { get; set; }                  // 时间戳 TimeStamp
+    public long Change { get; set; }                         // 收支 Change
+    public long Amount { get; set; }                         // 总金额 Currency Amount
     public string LocationName { get; set; } = string.Empty; // 地名 Location Name
-    public string Note { get; set; } = string.Empty; // 备注 Note
+    public string Note { get; set; } = string.Empty;         // 备注 Note
 
     private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
@@ -24,13 +24,12 @@ public class TransactionsConvertor
         var start = 0;
 
         for (var i = 0; i < span.Length; i++)
-        {
             if (span[i] == ';')
             {
                 parts[partIndex++] = span.Slice(start, i - start).ToString();
                 start = i + 1;
             }
-        }
+
         parts[partIndex] = span.Slice(start).ToString();
 
         var transaction = new TransactionsConvertor
@@ -48,10 +47,7 @@ public class TransactionsConvertor
     // 解析整个数据文件 Parse a data file
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
-        if (!File.Exists(filePath))
-        {
-            return new();
-        }
+        if (!File.Exists(filePath)) return new List<TransactionsConvertor>();
 
         var transactions = new List<TransactionsConvertor>();
 
@@ -82,11 +78,9 @@ public class TransactionsConvertor
             using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             using (var writer = new StreamWriter(fileStream))
             {
-                foreach (var transaction in singleTransaction)
-                {
-                    writer.WriteLine(transaction.ToFileLine());
-                }
+                foreach (var transaction in singleTransaction) writer.WriteLine(transaction.ToFileLine());
             }
+
             singleTransaction.Clear();
         }
         catch (IOException ex)
@@ -103,10 +97,7 @@ public class TransactionsConvertor
         {
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(fileStream);
-            foreach (var transaction in transactions)
-            {
-                writer.WriteLine(transaction.ToFileLine());
-            }
+            foreach (var transaction in transactions) writer.WriteLine(transaction.ToFileLine());
         }
         catch (IOException ex)
         {

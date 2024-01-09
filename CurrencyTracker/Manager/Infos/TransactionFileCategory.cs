@@ -1,10 +1,9 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public enum TransactionFileCategory
 {
-    public enum TransactionFileCategory
-    {
-        Inventory = 0,
-        Retainer = 1,
-        SaddleBag = 2,
-        PremiumSaddleBag = 3,
-    }
+    Inventory = 0,
+    Retainer = 1,
+    SaddleBag = 2,
+    PremiumSaddleBag = 3
 }

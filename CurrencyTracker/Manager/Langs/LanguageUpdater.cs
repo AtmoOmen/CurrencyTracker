@@ -7,21 +7,16 @@ public class LanguageUpdater
     public static async Task DownloadLanguageFilesAsync()
     {
         var httpClient = new HttpClient();
-        var baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
-        var fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
+        const string baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
+        const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
 
         if (!Directory.Exists(LanguageManager.LangsDirectory))
-        {
             Directory.CreateDirectory(LanguageManager.LangsDirectory);
-        }
 
         foreach (var language in LanguageManager.LanguageNames)
         {
             var success = await TryDownloadLanguageFileAsync(httpClient, baseUrl, language.Language);
-            if (!success)
-            {
-                await TryDownloadLanguageFileAsync(httpClient, fallbackBaseUrl, language.Language);
-            }
+            if (!success) await TryDownloadLanguageFileAsync(httpClient, fallbackBaseUrl, language.Language);
         }
     }
 
@@ -40,11 +35,9 @@ public class LanguageUpdater
                 Service.Log.Debug($"Successfully downloaded {language} language file.");
                 return true;
             }
-            else
-            {
-                Service.Log.Error($"Failed to download {language} language file. Status: {response.StatusCode}");
-                return false;
-            }
+
+            Service.Log.Error($"Failed to download {language} language file. Status: {response.StatusCode}");
+            return false;
         }
         catch (Exception ex)
         {

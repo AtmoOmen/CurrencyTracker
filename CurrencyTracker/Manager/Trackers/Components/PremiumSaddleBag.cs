@@ -1,64 +1,64 @@
-namespace CurrencyTracker.Manager.Trackers.Components
+namespace CurrencyTracker.Manager.Trackers.Components;
+
+public class PremiumSaddleBag : ITrackerComponent
 {
-    public class PremiumSaddleBag : ITrackerComponent
+    public bool Initialized { get; set; }
+
+    public static readonly InventoryType[] PSaddleBagInventories =
     {
-        public bool Initialized { get; set; } = false;
+        InventoryType.PremiumSaddleBag1, InventoryType.PremiumSaddleBag1
+    };
 
-        public static readonly InventoryType[] PSaddleBagInventories = new InventoryType[]
+    internal static Dictionary<uint, long> InventoryItemCount = new();
+    private string windowTitle = string.Empty;
+
+    public void Init()
+    {
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
+
+        Initialized = true;
+    }
+
+    private void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
+    {
+        switch (type)
         {
-            InventoryType.PremiumSaddleBag1, InventoryType.PremiumSaddleBag1
-        };
-
-        internal static Dictionary<uint, long> InventoryItemCount = new();
-        private string windowTitle = string.Empty;
-
-        public void Init()
-        {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
-
-            Initialized = true;
-        }
-
-        private void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
-        {
-            switch (type)
+            case AddonEvent.PostSetup:
             {
-                case AddonEvent.PostSetup:
-                    {
-                        windowTitle = GetWindowTitle(args.Addon, 86);
-                        Service.Framework.Update += PSaddleBagScanner;
+                windowTitle = GetWindowTitle(args.Addon, 86);
+                Service.Framework.Update += PSaddleBagScanner;
 
-                        break;
-                    }
-                case AddonEvent.PreFinalize:
-                    {
-                        Service.Framework.Update -= PSaddleBagScanner;
+                break;
+            }
+            case AddonEvent.PreFinalize:
+            {
+                Service.Framework.Update -= PSaddleBagScanner;
 
-                        Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21, TransactionFileCategory.SaddleBag, 0);
-                        Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21, TransactionFileCategory.Inventory, 0);
+                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                                                TransactionFileCategory.SaddleBag);
+                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 
-                        InventoryItemCount.Clear();
+                InventoryItemCount.Clear();
 
-                        break;
-                    }
+                break;
             }
         }
+    }
 
-        private unsafe void PSaddleBagScanner(IFramework framework)
-        {
-            InventoryScanner(PSaddleBagInventories, ref InventoryItemCount);
-        }
+    private void PSaddleBagScanner(IFramework framework)
+    {
+        InventoryScanner(PSaddleBagInventories, ref InventoryItemCount);
+    }
 
-        public void Uninit()
-        {
-            Service.Framework.Update -= PSaddleBagScanner;
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
-            windowTitle = string.Empty;
-            InventoryItemCount.Clear();
+    public void Uninit()
+    {
+        Service.Framework.Update -= PSaddleBagScanner;
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
+        windowTitle = string.Empty;
+        InventoryItemCount.Clear();
 
-            Initialized = false;
-        }
+        Initialized = false;
     }
 }

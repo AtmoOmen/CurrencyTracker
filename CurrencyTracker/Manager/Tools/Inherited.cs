@@ -4,7 +4,7 @@ public class UpdateDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKe
 {
     public event Action? Update;
 
-    public UpdateDictionary() : base() { }
+    public UpdateDictionary() { }
 
     public UpdateDictionary(IDictionary<TKey, TValue> dictionary) : base(dictionary) { }
 
@@ -17,11 +17,7 @@ public class UpdateDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKe
     public new bool Remove(TKey key)
     {
         var removed = base.Remove(key);
-        if (removed)
-        {
-            Update?.Invoke();
-        }
+        if (removed) Update?.Invoke();
         return removed;
     }
 }
-

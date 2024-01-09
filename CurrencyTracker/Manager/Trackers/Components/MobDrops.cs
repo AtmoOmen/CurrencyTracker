@@ -1,74 +1,77 @@
-namespace CurrencyTracker.Manager.Trackers.Components
+namespace CurrencyTracker.Manager.Trackers.Components;
+
+public class MobDrops : ITrackerComponent
 {
-    public class MobDrops : ITrackerComponent
+    public bool Initialized { get; set; }
+
+    private readonly HashSet<string> enemiesList = new();
+    private InventoryHandler? inventoryHandler;
+
+    public void Init()
     {
-        public bool Initialized { get; set; } = false;
+        Service.Condition.ConditionChange += OnConditionChange;
 
-        private HashSet<string> enemiesList = new();
-        private InventoryHandler? inventoryHandler;
+        Initialized = true;
+    }
 
-        public void Init()
+    private unsafe void OnConditionChange(ConditionFlag flag, bool value)
+    {
+        if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty()) return;
+
+        if (value)
         {
-            Service.Condition.ConditionChange += OnConditionChange;
+            if (FateManager.Instance()->CurrentFate != null || inventoryHandler != null) return;
+            HandlerManager.ChatHandler.isBlocked = true;
+            inventoryHandler = new InventoryHandler();
+            Service.Framework.Update += OnFrameworkUpdate;
+        }
+        else
+            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
+    }
 
-            Initialized = true;
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        var target = Service.TargetManager.Target;
+        if (target is BattleNpc battleNPC && target.ObjectKind == ObjectKind.BattleNpc &&
+            (battleNPC.StatusFlags & (StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut)) != 0 &&
+            !enemiesList.Contains(battleNPC.Name.TextValue))
+        {
+            enemiesList.Add(battleNPC.Name.TextValue);
+            Service.Log.Debug($"{battleNPC.Name.TextValue}");
+        }
+    }
+
+    private void EndMobDropsHandler()
+    {
+        if (Service.Condition[ConditionFlag.InCombat])
+        {
+            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
+            return;
         }
 
-        private unsafe void OnConditionChange(ConditionFlag flag, bool value)
-        {
-            if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty()) return;
+        ;
 
-            if (value)
-            {
-                if (FateManager.Instance()->CurrentFate != null || inventoryHandler != null) return;
-                HandlerManager.ChatHandler.isBlocked = true;
-                inventoryHandler = new();
-                Service.Framework.Update += OnFrameworkUpdate;
-            }
-            else
-            {
-                Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
-            }
-        }
+        Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
+        Service.Framework.Update -= OnFrameworkUpdate;
 
-        private void OnFrameworkUpdate(IFramework framework)
-        {
-            var target = Service.TargetManager.Target;
-            if (target is BattleNpc battleNPC && target.ObjectKind == ObjectKind.BattleNpc && (battleNPC.StatusFlags & (StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut)) != 0 && !enemiesList.Contains(battleNPC.Name.TextValue))
-            {
-                enemiesList.Add(battleNPC.Name.TextValue);
-                Service.Log.Debug($"{battleNPC.Name.TextValue}");
-            }
-        }
+        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        Service.Tracker.CheckCurrencies(
+            items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
+            RecordChangeType.All, 8);
 
-        private void EndMobDropsHandler()
-        {
-            if (Service.Condition[ConditionFlag.InCombat]) 
-            {
-                Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
-                return;
-            };
+        enemiesList.Clear();
+        HandlerManager.ChatHandler.isBlocked = false;
+        HandlerManager.Nullify(ref inventoryHandler);
 
-            Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
-            Service.Framework.Update -= OnFrameworkUpdate;
+        Service.Log.Debug("Currency Change Check Completes.");
+    }
 
-            var items = inventoryHandler?.Items ?? new();
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})", RecordChangeType.All, 8);
+    public void Uninit()
+    {
+        Service.Condition.ConditionChange -= OnConditionChange;
+        Service.Framework.Update -= OnFrameworkUpdate;
+        HandlerManager.Nullify(ref inventoryHandler);
 
-            enemiesList.Clear();
-            HandlerManager.ChatHandler.isBlocked = false;
-            HandlerManager.Nullify(ref inventoryHandler);
-
-            Service.Log.Debug("Currency Change Check Completes.");
-        }
-
-        public void Uninit()
-        {
-            Service.Condition.ConditionChange -= OnConditionChange;
-            Service.Framework.Update -= OnFrameworkUpdate;
-            HandlerManager.Nullify(ref inventoryHandler);
-
-            Initialized = false;
-        }
+        Initialized = false;
     }
 }

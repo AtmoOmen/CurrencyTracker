@@ -1,27 +1,28 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public class CharacterCurrencyInfo
 {
-    public class CharacterCurrencyInfo
+    private CharacterInfo? character;
+
+    public CharacterInfo Character
     {
-        private CharacterInfo? character;
-        public CharacterInfo Character
+        get => character;
+        set
         {
-            get { return character; }
-            set
-            {
-                character = value;
-                GetCharacterCurrencyAmount();
-            }
+            character = value;
+            GetCharacterCurrencyAmount();
         }
-        public ConcurrentDictionary<uint, long> CurrencyAmount => currencyAmount;
+    }
 
-        private ConcurrentDictionary<uint, long> currencyAmount = new();
+    public ConcurrentDictionary<uint, long> CurrencyAmount { get; } = new();
 
-        public void GetCharacterCurrencyAmount()
-        {
-            Parallel.ForEach(Plugin.Configuration.AllCurrencyID, currencyKey =>
-            {
-                currencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
-            });
-        }
+    public void GetCharacterCurrencyAmount()
+    {
+        Parallel.ForEach(Plugin.Configuration.AllCurrencyID,
+                         currencyKey =>
+                         {
+                             CurrencyAmount[currencyKey] =
+                                 CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
+                         });
     }
 }

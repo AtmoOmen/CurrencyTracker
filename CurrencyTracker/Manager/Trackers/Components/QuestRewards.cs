@@ -1,91 +1,93 @@
-namespace CurrencyTracker.Manager.Trackers.Components
+namespace CurrencyTracker.Manager.Trackers.Components;
+
+public class QuestRewards : ITrackerComponent
 {
-    public class QuestRewards : ITrackerComponent
+    public bool Initialized { get; set; }
+
+    private bool isReadyFinish;
+    private string questName = string.Empty;
+
+    private InventoryHandler? inventoryHandler;
+
+    public void Init()
     {
-        public bool Initialized { get; set; } = false;
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
 
-        private bool isReadyFinish = false;
-        private string questName = string.Empty;
+        Initialized = true;
+    }
 
-        InventoryHandler? inventoryHandler;
+    private void OnQuestRewards(AddonEvent type, AddonArgs? args)
+    {
+        if (isReadyFinish) return;
 
-        public void Init()
+        BeginQuestHandler();
+    }
+
+    private unsafe void BeginQuestHandler()
+    {
+        ResetQuestState();
+
+        var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
+        if (JR == null || !IsAddonNodesReady(JR)) return;
+
+        questName = JR->GetTextNodeById(30)->NodeText.ToString();
+        var buttonNode = JR->GetNodeById(37);
+        if (questName.IsNullOrEmpty() || buttonNode == null) return;
+
+        isReadyFinish = true;
+        inventoryHandler = new InventoryHandler();
+        HandlerManager.ChatHandler.isBlocked = true;
+        Service.Framework.Update += OnFrameworkUpdate;
+
+        Service.Log.Debug($"Quest {questName} Ready to Finish!");
+    }
+
+    private void OnFrameworkUpdate(IFramework framework)
+    {
+        if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
+
+        Service.Framework.Update -= OnFrameworkUpdate;
+        Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndQuestHandler());
+    }
+
+    private void EndQuestHandler()
+    {
+        if (Flags.OccupiedInEvent() || Flags.BetweenAreas())
         {
-            Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
-
-            Initialized = true;
-        }
-
-        private void OnQuestRewards(AddonEvent type, AddonArgs? args)
-        {
-            if (isReadyFinish) return;
-
-            BeginQuestHandler();
-        }
-
-        private unsafe void BeginQuestHandler()
-        {
-            ResetQuestState();
-
-            var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
-            if (JR == null || !IsAddonNodesReady(JR)) return;
-
-            questName = JR->GetTextNodeById(30)->NodeText.ToString();
-            var buttonNode = JR->GetNodeById(37);
-            if (questName.IsNullOrEmpty() || buttonNode == null) return;
-
-            isReadyFinish = true;
-            inventoryHandler = new();
-            HandlerManager.ChatHandler.isBlocked = true;
-            Service.Framework.Update += OnFrameworkUpdate;
-
-            Service.Log.Debug($"Quest {questName} Ready to Finish!");
-        }
-
-        private void OnFrameworkUpdate(IFramework framework)
-        {
-            if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return;
-
-            Service.Framework.Update -= OnFrameworkUpdate;
             Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndQuestHandler());
+            return;
         }
 
-        private void EndQuestHandler()
-        {
-            if (Flags.OccupiedInEvent() || Flags.BetweenAreas())
-            {
-                Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndQuestHandler());
-                return;
-            };
+        ;
 
-            Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
+        Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
 
-            isReadyFinish = false;
+        isReadyFinish = false;
 
-            var items = inventoryHandler?.Items ?? new();
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})", RecordChangeType.All, 9);
+        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})",
+                                        RecordChangeType.All, 9);
 
-            ResetQuestState();
+        ResetQuestState();
 
-            Service.Log.Debug("Currency Change Check Completes.");
-        }
+        Service.Log.Debug("Currency Change Check Completes.");
+    }
 
-        private void ResetQuestState()
-        {
-            Service.Framework.Update -= OnFrameworkUpdate;
-            HandlerManager.ChatHandler.isBlocked = false;
-            isReadyFinish = false;
-            questName = string.Empty;
-            HandlerManager.Nullify(ref inventoryHandler);
-        }
+    private void ResetQuestState()
+    {
+        Service.Framework.Update -= OnFrameworkUpdate;
+        HandlerManager.ChatHandler.isBlocked = false;
+        isReadyFinish = false;
+        questName = string.Empty;
+        HandlerManager.Nullify(ref inventoryHandler);
+    }
 
-        public void Uninit()
-        {
-            Service.Framework.Update -= OnFrameworkUpdate;
-            Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
-            HandlerManager.Nullify(ref inventoryHandler);
+    public void Uninit()
+    {
+        Service.Framework.Update -= OnFrameworkUpdate;
+        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
+        HandlerManager.Nullify(ref inventoryHandler);
 
-            Initialized = false;
-        }
+        Initialized = false;
     }
 }

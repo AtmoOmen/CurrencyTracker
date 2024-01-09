@@ -1,12 +1,11 @@
-namespace CurrencyTracker.Manager.Infos
+namespace CurrencyTracker.Manager.Infos;
+
+public interface ITrackerHandler
 {
-    public interface ITrackerHandler
-    {
-        void Init();
+    void Init();
 
-        void Uninit();
+    void Uninit();
 
-        bool isBlocked { get; set; }
-        bool Initialized { get; set; }
-    }
+    bool isBlocked { get; set; }
+    bool Initialized { get; set; }
 }
