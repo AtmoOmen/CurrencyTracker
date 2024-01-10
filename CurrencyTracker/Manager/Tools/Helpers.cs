@@ -104,7 +104,7 @@ public static class Helpers
 
     public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
     {
-        textNodeIDs ??= [3, 4];
+        textNodeIDs ??= new uint[] { 3, 4 };
 
         var UI = (AtkUnitBase*)args.Addon;
 
@@ -125,7 +125,7 @@ public static class Helpers
 
     public static unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
     {
-        textNodeIDs ??= [3, 4];
+        textNodeIDs ??= new uint[] {3, 4};
 
         var UI = (AtkUnitBase*)addon;
 
