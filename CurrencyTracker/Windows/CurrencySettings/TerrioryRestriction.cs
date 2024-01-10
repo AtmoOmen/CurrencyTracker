@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Windows;
 
-public partial class CurrencySettings : Window, IDisposable
+public partial class CurrencySettings
 {
     private Dictionary<uint, string>? TerritoryNamesTR;
     private string searchFilterTR = string.Empty;

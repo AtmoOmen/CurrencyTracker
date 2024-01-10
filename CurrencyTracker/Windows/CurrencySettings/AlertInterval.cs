@@ -1,13 +1,13 @@
 namespace CurrencyTracker.Windows;
 
-public partial class CurrencySettings : Window, IDisposable
+public partial class CurrencySettings
 {
-    private int alertMode = 0; // 0 - Amount; 1 - Change;
-    private int intervalStart = 0;
+    private int alertMode; // 0 - Amount; 1 - Change;
+    private int intervalStart;
     private int intervalEnd = 1;
     private Interval<int>? selectedInterval;
     private TransactionFileCategory viewIA = TransactionFileCategory.Inventory;
-    private ulong idIA = 0;
+    private ulong idIA;
     private Vector2 alertIntervalWidth = new(200, 100);
 
     private void IntervalAlertUI()
@@ -39,7 +39,8 @@ public partial class CurrencySettings : Window, IDisposable
             if (combo)
             {
                 DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
-                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID]) DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
+                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+                    DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
                 DrawViewSelectableIA(TransactionFileCategory.SaddleBag, 0);
                 DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
             }
@@ -55,17 +56,15 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
         ImGui.SetNextItemWidth(alertIntervalWidth.X - M.checkboxColumnWidth + 48);
-        using (var combo = ImRaii.Combo("##IntervalSelectCombo", selectedInterval != null ? selectedInterval.ToIntervalString() : intervals.Any() ? Service.Lang.GetText("PleaseSelect") : ""))
+        using (var combo = ImRaii.Combo("##IntervalSelectCombo",
+                                        selectedInterval != null ? selectedInterval.ToIntervalString() :
+                                        intervals.Any() ? Service.Lang.GetText("PleaseSelect") : ""))
         {
             if (combo)
             {
                 foreach (var interval in intervals)
-                {
                     if (ImGui.Selectable(interval.ToIntervalString()))
-                    {
                         selectedInterval = new Interval<int>(interval.Start, interval.End);
-                    }
-                }
             }
         }
 
@@ -85,20 +84,16 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.BeginGroup();
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
         if (ImGui.InputInt($"{Service.Lang.GetText("Minimum")}##MinIntervalStart", ref intervalStart, 1000, 1000000))
-        {
             intervalStart = intervalStart != -1 ? Math.Max(0, intervalStart) : -1;
-        }
 
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
         if (ImGui.InputInt($"{Service.Lang.GetText("Maximum")}##MaxIntervalEnd", ref intervalEnd, 1000, 1000000))
-        {
             intervalEnd = intervalEnd != -1 ? Math.Max(intervalEnd, intervalStart) : -1;
-        }
         ImGui.EndGroup();
         alertIntervalWidth = ImGui.GetItemRectSize();
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("AddInterval", FontAwesomeIcon.Plus))
+        if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add")))
         {
             AddIntervalHandler(selectedCurrencyID, intervalStart, intervalEnd);
             C.Save();
@@ -112,7 +107,8 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("NotificationType")}:");
 
         var b1 = C.AlertNotificationChat;
-        if (ImGui.Checkbox(C.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref b1))
+        if (ImGui.Checkbox(
+                C.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref b1))
         {
             C.AlertNotificationChat = b1;
             C.Save();
@@ -120,17 +116,25 @@ public partial class CurrencySettings : Window, IDisposable
 
         if (b1)
         {
-            var paramsEP = new string[5] { Service.Lang.GetText("AlertType"), Service.Lang.GetText("ParamEP-Value"), Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType") ,Service.Lang.GetText("Interval") };
+            var paramsEP = new string[5]
+            {
+                Service.Lang.GetText("AlertType"), Service.Lang.GetText("ParamEP-Value"),
+                Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType"),
+                Service.Lang.GetText("Interval")
+            };
             var key = "AlertIntervalMessage";
-            var textToShow = C.CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
+            var textToShow = C.CustomNoteContents.TryGetValue(key, out var value)
+                                 ? value
+                                 : Service.Lang.GetOrigText(key);
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(alertIntervalWidth.X - M.checkboxColumnWidth + 8);
-            if (ImGui.InputText($"##AlertNotificationChatNote", ref textToShow, 50))
+            if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
                 C.CustomNoteContents[key] = textToShow;
                 C.Save();
             }
+
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
@@ -140,12 +144,10 @@ public partial class CurrencySettings : Window, IDisposable
                     if (paramsEP != null)
                     {
                         ImGui.Separator();
-                        for (var i = 0; i < paramsEP.Length; i++)
-                        {
-                            ImGui.Text("{" + i + "}" + $" - {paramsEP[i]}");
-                        }
+                        for (var i = 0; i < paramsEP.Length; i++) ImGui.Text("{" + i + "}" + $" - {paramsEP[i]}");
                     }
                 }
+
                 ImGui.EndTooltip();
             }
 
@@ -161,7 +163,7 @@ public partial class CurrencySettings : Window, IDisposable
     private void DrawViewSelectableIA(TransactionFileCategory category, ulong ID)
     {
         var text = GetSelectedViewName(category, ID);
-        var boolUI = (category == viewIA && ID == idIA);
+        var boolUI = category == viewIA && ID == idIA;
         if (ImGui.Selectable($"{text}##{category}_{ID}", boolUI))
         {
             selectedInterval = null;
@@ -196,15 +198,15 @@ public partial class CurrencySettings : Window, IDisposable
         }
     }
 
-    public static List<Interval<int>> GetOrCreateIntervals(uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
+    public static List<Interval<int>> GetOrCreateIntervals(
+        uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
     {
-        var intervalList = alertMode == 0 ? Plugin.Configuration.CurrencyRules[currencyID].AlertedAmountIntervals : Plugin.Configuration.CurrencyRules[currencyID].AlertedChangeIntervals;
+        var intervalList = alertMode == 0
+                               ? Plugin.Configuration.CurrencyRules[currencyID].AlertedAmountIntervals
+                               : Plugin.Configuration.CurrencyRules[currencyID].AlertedChangeIntervals;
         var key = ConstructKeyIA(view, ID);
 
-        if (!intervalList.TryGetValue(key, out var intervals))
-        {
-            intervalList[key] = new List<Interval<int>>();
-        }
+        if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = new List<Interval<int>>();
 
         return intervalList[key];
     }

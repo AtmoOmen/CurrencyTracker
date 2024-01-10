@@ -43,6 +43,27 @@ public static class Helpers
         }
     }
 
+    public static void OpenAndSelectFile(string filePath)
+    {
+        try
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Process.Start("explorer.exe", $"/select,\"{filePath}\"");
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", $"-R \"{filePath}\"");
+            }
+            else
+                Service.Log.Error("Unsupported OS");
+        }
+        catch(Exception ex)
+        {
+            Service.Log.Error($"Error :{ex.Message}");
+        }
+    }
+
     public static bool IsFileLocked(FileInfo file)
     {
         FileStream? stream = null;
