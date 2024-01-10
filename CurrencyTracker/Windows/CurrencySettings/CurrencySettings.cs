@@ -6,7 +6,7 @@ public partial class CurrencySettings : Window, IDisposable
     private readonly Plugin? P = Plugin.Instance;
     private readonly Main? M = Plugin.Instance.Main;
 
-    private uint selectedCurrencyID = 0;
+    private uint selectedCurrencyID;
     private int currencyInfoGroupWidth = 200;
 
     public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Plugin.Name}")
@@ -27,7 +27,7 @@ public partial class CurrencySettings : Window, IDisposable
     {
         if (M == null || M.selectedCurrencyID == 0)
         {
-            this.IsOpen = false;
+            IsOpen = false;
             return;
         }
 
@@ -45,27 +45,24 @@ public partial class CurrencySettings : Window, IDisposable
 
                         ImGui.Separator();
                         RenameCurrencyUI();
+
+                        ImGui.Separator();
+                        CurrencyFilesInfoUI();
                     }
                 }
 
                 using (var item0 = ImRaii.TabItem(Service.Lang.GetText("Main-CS-AreaRestriction")))
                 {
-                    if (item0)
-                    {
-                        TerrioryRestrictedUI();
-                    }
+                    if (item0) TerrioryRestrictedUI();
                 }
 
-                using (var item0 = ImRaii.TabItem("Alert"))
+                using (var item0 = ImRaii.TabItem(Service.Lang.GetText("Alert")))
                 {
-                    if (item0)
-                    {
-                        IntervalAlertUI();
-                    }
+                    if (item0) IntervalAlertUI();
                 }
             }
-
         }
+
         ImGui.EndGroup();
     }
 
@@ -75,8 +72,9 @@ public partial class CurrencySettings : Window, IDisposable
         var minDimension = Math.Min(region.X, region.Y);
 
         var areaStart = ImGui.GetCursorPos();
-        ImGui.SetCursorPosX(region.X / 2.0f - minDimension / 2.0f);
-        ImGui.Image(C.AllCurrencyIcons[1].ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One, Vector4.One with { W = 0.10f });
+        ImGui.SetCursorPosX((region.X / 2.0f) - (minDimension / 2.0f));
+        ImGui.Image(C.AllCurrencyIcons[1].ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One,
+                    Vector4.One with { W = 0.10f });
         ImGui.SetCursorPos(areaStart);
     }
 
@@ -98,7 +96,8 @@ public partial class CurrencySettings : Window, IDisposable
 
         if (!M.characterCurrencyInfos.Any()) M.LoadDataMCS();
         ImGui.SetWindowFontScale(1);
-        ImGui.Text($"{Service.Lang.GetText("Amount")}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.TryGetValue(selectedCurrencyID, out var amount) ? amount : 0)}");
+        ImGui.Text(
+            $"{Service.Lang.GetText("Amount")}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0))}");
 
         ImGui.SameLine();
         ImGui.Text("");
@@ -106,12 +105,12 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.EndGroup();
         ImGui.EndGroup();
 
-        currencyInfoGroupWidth = (int)(ImGui.GetItemRectSize().X);
+        var padding = ImGui.GetStyle().FramePadding.X;
+        currencyInfoGroupWidth = (int)Math.Max(ImGui.GetItemRectSize().X, ((10 * padding) + ImGui.CalcTextSize(Service.Lang.GetText("Main-CS-AreaRestriction")).X + ImGui.CalcTextSize(Service.Lang.GetText("Info")).X + ImGui.CalcTextSize(Service.Lang.GetText("Alert")).X));
     }
 
-    public void Dispose() 
+    public void Dispose()
     {
-
         searchTimerTR.Elapsed -= SearchTimerTRElapsed;
         searchTimerTR.Stop();
         searchTimerTR.Dispose();
