@@ -719,4 +719,13 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="UpdateTranslations" xml:space="preserve">
     <value>Update Translations</value>
   </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>Alert</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>Data Files</value>
+  </data>
 </root>

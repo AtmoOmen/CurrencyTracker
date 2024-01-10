@@ -719,4 +719,13 @@
   <data name="UpdateTranslations" xml:space="preserve">
     <value>更新翻譯檔案</value>
   </data>
+  <data name="Add" xml:space="preserve">
+    <value>新增</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>警報</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>資料檔案</value>
+  </data>
 </root>
