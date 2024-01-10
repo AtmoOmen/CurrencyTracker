@@ -15,7 +15,7 @@ public sealed class Plugin : IDalamudPlugin
     public CurrencySettings? CurrencySettings { get; private set; }
 
     public WindowSystem WindowSystem = new("CurrencyTracker");
-    public static Configuration? Configuration = null!;
+    public static Configuration? Configuration;
     public static Plugin Instance = null!;
 
 
@@ -44,41 +44,35 @@ public sealed class Plugin : IDalamudPlugin
 
     private void HandleLogin()
     {
-        Configuration.CurrentActiveCharacter ??= new();
-
         CurrentCharacter = GetCurrentCharacter();
 
         if (WindowSystem.Windows.Contains(Main) && Main.selectedCurrencyID != 0)
-        {
-            Main.currentTypeTransactions = Transactions.LoadAllTransactions(Main.selectedCurrencyID);
-        }
+            Main.currentTypeTransactions = TransactionsHandler.LoadAllTransactions(Main.selectedCurrencyID);
 
         Service.Tracker.InitializeTracking();
     }
 
-    public CharacterInfo GetCurrentCharacter()
+    public CharacterInfo? GetCurrentCharacter()
     {
-        if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null || !Service.ClientState.IsLoggedIn) return null;
+        if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null ||
+            !Service.ClientState.IsLoggedIn) return null;
 
         var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
         var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name?.RawString;
         var contentID = Service.ClientState.LocalContentId;
 
         if (playerName.IsNullOrEmpty() || serverName.IsNullOrEmpty() || contentID == 0)
-        {
             Service.Log.Error("Fail to load current character info");
-        }
 
         var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-        if (CurrentCharacter != null && (CurrentCharacter.ContentID == contentID || (CurrentCharacter.Name == playerName && CurrentCharacter.Server == serverName)))
-        {
-            return CurrentCharacter;
-        }
+        if (CurrentCharacter != null && (CurrentCharacter.ContentID == contentID ||
+                                         (CurrentCharacter.Name == playerName &&
+                                          CurrentCharacter.Server == serverName))) return CurrentCharacter;
 
-        Configuration.CurrentActiveCharacter ??= new();
-
-        var existingCharacter = Configuration.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == contentID || (x.Name == playerName && x.Server == serverName));
+        var existingCharacter =
+            Configuration.CurrentActiveCharacter.FirstOrDefault(
+                x => x.ContentID == contentID || (x.Name == playerName && x.Server == serverName));
         if (existingCharacter != null)
         {
             existingCharacter.Server = serverName;
@@ -93,7 +87,7 @@ public sealed class Plugin : IDalamudPlugin
             {
                 Name = playerName,
                 Server = serverName,
-                ContentID = contentID,
+                ContentID = contentID
             };
             Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
         }
@@ -115,7 +109,8 @@ public sealed class Plugin : IDalamudPlugin
 
         if (CurrentCharacter == null) return string.Empty;
 
-        var path = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{CurrentCharacter.Name}_{CurrentCharacter.Server}");
+        var path = Path.Join(PluginInterface.ConfigDirectory.FullName,
+                             $"{CurrentCharacter.Name}_{CurrentCharacter.Server}");
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
@@ -130,10 +125,7 @@ public sealed class Plugin : IDalamudPlugin
         var configDirectory = Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory());
         var configPath = Path.Combine(configDirectory, "CurrencyTracker.json");
 
-        if (File.Exists(configPath))
-        {
-            ParseOldConfiguration(configPath);
-        }
+        if (File.Exists(configPath)) ParseOldConfiguration(configPath);
 
         Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Configuration.Initialize(PluginInterface);
@@ -141,15 +133,12 @@ public sealed class Plugin : IDalamudPlugin
 
     public static void ParseOldConfiguration(string jsonFilePath)
     {
-        if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath))
-        {
-            return;
-        }
+        if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath)) return;
 
         var json = File.ReadAllText(jsonFilePath);
         var jsonObj = JObject.Parse(json);
 
-        var dicts = new Dictionary<string, string>[]
+        var dicts = new[]
         {
             jsonObj["CustomCurrencies"]?.ToObject<Dictionary<string, string>>(),
             jsonObj["PresetCurrencies"]?.ToObject<Dictionary<string, string>>()
@@ -157,33 +146,20 @@ public sealed class Plugin : IDalamudPlugin
 
         foreach (var originalDict in dicts)
         {
-            if (originalDict == null)
-            {
-                continue;
-            }
+            if (originalDict == null) continue;
 
             var swappedDict = new JObject();
 
             foreach (var entry in originalDict)
-            {
                 if (uint.TryParse(entry.Key, out var _))
-                {
                     swappedDict.Add(entry.Key, JToken.FromObject(entry.Value));
-                }
                 else
-                {
                     swappedDict.Add(entry.Value, JToken.FromObject(entry.Key));
-                }
-            }
 
             if (originalDict == dicts[0])
-            {
                 jsonObj["CustomCurrencies"] = swappedDict;
-            }
             else
-            {
                 jsonObj["PresetCurrencies"] = swappedDict;
-            }
         }
 
         var outputJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
@@ -198,7 +174,8 @@ public sealed class Plugin : IDalamudPlugin
 
     public void OnCommand(string command, string args)
     {
-        if (Main.visibleColumns == Array.Empty<string>()) Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+        if (Main.visibleColumns == Array.Empty<string>())
+            Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
         if (args.IsNullOrEmpty())
         {
             Main.IsOpen = !Main.IsOpen;
@@ -222,19 +199,15 @@ public sealed class Plugin : IDalamudPlugin
                 {
                     Main.IsOpen = true;
                     Main.selectedCurrencyID = currencyID;
-                    Main.currentTypeTransactions = Main.ApplyFilters(Transactions.LoadAllTransactions(currencyID));
+                    Main.currentTypeTransactions = Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID));
                 }
                 else
-                {
                     Main.IsOpen = false;
-                }
+
                 break;
             default:
                 Service.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
-                foreach (var currency in matchingCurrencies)
-                {
-                    Service.Chat.PrintError(currency);
-                }
+                foreach (var currency in matchingCurrencies) Service.Chat.PrintError(currency);
                 break;
         }
     }
@@ -261,10 +234,7 @@ public sealed class Plugin : IDalamudPlugin
             if (isCS)
             {
                 var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
-                if (pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase))
-                {
-                    matchingCurrencies.Add(currency);
-                }
+                if (pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase)) matchingCurrencies.Add(currency);
             }
         }
 
@@ -299,7 +269,8 @@ public sealed class Plugin : IDalamudPlugin
         var currentCharacter = GetCurrentCharacter();
         if (currentCharacter == null) return;
 
-        if (Main.visibleColumns == Array.Empty<string>()) Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+        if (Main.visibleColumns == Array.Empty<string>())
+            Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
         Main.IsOpen = !Main.IsOpen;
     }

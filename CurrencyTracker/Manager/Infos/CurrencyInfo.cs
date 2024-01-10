@@ -30,9 +30,9 @@ public static class CurrencyInfo
     {
         if (LuminaCache<Item>.Instance.GetRow(currencyID) is { } currencyItem)
         {
-            var CurrencyName = currencyItem.Name.ToDalamudString().TextValue;
+            var currencyName = currencyItem.Name.ToDalamudString().TextValue;
 
-            return CurrencyName;
+            return currencyName;
         }
 
         return "Unknown";
@@ -89,7 +89,7 @@ public static class CurrencyInfo
     public static long? GetCurrencyAmountFromFile(
         uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
-        var latestTransaction = Transactions.LoadLatestSingleTransaction(currencyID, character, category, ID);
+        var latestTransaction = TransactionsHandler.LoadLatestSingleTransaction(currencyID, character, category, ID);
 
         return latestTransaction?.Amount;
     }
@@ -105,8 +105,6 @@ public static class CurrencyInfo
     {
         if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
         {
-            const ITextureProvider.IconFlags iconFlags = ITextureProvider.IconFlags.HiRes;
-
             return Service.TextureProvider.GetIcon(iconId);
         }
 

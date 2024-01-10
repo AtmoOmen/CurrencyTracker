@@ -134,13 +134,15 @@ public partial class Main
         {
             var selectedList = selectedTransactions[selectedCurrencyID];
 
+            var comparer = new TransactionComparer();
+
             if (selected)
             {
-                if (!selectedList.Any(t => IsTransactionEqual(t, transaction))) selectedList.Add(transaction);
+                if (!selectedList.Any(t => comparer.Equals(t, transaction))) selectedList.Add(transaction);
             }
             else
             {
-                selectedList.RemoveAll(t => IsTransactionEqual(t, transaction));
+                selectedList.RemoveAll(t => comparer.Equals(t, transaction));
             }
         }
     }

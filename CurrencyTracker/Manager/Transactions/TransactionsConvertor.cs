@@ -1,4 +1,4 @@
-namespace CurrencyTracker.Manager;
+namespace CurrencyTracker.Manager.Transactions;
 
 public class TransactionsConvertor
 {
@@ -16,7 +16,7 @@ public class TransactionsConvertor
         return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
     }
 
-    // 将单行字符串解析为交易记录 Parese string into a transaction
+    // 将单行字符串解析为交易记录 Parse string into a transaction
     public static TransactionsConvertor FromFileLine(ReadOnlySpan<char> span)
     {
         var parts = new string[5];
@@ -54,8 +54,7 @@ public class TransactionsConvertor
         try
         {
             using var sr = new StreamReader(filePath);
-            string? line;
-            while ((line = sr.ReadLine()) != null)
+            while (sr.ReadLine() is { } line)
             {
                 var transaction = FromFileLine(line.AsSpan());
                 transactions.Add(transaction);
@@ -63,7 +62,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            Transactions.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
             Service.Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
@@ -85,7 +84,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            Transactions.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
             Service.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
@@ -101,7 +100,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            Transactions.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
             Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }

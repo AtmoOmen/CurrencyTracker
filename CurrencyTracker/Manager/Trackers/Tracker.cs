@@ -87,10 +87,10 @@ public class Tracker : IDisposable
             (recordChangeType == RecordChangeType.Negative && currencyChange < 0))
         {
             if (previousAmount != null)
-                Transactions.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName,
+                TransactionsHandler.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName,
                                                noteContent, category, ID);
             else
-                Transactions.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName,
+                TransactionsHandler.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName,
                                             noteContent, category, ID);
             PostTransactionUpdate(currencyID, currencyChange, source, category, ID);
             return true;

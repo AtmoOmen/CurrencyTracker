@@ -2,23 +2,6 @@ namespace CurrencyTracker.Manager.Tools;
 
 public static class Helpers
 {
-    public static bool IsTransactionEqual(TransactionsConvertor t1, TransactionsConvertor t2)
-    {
-        return t1.TimeStamp == t2.TimeStamp && t1.Amount == t2.Amount && t1.Change == t2.Change &&
-               t1.LocationName == t2.LocationName && t1.Note == t2.Note;
-    }
-
-    public static bool AreTransactionsEqual(List<TransactionsConvertor> list1, List<TransactionsConvertor> list2)
-    {
-        if (list1.Count != list2.Count) return false;
-
-        for (var i = 0; i < list1.Count; i++)
-            if (!IsTransactionEqual(list1[i], list2[i]))
-                return false;
-
-        return true;
-    }
-
     public static void OpenDirectory(string path)
     {
         if (path.IsNullOrEmpty()) return;
@@ -100,7 +83,7 @@ public static class Helpers
 
     public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
     {
-        textNodeIDs ??= new uint[] { 3, 4 };
+        textNodeIDs ??= [3, 4];
 
         var UI = (AtkUnitBase*)args.Addon;
 
@@ -111,7 +94,6 @@ public static class Helpers
         if (windowNode == null)
             return string.Empty;
 
-        // 国服和韩服特别处理逻辑 For CN and KR Client
         var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
         var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
@@ -122,7 +104,7 @@ public static class Helpers
 
     public static unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
     {
-        textNodeIDs ??= new uint[] { 3, 4 };
+        textNodeIDs ??= [3, 4];
 
         var UI = (AtkUnitBase*)addon;
 
@@ -133,16 +115,16 @@ public static class Helpers
         if (windowNode == null)
             return string.Empty;
 
-        var textNode3 = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
-        var textNode4 = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
+        var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
+        var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
-        var windowTitle = !textNode4.IsNullOrEmpty() ? textNode4 : textNode3;
+        var windowTitle = !smallTitle.IsNullOrEmpty() ? smallTitle : bigTitle;
 
         return windowTitle;
     }
 
     public static unsafe void InventoryScanner(
-        IEnumerable<InventoryType> Inventories, ref Dictionary<uint, long> InventoryItemCount)
+        IEnumerable<InventoryType> inventories, ref Dictionary<uint, long> inventoryItemCount)
     {
         var inventoryManager = InventoryManager.Instance();
 
@@ -150,7 +132,7 @@ public static class Helpers
 
         var itemCountDict = new Dictionary<uint, long>();
 
-        foreach (var inventory in Inventories)
+        foreach (var inventory in inventories)
         {
             var container = inventoryManager->GetInventoryContainer(inventory);
             if (container == null) continue;
@@ -168,11 +150,11 @@ public static class Helpers
             }
         }
 
-        foreach (var kvp in itemCountDict) InventoryItemCount[kvp.Key] = kvp.Value;
+        foreach (var kvp in itemCountDict) inventoryItemCount[kvp.Key] = kvp.Value;
 
-        foreach (var kvp in InventoryItemCount)
+        foreach (var kvp in inventoryItemCount)
             if (!itemCountDict.ContainsKey(kvp.Key) && kvp.Key != 1)
-                InventoryItemCount[kvp.Key] = 0;
+                inventoryItemCount[kvp.Key] = 0;
     }
 
     public static void Restart(this Timer timer)
@@ -194,29 +176,5 @@ public static class Helpers
         var updateDictionary = new UpdateDictionary<TKey, TValue>();
         foreach (var pair in pairs) updateDictionary.Add(keySelector(pair), valueSelector(pair));
         return updateDictionary;
-    }
-}
-
-public class TransactionComparer : IEqualityComparer<TransactionsConvertor>
-{
-    public bool Equals(TransactionsConvertor? x, TransactionsConvertor? y)
-    {
-        if (ReferenceEquals(x, y)) return true;
-        if (x is null || y is null) return false;
-
-        return IsTransactionEqual(x, y);
-    }
-
-    public int GetHashCode(TransactionsConvertor? obj)
-    {
-        if (obj is null) return 0;
-
-        var hashTimeStamp = obj.TimeStamp.GetHashCode();
-        var hashAmount = obj.Amount.GetHashCode();
-        var hashChange = obj.Change.GetHashCode();
-        var hashLocationName = obj.LocationName.GetHashCode();
-        var hashNote = obj.Note.GetHashCode();
-
-        return hashTimeStamp ^ hashAmount ^ hashChange ^ hashLocationName ^ hashNote;
     }
 }

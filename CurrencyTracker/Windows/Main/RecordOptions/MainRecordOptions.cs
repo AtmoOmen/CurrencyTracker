@@ -60,7 +60,7 @@ public partial class Main : Window, IDisposable
     private int MergeTransactionHandler(bool oneWay)
     {
         var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        var mergeCount = Transactions.MergeTransactionsByLocationAndThreshold(selectedCurrencyID, threshold, oneWay);
+        var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(selectedCurrencyID, threshold, oneWay);
 
         if (mergeCount > 0)
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
@@ -113,7 +113,7 @@ public partial class Main : Window, IDisposable
                 {
                     if (currentTypeTransactions == null || currentTypeTransactions.Count == 0) return;
 
-                    Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {Transactions.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
+                    Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
                 }
 
                 ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}.csv");

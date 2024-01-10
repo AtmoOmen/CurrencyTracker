@@ -4,6 +4,7 @@ global using CurrencyTracker.Manager.Tools;
 global using CurrencyTracker.Manager.Trackers;
 global using CurrencyTracker.Manager.Trackers.Components;
 global using CurrencyTracker.Manager.Trackers.Handlers;
+global using CurrencyTracker.Manager.Transactions;
 global using CurrencyTracker.Windows;
 global using Dalamud;
 global using Dalamud.Game.Addon.Events;

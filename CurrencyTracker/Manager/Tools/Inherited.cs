@@ -2,7 +2,7 @@ namespace CurrencyTracker.Manager.Tools;
 
 public class UpdateDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
 {
-    public event Action? Update;
+    public event Action? OnUpdate;
 
     public UpdateDictionary() { }
 
@@ -11,13 +11,13 @@ public class UpdateDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKe
     public new void Add(TKey key, TValue value)
     {
         base.Add(key, value);
-        Update?.Invoke();
+        OnUpdate?.Invoke();
     }
 
     public new bool Remove(TKey key)
     {
         var removed = base.Remove(key);
-        if (removed) Update?.Invoke();
+        if (removed) OnUpdate?.Invoke();
         return removed;
     }
 }

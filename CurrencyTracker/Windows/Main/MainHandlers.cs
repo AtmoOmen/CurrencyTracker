@@ -179,7 +179,7 @@ public partial class Main
         selectedStates.Clear();
         selectedTransactions.Clear();
 
-        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
+        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID));
         if (!characterCurrencyInfos.Any()) LoadDataMCS();
         else
         {

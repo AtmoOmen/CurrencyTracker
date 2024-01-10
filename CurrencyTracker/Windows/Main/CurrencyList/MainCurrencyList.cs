@@ -28,7 +28,7 @@ public partial class Main
                     if (ImGuiOm.SelectableImageWithText(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20f), currencyName, i == selectedOptionIndex))
                     {
                         selectedCurrencyID = option;
-                        currentTypeTransactions = ApplyFilters(Transactions.LoadAllTransactions(selectedCurrencyID));
+                        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
                         currentView = TransactionFileCategory.Inventory;
                         currentViewID = 0;
                     }

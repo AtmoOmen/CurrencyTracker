@@ -37,7 +37,7 @@ public class AutoSave : ITrackerComponent
             case 0:
             {
                 var filePath =
-                    Transactions.BackupTransactions(Plugin.Instance.PlayerDataFolder,
+                    TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder,
                                                     Plugin.Configuration.MaxBackupFilesCount);
                 if (C.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
                 break;
@@ -46,7 +46,7 @@ public class AutoSave : ITrackerComponent
             {
                 var failCharacters = C.CurrentActiveCharacter
                                       .Where(character =>
-                                                 Transactions
+                                                 TransactionsHandler
                                                      .BackupTransactions(
                                                          Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName,
                                                                    $"{character.Name}_{character.Server}"),

@@ -1,6 +1,6 @@
-namespace CurrencyTracker.Manager;
+namespace CurrencyTracker.Manager.Transactions;
 
-public static class Transactions
+public static class TransactionsHandler
 {
     // Transactions Type Suffix:
     // Inventory - {CurrencyName}.txt
@@ -82,26 +82,26 @@ public static class Transactions
         uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "None",
         string noteContent = "None", TransactionFileCategory category = 0, ulong ID = 0)
     {
-        if (!selectedTransactions.Any()) return selectedTransactions.Count;
+        if (!selectedTransactions.Any()) return 0;
 
         var editedTransactions = LoadAllTransactions(currencyID, category, ID);
         var filePath = GetTransactionFilePath(currencyID, category, ID);
-
         var failCount = 0;
+        var isLocationEdited = locationName != "None";
+        var isNoteEdited = noteContent != "None";
 
         foreach (var transaction in selectedTransactions)
         {
-            var index = editedTransactions.FindIndex(t => IsTransactionEqual(t, transaction));
-
+            var comparer = new TransactionComparer();
+            var index = editedTransactions.FindIndex(t => comparer.Equals(t, transaction));
             if (index == -1)
             {
                 failCount++;
                 continue;
             }
 
-            editedTransactions[index].LocationName =
-                locationName == "None" ? editedTransactions[index].LocationName : locationName;
-            editedTransactions[index].Note = noteContent == "None" ? editedTransactions[index].Note : noteContent;
+            if (isLocationEdited) editedTransactions[index].LocationName = locationName;
+            if (isNoteEdited) editedTransactions[index].Note = noteContent;
         }
 
         TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
@@ -133,7 +133,7 @@ public static class Transactions
 
     // 新建一条数据记录 Create a New Transaction File with a transaction
     public static void AddTransaction(
-        uint currencyID, DateTime TimeStamp, long Amount, long Change, string LocationName, string Note,
+        uint currencyID, DateTime timeStamp, long amount, long change, string locationName, string note,
         TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (!ValidityCheck(currencyID)) return;
@@ -144,11 +144,11 @@ public static class Transactions
         {
             new()
             {
-                TimeStamp = TimeStamp,
-                Amount = Amount,
-                Change = Change,
-                LocationName = LocationName,
-                Note = Note
+                TimeStamp = timeStamp,
+                Amount = amount,
+                Change = change,
+                LocationName = locationName,
+                Note = note
             }
         });
     }
@@ -221,7 +221,7 @@ public static class Transactions
 
     // 合并特定的记录 Merge Specific Transactions
     public static int MergeSpecificTransactions(
-        uint currencyID, string LocationName, List<TransactionsConvertor> selectedTransactions,
+        uint currencyID, string locationName, List<TransactionsConvertor> selectedTransactions,
         string noteContent = "-1", TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (!ValidityCheck(currencyID) || selectedTransactions.Count <= 1) return 0;
@@ -233,10 +233,11 @@ public static class Transactions
         long overallChange = 0;
         long finalAmount = 0;
         var mergedCount = 0;
+        var comparer = new TransactionComparer();
 
         foreach (var transaction in selectedTransactions)
         {
-            var foundTransaction = allTransactions.FirstOrDefault(t => IsTransactionEqual(t, transaction));
+            var foundTransaction = allTransactions.FirstOrDefault(t => comparer.Equals(t, transaction));
 
             if (foundTransaction == null) continue;
 
@@ -255,7 +256,7 @@ public static class Transactions
         {
             TimeStamp = latestTime,
             Change = overallChange,
-            LocationName = LocationName,
+            LocationName = locationName,
             Amount = finalAmount,
             Note = noteContent != "-1" ? noteContent : $"({Service.Lang.GetText("MergedSpecificHelp", mergedCount)})"
         };

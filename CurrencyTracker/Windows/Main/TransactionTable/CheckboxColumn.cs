@@ -115,8 +115,8 @@ public partial class Main
                 return;
             }
 
-            var filePath = Transactions.GetTransactionFilePath(selectedCurrencyID, currentView, currentViewID);
-            var editedTransactions = Transactions.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID);
+            var filePath = TransactionsHandler.GetTransactionFilePath(selectedCurrencyID, currentView, currentViewID);
+            var editedTransactions = TransactionsHandler.LoadAllTransactions(selectedCurrencyID, currentView, currentViewID);
 
             var selectedSet = new HashSet<TransactionsConvertor>(selectedTransactions[selectedCurrencyID], new TransactionComparer());
             editedTransactions.RemoveAll(selectedSet.Contains);
@@ -137,7 +137,7 @@ public partial class Main
                 return;
             }
 
-            var filePath = Transactions.ExportData(selectedTransactions[selectedCurrencyID], "", selectedCurrencyID, C.ExportDataFileType, currentView, currentViewID);
+            var filePath = TransactionsHandler.ExportData(selectedTransactions[selectedCurrencyID], "", selectedCurrencyID, C.ExportDataFileType, currentView, currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }
     }
@@ -180,7 +180,7 @@ public partial class Main
                 return;
             }
 
-            var mergeCount = Transactions.MergeSpecificTransactions(selectedCurrencyID, editedLocationName, selectedTransactions[selectedCurrencyID], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent, currentView, currentViewID);
+            var mergeCount = TransactionsHandler.MergeSpecificTransactions(selectedCurrencyID, editedLocationName, selectedTransactions[selectedCurrencyID], editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent, currentView, currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
             UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
@@ -248,7 +248,7 @@ public partial class Main
             return;
         }
 
-        var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], editedLocationName, "None", currentView, currentViewID);
+        var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], editedLocationName, "None", currentView, currentViewID);
 
         EditResultHandler(failCount, editedLocationName, "");
     }
@@ -261,7 +261,7 @@ public partial class Main
             return;
         }
 
-        var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], "None", editedNoteContent, currentView, currentViewID);
+        var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, selectedTransactions[selectedCurrencyID], "None", editedNoteContent, currentView, currentViewID);
 
         EditResultHandler(failCount, "", editedNoteContent);
     }
@@ -298,7 +298,8 @@ public partial class Main
 
             if (selected)
             {
-                var exists = selectedTransactions[selectedCurrencyID].Any(t => IsTransactionEqual(t, transaction));
+                var comparer = new TransactionComparer();
+                var exists = selectedTransactions[selectedCurrencyID].Any(t => comparer.Equals(t, transaction));
 
                 if (!exists)
                 {
@@ -307,7 +308,9 @@ public partial class Main
             }
             else
             {
-                selectedTransactions[selectedCurrencyID].RemoveAll(t => IsTransactionEqual(t, transaction));
+                var comparer = new TransactionComparer();
+
+                selectedTransactions[selectedCurrencyID].RemoveAll(t => comparer.Equals(t, transaction));
             }
         }
 

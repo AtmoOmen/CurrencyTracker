@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Windows;
 
-public partial class CurrencySettings : Window, IDisposable
+public partial class CurrencySettings
 {
     internal string editedCurrencyName = string.Empty;
 
@@ -64,8 +64,8 @@ public partial class CurrencySettings : Window, IDisposable
         foreach (var category in categories)
         {
             var key = category == TransactionFileCategory.Retainer ? C.CharacterRetainers[P.CurrentCharacter.ContentID].First().Key : 0;
-            var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{Transactions.GetTransactionFileSuffix(category, key)}.txt");
-            filePaths[Transactions.GetTransactionFilePath(selectedCurrencyID, category, key)] = editedFilePath;
+            var editedFilePath = Path.Join(P.PlayerDataFolder, $"{editedCurrencyName}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt");
+            filePaths[TransactionsHandler.GetTransactionFilePath(selectedCurrencyID, category, key)] = editedFilePath;
         }
 
         return (filePaths.Values.All(path => !File.Exists(path)), filePaths);
@@ -77,7 +77,7 @@ public partial class CurrencySettings : Window, IDisposable
 
         var targetCurrency = C.PresetCurrencies.ContainsKey(currencyId) ? C.PresetCurrencies : C.CustomCurrencies;
         targetCurrency[currencyId] = newName;
-        C.isUpdated = true;
+        C.IsUpdated = true;
         C.Save();
 
         return true;

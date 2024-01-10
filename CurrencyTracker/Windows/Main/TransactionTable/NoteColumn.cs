@@ -49,7 +49,7 @@ public partial class Main
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, "None", editedNoteContent, currentView, currentViewID);
+                    var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, "None", editedNoteContent, currentView, currentViewID);
 
                     if (failCount == 0) searchTimer.Restart();
                     else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");

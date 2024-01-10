@@ -51,7 +51,7 @@ public partial class Main
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
                 {
-                    var failCount = Transactions.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
+                    var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
 
                     if (failCount == 0) searchTimer.Restart();
                     else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
