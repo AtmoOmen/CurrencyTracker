@@ -161,8 +161,14 @@ public class Configuration : IPluginConfiguration
     {
         Service.Log.Debug("Successfully reacquire all currencies");
         IsUpdated = false;
-        return PresetCurrencies.Concat(CustomCurrencies).ToDictionary(kv => kv.Key, kv => kv.Value);
+
+        PresetCurrencies.Keys.ToList().ForEach(k => CustomCurrencies.Remove(k));
+        Save();
+
+        return PresetCurrencies.Concat(CustomCurrencies)
+                               .ToDictionary(kv => kv.Key, kv => kv.Value);
     }
+
 
     public void Initialize(DalamudPluginInterface pluginInterface)
     {
