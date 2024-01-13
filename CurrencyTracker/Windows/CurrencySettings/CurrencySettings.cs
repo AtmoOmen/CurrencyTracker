@@ -107,7 +107,7 @@ public partial class CurrencySettings : Window, IDisposable
         if (!M.characterCurrencyInfos.Any()) M.LoadDataMCS();
         ImGui.SetWindowFontScale(1);
         ImGui.Text(
-            $"{"Total"}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
+            $"{Service.Lang.GetText("Total")}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
 
         ImGui.SameLine();
         ImGui.Text("");

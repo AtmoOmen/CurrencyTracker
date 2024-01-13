@@ -180,9 +180,6 @@
   <data name="FileRenameLabel" xml:space="preserve">
     <value>Nom du fichier:</value>
   </data>
-  <data name="FileRenameLabel2" xml:space="preserve">
-    <value>Heure actuelle</value>
-  </data>
   <data name="FilterByTime" xml:space="preserve">
     <value>Filtre Timer</value>
   </data>

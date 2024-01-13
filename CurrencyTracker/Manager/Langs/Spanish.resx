@@ -147,9 +147,6 @@
   <data name="FileRenameHelp1" xml:space="preserve">
     <value>Si se deja en blanco, el nombre del archivo será:</value>
   </data>
-  <data name="FileRenameLabel2" xml:space="preserve">
-    <value>HoraActual</value>
-  </data>
   <data name="FilterByTime" xml:space="preserve">
     <value>Filtrar por hora</value>
   </data>

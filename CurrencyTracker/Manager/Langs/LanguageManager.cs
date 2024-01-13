@@ -12,13 +12,13 @@ public class LanguageManager
     {
         new() { Language = "English", DisplayName = "English", Translators = new string[1] { "AtmoOmen" } },
         new() { Language = "Spanish", DisplayName = "Español", Translators = new string[1] { "Risu" } },
-        new() { Language = "German", DisplayName = "Deutsch", Translators = new string[1] { "vyrnius" } },
+        new() { Language = "German", DisplayName = "Deutsch", Translators = new string[2] { "vyrnius", "alex97000" } },
         new()
         {
             Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" }
         },
         new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" } },
-        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[1] { "Fluxus" } }
+        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[2] { "Fluxus", "AtmoOmen" } }
     };
 
     public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")

@@ -180,9 +180,6 @@
   <data name="FileRenameLabel" xml:space="preserve">
     <value>文件名:</value>
   </data>
-  <data name="FileRenameLabel2" xml:space="preserve">
-    <value>当前时间</value>
-  </data>
   <data name="FilterByTime" xml:space="preserve">
     <value>时间筛选</value>
   </data>
@@ -726,5 +723,8 @@
   </data>
   <data name="DataFiles" xml:space="preserve">
     <value>数据文件</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>总计</value>
   </data>
 </root>
