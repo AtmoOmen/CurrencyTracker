@@ -58,14 +58,30 @@ public partial class Main : Window, IDisposable
                     ImGui.SetNextItemWidth(itemWidth);
                     if (ImGui.BeginCombo($"##{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", $"{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", ImGuiComboFlags.HeightLarge))
                     {
+                        ImGui.BeginGroup();
                         foreach (var currency in C.AllCurrencies)
                         {
-                            var amount = characterCurrencyInfo.CurrencyAmount.TryGetValue(currency.Key, out var value) ? value : 0;
                             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
                             ImGui.Image(C.AllCurrencyIcons[currency.Key].ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+
                             ImGui.SameLine();
-                            ImGui.Text($"{currency.Value} - {amount}");
+                            ImGui.Text($"{currency.Value}");
                         }
+                        ImGui.EndGroup();
+
+                        ImGui.SameLine();
+                        ImGui.Spacing();
+
+                        ImGui.SameLine();
+                        ImGui.BeginGroup();
+                        foreach (var currency in C.AllCurrencies)
+                        {
+                            var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
+                            ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
+                            ImGui.Text($"{amount:N0}");
+                        }
+                        ImGui.EndGroup();
+
                         ImGui.EndCombo();
                     }
                 }
