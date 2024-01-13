@@ -118,20 +118,22 @@ public partial class Main
     private void SelectedStatesWatcher(int transactionCount)
     {
         var stateList = selectedStates.GetOrAdd(selectedCurrencyID, _ => new List<bool>());
-        selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new());
+        selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new List<TransactionsConvertor>());
 
         var itemsToAdd = transactionCount - stateList.Count;
         if (itemsToAdd > 0)
+        {
             for (var i = 0; i < itemsToAdd; i++)
                 stateList.Add(false);
+        }
     }
 
     private void TransactionTablePagingUI(float windowWidth)
     {
-        var pageCount = (currentTypeTransactions.Any())
+        var pageCount = currentTypeTransactions.Any()
                             ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage)
                             : 0;
-        currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
+        currentPage = pageCount > 0 ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
         ImGuiOm.CenterAlignFor(tablePagingComponentsWidth);
         ImGui.BeginGroup();
@@ -157,7 +159,7 @@ public partial class Main
 
         // 下一页 Next Page
         ImGui.SameLine();
-        ImGui.BeginDisabled(currentPage >= pageCount -1);
+        ImGui.BeginDisabled(currentPage >= pageCount - 1);
         if (ImGui.ArrowButton("NextPage", ImGuiDir.Right)) currentPage++;
         ImGui.EndDisabled();
 
@@ -201,11 +203,10 @@ public partial class Main
             if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
                 currentTypeTransactions =
-                    ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, 0, 0));
+                    ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
             }
 
             foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
-            {
                 if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
                                      ImGuiSelectableFlags.DontClosePopups))
                 {
@@ -213,14 +214,13 @@ public partial class Main
                         ApplyFilters(TransactionsHandler.LoadAllTransactions(
                                          selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
                 }
-            }
 
             if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
                 currentTypeTransactions =
                     ApplyFilters(
                         TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
-                                                                TransactionFileCategory.SaddleBag, 0));
+                                                                TransactionFileCategory.SaddleBag));
                 currentView = TransactionFileCategory.SaddleBag;
                 currentViewID = 0;
             }
@@ -230,7 +230,7 @@ public partial class Main
                 currentTypeTransactions =
                     ApplyFilters(
                         TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
-                                                                TransactionFileCategory.PremiumSaddleBag, 0));
+                                                                TransactionFileCategory.PremiumSaddleBag));
             }
         }
     }
@@ -306,9 +306,8 @@ public partial class Main
 
             var tempList = new List<string>();
             foreach (var column in C.ColumnsVisibility)
-            {
-                if (column.Value) tempList.Add(column.Key);
-            }
+                if (column.Value)
+                    tempList.Add(column.Key);
 
             visibleColumns = tempList.ToArray();
         }

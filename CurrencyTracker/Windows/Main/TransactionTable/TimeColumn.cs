@@ -32,13 +32,11 @@ public partial class Main
         }
         ImGui.EndDisabled();
 
-        using (var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar))
+        using var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar);
+        if (popup.Success)
         {
-            if (popup.Success)
-            {
-                ClusterByTimeUI();
-                FilterByTimeUI();
-            }
+            ClusterByTimeUI();
+            FilterByTimeUI();
         }
     }
 

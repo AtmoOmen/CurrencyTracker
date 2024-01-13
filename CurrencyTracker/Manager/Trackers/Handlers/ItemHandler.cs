@@ -1,4 +1,4 @@
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 

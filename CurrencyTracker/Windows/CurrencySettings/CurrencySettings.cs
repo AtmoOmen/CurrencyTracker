@@ -7,7 +7,8 @@ public partial class CurrencySettings : Window, IDisposable
     private readonly Main? M = Plugin.Instance.Main;
 
     private uint selectedCurrencyID;
-    private int currencyInfoGroupWidth = 200;
+    private bool isEditingCurrencyName;
+    private int currencyTextWidth = 200;
 
     public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Plugin.Name}")
     {
@@ -44,7 +45,7 @@ public partial class CurrencySettings : Window, IDisposable
                         CurrencyInfoGroupUI();
 
                         ImGui.Separator();
-                        RenameCurrencyUI();
+                        CurrencyAmountInfoUI();
 
                         ImGui.Separator();
                         CurrencyFilesInfoUI();
@@ -87,9 +88,18 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.BeginGroup();
         ImGui.SetWindowFontScale(1.6f);
         var currencyName = C.AllCurrencies[selectedCurrencyID];
-        ImGui.Text($"{currencyName}");
-
-        if (ImGui.IsItemClicked()) editedCurrencyName = currencyName;
+        currencyTextWidth = (int)ImGui.CalcTextSize(currencyName).X;
+        if (!isEditingCurrencyName)
+        {
+            ImGui.Text($"{currencyName}");
+            if (ImGui.IsItemClicked())
+            {
+                isEditingCurrencyName = true;
+                editedCurrencyName = currencyName;
+            }
+        }
+        else
+            RenameCurrencyUI();
 
         ImGui.SameLine();
         ImGui.Text("");
@@ -97,16 +107,13 @@ public partial class CurrencySettings : Window, IDisposable
         if (!M.characterCurrencyInfos.Any()) M.LoadDataMCS();
         ImGui.SetWindowFontScale(1);
         ImGui.Text(
-            $"{Service.Lang.GetText("Amount")}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0))}");
+            $"{"Total"}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
 
         ImGui.SameLine();
         ImGui.Text("");
 
         ImGui.EndGroup();
         ImGui.EndGroup();
-
-        var padding = ImGui.GetStyle().FramePadding.X;
-        currencyInfoGroupWidth = (int)Math.Max(ImGui.GetItemRectSize().X, ((10 * padding) + ImGui.CalcTextSize(Service.Lang.GetText("Main-CS-AreaRestriction")).X + ImGui.CalcTextSize(Service.Lang.GetText("Info")).X + ImGui.CalcTextSize(Service.Lang.GetText("Alert")).X));
     }
 
     public void Dispose()

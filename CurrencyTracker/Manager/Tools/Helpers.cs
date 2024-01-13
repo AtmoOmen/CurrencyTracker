@@ -144,6 +144,18 @@ public static class Helpers
         return windowTitle;
     }
 
+    public static string GetTransactionViewKeyString(TransactionFileCategory view, ulong ID)
+    {
+        return view switch
+        {
+            TransactionFileCategory.Inventory => Plugin.Instance.CurrentCharacter.ContentID.ToString(),
+            TransactionFileCategory.SaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_SB",
+            TransactionFileCategory.PremiumSaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_PSB",
+            TransactionFileCategory.Retainer => ID.ToString(),
+            _ => string.Empty
+        };
+    }
+
     public static unsafe void InventoryScanner(
         IEnumerable<InventoryType> inventories, ref Dictionary<uint, long> inventoryItemCount)
     {

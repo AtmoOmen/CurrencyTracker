@@ -52,7 +52,6 @@ public partial class CurrencySettings
         if (shouldUpdate) GetCurrencyFilesInfoCFI();
     }
 
-
     public void GetCurrencyFilesInfoCFI()
     {
         var filePaths = new Dictionary<string, string>();

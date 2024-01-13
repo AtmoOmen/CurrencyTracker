@@ -1,4 +1,4 @@
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Infos;
 
@@ -85,6 +85,34 @@ public static class CurrencyInfo
 
         return amount;
     }
+
+    public static Dictionary<TransactionFileCategoryInfo, long> GetCharacterCurrencyAmountDictionary(uint currencyID, CharacterInfo character)
+    {
+        var amountDic = new Dictionary<TransactionFileCategoryInfo, long>();
+
+        foreach (var category in new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag })
+        {
+            AddCurrencyAmountToDictionary(currencyID, character, category, 0, amountDic);
+        }
+
+        if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
+        {
+            foreach (var retainer in retainers)
+            {
+                AddCurrencyAmountToDictionary(currencyID, character, TransactionFileCategory.Retainer, retainer.Key, amountDic);
+            }
+        }
+
+        return amountDic;
+
+        void AddCurrencyAmountToDictionary(uint currencyID, CharacterInfo character, TransactionFileCategory category, ulong ID, IDictionary<TransactionFileCategoryInfo, long> dictionary)
+        {
+            var currencyAmount = GetCurrencyAmountFromFile(currencyID, character, category, ID);
+            var key = new TransactionFileCategoryInfo{Category = category, Id = ID};
+            dictionary[key] = currencyAmount ?? 0;
+        }
+    }
+
 
     public static long? GetCurrencyAmountFromFile(
         uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)

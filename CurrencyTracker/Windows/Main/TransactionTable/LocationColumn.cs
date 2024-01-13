@@ -16,16 +16,14 @@ public partial class Main
         }
         ImGui.EndDisabled();
 
-        using (var popup = ImRaii.Popup("LocationSearch"))
+        using var popup = ImRaii.Popup("LocationSearch");
+        if (popup.Success)
         {
-            if (popup.Success)
+            ImGui.SetNextItemWidth(250);
+            if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
-                ImGui.SetNextItemWidth(250);
-                if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
-                {
-                    isLocationFilterEnabled = !searchLocationName.IsNullOrEmpty();
-                    searchTimer.Restart();
-                }
+                isLocationFilterEnabled = !searchLocationName.IsNullOrEmpty();
+                searchTimer.Restart();
             }
         }
     }
@@ -44,20 +42,18 @@ public partial class Main
             ImGui.OpenPopup($"EditLocationName##_{i}");
         }
 
-        using (var popup = ImRaii.Popup($"EditLocationName##_{i}"))
+        using var popup = ImRaii.Popup($"EditLocationName##_{i}");
+        if (popup.Success)
         {
-            if (popup.Success)
+            if (!editedLocationName.IsNullOrEmpty()) ImGui.TextWrapped(editedLocationName);
+
+            ImGui.SetNextItemWidth(270);
+            if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                if (!editedLocationName.IsNullOrEmpty()) ImGui.TextWrapped(editedLocationName);
+                var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
 
-                ImGui.SetNextItemWidth(270);
-                if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
-                {
-                    var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
-
-                    if (failCount == 0) searchTimer.Restart();
-                    else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
-                }
+                if (failCount == 0) searchTimer.Restart();
+                else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
         }
     }

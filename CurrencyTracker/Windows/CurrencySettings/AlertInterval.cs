@@ -204,7 +204,7 @@ public partial class CurrencySettings
         var intervalList = alertMode == 0
                                ? Plugin.Configuration.CurrencyRules[currencyID].AlertedAmountIntervals
                                : Plugin.Configuration.CurrencyRules[currencyID].AlertedChangeIntervals;
-        var key = ConstructKeyIA(view, ID);
+        var key = GetTransactionViewKeyString(view, ID);
 
         if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = new List<Interval<int>>();
 
@@ -215,18 +215,6 @@ public partial class CurrencySettings
     {
         int? end1 = start == -1 ? null : start;
         int? end2 = end == -1 ? null : end;
-        return new Interval<int>(start == -1 ? null : start, end == -1 ? null : end);
-    }
-
-    public static string ConstructKeyIA(TransactionFileCategory view, ulong ID)
-    {
-        return view switch
-        {
-            TransactionFileCategory.Inventory => Plugin.Instance.CurrentCharacter.ContentID.ToString(),
-            TransactionFileCategory.SaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_SB",
-            TransactionFileCategory.PremiumSaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_PSB",
-            TransactionFileCategory.Retainer => ID.ToString(),
-            _ => string.Empty
-        };
+        return new Interval<int>(end1, end2);
     }
 }

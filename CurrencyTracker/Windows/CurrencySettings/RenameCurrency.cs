@@ -6,26 +6,39 @@ public partial class CurrencySettings
 
     private void RenameCurrencyUI()
     {
-        ImGui.AlignTextToFramePadding();
-        ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Rename")}:");
-
-        ImGui.BeginGroup();
-        ImGui.SetNextItemWidth(currencyInfoGroupWidth - (2 * M.checkboxColumnWidth) - 24);
-        ImGui.InputText("##CurrencyRename", ref editedCurrencyName, 150, ImGuiInputTextFlags.AutoSelectAll);
-
-        if (!editedCurrencyName.IsNullOrEmpty()) ImGuiOm.TooltipHover(editedCurrencyName);
-
-        ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("RenameCurrencyConfirm", FontAwesomeIcon.Check, Service.Lang.GetText("Confirm")))
+        ImGui.SetNextItemWidth(currencyTextWidth + ImGui.GetStyle().FramePadding.X * 2);
+        if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
         {
-            if (!editedCurrencyName.IsNullOrEmpty() && editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
+            if (!editedCurrencyName.IsNullOrWhitespace() &&
+                editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
+            {
                 RenameCurrencyHandler(editedCurrencyName);
+                isEditingCurrencyName = false;
+            }
         }
 
-        ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("RenameCurrencyReset", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
-            RenameCurrencyHandler(CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID));
-        ImGui.EndGroup();
+        if (!editedCurrencyName.IsNullOrWhitespace()) ImGuiOm.TooltipHover(editedCurrencyName);
+
+        if (ImGui.IsItemDeactivated())
+        {
+            isEditingCurrencyName = false;
+        }
+
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
+        {
+            ImGui.OpenPopup("ResetCurrencyNamePopup");
+        }
+
+        ImGui.SetWindowFontScale(1f);
+        using var popup = ImRaii.Popup("ResetCurrencyNamePopup");
+        if (popup.Success)
+        {
+            if (ImGuiOm.Selectable(Service.Lang.GetText("Reset")))
+            {
+                RenameCurrencyHandler(CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID));
+                isEditingCurrencyName = false;
+            }
+        }
     }
 
     internal void RenameCurrencyHandler(string editedCurrencyName)

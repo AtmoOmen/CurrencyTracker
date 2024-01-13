@@ -20,13 +20,11 @@ public partial class Main
         }
         ImGui.EndDisabled();
 
-        using (var popup = ImRaii.Popup("ChangeFunctions"))
+        using var popup = ImRaii.Popup("ChangeFunctions");
+        if (popup.Success)
         {
-            if (popup.Success)
-            {
-                FilterByChangeUI();
-                ColoringByChangeUI();
-            }
+            FilterByChangeUI();
+            ColoringByChangeUI();
         }
     }
 

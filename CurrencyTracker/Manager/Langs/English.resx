@@ -181,9 +181,6 @@
   <data name="FileRenameLabel" xml:space="preserve">
     <value>File Name:</value>
   </data>
-  <data name="FileRenameLabel2" xml:space="preserve">
-    <value>CurrentTime</value>
-  </data>
   <data name="FilterByTime" xml:space="preserve">
     <value>Timer Filter</value>
   </data>
@@ -727,5 +724,8 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   </data>
   <data name="DataFiles" xml:space="preserve">
     <value>Data Files</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
   </data>
 </root>

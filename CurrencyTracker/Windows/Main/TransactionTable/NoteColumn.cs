@@ -16,16 +16,14 @@ public partial class Main
         }
         ImGui.EndDisabled();
 
-        using (var popup = ImRaii.Popup("NoteSearch"))
+        using var popup = ImRaii.Popup("NoteSearch");
+        if (popup.Success)
         {
-            if (popup.Success)
+            ImGui.SetNextItemWidth(250);
+            if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
             {
-                ImGui.SetNextItemWidth(250);
-                if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
-                {
-                    isNoteFilterEnabled = !searchNoteContent.IsNullOrEmpty();
-                    searchTimer.Restart();
-                }
+                isNoteFilterEnabled = !searchNoteContent.IsNullOrEmpty();
+                searchTimer.Restart();
             }
         }
     }

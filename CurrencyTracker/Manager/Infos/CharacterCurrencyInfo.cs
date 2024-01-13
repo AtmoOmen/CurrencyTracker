@@ -15,6 +15,7 @@ public class CharacterCurrencyInfo
     }
 
     public ConcurrentDictionary<uint, long> CurrencyAmount { get; } = new();
+    public ConcurrentDictionary<uint, Dictionary<TransactionFileCategoryInfo, long>> SubCurrencyAmount { get; } = new();
 
     public void GetCharacterCurrencyAmount()
     {
@@ -23,6 +24,8 @@ public class CharacterCurrencyInfo
                          {
                              CurrencyAmount[currencyKey] =
                                  CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
+                             SubCurrencyAmount[currencyKey] =
+                                 CurrencyInfo.GetCharacterCurrencyAmountDictionary(currencyKey, Character);
                          });
     }
 }
