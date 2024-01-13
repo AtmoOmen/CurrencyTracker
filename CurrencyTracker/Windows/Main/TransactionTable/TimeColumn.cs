@@ -32,7 +32,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ClusterByTimeUI();
                 FilterByTimeUI();

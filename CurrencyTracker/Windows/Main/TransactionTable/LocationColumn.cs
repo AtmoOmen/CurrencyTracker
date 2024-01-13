@@ -16,7 +16,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("LocationSearch"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.SetNextItemWidth(250);
                 if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
@@ -44,7 +44,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup($"EditLocationName##_{i}"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 if (!editedLocationName.IsNullOrEmpty()) ImGui.TextWrapped(editedLocationName);
 

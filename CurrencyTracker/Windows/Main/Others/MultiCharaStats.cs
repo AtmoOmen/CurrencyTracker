@@ -21,7 +21,7 @@ public partial class Main : Window, IDisposable
 
         using (var popup = ImRaii.Popup("MultiCharStats"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.BeginGroup();
                 ImGui.SetNextItemWidth(240f);

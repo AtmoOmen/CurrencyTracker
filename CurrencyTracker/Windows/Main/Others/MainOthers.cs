@@ -47,7 +47,7 @@ namespace CurrencyTracker.Windows
 
             using (var popup = ImRaii.Popup("NeedHelp"))
             {
-                if (popup)
+                if (popup.Success)
                 {
                     ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.TankBlue);
                     if (ImGui.Button("GitHub Issue"))
@@ -83,7 +83,7 @@ namespace CurrencyTracker.Windows
 
             using (var popup = ImRaii.Popup("LanguagesList"))
             {
-                if (popup)
+                if (popup.Success)
                 {
                     ImGui.BeginGroup();
                     for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)

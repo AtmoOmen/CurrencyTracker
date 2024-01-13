@@ -15,7 +15,7 @@ public partial class Main
         }
 
         using var popup = ImRaii.Popup("TableTools");
-        if (popup) CheckboxColumnToolUI();
+        if (popup.Success) CheckboxColumnToolUI();
     }
 
     private void CheckboxColumnToolUI()

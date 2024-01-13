@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     private Dictionary<string, uint>? ItemNames;
     private readonly Timer searchTimerACC = new(100);
@@ -9,7 +9,7 @@ public partial class Main : Window, IDisposable
     private string searchFilterCCT = string.Empty;
     private uint currencyIDACC = uint.MaxValue;
     private string currencyNameAAC = string.Empty;
-    private int currentPageACC = 0;
+    private int currentPageACC;
 
     private void AddCustomCurrencyUI()
     {
@@ -21,7 +21,7 @@ public partial class Main : Window, IDisposable
 
         using (var popup = ImRaii.Popup("AddCustomCurrency", ImGuiWindowFlags.AlwaysAutoResize))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
                 ImGuiOm.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
@@ -32,7 +32,11 @@ public partial class Main : Window, IDisposable
 
                 ImGui.SetNextItemWidth(210f);
                 ImGui.SameLine();
-                using (var combo = ImRaii.Combo("", !currencyNameAAC.IsNullOrEmpty() ? currencyNameAAC : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+                using (var combo =
+                       ImRaii.Combo(
+                           "",
+                           !currencyNameAAC.IsNullOrEmpty() ? currencyNameAAC : Service.Lang.GetText("PleaseSelect"),
+                           ImGuiComboFlags.HeightLarge))
                 {
                     if (combo)
                     {
@@ -40,40 +44,35 @@ public partial class Main : Window, IDisposable
                         var endIndex = Math.Min(startIndex + 10, itemNamesACC.Length);
 
                         ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
-                        if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref searchFilterCCT, 100)) searchTimerACC.Restart();
+                        if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"),
+                                                    ref searchFilterCCT, 100)) searchTimerACC.Restart();
 
                         ImGui.SameLine();
                         if (ImGuiOm.ButtonIcon("CCTFirstPage", FontAwesomeIcon.Backward)) currentPageACC = 0;
 
                         ImGui.SameLine();
-                        if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left)) 
+                        if (ImGui.ArrowButton("CustomPreviousPage", ImGuiDir.Left))
                         {
-                            if (currentPageACC > 0)
-                            {
-                                currentPageACC--;
-                            }
+                            if (currentPageACC > 0) currentPageACC--;
                         }
 
                         ImGui.SameLine();
                         if (ImGui.ArrowButton("CustomNextPage", ImGuiDir.Right) && itemNamesACC.Any())
                         {
-                            if (currentPageACC < (itemNamesACC.Length / 10) - 1)
-                            {
-                                currentPageACC++;
-                            }
+                            if (currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++;
                         }
 
                         ImGui.SameLine();
-                        if (ImGuiOm.ButtonIcon("CCTLastPage", FontAwesomeIcon.Forward)) 
+                        if (ImGuiOm.ButtonIcon("CCTLastPage", FontAwesomeIcon.Forward))
                         {
-                            if (itemNamesACC.Any())
-                            {
-                                currentPageACC = (itemNamesACC.Length / 10) - 1;
-                            }
+                            if (itemNamesACC.Any()) currentPageACC = (itemNamesACC.Length / 10) - 1;
                         }
 
-                        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentPageACC > 0) currentPageACC--;
-                        if (itemNamesACC.Any() && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++;
+                        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0 &&
+                            currentPageACC > 0) currentPageACC--;
+                        if (itemNamesACC.Any() && ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) &&
+                            ImGui.GetIO().MouseWheel < 0 &&
+                            currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++;
 
                         if (itemNamesACC.Any())
                         {
@@ -134,8 +133,8 @@ public partial class Main : Window, IDisposable
         currenciesACC = C.AllCurrencyID;
 
         ItemNames = ItemHandler.ItemNames
-            .Where(x => !currencyNames.Contains(x.Key))
-            .ToDictionary(x => x.Key, x => x.Value);
+                               .Where(x => !currencyNames.Contains(x.Key))
+                               .ToDictionary(x => x.Key, x => x.Value);
 
         itemNamesACC = ItemNames.Keys.ToArray();
     }
@@ -146,15 +145,15 @@ public partial class Main : Window, IDisposable
         {
             var isCS = C.SelectedLanguage == "ChineseSimplified";
             return ItemNames
-                .Keys
-                .Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)
-                    || (isCS && PinyinHelper.GetPinyin(itemName, "").Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)))
-                .ToArray();
+                   .Keys
+                   .Where(itemName => itemName.Contains(searchFilterCCT, StringComparison.OrdinalIgnoreCase)
+                                      || (isCS && PinyinHelper.GetPinyin(itemName, "")
+                                                              .Contains(searchFilterCCT,
+                                                                        StringComparison.OrdinalIgnoreCase)))
+                   .ToArray();
         }
-        else
-        {
-            return ItemNames.Keys.ToArray();
-        }
+
+        return ItemNames.Keys.ToArray();
     }
 
     private void SearchTimerACCElapsed(object? sender, ElapsedEventArgs e)

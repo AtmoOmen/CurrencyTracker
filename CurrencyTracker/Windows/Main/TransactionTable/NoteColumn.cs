@@ -16,7 +16,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("NoteSearch"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.SetNextItemWidth(250);
                 if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
@@ -42,7 +42,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup($"EditTransactionNote##_{i}"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 if (!editedNoteContent.IsNullOrEmpty()) ImGui.TextWrapped(editedNoteContent);
 

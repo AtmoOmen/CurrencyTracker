@@ -11,7 +11,7 @@ public partial class Main : Window, IDisposable
 
         using (var popup = ImRaii.Popup("BackupUI"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ManualBackupUI();
                 AutoBackupUI();

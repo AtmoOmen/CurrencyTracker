@@ -36,7 +36,7 @@ public partial class Main : Window, IDisposable
 
         using (var popup = ImRaii.Popup("MergeTransactions"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("ManualMerge"));
 
@@ -86,7 +86,7 @@ public partial class Main : Window, IDisposable
 
         using (var popup = ImRaii.Popup("ExportFileRename"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");

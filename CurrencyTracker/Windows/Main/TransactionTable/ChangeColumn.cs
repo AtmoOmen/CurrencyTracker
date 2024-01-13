@@ -20,7 +20,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("ChangeFunctions"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 FilterByChangeUI();
                 ColoringByChangeUI();
@@ -78,7 +78,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup(popupId))
         {
-            if (popup)
+            if (popup.Success)
             {
                 if (ImGui.ColorPicker4("", ref color))
                 {

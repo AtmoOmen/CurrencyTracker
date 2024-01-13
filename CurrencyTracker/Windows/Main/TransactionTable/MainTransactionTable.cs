@@ -184,7 +184,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("TableViewSwitch"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 var boolUI = false;
                 if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
@@ -221,7 +221,7 @@ public partial class Main
 
         using (var popup = ImRaii.Popup("TableAppearance"))
         {
-            if (popup)
+            if (popup.Success)
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
 

@@ -75,13 +75,9 @@ public partial class Main
 
     private void DeleteCustomCurrencyUI()
     {
-        var isDeleteValid = selectedCurrencyID != 0 && !C.PresetCurrencies.ContainsKey(selectedCurrencyID);
-
-        using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, 0.5f, !isDeleteValid))
-        {
-            ImGuiOm.ButtonIcon("ToolsDelete", FontAwesomeIcon.Trash, isDeleteValid ? $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})" : "");
-        }
-        if (isDeleteValid && ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || C.PresetCurrencies.ContainsKey(selectedCurrencyID));
+        ImGuiOm.ButtonIcon("ToolsDelete", FontAwesomeIcon.Trash, $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
+        if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
             var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
             if (C.CustomCurrencies[selectedCurrencyID] != localName) P.CurrencySettings.RenameCurrencyHandler(localName);
@@ -92,19 +88,16 @@ public partial class Main
             selectedCurrencyID = 0;
             ReloadOrderedOptions();
         }
+        ImGui.EndDisabled();
     }
 
     private void CurrencySettingsUI()
     {
-        using (ImRaii.PushStyle(ImGuiStyleVar.Alpha, selectedCurrencyID != 0 ? 1f : 0.5f))
+        ImGui.BeginDisabled(selectedCurrencyID == 0);
+        if (ImGuiOm.ButtonIcon("CurrencySettings", FontAwesomeIcon.Cog))
         {
-            if (ImGuiOm.ButtonIcon("CurrencySettings", FontAwesomeIcon.Cog))
-            {
-                if (selectedCurrencyID != 0)
-                {
-                    P.CurrencySettings.IsOpen = !P.CurrencySettings.IsOpen;
-                }
-            }
+            P.CurrencySettings.IsOpen = !P.CurrencySettings.IsOpen;
         }
+        ImGui.EndDisabled();
     }
 }
