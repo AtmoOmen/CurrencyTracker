@@ -67,21 +67,20 @@ public partial class Main
                         {
                             SelectedStatesWatcher(currentTypeTransactions.Count);
 
-                            ImGui.TableNextRow();
                             for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                             {
+                                ImGui.TableNextRow();
                                 foreach (var column in visibleColumns)
                                 {
                                     ImGui.TableNextColumn();
                                     ColumnCellActions[column]
                                         .Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
                                 }
-
-                                ImGui.TableNextRow();
                             }
                         }
                     }
                 }
+
 
                 TransactionTableInfoBarUI();
             }
@@ -195,45 +194,43 @@ public partial class Main
     {
         if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars)) ImGui.OpenPopup("TableViewSwitch");
 
-        using (var popup = ImRaii.Popup("TableViewSwitch"))
+        using var popup = ImRaii.Popup("TableViewSwitch");
+        if (popup.Success)
         {
-            if (popup.Success)
+            var boolUI = false;
+            if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                var boolUI = false;
-                if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+                currentTypeTransactions =
+                    ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, 0, 0));
+            }
+
+            foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+            {
+                if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
+                                     ImGuiSelectableFlags.DontClosePopups))
                 {
                     currentTypeTransactions =
-                        ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, 0, 0));
+                        ApplyFilters(TransactionsHandler.LoadAllTransactions(
+                                         selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
                 }
+            }
 
-                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
-                {
-                    if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
-                                         ImGuiSelectableFlags.DontClosePopups))
-                    {
-                        currentTypeTransactions =
-                            ApplyFilters(TransactionsHandler.LoadAllTransactions(
-                                             selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
-                    }
-                }
+            if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+            {
+                currentTypeTransactions =
+                    ApplyFilters(
+                        TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                                                                TransactionFileCategory.SaddleBag, 0));
+                currentView = TransactionFileCategory.SaddleBag;
+                currentViewID = 0;
+            }
 
-                if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-                {
-                    currentTypeTransactions =
-                        ApplyFilters(
-                            TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
-                                                                    TransactionFileCategory.SaddleBag, 0));
-                    currentView = TransactionFileCategory.SaddleBag;
-                    currentViewID = 0;
-                }
-
-                if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-                {
-                    currentTypeTransactions =
-                        ApplyFilters(
-                            TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
-                                                                    TransactionFileCategory.PremiumSaddleBag, 0));
-                }
+            if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+            {
+                currentTypeTransactions =
+                    ApplyFilters(
+                        TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                                                                TransactionFileCategory.PremiumSaddleBag, 0));
             }
         }
     }
@@ -243,60 +240,58 @@ public partial class Main
         if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance")))
             ImGui.OpenPopup("TableAppearance");
 
-        using (var popup = ImRaii.Popup("TableAppearance"))
+        using var popup = ImRaii.Popup("TableAppearance");
+        if (popup.Success)
         {
-            if (popup.Success)
-            {
-                ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ColumnsDisplayed")}:");
 
-                ImGui.BeginGroup();
-                using (var table = ImRaii.Table("##ColumnsDisplay", 4, ImGuiTableFlags.NoBordersInBody))
+            ImGui.BeginGroup();
+            using (var table = ImRaii.Table("##ColumnsDisplay", 4, ImGuiTableFlags.NoBordersInBody))
+            {
+                if (table)
                 {
-                    if (table)
+                    foreach (var column in C.ColumnsVisibility.Keys)
                     {
-                        foreach (var column in C.ColumnsVisibility.Keys)
-                        {
-                            ImGui.TableNextColumn();
-                            ColumnDisplayCheckbox(column);
-                        }
+                        ImGui.TableNextColumn();
+                        ColumnDisplayCheckbox(column);
                     }
                 }
+            }
 
-                ImGui.EndGroup();
+            ImGui.EndGroup();
 
-                var tableWidth = ImGui.GetItemRectSize().X;
-                var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
-                var widthWidthOffset = tableWidth - ImGui.CalcTextSize(textWidthOffset).X;
-                var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
-                var widthPerPage = tableWidth - ImGui.CalcTextSize(textPerPage).X;
+            var tableWidth = ImGui.GetItemRectSize().X;
+            var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
+            var widthWidthOffset = tableWidth - ImGui.CalcTextSize(textWidthOffset).X;
+            var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
+            var widthPerPage = tableWidth - ImGui.CalcTextSize(textPerPage).X;
 
-                ImGui.Separator();
+            ImGui.Separator();
 
-                ImGui.AlignTextToFramePadding();
-                ImGui.TextColored(ImGuiColors.DalamudYellow, textWidthOffset);
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, textWidthOffset);
 
-                var childWidthOffset = C.ChildWidthOffset;
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(widthWidthOffset);
-                if (ImGui.InputInt("##ChildframeWidthOffset", ref childWidthOffset, 10))
-                {
-                    childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
-                    C.ChildWidthOffset = childWidthOffset;
-                    C.Save();
-                }
+            var childWidthOffset = C.ChildWidthOffset;
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(widthWidthOffset);
+            if (ImGui.InputInt("##ChildframeWidthOffset", ref childWidthOffset, 10))
+            {
+                childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
+                C.ChildWidthOffset = childWidthOffset;
+                C.Save();
+            }
 
-                ImGui.AlignTextToFramePadding();
-                ImGui.TextColored(ImGuiColors.DalamudYellow, textPerPage);
+            ImGui.AlignTextToFramePadding();
+            ImGui.TextColored(ImGuiColors.DalamudYellow, textPerPage);
 
-                var transactionsPerPage = C.RecordsPerPage;
-                ImGui.SetNextItemWidth(widthPerPage);
-                ImGui.SameLine();
-                if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
-                {
-                    transactionsPerPage = Math.Max(transactionsPerPage, 1);
-                    C.RecordsPerPage = transactionsPerPage;
-                    C.Save();
-                }
+            var transactionsPerPage = C.RecordsPerPage;
+            ImGui.SetNextItemWidth(widthPerPage);
+            ImGui.SameLine();
+            if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
+            {
+                transactionsPerPage = Math.Max(transactionsPerPage, 1);
+                C.RecordsPerPage = transactionsPerPage;
+                C.Save();
             }
         }
     }
