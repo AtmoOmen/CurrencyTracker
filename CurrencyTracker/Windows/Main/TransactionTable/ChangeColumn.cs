@@ -12,11 +12,13 @@ public partial class Main
 
     private void ChangeColumnHeaderUI()
     {
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("ChangeFunctions");
         }
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("ChangeFunctions"))
         {

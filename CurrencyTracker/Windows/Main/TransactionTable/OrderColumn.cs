@@ -4,6 +4,7 @@ public partial class Main
 {
     private void OrderColumnHeaderUI()
     {
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         var icon = C.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
         if (ImGuiOm.SelectableIconCentered("ReverseSort", icon))
         {
@@ -12,6 +13,7 @@ public partial class Main
 
             searchTimer.Restart();
         }
+        ImGui.EndDisabled();
     }
 
     private void OrderColumnCellUI(int i, bool selected, TransactionsConvertor transaction)

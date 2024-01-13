@@ -28,13 +28,9 @@ namespace CurrencyTracker.Windows
         // 图表窗口 Graphs Window
         private void GraphWindowUI()
         {
-            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")))
-            {
-                if (selectedCurrencyID != 0 &&  currentTypeTransactions != null && currentTypeTransactions.Count > 1)
-                {
-                    P.Graph.IsOpen = !P.Graph.IsOpen;
-                }
-            }
+            ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+            if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs"))) P.Graph.IsOpen = !P.Graph.IsOpen;
+            ImGui.EndDisabled();
         }
 
         // 帮助页面 Help Page

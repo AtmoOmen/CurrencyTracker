@@ -8,11 +8,13 @@ public partial class Main
 
     private void LocationColumnHeaderUI()
     {
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("LocationSearch");
         }
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("LocationSearch"))
         {

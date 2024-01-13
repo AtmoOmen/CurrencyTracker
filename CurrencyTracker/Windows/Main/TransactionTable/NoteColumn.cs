@@ -8,11 +8,13 @@ public partial class Main
 
     private void NoteColumnHeaderUI()
     {
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Note"));
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
             ImGui.OpenPopup("NoteSearch");
         }
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("NoteSearch"))
         {

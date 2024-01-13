@@ -18,6 +18,7 @@ public partial class Main
 
     private void TimeColumnHeaderUI()
     {
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -29,6 +30,7 @@ public partial class Main
             }
             ImGui.OpenPopup("TimeFunctions");
         }
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar))
         {

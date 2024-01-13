@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     private string exportFileName = string.Empty;
     private int mergeThreshold;
@@ -23,16 +23,9 @@ public partial class Main : Window, IDisposable
 
     private void MergeTransactionUI()
     {
-        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("Merge"))) 
-        {
-            if (selectedCurrencyID == 0)
-            {
-                Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                return;
-            }
-
-            ImGui.OpenPopup("MergeTransactions");
-        } 
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("Merge"))) ImGui.OpenPopup("MergeTransactions");
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("MergeTransactions"))
         {
@@ -57,7 +50,7 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    private int MergeTransactionHandler(bool oneWay)
+    private void MergeTransactionHandler(bool oneWay)
     {
         var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
         var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(selectedCurrencyID, threshold, oneWay);
@@ -68,21 +61,13 @@ public partial class Main : Window, IDisposable
             Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
         UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
-        return mergeCount;
     }
 
     private void ExportDataUI()
     {
-        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.FileExport, Service.Lang.GetText("Export")))
-        {
-            if (selectedCurrencyID == 0)
-            {
-                Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
-                return;
-            }
-
-            ImGui.OpenPopup("ExportFileRename");
-        }
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.FileExport, Service.Lang.GetText("Export"))) ImGui.OpenPopup("ExportFileRename");
+        ImGui.EndDisabled();
 
         using (var popup = ImRaii.Popup("ExportFileRename"))
         {
@@ -111,7 +96,7 @@ public partial class Main : Window, IDisposable
                 ImGui.SetNextItemWidth(200f);
                 if (ImGui.InputText($"_{C.AllCurrencies[selectedCurrencyID]}_{Service.Lang.GetText("FileRenameLabel2")}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref exportFileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
                 {
-                    if (currentTypeTransactions == null || currentTypeTransactions.Count == 0) return;
+                    if (currentTypeTransactions.Count == 0) return;
 
                     Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
                 }
