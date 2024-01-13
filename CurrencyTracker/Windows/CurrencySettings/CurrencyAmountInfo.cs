@@ -8,7 +8,7 @@ public partial class CurrencySettings
 
         if (infoDic.Any())
         {
-            ImGui.TextColored(ImGuiColors.DalamudYellow, "Amount:");
+            ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Amount")}:");
 
             ImGui.BeginGroup();
             foreach (var source in infoDic)
