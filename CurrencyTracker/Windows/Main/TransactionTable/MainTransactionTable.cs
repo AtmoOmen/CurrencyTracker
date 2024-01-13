@@ -4,23 +4,24 @@ public partial class Main
 {
     private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
     {
-        {"Order", Plugin.Instance.Main.OrderColumnHeaderUI},
-        {"Time", Plugin.Instance.Main.TimeColumnHeaderUI},
-        {"Amount", Plugin.Instance.Main.AmountColumnHeaderUI},
-        {"Change", Plugin.Instance.Main.ChangeColumnHeaderUI},
-        {"Location", Plugin.Instance.Main.LocationColumnHeaderUI},
-        {"Note", Plugin.Instance.Main.NoteColumnHeaderUI},
-        {"Checkbox", Plugin.Instance.Main.CheckboxColumnHeaderUI}
+        { "Order", Plugin.Instance.Main.OrderColumnHeaderUI },
+        { "Time", Plugin.Instance.Main.TimeColumnHeaderUI },
+        { "Amount", Plugin.Instance.Main.AmountColumnHeaderUI },
+        { "Change", Plugin.Instance.Main.ChangeColumnHeaderUI },
+        { "Location", Plugin.Instance.Main.LocationColumnHeaderUI },
+        { "Note", Plugin.Instance.Main.NoteColumnHeaderUI },
+        { "Checkbox", Plugin.Instance.Main.CheckboxColumnHeaderUI }
     };
+
     private static readonly Dictionary<string, Action<int, bool, TransactionsConvertor>> ColumnCellActions = new()
     {
-        {"Order", Plugin.Instance.Main.OrderColumnCellUI},
-        {"Time", Plugin.Instance.Main.TimeColumnCellUI},
-        {"Amount", Plugin.Instance.Main.AmountColumnCellUI},
-        {"Change", Plugin.Instance.Main.ChangeColumnCellUI},
-        {"Location", Plugin.Instance.Main.LocationColumnCellUI},
-        {"Note", Plugin.Instance.Main.NoteColumnCellUI},
-        {"Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI}
+        { "Order", Plugin.Instance.Main.OrderColumnCellUI },
+        { "Time", Plugin.Instance.Main.TimeColumnCellUI },
+        { "Amount", Plugin.Instance.Main.AmountColumnCellUI },
+        { "Change", Plugin.Instance.Main.ChangeColumnCellUI },
+        { "Location", Plugin.Instance.Main.LocationColumnCellUI },
+        { "Note", Plugin.Instance.Main.NoteColumnCellUI },
+        { "Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI }
     };
 
     internal static string[] visibleColumns = Array.Empty<string>();
@@ -44,7 +45,8 @@ public partial class Main
 
         ImGui.SameLine();
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
-        using (var child = ImRaii.Child("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y), false, ImGuiWindowFlags.NoScrollbar))
+        using (var child = ImRaii.Child("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y),
+                                        false, ImGuiWindowFlags.NoScrollbar))
         {
             if (child)
             {
@@ -53,7 +55,9 @@ public partial class Main
                 if (visibleColumns.Length == 0) return;
 
                 ImGui.SetCursorPosX(5);
-                using (var table = ImRaii.Table("Transactions", visibleColumns.Length, ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
+                using (var table = ImRaii.Table("Transactions", visibleColumns.Length,
+                                                ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
+                                                ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
                 {
                     if (table)
                     {
@@ -69,11 +73,12 @@ public partial class Main
                                 foreach (var column in visibleColumns)
                                 {
                                     ImGui.TableNextColumn();
-                                    ColumnCellActions[column].Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
+                                    ColumnCellActions[column]
+                                        .Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
                                 }
+
                                 ImGui.TableNextRow();
                             }
-
                         }
                     }
                 }
@@ -81,6 +86,7 @@ public partial class Main
                 TransactionTableInfoBarUI();
             }
         }
+
         ImGui.PopStyleColor();
     }
 
@@ -90,7 +96,9 @@ public partial class Main
 
         foreach (var column in columns)
         {
-            var flags = column is "Order" or "Checkbox" ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize : ImGuiTableColumnFlags.None;
+            var flags = column is "Order" or "Checkbox"
+                            ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize
+                            : ImGuiTableColumnFlags.None;
             var width = column switch
             {
                 "Order" => orderColumnWidth,
@@ -111,15 +119,19 @@ public partial class Main
     private void SelectedStatesWatcher(int transactionCount)
     {
         var stateList = selectedStates.GetOrAdd(selectedCurrencyID, _ => new List<bool>());
-        var transactionList = selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new());
+        selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new());
 
         var itemsToAdd = transactionCount - stateList.Count;
-        if (itemsToAdd > 0) for (var i = 0; i < itemsToAdd; i++) stateList.Add(false);
+        if (itemsToAdd > 0)
+            for (var i = 0; i < itemsToAdd; i++)
+                stateList.Add(false);
     }
 
     private void TransactionTablePagingUI(float windowWidth)
     {
-        var pageCount = (currentTypeTransactions.Any()) ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage) : 0;
+        var pageCount = (currentTypeTransactions.Any())
+                            ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage)
+                            : 0;
         currentPage = (pageCount > 0) ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
         ImGuiOm.CenterAlignFor(tablePagingComponentsWidth);
@@ -130,14 +142,15 @@ public partial class Main
 
         // 首页 First Page
         ImGui.SameLine();
+        ImGui.BeginDisabled(pageCount <= 0);
         if (ImGuiOm.ButtonIcon("FirstPageTransactionTable", FontAwesomeIcon.Backward)) currentPage = 0;
+        ImGui.EndDisabled();
 
         // 上一页 Last Page
         ImGui.SameLine();
-        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left))
-        {
-            if (currentPage > 0) currentPage--;
-        }
+        ImGui.BeginDisabled(currentPage <= 0);
+        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left)) currentPage--;
+        ImGui.EndDisabled();
 
         // 页数显示 Pages
         ImGui.SameLine();
@@ -145,17 +158,15 @@ public partial class Main
 
         // 下一页 Next Page
         ImGui.SameLine();
-        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right))
-        {
-            if (currentPage < pageCount - 1) currentPage++;
-        }
+        ImGui.BeginDisabled(currentPage >= pageCount -1);
+        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right)) currentPage++;
+        ImGui.EndDisabled();
 
         // 尾页 Final Page
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward))
-        {
-            if (currentPage >= 0) currentPage = pageCount;
-        }
+        ImGui.BeginDisabled(pageCount <= 0);
+        if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward)) currentPage = pageCount;
+        ImGui.EndDisabled();
 
         // 表格外观 Table Appearance
         ImGui.SameLine();
@@ -167,13 +178,15 @@ public partial class Main
         visibleStartIndex = currentPage * C.RecordsPerPage;
         visibleEndIndex = Math.Min(visibleStartIndex + C.RecordsPerPage, currentTypeTransactions.Count);
 
-        // 鼠标滚轮控制 Logic controlling Mouse Wheel Filpping
+        // 鼠标滚轮控制 Logic controlling Mouse Wheel Flipping
         if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
         {
-            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel > 0 && currentPage > 0)
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel > 0 &&
+                currentPage > 0)
                 currentPage--;
 
-            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0 && currentPage < pageCount - 1)
+            if (ImGui.IsWindowFocused(ImGuiFocusedFlags.RootAndChildWindows) && ImGui.GetIO().MouseWheel < 0 &&
+                currentPage < pageCount - 1)
                 currentPage++;
         }
     }
@@ -189,27 +202,37 @@ public partial class Main
                 var boolUI = false;
                 if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
-                    currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, 0, 0));
+                    currentTypeTransactions =
+                        ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, 0, 0));
                 }
 
                 foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
                 {
-                    if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI, ImGuiSelectableFlags.DontClosePopups))
+                    if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
+                                         ImGuiSelectableFlags.DontClosePopups))
                     {
-                        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                        currentTypeTransactions =
+                            ApplyFilters(TransactionsHandler.LoadAllTransactions(
+                                             selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
                     }
                 }
 
                 if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
-                    currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.SaddleBag, 0));
+                    currentTypeTransactions =
+                        ApplyFilters(
+                            TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                                                                    TransactionFileCategory.SaddleBag, 0));
                     currentView = TransactionFileCategory.SaddleBag;
                     currentViewID = 0;
                 }
 
                 if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
                 {
-                    currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID, TransactionFileCategory.PremiumSaddleBag, 0));
+                    currentTypeTransactions =
+                        ApplyFilters(
+                            TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                                                                    TransactionFileCategory.PremiumSaddleBag, 0));
                 }
             }
         }
@@ -217,7 +240,8 @@ public partial class Main
 
     private void TableAppearenceUI(float windowWidth)
     {
-        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"))) ImGui.OpenPopup("TableAppearance");
+        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance")))
+            ImGui.OpenPopup("TableAppearance");
 
         using (var popup = ImRaii.Popup("TableAppearance"))
         {
@@ -237,13 +261,14 @@ public partial class Main
                         }
                     }
                 }
+
                 ImGui.EndGroup();
 
-                var tablewidth = ImGui.GetItemRectSize().X;
+                var tableWidth = ImGui.GetItemRectSize().X;
                 var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
-                var widthWidthOffset = tablewidth - ImGui.CalcTextSize(textWidthOffset).X;
+                var widthWidthOffset = tableWidth - ImGui.CalcTextSize(textWidthOffset).X;
                 var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
-                var widthPerPage = tablewidth - ImGui.CalcTextSize(textPerPage).X;
+                var widthPerPage = tableWidth - ImGui.CalcTextSize(textPerPage).X;
 
                 ImGui.Separator();
 
@@ -274,7 +299,6 @@ public partial class Main
                 }
             }
         }
-
     }
 
     private void ColumnDisplayCheckbox(string boolName)
@@ -290,6 +314,7 @@ public partial class Main
             {
                 if (column.Value) tempList.Add(column.Key);
             }
+
             visibleColumns = tempList.ToArray();
         }
     }
