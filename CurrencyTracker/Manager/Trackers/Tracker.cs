@@ -48,7 +48,7 @@ public class Tracker : IDisposable
 
                 if (currencyName.IsNullOrEmpty()) continue;
 
-                if (!C.CustomCurrencies.ContainsKey(currencyID)) C.CustomCurrencies.Add(currencyID, currencyName);
+                C.CustomCurrencies.TryAdd(currencyID, currencyName);
             }
 
             C.FisrtOpen = false;
@@ -136,26 +136,26 @@ public class Tracker : IDisposable
 
         var util = new IntervalUtil();
 
-        void CheckIntervals(List<Interval<int>> intervals, int value, string type)
+        // 数量 Amount
+        CheckIntervals(currencyID, CurrencySettings.GetIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
+
+        // 收支 Change
+        CheckIntervals(currencyID, CurrencySettings.GetIntervals(currencyID, 1, category, ID), currencyChange, "Change");
+
+        return true;
+
+        void CheckIntervals(uint currencyID, List<Interval<int>> intervals, int value, string type)
         {
             foreach (var interval in intervals)
                 if (util.InRange(interval, value, true) && C.AlertNotificationChat)
                 {
                     var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"),
-                                                           SeString.CreateItemLink(1, false),
+                                                           SeString.CreateItemLink(currencyID, false),
                                                            GetSelectedViewName(category, ID),
                                                            interval.ToIntervalString());
                     Service.Chat.PrintError(message);
                 }
         }
-
-        // 数量 Amount
-        CheckIntervals(CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
-
-        // 收支 Change
-        CheckIntervals(CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange, "Change");
-
-        return true;
     }
 
     public bool CheckCurrencies(

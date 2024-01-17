@@ -19,7 +19,7 @@ public class Service
         if (playerLang.IsNullOrEmpty())
         {
             playerLang = ClientState.ClientLanguage.ToString();
-            if (!LanguageManager.LanguageNames.Any(x => x.Language == playerLang))
+            if (LanguageManager.LanguageNames.All(x => x.Language != playerLang))
             {
                 playerLang = "English";
             }
