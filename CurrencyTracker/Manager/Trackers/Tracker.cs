@@ -137,10 +137,10 @@ public class Tracker : IDisposable
         var util = new IntervalUtil();
 
         // 数量 Amount
-        CheckIntervals(currencyID, CurrencySettings.GetIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
+        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
 
         // 收支 Change
-        CheckIntervals(currencyID, CurrencySettings.GetIntervals(currencyID, 1, category, ID), currencyChange, "Change");
+        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange, "Change");
 
         return true;
 

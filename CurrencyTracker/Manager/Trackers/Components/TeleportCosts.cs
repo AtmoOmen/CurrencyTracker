@@ -34,14 +34,14 @@ public class TeleportCosts : ITrackerComponent
         GetAetherytes();
 
         var actorControlSelfPtr = Service.SigScanner.ScanText(ActorControlSig);
-        actorControlSelfHook =
+        actorControlSelfHook ??=
             Service.Hook.HookFromAddress<ActorControlSelfDelegate>(actorControlSelfPtr, ActorControlSelf);
-        actorControlSelfHook.Enable();
+        actorControlSelfHook?.Enable();
 
         var teleportActionSelfPtr = Service.SigScanner.ScanText(TeleportActionSig);
-        teleportActionSelfHook =
+        teleportActionSelfHook ??=
             Service.Hook.HookFromAddress<TeleportActionSelfDelegate>(teleportActionSelfPtr, TeleportActionSelf);
-        teleportActionSelfHook.Enable();
+        teleportActionSelfHook?.Enable();
 
         Initialized = true;
     }
@@ -153,8 +153,8 @@ public class TeleportCosts : ITrackerComponent
     public void Uninit()
     {
         ResetStates();
-        actorControlSelfHook.Dispose();
-        teleportActionSelfHook.Dispose();
+        actorControlSelfHook?.Dispose();
+        teleportActionSelfHook?.Dispose();
 
         Initialized = false;
     }

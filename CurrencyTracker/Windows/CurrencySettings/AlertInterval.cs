@@ -51,7 +51,7 @@ public partial class CurrencySettings
     {
         ImGui.Separator();
 
-        var intervals = GetIntervals(selectedCurrencyID, alertMode, viewIA, idIA);
+        var intervals = GetOrCreateIntervals(selectedCurrencyID, alertMode, viewIA, idIA);
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
@@ -116,7 +116,7 @@ public partial class CurrencySettings
 
         if (b1)
         {
-            var paramsEP = new string[5]
+            var paramsEP = new string[]
             {
                 Service.Lang.GetText("AlertType"), Service.Lang.GetText("ParamEP-Value"),
                 Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType"),
@@ -176,7 +176,7 @@ public partial class CurrencySettings
     {
         if (end != -1 && start > end) return;
 
-        var intervals = GetIntervals(currencyID, alertMode, viewIA, idIA);
+        var intervals = GetOrCreateIntervals(currencyID, alertMode, viewIA, idIA);
         var newInterval = CreateInterval(start, end);
 
         if (!intervals.Contains(newInterval))
@@ -188,7 +188,7 @@ public partial class CurrencySettings
 
     private void RemoveIntervalHandler(uint currencyID, int? start, int? end)
     {
-        var intervals = GetIntervals(currencyID, alertMode, viewIA, idIA);
+        var intervals = GetOrCreateIntervals(currencyID, alertMode, viewIA, idIA);
         var newInterval = new Interval<int>(start, end);
 
         if (intervals.Remove(newInterval))
@@ -198,16 +198,17 @@ public partial class CurrencySettings
         }
     }
 
-    public static List<Interval<int>> GetIntervals(uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
+    public static List<Interval<int>> GetOrCreateIntervals(
+        uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
     {
         var intervalList = alertMode == 0
                                ? Plugin.Configuration.CurrencyRules[currencyID].AlertedAmountIntervals
                                : Plugin.Configuration.CurrencyRules[currencyID].AlertedChangeIntervals;
         var key = GetTransactionViewKeyString(view, ID);
 
-        intervalList.TryGetValue(key, out var intervals);
+        if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = new List<Interval<int>>();
 
-        return intervals;
+        return intervalList[key];
     }
 
 
