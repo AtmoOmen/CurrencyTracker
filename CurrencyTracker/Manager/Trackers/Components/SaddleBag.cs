@@ -52,8 +52,8 @@ public class SaddleBag : ITrackerComponent
     public void Uninit()
     {
         Service.Framework.Update -= SaddleBagScanner;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
+        Service.AddonLifecycle.UnregisterListener(OnSaddleBag);
+
         windowTitle = string.Empty;
         InventoryItemCount.Clear();
     }

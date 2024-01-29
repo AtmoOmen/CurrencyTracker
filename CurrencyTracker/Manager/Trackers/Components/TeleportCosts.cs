@@ -1,3 +1,4 @@
+using Dalamud.Utility.Signatures;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -6,18 +7,17 @@ public class TeleportCosts : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private const string ActorControlSig = "E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64";
-
     private delegate void ActorControlSelfDelegate(
         uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6,
         ulong targetId, byte param7);
 
+    [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelf))]
     private Hook<ActorControlSelfDelegate>? actorControlSelfHook;
-
-    private const string TeleportActionSig = "E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??";
 
     private delegate byte TeleportActionSelfDelegate(long p1, uint p2, byte p3);
 
+    [Signature("E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??",
+               DetourName = nameof(TeleportActionSelf))]
     private Hook<TeleportActionSelfDelegate>? teleportActionSelfHook;
 
     private static Dictionary<uint, string> AetheryteNames = new();
@@ -33,14 +33,8 @@ public class TeleportCosts : ITrackerComponent
     {
         GetAetherytes();
 
-        var actorControlSelfPtr = Service.SigScanner.ScanText(ActorControlSig);
-        actorControlSelfHook ??=
-            Service.Hook.HookFromAddress<ActorControlSelfDelegate>(actorControlSelfPtr, ActorControlSelf);
+        Service.Hook.InitializeFromAttributes(this);
         actorControlSelfHook?.Enable();
-
-        var teleportActionSelfPtr = Service.SigScanner.ScanText(TeleportActionSig);
-        teleportActionSelfHook ??=
-            Service.Hook.HookFromAddress<TeleportActionSelfDelegate>(teleportActionSelfPtr, TeleportActionSelf);
         teleportActionSelfHook?.Enable();
     }
 
@@ -52,7 +46,7 @@ public class TeleportCosts : ITrackerComponent
                          .Select(row => new
                          {
                              row.RowId,
-                             Name = Plugin.Instance.PluginInterface.Sanitizer.Sanitize(
+                             Name = P.PluginInterface.Sanitizer.Sanitize(
                                  row.PlaceName.Value?.Name?.ToString())
                          })
                          .Where(x => !x.Name.IsNullOrEmpty())
@@ -61,16 +55,8 @@ public class TeleportCosts : ITrackerComponent
 
     private byte TeleportActionSelf(long p1, uint p2, byte p3)
     {
-        try
-        {
-            if (!AetheryteNames.TryGetValue(p2, out tpDestination))
-                Service.Log.Warning($"Unknown Aetheryte Name {tpDestination}");
-        }
-        catch (Exception e)
-        {
-            Service.Log.Warning(e.Message);
-            Service.Log.Warning(e.StackTrace ?? "Unknown");
-        }
+        if (!AetheryteNames.TryGetValue(p2, out tpDestination))
+            Service.Log.Warning($"Unknown Aetheryte Name {tpDestination}");
 
         return teleportActionSelfHook.OriginalDisposeSafe(p1, p2, p3);
     }
@@ -82,18 +68,9 @@ public class TeleportCosts : ITrackerComponent
         actorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, targetId,
                                       param7);
 
-        if (eventId != 517)
-            return;
+        if (eventId != 517) return;
 
-        try
-        {
-            if (param1 is 4590 or 4591 && param2 != 0) TeleportWithCost();
-        }
-        catch (Exception e)
-        {
-            Service.Log.Warning(e.Message);
-            Service.Log.Warning(e.StackTrace ?? "Unknown");
-        }
+        if (param1 is 4590 or 4591 && param2 != 0) TeleportWithCost();
     }
 
     public void TeleportWithCost()
@@ -126,13 +103,17 @@ public class TeleportCosts : ITrackerComponent
         if (Flags.BetweenAreas() || Flags.OccupiedInEvent()) return;
 
         if (tpBetweenAreas)
+        {
             Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
-                                            $"({Service.Lang.GetText("TeleportTo", Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
+                                            $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
+        }
         else if (tpInAreas)
+        {
             Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
-                                            Plugin.Configuration.ComponentProp["RecordDesAetheryteName"]
+                                            Service.Config.ComponentProp["RecordDesAetheryteName"]
                                                 ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
                                                 : $"{Service.Lang.GetText("TeleportWithinArea")}");
+        }
 
         if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
         {
@@ -151,6 +132,7 @@ public class TeleportCosts : ITrackerComponent
     public void Uninit()
     {
         ResetStates();
+
         actorControlSelfHook?.Dispose();
         teleportActionSelfHook?.Dispose();
     }

@@ -90,16 +90,11 @@ public static class Helpers
             TransactionFileCategory.Inventory => Service.Lang.GetText("Inventory"),
             TransactionFileCategory.SaddleBag => Service.Lang.GetText("SaddleBag"),
             TransactionFileCategory.PremiumSaddleBag => Service.Lang.GetText("PSaddleBag"),
-            TransactionFileCategory.Retainer => Plugin.Configuration.CharacterRetainers[
-                Plugin.Instance.CurrentCharacter.ContentID][id],
+            TransactionFileCategory.Retainer => Service.Config.CharacterRetainers[
+                Plugin.P.CurrentCharacter.ContentID][id],
             _ => string.Empty
         };
         return text;
-    }
-
-    public static unsafe bool IsAddonNodesReady(AtkUnitBase* UI)
-    {
-        return UI != null && UI->RootNode != null && UI->RootNode->ChildNode != null && UI->UldManager.NodeList != null;
     }
 
     public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
@@ -148,9 +143,9 @@ public static class Helpers
     {
         return view switch
         {
-            TransactionFileCategory.Inventory => Plugin.Instance.CurrentCharacter.ContentID.ToString(),
-            TransactionFileCategory.SaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_SB",
-            TransactionFileCategory.PremiumSaddleBag => $"{Plugin.Instance.CurrentCharacter.ContentID}_PSB",
+            TransactionFileCategory.Inventory => Plugin.P.CurrentCharacter.ContentID.ToString(),
+            TransactionFileCategory.SaddleBag => $"{Plugin.P.CurrentCharacter.ContentID}_SB",
+            TransactionFileCategory.PremiumSaddleBag => $"{Plugin.P.CurrentCharacter.ContentID}_PSB",
             TransactionFileCategory.Retainer => ID.ToString(),
             _ => string.Empty
         };

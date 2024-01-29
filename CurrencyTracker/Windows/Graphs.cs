@@ -2,7 +2,7 @@ namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    private readonly Main Main = Plugin.Instance.Main;
+    private readonly Main Main = Plugin.P.Main;
     private List<TransactionsConvertor>? currentTypeTransactions = new();
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
@@ -25,22 +25,22 @@ public class Graph : Window, IDisposable
 
         if (Main.currentTypeTransactions == null)
         {
-            if (Plugin.Instance.Graph.IsOpen)
-                Plugin.Instance.Graph.IsOpen = false;
+            if (Plugin.P.Graph.IsOpen)
+                Plugin.P.Graph.IsOpen = false;
             return;
         }
     }
 
     public override unsafe void Draw()
     {
-        if (!Plugin.Instance.Main.IsOpen)
+        if (!Plugin.P.Main.IsOpen)
         {
-            Plugin.Instance.Graph.IsOpen = false;
+            Plugin.P.Graph.IsOpen = false;
         }
 
         ImGui.Text($"{Service.Lang.GetText("Now")}:");
         ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, Plugin.Configuration.AllCurrencies[Main.selectedCurrencyID]);
+        ImGui.TextColored(ImGuiColors.DalamudOrange, Service.Config.AllCurrencies[Main.selectedCurrencyID]);
         ImGui.SameLine();
         ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();

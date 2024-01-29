@@ -23,7 +23,7 @@ public class LanguageManager
 
     public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")
     {
-        LangsDirectory = Path.Join(Path.GetDirectoryName(Plugin.Instance.PluginInterface.AssemblyLocation.FullName),
+        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName),
                                    "Manager", "Langs");
 
         if (isDev)
@@ -70,7 +70,7 @@ public class LanguageManager
 
     public string GetText(string key, params object[] args)
     {
-        if (!Plugin.Configuration.CustomNoteContents.TryGetValue(key, out var format))
+        if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
             format = resourceData.TryGetValue(key, out var resValue) ? resValue :
                      fbResourceData.GetValueOrDefault(key);
 
@@ -91,7 +91,7 @@ public class LanguageManager
 
     public SeString GetSeString(string key, params object[] args)
     {
-        if (!Plugin.Configuration.CustomNoteContents.TryGetValue(key, out var format))
+        if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
             format = resourceData.TryGetValue(key, out var resValue) ? resValue :
                      fbResourceData.GetValueOrDefault(key);
 

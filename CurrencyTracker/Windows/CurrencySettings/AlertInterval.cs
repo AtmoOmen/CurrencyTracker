@@ -202,8 +202,8 @@ public partial class CurrencySettings
         uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
     {
         var intervalList = alertMode == 0
-                               ? Plugin.Configuration.CurrencyRules[currencyID].AlertedAmountIntervals
-                               : Plugin.Configuration.CurrencyRules[currencyID].AlertedChangeIntervals;
+                               ? Service.Config.CurrencyRules[currencyID].AlertedAmountIntervals
+                               : Service.Config.CurrencyRules[currencyID].AlertedChangeIntervals;
         var key = GetTransactionViewKeyString(view, ID);
 
         if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = new List<Interval<int>>();

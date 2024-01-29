@@ -19,7 +19,7 @@ public class CharacterCurrencyInfo
 
     public void GetCharacterCurrencyAmount()
     {
-        Parallel.ForEach(Plugin.Configuration.AllCurrencyID,
+        Parallel.ForEach(Service.Config.AllCurrencyID,
                          currencyKey =>
                          {
                              CurrencyAmount[currencyKey] =

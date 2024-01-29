@@ -19,7 +19,7 @@ public class TerrioryHandler : ITrackerHandler
                                 .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
                                 .ToDictionary(
                                     x => x.RowId,
-                                    x => Plugin.Instance.PluginInterface.Sanitizer.Sanitize(
+                                    x => Plugin.P.PluginInterface.Sanitizer.Sanitize(
                                         x.PlaceName?.Value?.Name?.ToString()));
 
         PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;

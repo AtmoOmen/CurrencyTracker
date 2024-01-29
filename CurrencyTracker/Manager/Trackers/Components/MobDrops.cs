@@ -32,11 +32,8 @@ public class MobDrops : ITrackerComponent
         var target = Service.TargetManager.Target;
         if (target is BattleNpc battleNPC && target.ObjectKind == ObjectKind.BattleNpc &&
             (battleNPC.StatusFlags & (StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut)) != 0 &&
-            !enemiesList.Contains(battleNPC.Name.TextValue))
-        {
-            enemiesList.Add(battleNPC.Name.TextValue);
+            enemiesList.Add(battleNPC.Name.TextValue))
             Service.Log.Debug($"{battleNPC.Name.TextValue}");
-        }
     }
 
     private void EndMobDropsHandler()
@@ -46,8 +43,6 @@ public class MobDrops : ITrackerComponent
             Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
             return;
         }
-
-        ;
 
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
         Service.Framework.Update -= OnFrameworkUpdate;

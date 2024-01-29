@@ -4,24 +4,24 @@ public partial class Main
 {
     private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
     {
-        { "Order", Plugin.Instance.Main.OrderColumnHeaderUI },
-        { "Time", Plugin.Instance.Main.TimeColumnHeaderUI },
-        { "Amount", Plugin.Instance.Main.AmountColumnHeaderUI },
-        { "Change", Plugin.Instance.Main.ChangeColumnHeaderUI },
-        { "Location", Plugin.Instance.Main.LocationColumnHeaderUI },
-        { "Note", Plugin.Instance.Main.NoteColumnHeaderUI },
-        { "Checkbox", Plugin.Instance.Main.CheckboxColumnHeaderUI }
+        { "Order", Plugin.P.Main.OrderColumnHeaderUI },
+        { "Time", Plugin.P.Main.TimeColumnHeaderUI },
+        { "Amount", Plugin.P.Main.AmountColumnHeaderUI },
+        { "Change", Plugin.P.Main.ChangeColumnHeaderUI },
+        { "Location", Plugin.P.Main.LocationColumnHeaderUI },
+        { "Note", Plugin.P.Main.NoteColumnHeaderUI },
+        { "Checkbox", Plugin.P.Main.CheckboxColumnHeaderUI }
     };
 
     private static readonly Dictionary<string, Action<int, bool, TransactionsConvertor>> ColumnCellActions = new()
     {
-        { "Order", Plugin.Instance.Main.OrderColumnCellUI },
-        { "Time", Plugin.Instance.Main.TimeColumnCellUI },
-        { "Amount", Plugin.Instance.Main.AmountColumnCellUI },
-        { "Change", Plugin.Instance.Main.ChangeColumnCellUI },
-        { "Location", Plugin.Instance.Main.LocationColumnCellUI },
-        { "Note", Plugin.Instance.Main.NoteColumnCellUI },
-        { "Checkbox", Plugin.Instance.Main.CheckboxColumnCellUI }
+        { "Order", Plugin.P.Main.OrderColumnCellUI },
+        { "Time", Plugin.P.Main.TimeColumnCellUI },
+        { "Amount", Plugin.P.Main.AmountColumnCellUI },
+        { "Change", Plugin.P.Main.ChangeColumnCellUI },
+        { "Location", Plugin.P.Main.LocationColumnCellUI },
+        { "Note", Plugin.P.Main.NoteColumnCellUI },
+        { "Checkbox", Plugin.P.Main.CheckboxColumnCellUI }
     };
 
     internal static string[] visibleColumns = Array.Empty<string>();

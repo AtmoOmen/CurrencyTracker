@@ -1,4 +1,5 @@
 using Lumina.Excel.GeneratedSheets2;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -10,8 +11,8 @@ public class WarpCosts : ITrackerComponent
     private static readonly HashSet<string> ValidWarpText = new() { "Gils", "Gil", "金币", "金幣", "ギル" };
     private static readonly uint[] tpCostCurrencies = { 1, 7569 };
 
-    // 包含金币传送点的区域 Terriories that Have a Gil-Cost Warp
-    private List<uint> ValidGilWarpTerriories = new();
+    // 包含金币传送点的区域 Territories that Have a Gil-Cost Warp
+    private List<uint> ValidGilWarpTerritories = new();
 
     private bool isReadyWarpTP;
     private bool warpTPBetweenAreas;
@@ -19,7 +20,7 @@ public class WarpCosts : ITrackerComponent
 
     public void Init()
     {
-        ValidGilWarpTerriories = Service.DataManager.GetExcelSheet<Warp>()
+        ValidGilWarpTerritories = Service.DataManager.GetExcelSheet<Warp>()
                                         .Where(x => Service.DataManager.GetExcelSheet<WarpCondition>()
                                                            .Any(y => y.Gil != 0 &&
                                                                      x.WarpCondition.Value.RowId == y.RowId))
@@ -31,10 +32,10 @@ public class WarpCosts : ITrackerComponent
 
     private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
     {
-        if (!ValidGilWarpTerriories.Any(x => Service.ClientState.TerritoryType == x)) return;
+        if (ValidGilWarpTerritories.All(x => Service.ClientState.TerritoryType != x)) return;
 
         var SYN = (AtkUnitBase*)args.Addon;
-        if (!IsAddonNodesReady(SYN)) return;
+        if (!HelpersOm.IsAddonAndNodesReady(SYN)) return;
 
         var text = SYN->GetTextNodeById(2)->NodeText.ToString();
         if (text.IsNullOrEmpty()) return;
@@ -92,7 +93,7 @@ public class WarpCosts : ITrackerComponent
 
     public void Uninit()
     {
-        ValidGilWarpTerriories.Clear();
+        ValidGilWarpTerritories.Clear();
         ResetStates();
     }
 }

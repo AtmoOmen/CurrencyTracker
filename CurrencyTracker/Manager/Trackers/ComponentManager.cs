@@ -21,7 +21,7 @@ public class ComponentManager
     {
         foreach (var component in Components)
         {
-            if (Plugin.Configuration.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))
+            if (Service.Config.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))
             {
                 if (!enabled) continue;
             }

@@ -26,7 +26,8 @@ public class DutyRewards : ITrackerComponent
     public void Init()
     {
         ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                              .Where(x => !x.Name.ToString().IsNullOrEmpty() && IgnoredContents.All(y => y != x.TerritoryType.Row))
+                              .Where(x => !x.Name.ToString().IsNullOrEmpty() &&
+                                          IgnoredContents.All(y => y != x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
                               .ToDictionary(x => x.TerritoryType.Row, x => x.Name.ToString());
 
@@ -65,7 +66,7 @@ public class DutyRewards : ITrackerComponent
 
         var items = inventoryHandler?.Items ?? new HashSet<uint>();
         Service.Tracker.CheckCurrencies(items, PreviousLocationName,
-                                        Plugin.Configuration.ComponentProp["RecordContentName"]
+                                        Service.Config.ComponentProp["RecordContentName"]
                                             ? $"({contentName})"
                                             : "", RecordChangeType.All, 2);
 
@@ -81,6 +82,7 @@ public class DutyRewards : ITrackerComponent
     {
         Service.ClientState.TerritoryChanged -= OnZoneChange;
         HandlerManager.Nullify(ref inventoryHandler);
+
         isDutyStarted = false;
         contentName = string.Empty;
     }

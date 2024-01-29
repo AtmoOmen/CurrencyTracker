@@ -120,11 +120,14 @@ public class IslandSanctuary : ITrackerComponent
     {
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.ClientState.TerritoryChanged -= OnZoneChanged;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
+
+        Service.AddonLifecycle.UnregisterListener(BeginMJIWindow);
+        Service.AddonLifecycle.UnregisterListener(EndMJIWindow);
+        Service.AddonLifecycle.UnregisterListener(BeginMJI);
+        Service.AddonLifecycle.UnregisterListener(EndMJI);
+
         HandlerManager.Nullify(ref inventoryHandler);
+
         isInIsland = false;
         isOnWorkshop = false;
         windowTitle = string.Empty;

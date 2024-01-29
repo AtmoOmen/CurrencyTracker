@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class LetterAttachments : ITrackerComponent
@@ -20,7 +22,7 @@ public class LetterAttachments : ITrackerComponent
             case AddonEvent.PostSetup:
             {
                 var UI = (AtkUnitBase*)args.Addon;
-                if (!IsAddonNodesReady(UI)) return;
+                if (!HelpersOm.IsAddonAndNodesReady(UI)) return;
 
                 var buttonNode = UI->GetButtonNodeById(30);
                 if (buttonNode == null || !buttonNode->IsEnabled) return;
@@ -57,8 +59,7 @@ public class LetterAttachments : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
+        Service.AddonLifecycle.UnregisterListener(OnLetterViewer);
         HandlerManager.Nullify(ref inventoryHandler);
     }
 }

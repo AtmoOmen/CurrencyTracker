@@ -24,7 +24,7 @@ public class InventoryHandler : ITrackerHandler
         foreach (var eventArgs in events)
         {
             Items.Add(eventArgs.Item.ItemId);
-            if (Plugin.Instance.PluginInterface.IsDev) Service.Log.Debug(eventArgs.ToString());
+            if (Plugin.P.PluginInterface.IsDev) Service.Log.Debug(eventArgs.ToString());
         }
     }
 

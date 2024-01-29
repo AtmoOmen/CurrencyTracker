@@ -62,7 +62,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
@@ -84,7 +84,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
@@ -100,7 +100,7 @@ public class TransactionsConvertor
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder, Plugin.Configuration.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(Plugin.P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }

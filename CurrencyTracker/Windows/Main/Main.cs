@@ -2,8 +2,8 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
 {
-    private readonly Configuration? C = Plugin.Configuration;
-    private readonly Plugin? P = Plugin.Instance;
+    private readonly Configuration? C = Service.Config;
+    private readonly Plugin? P = Plugin.P;
 
     private bool showRecordOptions = true;
     private bool showOthers = true;

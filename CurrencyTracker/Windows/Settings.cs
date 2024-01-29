@@ -2,8 +2,8 @@ namespace CurrencyTracker.Windows;
 
 public class Settings : Window, IDisposable
 {
-    private Configuration? C = Plugin.Configuration;
-    private Plugin? P = Plugin.Instance;
+    private Configuration? C = Service.Config;
+    private Plugin? P = Plugin.P;
 
     private string devLangFilePath = string.Empty;
 

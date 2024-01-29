@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
@@ -31,8 +33,7 @@ public class GoldSaucer : ITrackerComponent
     private unsafe void BeginGoldSaucerHandler(AddonArgs args)
     {
         var GSR = (AtkUnitBase*)args.Addon;
-        if (GSR != null && GSR->RootNode != null && GSR->RootNode->ChildNode != null &&
-            GSR->UldManager.NodeList != null)
+        if (HelpersOm.IsAddonAndNodesReady(GSR))
         {
             var textNode = GSR->GetTextNodeById(5);
             if (textNode != null)
@@ -46,10 +47,6 @@ public class GoldSaucer : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "GoldSaucerReward", GoldSaucerHandler);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
-
-        Initialized = false;
+        Service.AddonLifecycle.UnregisterListener(GoldSaucerHandler);
     }
 }

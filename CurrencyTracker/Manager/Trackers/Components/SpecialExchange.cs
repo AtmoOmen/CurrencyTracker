@@ -28,7 +28,7 @@ public class SpecialExchange : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = true;
 
         isOnExchange = true;
-        windowName = GetWindowTitle(args, UI[args.AddonName]) ?? string.Empty;
+        windowName = GetWindowTitle(args, UI[args.AddonName]);
         inventoryHandler = new InventoryHandler();
 
         Service.Framework.Update += OnFrameworkUpdate;
@@ -69,8 +69,9 @@ public class SpecialExchange : ITrackerComponent
     public void Uninit()
     {
         Service.Framework.Update -= OnFrameworkUpdate;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
+        Service.AddonLifecycle.UnregisterListener(BeginExchange);
         HandlerManager.Nullify(ref inventoryHandler);
+
         isOnExchange = false;
         windowName = string.Empty;
     }

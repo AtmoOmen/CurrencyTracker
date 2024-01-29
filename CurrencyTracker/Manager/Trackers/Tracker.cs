@@ -9,8 +9,8 @@ public class Tracker : IDisposable
     public HandlerManager HandlerManager = null!;
     public ComponentManager ComponentManager = null!;
 
-    private readonly Configuration? C = Plugin.Configuration;
-    private readonly Plugin? P = Plugin.Instance;
+    private readonly Configuration? C = Service.Config;
+    private readonly Plugin? P = Plugin.P;
 
     public Tracker()
     {

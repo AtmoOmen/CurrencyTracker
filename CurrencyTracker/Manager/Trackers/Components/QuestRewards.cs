@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class QuestRewards : ITrackerComponent
@@ -26,7 +28,7 @@ public class QuestRewards : ITrackerComponent
         ResetQuestState();
 
         var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
-        if (JR == null || !IsAddonNodesReady(JR)) return;
+        if (JR == null || !HelpersOm.IsAddonAndNodesReady(JR)) return;
 
         questName = JR->GetTextNodeById(30)->NodeText.ToString();
         var buttonNode = JR->GetNodeById(37);
@@ -56,8 +58,6 @@ public class QuestRewards : ITrackerComponent
             return;
         }
 
-        ;
-
         Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
 
         isReadyFinish = false;
@@ -83,7 +83,7 @@ public class QuestRewards : ITrackerComponent
     public void Uninit()
     {
         Service.Framework.Update -= OnFrameworkUpdate;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
+        Service.AddonLifecycle.UnregisterListener(OnQuestRewards);
         HandlerManager.Nullify(ref inventoryHandler);
     }
 }

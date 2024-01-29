@@ -2,9 +2,9 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings : Window, IDisposable
 {
-    private readonly Configuration? C = Plugin.Configuration;
-    private readonly Plugin? P = Plugin.Instance;
-    private readonly Main? M = Plugin.Instance.Main;
+    private readonly Configuration? C = Service.Config;
+    private readonly Plugin? P = Plugin.P;
+    private readonly Main? M = Plugin.P.Main;
 
     private uint selectedCurrencyID;
     private bool isEditingCurrencyName;

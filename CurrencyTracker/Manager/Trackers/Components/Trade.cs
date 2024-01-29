@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class Trade : ITrackerComponent
@@ -20,12 +22,12 @@ public class Trade : ITrackerComponent
         isOnTrade = true;
 
         var TGUI = (AtkUnitBase*)args.Addon;
-        if (TGUI == null) return;
+        if (HelpersOm.IsAddonAndNodesReady(TGUI)) return;
 
         var textNode = TGUI->GetTextNodeById(17);
         if (textNode == null) return;
 
-        tradeTargetName = textNode->NodeText.ToString();
+        tradeTargetName = textNode->NodeText.ExtractText();
         inventoryHandler = new InventoryHandler();
         Service.Framework.Update += OnFrameworkUpdate;
         HandlerManager.ChatHandler.isBlocked = true;
@@ -38,7 +40,7 @@ public class Trade : ITrackerComponent
         if (Service.Condition[ConditionFlag.TradeOpen]) return;
 
         Service.Framework.Update -= OnFrameworkUpdate;
-        Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(t => EndTrade());
+        Task.Delay(TimeSpan.FromSeconds(2)).ContinueWith(_ => EndTrade());
     }
 
     private void EndTrade()
@@ -52,6 +54,7 @@ public class Trade : ITrackerComponent
         Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? new HashSet<uint>();
+
         Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
                                         RecordChangeType.All, 13);
         tradeTargetName = string.Empty;
@@ -65,8 +68,9 @@ public class Trade : ITrackerComponent
     public void Uninit()
     {
         Service.Framework.Update -= OnFrameworkUpdate;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
+        Service.AddonLifecycle.UnregisterListener(StartTrade);
         HandlerManager.Nullify(ref inventoryHandler);
+
         tradeTargetName = string.Empty;
     }
 }

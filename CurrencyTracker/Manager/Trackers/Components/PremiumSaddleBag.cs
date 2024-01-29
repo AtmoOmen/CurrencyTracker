@@ -52,8 +52,8 @@ public class PremiumSaddleBag : ITrackerComponent
     public void Uninit()
     {
         Service.Framework.Update -= PSaddleBagScanner;
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
+        Service.AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
+
         windowTitle = string.Empty;
         InventoryItemCount.Clear();
     }

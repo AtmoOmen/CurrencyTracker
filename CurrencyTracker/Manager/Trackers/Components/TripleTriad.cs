@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class TripleTriad : ITrackerComponent
@@ -21,7 +23,7 @@ public class TripleTriad : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = true;
 
         var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
-        if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ToString();
+        if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ExtractText();
 
         inventoryHandler = new InventoryHandler();
 
@@ -61,9 +63,10 @@ public class TripleTriad : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
+        Service.AddonLifecycle.UnregisterListener(StartTripleTriad);
+        Service.AddonLifecycle.UnregisterListener(EndTripleTriad);
         HandlerManager.Nullify(ref inventoryHandler);
+
         isTTOn = false;
         ttRivalName = ttResultText = string.Empty;
     }

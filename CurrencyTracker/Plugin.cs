@@ -6,7 +6,7 @@ public sealed class Plugin : IDalamudPlugin
     public const string CommandName = "/ct";
 
     public CharacterInfo? CurrentCharacter { get; set; }
-    public string PlayerDataFolder => GetCurrentCharcterDataFolder();
+    public string PlayerDataFolder => GetCurrentCharacterDataFolder();
 
     public DalamudPluginInterface PluginInterface { get; init; }
     public Main? Main { get; private set; }
@@ -15,13 +15,11 @@ public sealed class Plugin : IDalamudPlugin
     public CurrencySettings? CurrencySettings { get; private set; }
 
     public WindowSystem WindowSystem = new("CurrencyTracker");
-    public static Configuration? Configuration;
-    public static Plugin Instance = null!;
-
+    internal static Plugin P = null!;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
-        Instance = this;
+        P = this;
         PluginInterface = pluginInterface;
 
         ConfigHandler(pluginInterface);
@@ -71,7 +69,7 @@ public sealed class Plugin : IDalamudPlugin
                                           CurrentCharacter.Server == serverName))) return CurrentCharacter;
 
         var existingCharacter =
-            Configuration.CurrentActiveCharacter.FirstOrDefault(
+            Service.Config.CurrentActiveCharacter.FirstOrDefault(
                 x => x.ContentID == contentID || (x.Name == playerName && x.Server == serverName));
         if (existingCharacter != null)
         {
@@ -89,7 +87,7 @@ public sealed class Plugin : IDalamudPlugin
                 Server = serverName,
                 ContentID = contentID
             };
-            Configuration.CurrentActiveCharacter.Add(CurrentCharacter);
+            Service.Config.CurrentActiveCharacter.Add(CurrentCharacter);
         }
 
         if (!Directory.Exists(dataFolderName))
@@ -98,12 +96,12 @@ public sealed class Plugin : IDalamudPlugin
             Service.Log.Debug("Successfully create character info directory.");
         }
 
-        Configuration.Save();
+        Service.Config.Save();
 
         return CurrentCharacter;
     }
 
-    private string GetCurrentCharcterDataFolder()
+    private string GetCurrentCharacterDataFolder()
     {
         CurrentCharacter ??= GetCurrentCharacter();
 
@@ -127,8 +125,8 @@ public sealed class Plugin : IDalamudPlugin
 
         if (File.Exists(configPath)) ParseOldConfiguration(configPath);
 
-        Configuration = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Configuration.Initialize(PluginInterface);
+        Service.Config = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        Service.Config.Initialize(PluginInterface);
     }
 
     public static void ParseOldConfiguration(string jsonFilePath)
@@ -175,14 +173,14 @@ public sealed class Plugin : IDalamudPlugin
     public void OnCommand(string command, string args)
     {
         if (Main.visibleColumns == Array.Empty<string>())
-            Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+            Main.visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
         if (args.IsNullOrEmpty())
         {
             Main.IsOpen = !Main.IsOpen;
             return;
         }
 
-        var matchingCurrencies = FindMatchingCurrencies(Configuration.AllCurrencies.Values.ToList(), args);
+        var matchingCurrencies = FindMatchingCurrencies(Service.Config.AllCurrencies.Values.ToList(), args);
         var matchCount = matchingCurrencies.Count;
 
         switch (matchCount)
@@ -192,7 +190,7 @@ public sealed class Plugin : IDalamudPlugin
                 break;
             case 1:
                 var currencyName = matchingCurrencies[0];
-                var currencyPair = Configuration.AllCurrencies.FirstOrDefault(x => x.Value == currencyName);
+                var currencyPair = Service.Config.AllCurrencies.FirstOrDefault(x => x.Value == currencyName);
                 var currencyID = currencyPair.Key;
 
                 if (!Main.IsOpen || currencyID != Main.selectedCurrencyID)
@@ -214,7 +212,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
     {
-        var isCS = Configuration.SelectedLanguage == "ChineseSimplified";
+        var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
         partialName = partialName.Normalize(NormalizationForm.FormKC);
 
         var exactMatch = currencyList
@@ -270,7 +268,7 @@ public sealed class Plugin : IDalamudPlugin
         if (currentCharacter == null) return;
 
         if (Main.visibleColumns == Array.Empty<string>())
-            Main.visibleColumns = Configuration.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+            Main.visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
         Main.IsOpen = !Main.IsOpen;
     }
@@ -290,6 +288,6 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.CommandManager.RemoveHandler(CommandName);
 
-        Configuration.Uninitialize();
+        Service.Config.Uninitialize();
     }
 }

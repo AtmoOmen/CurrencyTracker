@@ -8,7 +8,7 @@ public class Exchange : ITrackerComponent
     {
         "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency",
         "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "TripleTriadCoinExchange", "FreeCompanyChest",
-        "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback"
+        "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback", "ShopExchangeCoin"
     };
 
     private static readonly Dictionary<string, uint> WindowUI = new() // Addon Name - Window Node ID
@@ -68,8 +68,8 @@ public class Exchange : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
+        Service.AddonLifecycle.UnregisterListener(BeginExchange);
+        Service.AddonLifecycle.UnregisterListener(EndExchange);
         HandlerManager.Nullify(ref inventoryHandler);
     }
 }

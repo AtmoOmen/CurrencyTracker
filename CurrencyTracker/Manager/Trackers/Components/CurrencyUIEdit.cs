@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class CurrencyUIEdit : ITrackerComponent
@@ -37,14 +39,14 @@ public class CurrencyUIEdit : ITrackerComponent
         var gilTextNode = gilNode->GetTextNodeById(5);
 
         gilTextNode->GetAsAtkTextNode()->SetText(CurrencyInfo
-                                                 .GetCharacterCurrencyAmount(1, Plugin.Instance.CurrentCharacter)
+                                                 .GetCharacterCurrencyAmount(1, P.CurrentCharacter)
                                                  .ToString("#,0"));
     }
 
     private unsafe void UITooltipEdit(AddonArgs args)
     {
         var UI = (AtkUnitBase*)args.Addon;
-        if (!IsAddonNodesReady(UI)) return;
+        if (!HelpersOm.IsAddonAndNodesReady(UI)) return;
 
         var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
         if (gilTextNode == null) return;
@@ -66,13 +68,13 @@ public class CurrencyUIEdit : ITrackerComponent
             CurrencyInfo.GetCurrencyAmount(1).ToString("N0");
         var tooltipBuilder = new StringBuilder($"{Service.Lang.GetText("Inventory")}: {inventoryAmount}");
 
-        if (Plugin.Configuration.CharacterRetainers.TryGetValue(Plugin.Instance.CurrentCharacter.ContentID,
-                                                                out var retainers))
+        if (Service.Config.CharacterRetainers.TryGetValue(P.CurrentCharacter.ContentID,
+                                                          out var retainers))
         {
             foreach (var retainer in retainers)
             {
                 var retainerAmount = CurrencyInfo.GetCurrencyAmountFromFile(
-                    1, Plugin.Instance.CurrentCharacter, TransactionFileCategory.Retainer, retainer.Key);
+                    1, P.CurrentCharacter, TransactionFileCategory.Retainer, retainer.Key);
                 if (retainerAmount.HasValue)
                 {
                     tooltipBuilder.AppendLine();
@@ -101,14 +103,13 @@ public class CurrencyUIEdit : ITrackerComponent
         Service.AddonEventManager.RemoveEvent(mouseoutHandle);
 
         var UI = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
-        if (IsAddonNodesReady(UI))
+        if (HelpersOm.IsAddonAndNodesReady(UI))
         {
             var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
             if (gilTextNode == null) return;
             gilTextNode->NodeFlags &= ~(NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision);
         }
 
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
+        Service.AddonLifecycle.UnregisterListener(OnCurrencyUI);
     }
 }

@@ -21,7 +21,7 @@ public static class CurrencyInfo
     /// <returns></returns>
     public static string GetCurrencyName(uint currencyID)
     {
-        return Plugin.Configuration.AllCurrencies.TryGetValue(currencyID, out var currencyName)
+        return Service.Config.AllCurrencies.TryGetValue(currencyID, out var currencyName)
                    ? currencyName
                    : GetCurrencyLocalName(currencyID);
     }
@@ -73,7 +73,7 @@ public static class CurrencyInfo
             amount += currencyAmount ?? 0;
         }
 
-        if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var value))
+        if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var value))
         {
             foreach (var retainer in value)
             {
@@ -95,7 +95,7 @@ public static class CurrencyInfo
             AddCurrencyAmountToDictionary(currencyID, character, category, 0, amountDic);
         }
 
-        if (Plugin.Configuration.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
+        if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
         {
             foreach (var retainer in retainers)
             {

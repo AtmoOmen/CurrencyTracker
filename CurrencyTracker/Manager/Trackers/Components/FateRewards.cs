@@ -45,8 +45,6 @@ public class FateRewards : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
+        Service.AddonLifecycle.UnregisterListener(FateHandler);
     }
 }

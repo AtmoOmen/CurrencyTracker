@@ -64,3 +64,4 @@ global using OmenTools.ImGuiOm;
 global using OmenTools.Widgets;
 global using static CurrencyTracker.Manager.Tools.Helpers;
 global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+global using static CurrencyTracker.Plugin;

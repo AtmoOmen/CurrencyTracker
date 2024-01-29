@@ -20,15 +20,12 @@ public class Retainer : ITrackerComponent
     internal static Dictionary<ulong, Dictionary<uint, long>>
         InventoryItemCount = new(); // Retainer ID - Currency ID : Amount
 
-    private readonly Configuration? C = Plugin.Configuration;
-    private readonly Plugin? P = Plugin.Instance;
-
     public void Init()
     {
-        if (!C.CharacterRetainers.ContainsKey(P.CurrentCharacter.ContentID))
+        if (!Service.Config.CharacterRetainers.ContainsKey(P.CurrentCharacter.ContentID))
         {
-            C.CharacterRetainers.Add(P.CurrentCharacter.ContentID, new Dictionary<ulong, string>());
-            C.Save();
+            Service.Config.CharacterRetainers.Add(P.CurrentCharacter.ContentID, new Dictionary<ulong, string>());
+            Service.Config.Save();
         }
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
@@ -53,7 +50,7 @@ public class Retainer : ITrackerComponent
             var retainerGil = retainer->Gil;
             Service.Log.Debug($"Successfully get retainer {retainerName} ({retainerID})");
 
-            var characterRetainers = C.CharacterRetainers[P.CurrentCharacter.ContentID];
+            var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
 
             characterRetainers[retainerID] = retainerName;
 
@@ -73,13 +70,13 @@ public class Retainer : ITrackerComponent
                                             TransactionFileCategory.Inventory, retainerID);
         }
 
-        C.Save();
+        Service.Config.Save();
 
         if (!isOnRetainer)
         {
             isOnRetainer = true;
             HandlerManager.ChatHandler.isBlocked = true;
-            Service.Framework.Update += RetainerUIWacther;
+            Service.Framework.Update += RetainerUIWatcher;
         }
     }
 
@@ -90,20 +87,25 @@ public class Retainer : ITrackerComponent
 
         currentRetainerID = retainerManager->LastSelectedRetainerId;
 
-        if (type == AddonEvent.PostSetup) Service.Framework.Update += RetainerInventoryScanner;
-
-        if (type == AddonEvent.PreFinalize)
+        switch (type)
         {
-            var retainerName =
-                MemoryHelper.ReadStringNullTerminated((IntPtr)retainerManager->GetActiveRetainer()->Name);
+            case AddonEvent.PostSetup:
+                Service.Framework.Update += RetainerInventoryScanner;
+                break;
+            case AddonEvent.PreFinalize:
+            {
+                var retainerName =
+                    MemoryHelper.ReadStringNullTerminated((IntPtr)retainerManager->GetActiveRetainer()->Name);
 
-            Service.Framework.Update -= RetainerInventoryScanner;
+                Service.Framework.Update -= RetainerInventoryScanner;
 
-            Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "", "", RecordChangeType.All,
-                                            24, TransactionFileCategory.Retainer, currentRetainerID);
-            Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "",
-                                            $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
-                                            TransactionFileCategory.Inventory, currentRetainerID);
+                Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "", "", RecordChangeType.All,
+                                                24, TransactionFileCategory.Retainer, currentRetainerID);
+                Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "",
+                                                $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
+                                                TransactionFileCategory.Inventory, currentRetainerID);
+                break;
+            }
         }
     }
 
@@ -114,18 +116,18 @@ public class Retainer : ITrackerComponent
         InventoryItemCount[currentRetainerID] = tempDict;
     }
 
-    private void RetainerUIWacther(IFramework framework)
+    private void RetainerUIWatcher(IFramework framework)
     {
         if (!isOnRetainer)
         {
-            Service.Framework.Update -= RetainerUIWacther;
+            Service.Framework.Update -= RetainerUIWatcher;
             HandlerManager.ChatHandler.isBlocked = false;
             return;
         }
 
         if (!Service.Condition[ConditionFlag.OccupiedSummoningBell])
         {
-            Service.Framework.Update -= RetainerUIWacther;
+            Service.Framework.Update -= RetainerUIWatcher;
             isOnRetainer = false;
             currentRetainerID = 0;
             InventoryItemCount.Clear();
@@ -133,19 +135,17 @@ public class Retainer : ITrackerComponent
         }
     }
 
-
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
-        Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
+        Service.AddonLifecycle.UnregisterListener(OnRetainerList);
+        Service.AddonLifecycle.UnregisterListener(OnRetainerInventory);
 
         isOnRetainer = false;
         retainerWindowName = string.Empty;
         currentRetainerID = 0;
         InventoryItemCount.Clear();
 
-        Service.Framework.Update -= RetainerUIWacther;
+        Service.Framework.Update -= RetainerUIWatcher;
         Service.Framework.Update -= RetainerInventoryScanner;
     }
 }

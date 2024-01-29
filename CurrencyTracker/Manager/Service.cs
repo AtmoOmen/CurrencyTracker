@@ -4,8 +4,8 @@ public class Service
 {
     public static void Initialize(DalamudPluginInterface pluginInterface)
     {
-        Configuration = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Configuration.Initialize(pluginInterface);
+        Config = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
+        Config.Initialize(pluginInterface);
         pluginInterface.Create<Service>();
 
         InitLanguage();
@@ -15,7 +15,7 @@ public class Service
 
     private static void InitLanguage()
     {
-        var playerLang = Configuration.SelectedLanguage;
+        var playerLang = Config.SelectedLanguage;
         if (playerLang.IsNullOrEmpty())
         {
             playerLang = ClientState.ClientLanguage.ToString();
@@ -23,8 +23,8 @@ public class Service
             {
                 playerLang = "English";
             }
-            Configuration.SelectedLanguage = playerLang;
-            Configuration.Save();
+            Config.SelectedLanguage = playerLang;
+            Config.Save();
         }
 
         Lang = new LanguageManager(playerLang);
@@ -34,7 +34,7 @@ public class Service
     {
         if (ClientState.LocalPlayer != null || ClientState.LocalContentId != 0)
         {
-            Plugin.Instance.CurrentCharacter = Plugin.Instance.GetCurrentCharacter();
+            P.CurrentCharacter = P.GetCurrentCharacter();
         }
     }
 
@@ -54,6 +54,6 @@ public class Service
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new();
     public static Tracker Tracker { get; set; } = null!;
-    public static Configuration Configuration { get; set; } = null!;
+    public static Configuration Config { get; set; } = null!;
     public static LanguageManager Lang { get; set; } = null!;
 }

@@ -3,11 +3,9 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 public class AutoSave : ITrackerComponent
 {
     public bool Initialized { get; set; }
+    public static DateTime LastAutoSave { get; set; } = DateTime.MinValue;
 
-    public static DateTime LastAutoSave = DateTime.MinValue;
     private static Timer AutoSaveTimer = new(1000);
-
-    private readonly Configuration? C = Plugin.Configuration;
 
     public void Init()
     {
@@ -21,7 +19,7 @@ public class AutoSave : ITrackerComponent
 
     private void OnAutoSave(object? sender, ElapsedEventArgs e)
     {
-        if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(C.AutoSaveInterval))
+        if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval))
         {
             AutoSaveHandler();
             LastAutoSave = DateTime.Now;
@@ -30,30 +28,30 @@ public class AutoSave : ITrackerComponent
 
     private void AutoSaveHandler()
     {
-        switch (C.AutoSaveMode)
+        switch (Service.Config.AutoSaveMode)
         {
             case 0:
             {
                 var filePath =
-                    TransactionsHandler.BackupTransactions(Plugin.Instance.PlayerDataFolder,
-                                                    Plugin.Configuration.MaxBackupFilesCount);
-                if (C.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                    TransactionsHandler.BackupTransactions(Plugin.P.PlayerDataFolder,
+                                                    Service.Config.MaxBackupFilesCount);
+                if (Service.Config.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
                 break;
             }
             case 1:
             {
-                var failCharacters = C.CurrentActiveCharacter
+                var failCharacters = Service.Config.CurrentActiveCharacter
                                       .Where(character =>
                                                  TransactionsHandler
                                                      .BackupTransactions(
-                                                         Path.Join(Plugin.Instance.PluginInterface.ConfigDirectory.FullName,
+                                                         Path.Join(Plugin.P.PluginInterface.ConfigDirectory.FullName,
                                                                    $"{character.Name}_{character.Server}"),
-                                                         Plugin.Configuration.MaxBackupFilesCount).IsNullOrEmpty())
+                                                         Service.Config.MaxBackupFilesCount).IsNullOrEmpty())
                                       .Select(character => $"{character.Name}@{character.Server}")
                                       .ToList();
 
-                var successCount = C.CurrentActiveCharacter.Count - failCharacters.Count;
-                if (C.AutoSaveMessage)
+                var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
+                if (Service.Config.AutoSaveMessage)
                 {
                     Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
                                        (failCharacters.Any()
