@@ -10,8 +10,6 @@ public class GoldSaucer : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "GoldSaucerReward", GoldSaucerHandler);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
-
-        Initialized = true;
     }
 
     private void GoldSaucerHandler(AddonEvent type, AddonArgs args)

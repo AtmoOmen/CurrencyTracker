@@ -10,8 +10,6 @@ public class FateRewards : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
-
-        Initialized = true;
     }
 
     private void FateHandler(AddonEvent type, AddonArgs args)
@@ -50,7 +48,5 @@ public class FateRewards : ITrackerComponent
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
-
-        Initialized = false;
     }
 }

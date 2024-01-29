@@ -10,8 +10,6 @@ public class MobDrops : ITrackerComponent
     public void Init()
     {
         Service.Condition.ConditionChange += OnConditionChange;
-
-        Initialized = true;
     }
 
     private unsafe void OnConditionChange(ConditionFlag flag, bool value)

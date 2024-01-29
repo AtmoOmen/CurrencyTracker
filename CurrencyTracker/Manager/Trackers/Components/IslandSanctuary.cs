@@ -36,8 +36,6 @@ public class IslandSanctuary : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
-
-        Initialized = true;
     }
 
     private void OnZoneChanged(ushort obj)
@@ -130,7 +128,5 @@ public class IslandSanctuary : ITrackerComponent
         isInIsland = false;
         isOnWorkshop = false;
         windowTitle = string.Empty;
-
-        Initialized = false;
     }
 }

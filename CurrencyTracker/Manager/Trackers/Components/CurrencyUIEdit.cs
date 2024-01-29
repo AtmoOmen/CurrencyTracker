@@ -5,14 +5,12 @@ public class CurrencyUIEdit : ITrackerComponent
     public bool Initialized { get; set; }
 
     private IAddonEventHandle? mouseoverHandle;
-    private IAddonEventHandle? mouseooutHandle;
+    private IAddonEventHandle? mouseoutHandle;
 
     public void Init()
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
-
-        Initialized = true;
     }
 
     private void OnCurrencyUI(AddonEvent type, AddonArgs args)
@@ -56,7 +54,7 @@ public class CurrencyUIEdit : ITrackerComponent
         mouseoverHandle =
             Service.AddonEventManager.AddEvent((nint)UI, (nint)gilTextNode, AddonEventType.MouseOver,
                                                TooltipHandler);
-        mouseooutHandle =
+        mouseoutHandle =
             Service.AddonEventManager.AddEvent((nint)UI, (nint)gilTextNode, AddonEventType.MouseOut,
                                                TooltipHandler);
     }
@@ -100,7 +98,7 @@ public class CurrencyUIEdit : ITrackerComponent
     public unsafe void Uninit()
     {
         Service.AddonEventManager.RemoveEvent(mouseoverHandle);
-        Service.AddonEventManager.RemoveEvent(mouseooutHandle);
+        Service.AddonEventManager.RemoveEvent(mouseoutHandle);
 
         var UI = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
         if (IsAddonNodesReady(UI))
@@ -112,7 +110,5 @@ public class CurrencyUIEdit : ITrackerComponent
 
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
-
-        Initialized = false;
     }
 }

@@ -34,8 +34,6 @@ public class Retainer : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
-
-        Initialized = true;
     }
 
     private unsafe void OnRetainerList(AddonEvent type, AddonArgs args)
@@ -149,7 +147,5 @@ public class Retainer : ITrackerComponent
 
         Service.Framework.Update -= RetainerUIWacther;
         Service.Framework.Update -= RetainerInventoryScanner;
-
-        Initialized = false;
     }
 }

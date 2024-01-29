@@ -31,8 +31,6 @@ public class Exchange : ITrackerComponent
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
-
-        Initialized = true;
     }
 
     private void BeginExchange(AddonEvent type, AddonArgs? args)
@@ -73,7 +71,5 @@ public class Exchange : ITrackerComponent
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
         HandlerManager.Nullify(ref inventoryHandler);
-
-        Initialized = false;
     }
 }

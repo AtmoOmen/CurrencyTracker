@@ -33,8 +33,6 @@ public class DutyRewards : ITrackerComponent
         if (Flags.IsBoundByDuty()) CheckDutyStart();
 
         Service.ClientState.TerritoryChanged += OnZoneChange;
-
-        Initialized = true;
     }
 
     private void CheckDutyStart()
@@ -85,7 +83,5 @@ public class DutyRewards : ITrackerComponent
         HandlerManager.Nullify(ref inventoryHandler);
         isDutyStarted = false;
         contentName = string.Empty;
-
-        Initialized = false;
     }
 }

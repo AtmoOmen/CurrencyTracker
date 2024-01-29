@@ -17,8 +17,6 @@ public class AutoSave : ITrackerComponent
         AutoSaveTimer.Elapsed += OnAutoSave;
         AutoSaveTimer.AutoReset = true;
         AutoSaveTimer.Enabled = true;
-
-        Initialized = true;
     }
 
     private void OnAutoSave(object? sender, ElapsedEventArgs e)
@@ -81,7 +79,5 @@ public class AutoSave : ITrackerComponent
         AutoSaveTimer.Stop();
         AutoSaveTimer.Dispose();
         LastAutoSave = DateTime.MinValue;
-
-        Initialized = false;
     }
 }

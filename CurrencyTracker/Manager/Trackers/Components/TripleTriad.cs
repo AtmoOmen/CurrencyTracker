@@ -13,8 +13,6 @@ public class TripleTriad : ITrackerComponent
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
-
-        Initialized = true;
     }
 
     private unsafe void StartTripleTriad(AddonEvent type, AddonArgs args)
@@ -68,7 +66,5 @@ public class TripleTriad : ITrackerComponent
         HandlerManager.Nullify(ref inventoryHandler);
         isTTOn = false;
         ttRivalName = ttResultText = string.Empty;
-
-        Initialized = false;
     }
 }

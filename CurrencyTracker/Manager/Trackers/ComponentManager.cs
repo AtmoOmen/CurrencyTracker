@@ -36,6 +36,7 @@ public class ComponentManager
                 if (!component.Initialized)
                 {
                     component.Init();
+                    component.Initialized = true;
                     Service.Log.Debug($"Loaded {component.GetType().Name} module");
                 }
                 else
@@ -43,6 +44,8 @@ public class ComponentManager
             }
             catch (Exception ex)
             {
+                component.Uninit();
+                component.Initialized = false;
                 Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
                 Service.Log.Warning(ex.StackTrace ?? "Unknown");
             }
@@ -58,6 +61,7 @@ public class ComponentManager
                 if (!component.Initialized)
                 {
                     component.Init();
+                    component.Initialized = true;
                     Service.Log.Debug($"Loaded {component.GetType().Name} module");
                 }
                 else
@@ -65,6 +69,8 @@ public class ComponentManager
             }
             catch (Exception ex)
             {
+                component.Uninit();
+                component.Initialized = false;
                 Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
             }
         }
@@ -77,6 +83,7 @@ public class ComponentManager
         if (Components.Contains(component))
         {
             component.Uninit();
+            component.Initialized = false;
             Service.Log.Debug($"Unloaded {component.GetType().Name} module");
         }
     }
@@ -86,6 +93,7 @@ public class ComponentManager
         foreach (var component in Components)
         {
             component.Uninit();
+            component.Initialized = false;
             Service.Log.Debug($"Unloaded {component.GetType().Name} module");
         }
     }

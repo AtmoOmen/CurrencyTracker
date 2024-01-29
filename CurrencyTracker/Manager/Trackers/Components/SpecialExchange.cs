@@ -19,8 +19,6 @@ public class SpecialExchange : ITrackerComponent
     public void Init()
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
-
-        Initialized = true;
     }
 
     private void BeginExchange(AddonEvent type, AddonArgs args)
@@ -75,7 +73,5 @@ public class SpecialExchange : ITrackerComponent
         HandlerManager.Nullify(ref inventoryHandler);
         isOnExchange = false;
         windowName = string.Empty;
-
-        Initialized = false;
     }
 }

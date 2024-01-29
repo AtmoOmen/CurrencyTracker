@@ -11,8 +11,6 @@ public class Trade : ITrackerComponent
     public void Init()
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostDraw, "Trade", StartTrade);
-
-        Initialized = true;
     }
 
     private unsafe void StartTrade(AddonEvent type, AddonArgs args)
@@ -70,7 +68,5 @@ public class Trade : ITrackerComponent
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Trade", StartTrade);
         HandlerManager.Nullify(ref inventoryHandler);
         tradeTargetName = string.Empty;
-
-        Initialized = false;
     }
 }

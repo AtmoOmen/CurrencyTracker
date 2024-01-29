@@ -22,7 +22,7 @@ public class TeleportCosts : ITrackerComponent
 
     private static Dictionary<uint, string> AetheryteNames = new();
 
-    private static readonly uint[] tpCostCurrencies = { 1, 7569 };
+    private static readonly uint[] TpCostCurrencies = { 1, 7569 };
 
     private bool isReadyTP;
     private bool tpBetweenAreas;
@@ -42,8 +42,6 @@ public class TeleportCosts : ITrackerComponent
         teleportActionSelfHook ??=
             Service.Hook.HookFromAddress<TeleportActionSelfDelegate>(teleportActionSelfPtr, TeleportActionSelf);
         teleportActionSelfHook?.Enable();
-
-        Initialized = true;
     }
 
     private static void GetAetherytes()
@@ -89,7 +87,7 @@ public class TeleportCosts : ITrackerComponent
 
         try
         {
-            if ((param1 == 4590 || param1 == 4591) && param2 != 0) TeleportWithCost();
+            if (param1 is 4590 or 4591 && param2 != 0) TeleportWithCost();
         }
         catch (Exception e)
         {
@@ -128,10 +126,10 @@ public class TeleportCosts : ITrackerComponent
         if (Flags.BetweenAreas() || Flags.OccupiedInEvent()) return;
 
         if (tpBetweenAreas)
-            Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
+            Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             $"({Service.Lang.GetText("TeleportTo", Plugin.Configuration.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
         else if (tpInAreas)
-            Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
+            Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             Plugin.Configuration.ComponentProp["RecordDesAetheryteName"]
                                                 ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
                                                 : $"{Service.Lang.GetText("TeleportWithinArea")}");
@@ -155,7 +153,5 @@ public class TeleportCosts : ITrackerComponent
         ResetStates();
         actorControlSelfHook?.Dispose();
         teleportActionSelfHook?.Dispose();
-
-        Initialized = false;
     }
 }

@@ -16,8 +16,6 @@ public class PremiumSaddleBag : ITrackerComponent
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
-
-        Initialized = true;
     }
 
     private void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
@@ -58,7 +56,5 @@ public class PremiumSaddleBag : ITrackerComponent
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
         windowTitle = string.Empty;
         InventoryItemCount.Clear();
-
-        Initialized = false;
     }
 }

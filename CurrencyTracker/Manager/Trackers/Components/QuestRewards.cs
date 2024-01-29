@@ -12,8 +12,6 @@ public class QuestRewards : ITrackerComponent
     public void Init()
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
-
-        Initialized = true;
     }
 
     private void OnQuestRewards(AddonEvent type, AddonArgs? args)
@@ -87,7 +85,5 @@ public class QuestRewards : ITrackerComponent
         Service.Framework.Update -= OnFrameworkUpdate;
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
         HandlerManager.Nullify(ref inventoryHandler);
-
-        Initialized = false;
     }
 }

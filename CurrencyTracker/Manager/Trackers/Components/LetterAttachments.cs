@@ -11,8 +11,6 @@ public class LetterAttachments : ITrackerComponent
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
-
-        Initialized = true;
     }
 
     private unsafe void OnLetterViewer(AddonEvent type, AddonArgs args)
@@ -62,7 +60,5 @@ public class LetterAttachments : ITrackerComponent
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
         Service.AddonLifecycle.UnregisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
         HandlerManager.Nullify(ref inventoryHandler);
-
-        Initialized = false;
     }
 }

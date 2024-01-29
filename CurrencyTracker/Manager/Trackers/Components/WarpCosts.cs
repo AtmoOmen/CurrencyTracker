@@ -27,8 +27,6 @@ public class WarpCosts : ITrackerComponent
                                         .ToList();
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
-
-        Initialized = true;
     }
 
     private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
@@ -96,7 +94,5 @@ public class WarpCosts : ITrackerComponent
     {
         ValidGilWarpTerriories.Clear();
         ResetStates();
-
-        Initialized = false;
     }
 }
