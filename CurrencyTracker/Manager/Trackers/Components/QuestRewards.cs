@@ -28,7 +28,7 @@ public class QuestRewards : ITrackerComponent
         ResetQuestState();
 
         var JR = (AtkUnitBase*)Service.GameGui.GetAddonByName("JournalResult");
-        if (JR == null || !HelpersOm.IsAddonAndNodesReady(JR)) return;
+        if (!HelpersOm.IsAddonAndNodesReady(JR)) return;
 
         questName = JR->GetTextNodeById(30)->NodeText.ToString();
         var buttonNode = JR->GetNodeById(37);

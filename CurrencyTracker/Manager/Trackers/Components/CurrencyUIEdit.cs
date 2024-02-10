@@ -32,8 +32,7 @@ public class CurrencyUIEdit : ITrackerComponent
     private unsafe void UITextEdit(AddonArgs args)
     {
         var UI = (AtkUnitBase*)args.Addon;
-        if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null ||
-            UI->UldManager.NodeList == null) return;
+        if (!HelpersOm.IsAddonAndNodesReady(UI)) return;
 
         var gilNode = (AtkComponentBase*)UI->GetComponentNodeById(12);
         var gilTextNode = gilNode->GetTextNodeById(5);

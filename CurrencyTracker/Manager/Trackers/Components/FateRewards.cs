@@ -1,3 +1,5 @@
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
@@ -31,15 +33,13 @@ public class FateRewards : ITrackerComponent
     private unsafe void BeginFateHandler(AddonArgs args)
     {
         var FR = (AtkUnitBase*)args.Addon;
-        if (FR != null && FR->RootNode != null && FR->RootNode->ChildNode != null && FR->UldManager.NodeList != null)
+        if (!HelpersOm.IsAddonAndNodesReady(FR)) return;
+        var textNode = FR->GetTextNodeById(6);
+        if (textNode != null)
         {
-            var textNode = FR->GetTextNodeById(6);
-            if (textNode != null)
-            {
-                var FateName = textNode->NodeText.ToString();
-                Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", FateName)})",
-                                                   RecordChangeType.All, 23);
-            }
+            var FateName = textNode->NodeText.ToString();
+            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", FateName)})",
+                                               RecordChangeType.All, 23);
         }
     }
 

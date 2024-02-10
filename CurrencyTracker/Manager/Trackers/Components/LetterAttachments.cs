@@ -36,7 +36,7 @@ public class LetterAttachments : ITrackerComponent
                 break;
             }
             case AddonEvent.PreFinalize:
-                Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(t => EndLetterAttachments());
+                Task.Delay(TimeSpan.FromSeconds(1)).ContinueWith(_ => EndLetterAttachments());
                 break;
         }
     }

@@ -69,7 +69,7 @@ public class Tracker : IDisposable
         uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0,
         uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
     {
-        if (!CheckCurrencyRules1(currencyID)) return false;
+        if (!CheckRuleAreaRestrictions(currencyID)) return false;
 
         var currencyAmount = CurrencyInfo.GetCurrencyAmount(currencyID, category, ID);
         var previousAmount = CurrencyInfo.GetCurrencyAmountFromFile(currencyID, P.CurrentCharacter, category, ID);
@@ -78,7 +78,7 @@ public class Tracker : IDisposable
 
         var currencyChange = currencyAmount - (previousAmount ?? 0);
         if (currencyChange == 0 ||
-            !CheckCurrencyRules2(currencyID, (int)currencyAmount, (int)currencyChange, category, ID)) return false;
+            !CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID)) return false;
 
         locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
 
@@ -99,7 +99,7 @@ public class Tracker : IDisposable
         return false;
     }
 
-    public bool CheckCurrencyRules1(uint currencyID)
+    public bool CheckRuleAreaRestrictions(uint currencyID)
     {
         if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
 
@@ -124,7 +124,7 @@ public class Tracker : IDisposable
         return true;
     }
 
-    public bool CheckCurrencyRules2(
+    public bool CheckRuleAmountCap(
         uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
     {
         if (!C.CurrencyRules.TryGetValue(currencyID, out _))
@@ -200,7 +200,7 @@ public class Tracker : IDisposable
         if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
     }
 
-    public void UninitializeTracking()
+    public void UninitTracking()
     {
         HandlerManager.Uninit();
         ComponentManager.Uninit();
@@ -210,6 +210,6 @@ public class Tracker : IDisposable
 
     public void Dispose()
     {
-        UninitializeTracking();
+        UninitTracking();
     }
 }

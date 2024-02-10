@@ -33,15 +33,14 @@ public class GoldSaucer : ITrackerComponent
     private unsafe void BeginGoldSaucerHandler(AddonArgs args)
     {
         var GSR = (AtkUnitBase*)args.Addon;
-        if (HelpersOm.IsAddonAndNodesReady(GSR))
+        if (!HelpersOm.IsAddonAndNodesReady(GSR)) return;
+
+        var textNode = GSR->GetTextNodeById(5);
+        if (textNode != null)
         {
-            var textNode = GSR->GetTextNodeById(5);
-            if (textNode != null)
-            {
-                var GameName = textNode->NodeText.ToString();
-                if (!GameName.IsNullOrEmpty())
-                    Service.Tracker.CheckCurrency(29, "", $"({GameName})", RecordChangeType.All, 23);
-            }
+            var GameName = textNode->NodeText.ToString();
+            if (!GameName.IsNullOrEmpty())
+                Service.Tracker.CheckCurrency(29, "", $"({GameName})", RecordChangeType.All, 23);
         }
     }
 

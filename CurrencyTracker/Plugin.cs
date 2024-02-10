@@ -36,7 +36,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void HandleLogout()
     {
-        Service.Tracker.UninitializeTracking();
+        Service.Tracker.UninitTracking();
         CurrentCharacter = null;
     }
 
