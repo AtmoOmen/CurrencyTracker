@@ -40,13 +40,13 @@ public class Retainer : ITrackerComponent
 
         if (inventoryManager == null || retainerManager == null) return;
 
-        for (uint i = 0; i < retainerManager->GetRetainerCount(); i++)
+        for (var i = 0U; i < 10; i++)
         {
             var retainer = retainerManager->GetRetainerBySortedIndex(i);
             if (retainer == null) continue;
 
             var retainerID = retainer->RetainerID;
-            var retainerName = MemoryHelper.ReadStringNullTerminated((IntPtr)retainer->Name);
+            var retainerName = MemoryHelper.ReadStringNullTerminated((nint)retainer->Name);
             var retainerGil = retainer->Gil;
             Service.Log.Debug($"Successfully get retainer {retainerName} ({retainerID})");
 
@@ -56,8 +56,8 @@ public class Retainer : ITrackerComponent
 
             if (!InventoryItemCount.TryGetValue(retainerID, out var itemCount))
             {
-                itemCount = new Dictionary<uint, long>();
-                InventoryItemCount.Add(retainerID, itemCount);
+                itemCount = new();
+                InventoryItemCount[retainerID] = new();
             }
 
             itemCount[1] = retainerGil;
@@ -86,6 +86,11 @@ public class Retainer : ITrackerComponent
         if (retainerManager == null) return;
 
         currentRetainerID = retainerManager->LastSelectedRetainerId;
+        if (!InventoryItemCount.TryGetValue(currentRetainerID, out var value))
+        {
+            value = new();
+            InventoryItemCount[currentRetainerID] = value;
+        }
 
         switch (type)
         {
@@ -99,9 +104,9 @@ public class Retainer : ITrackerComponent
 
                 Service.Framework.Update -= RetainerInventoryScanner;
 
-                Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "", "", RecordChangeType.All,
+                Service.Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
                                                 24, TransactionFileCategory.Retainer, currentRetainerID);
-                Service.Tracker.CheckCurrencies(InventoryItemCount[currentRetainerID].Keys, "",
+                Service.Tracker.CheckCurrencies(value.Keys, "",
                                                 $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
                                                 TransactionFileCategory.Inventory, currentRetainerID);
                 break;

@@ -6,8 +6,8 @@ public class Tracker : IDisposable
 
     public event CurrencyChangedDelegate? CurrencyChanged;
 
-    public HandlerManager HandlerManager = null!;
-    public ComponentManager ComponentManager = null!;
+    public HandlerManager? HandlerManager;
+    public ComponentManager? ComponentManager;
 
     private readonly Configuration? C = Service.Config;
     private readonly Plugin? P = Plugin.P;
@@ -87,11 +87,18 @@ public class Tracker : IDisposable
             (recordChangeType == RecordChangeType.Negative && currencyChange < 0))
         {
             if (previousAmount != null)
-                TransactionsHandler.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange, locationName,
-                                               noteContent, category, ID);
+            {
+                TransactionsHandler.AppendTransaction(currencyID, DateTime.Now, currencyAmount, currencyChange,
+                                                      locationName,
+                                                      noteContent, category, ID);
+            }
             else
-                TransactionsHandler.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount, locationName,
-                                            noteContent, category, ID);
+            {
+                TransactionsHandler.AddTransaction(currencyID, DateTime.Now, currencyAmount, currencyAmount,
+                                                   locationName,
+                                                   noteContent, category, ID);
+            }
+
             PostTransactionUpdate(currencyID, currencyChange, source, category, ID);
             return true;
         }
@@ -137,10 +144,12 @@ public class Tracker : IDisposable
         var util = new IntervalUtil();
 
         // 数量 Amount
-        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount, "Amount");
+        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount,
+                       "Amount");
 
         // 收支 Change
-        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange, "Change");
+        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange,
+                       "Change");
 
         return true;
 
@@ -173,7 +182,7 @@ public class Tracker : IDisposable
         foreach (var currency in enumerable)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
-        ;
+        
 
         return isChanged;
     }
@@ -186,7 +195,7 @@ public class Tracker : IDisposable
         foreach (var currency in C.AllCurrencyID)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
-        ;
+        
         return isChanged;
     }
 
@@ -200,7 +209,7 @@ public class Tracker : IDisposable
         if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
     }
 
-    public void UninitTracking()
+    public void Uninit()
     {
         HandlerManager.Uninit();
         ComponentManager.Uninit();
@@ -210,6 +219,6 @@ public class Tracker : IDisposable
 
     public void Dispose()
     {
-        UninitTracking();
+        Uninit();
     }
 }
