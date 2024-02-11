@@ -30,10 +30,11 @@ public class PremiumSaddleBag : ITrackerComponent
                 break;
             }
             case AddonEvent.PreFinalize:
-            {
-                Service.Framework.Update -= PSaddleBagScanner;
+                {
+                    Service.Framework.Update -= PSaddleBagScanner;
+                    Service.Framework.Update -= PSaddleBagScanner;
 
-                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                    Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
                 Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 

@@ -32,8 +32,9 @@ public class SaddleBag : ITrackerComponent
             case AddonEvent.PreFinalize:
             {
                 Service.Framework.Update -= SaddleBagScanner;
+                Service.Framework.Update -= SaddleBagScanner;
 
-                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                    Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
                 Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 

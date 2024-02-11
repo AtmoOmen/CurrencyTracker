@@ -56,8 +56,8 @@ public class Retainer : ITrackerComponent
 
             if (!InventoryItemCount.TryGetValue(retainerID, out var itemCount))
             {
-                itemCount = new();
-                InventoryItemCount[retainerID] = new();
+                itemCount = new Dictionary<uint, long>();
+                InventoryItemCount[retainerID] = new Dictionary<uint, long>();
             }
 
             itemCount[1] = retainerGil;
@@ -88,7 +88,7 @@ public class Retainer : ITrackerComponent
         currentRetainerID = retainerManager->LastSelectedRetainerId;
         if (!InventoryItemCount.TryGetValue(currentRetainerID, out var value))
         {
-            value = new();
+            value = new Dictionary<uint, long>();
             InventoryItemCount[currentRetainerID] = value;
         }
 
@@ -98,11 +98,12 @@ public class Retainer : ITrackerComponent
                 Service.Framework.Update += RetainerInventoryScanner;
                 break;
             case AddonEvent.PreFinalize:
-            {
-                var retainerName =
-                    MemoryHelper.ReadStringNullTerminated((IntPtr)retainerManager->GetActiveRetainer()->Name);
 
                 Service.Framework.Update -= RetainerInventoryScanner;
+                Service.Framework.Update -= RetainerInventoryScanner;
+
+                var retainerName =
+                    MemoryHelper.ReadStringNullTerminated((IntPtr)retainerManager->GetActiveRetainer()->Name);
 
                 Service.Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
                                                 24, TransactionFileCategory.Retainer, currentRetainerID);
@@ -110,7 +111,6 @@ public class Retainer : ITrackerComponent
                                                 $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
                                                 TransactionFileCategory.Inventory, currentRetainerID);
                 break;
-            }
         }
     }
 
