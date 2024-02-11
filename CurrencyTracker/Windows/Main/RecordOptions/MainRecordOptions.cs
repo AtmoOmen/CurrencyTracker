@@ -95,14 +95,16 @@ public partial class Main
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel") + $"({Service.Lang.GetText("PressEnterToConfirm")})");
 
             ImGui.SetNextItemWidth(200f);
-            if (ImGui.InputText($"_{C.AllCurrencies[selectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}", ref exportFileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputText("###ExportFileNameInput", ref exportFileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if (currentTypeTransactions.Count == 0) return;
 
                 Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
             }
-
             ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{nowTime}.csv");
+
+            ImGui.SameLine();
+            ImGui.Text($"_{C.AllCurrencies[selectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
         }
     }
 }
