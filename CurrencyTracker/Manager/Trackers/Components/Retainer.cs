@@ -103,7 +103,7 @@ public class Retainer : ITrackerComponent
                 Service.Framework.Update -= RetainerInventoryScanner;
 
                 var retainerName =
-                    MemoryHelper.ReadStringNullTerminated((IntPtr)retainerManager->GetActiveRetainer()->Name);
+                    MemoryHelper.ReadStringNullTerminated((nint)retainerManager->GetActiveRetainer()->Name);
 
                 Service.Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
                                                 24, TransactionFileCategory.Retainer, currentRetainerID);
