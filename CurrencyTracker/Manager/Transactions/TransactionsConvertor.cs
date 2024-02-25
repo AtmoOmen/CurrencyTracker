@@ -52,9 +52,22 @@ public class TransactionsConvertor
         return transaction;
     }
 
+    // 清理文件名 Sanitize the file path
+    public static string SanitizeFilePath(string filePath)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Distinct();
+        var fileName = Path.GetFileName(filePath);
+        var path = Path.GetDirectoryName(filePath);
+
+        foreach (var c in invalidChars) fileName = fileName.Replace(c.ToString(), "");
+
+        return Path.Combine(path, fileName);
+    }
+
     // 解析整个数据文件 Parse a data file
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
+        filePath = SanitizeFilePath(filePath);
         if (!File.Exists(filePath)) return new List<TransactionsConvertor>();
 
         var transactions = new List<TransactionsConvertor>();
@@ -80,6 +93,7 @@ public class TransactionsConvertor
     // 将单个交易记录追加入数据文件 Append a transaction into the data file
     public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
     {
+        filePath = SanitizeFilePath(filePath);
         try
         {
             using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
@@ -100,6 +114,7 @@ public class TransactionsConvertor
     // 将整个交易记录覆写进数据文件 Overwrite the data file
     public static void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
+        filePath = SanitizeFilePath(filePath);
         try
         {
             using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
