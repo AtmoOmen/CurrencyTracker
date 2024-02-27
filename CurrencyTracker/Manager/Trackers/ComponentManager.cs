@@ -2,7 +2,7 @@ namespace CurrencyTracker.Manager.Trackers;
 
 public class ComponentManager
 {
-    public static List<ITrackerComponent> Components = new();
+    public static List<ITrackerComponent> Components { get; private set; } = new();
 
     public ComponentManager()
     {
@@ -80,21 +80,33 @@ public class ComponentManager
 
     public static void Unload(ITrackerComponent component)
     {
-        if (Components.Contains(component))
+        try
         {
-            component.Uninit();
-            component.Initialized = false;
-            Service.Log.Debug($"Unloaded {component.GetType().Name} module");
+            if (Components.Contains(component))
+            {
+                component.Uninit();
+                component.Initialized = false;
+                Service.Log.Debug($"Unloaded {component.GetType().Name} module");
+            }
+        }
+        catch (Exception ex)
+        {
+            Service.Log.Error($"Failed to unload component {component.GetType().Name} due to error: {ex.Message}");
         }
     }
 
     public static void Uninit()
     {
         foreach (var component in Components)
-        {
-            component.Uninit();
-            component.Initialized = false;
-            Service.Log.Debug($"Unloaded {component.GetType().Name} module");
-        }
+            try
+            {
+                component.Uninit();
+                component.Initialized = false;
+                Service.Log.Debug($"Unloaded {component.GetType().Name} module");
+            }
+            catch (Exception ex)
+            {
+                Service.Log.Error($"Failed to unload component {component.GetType().Name} due to error: {ex.Message}");
+            }
     }
 }
