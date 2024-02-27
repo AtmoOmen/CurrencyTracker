@@ -1,3 +1,4 @@
+using FFXIVClientStructs.FFXIV.Client.UI;
 using Lumina.Excel.GeneratedSheets2;
 using OmenTools.Helpers;
 
@@ -34,10 +35,10 @@ public class WarpCosts : ITrackerComponent
     {
         if (ValidGilWarpTerritories.All(x => Service.ClientState.TerritoryType != x)) return;
 
-        var SYN = (AtkUnitBase*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(SYN)) return;
+        var SYN = (AddonSelectYesno*)args.Addon;
+        if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return;
 
-        var text = SYN->GetTextNodeById(2)->NodeText.ToString();
+        var text = SYN->PromptText->NodeText.FetchText();
         if (text.IsNullOrEmpty()) return;
 
         if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
