@@ -10,18 +10,15 @@ public class TeleportCosts : ITrackerComponent
     private delegate void ActorControlSelfDelegate(
         uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6,
         ulong targetId, byte param7);
-
     [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelf))]
     private Hook<ActorControlSelfDelegate>? actorControlSelfHook;
 
     private delegate byte TeleportActionSelfDelegate(long p1, uint p2, byte p3);
-
     [Signature("E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??",
                DetourName = nameof(TeleportActionSelf))]
     private Hook<TeleportActionSelfDelegate>? teleportActionSelfHook;
 
     private static Dictionary<uint, string> AetheryteNames = new();
-
     private static readonly uint[] TpCostCurrencies = { 1, 7569 };
 
     private bool isReadyTP;
@@ -33,6 +30,7 @@ public class TeleportCosts : ITrackerComponent
     {
         GetAetherytes();
 
+        Service.Framework.Update += OnUpdate;
         Service.Hook.InitializeFromAttributes(this);
         actorControlSelfHook?.Enable();
         teleportActionSelfHook?.Enable();
@@ -58,7 +56,7 @@ public class TeleportCosts : ITrackerComponent
         if (!AetheryteNames.TryGetValue(p2, out tpDestination))
             Service.Log.Warning($"Unknown Aetheryte Name {tpDestination}");
 
-        return teleportActionSelfHook.OriginalDisposeSafe(p1, p2, p3);
+        return teleportActionSelfHook.Original(p1, p2, p3);
     }
 
     private void ActorControlSelf(
@@ -68,27 +66,16 @@ public class TeleportCosts : ITrackerComponent
         actorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, targetId,
                                       param7);
 
-        if (eventId != 517) return;
-
-        if (param1 is 4590 or 4591 && param2 != 0) TeleportWithCost();
-    }
-
-    public void TeleportWithCost()
-    {
-        HandlerManager.ChatHandler.isBlocked = true;
-
-        isReadyTP = true;
-
-        Service.Framework.Update += OnFrameworkUpdate;
-    }
-
-    private void OnFrameworkUpdate(IFramework framework)
-    {
-        if (!isReadyTP)
+        if (eventId == 517 && param1 is 4590 or 4591 && param2 != 0)
         {
-            Service.Framework.Update -= OnFrameworkUpdate;
-            return;
+            HandlerManager.ChatHandler.isBlocked = true;
+            isReadyTP = true;
         }
+    }
+
+    private void OnUpdate(IFramework framework)
+    {
+        if (!isReadyTP) return;
 
         switch (Service.Condition[ConditionFlag.BetweenAreas])
         {
@@ -100,7 +87,7 @@ public class TeleportCosts : ITrackerComponent
                 break;
         }
 
-        if (Flags.BetweenAreas() || Flags.OccupiedInEvent()) return;
+        if (IsStillOnTeleport()) return;
 
         if (tpBetweenAreas)
         {
@@ -115,7 +102,7 @@ public class TeleportCosts : ITrackerComponent
                                                 : $"{Service.Lang.GetText("TeleportWithinArea")}");
         }
 
-        if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
+        if (!IsStillOnTeleport())
         {
             ResetStates();
             HandlerManager.ChatHandler.isBlocked = false;
@@ -124,15 +111,17 @@ public class TeleportCosts : ITrackerComponent
 
     private void ResetStates()
     {
-        Service.Framework.Update -= OnFrameworkUpdate;
         isReadyTP = tpBetweenAreas = tpInAreas = false;
         tpDestination = string.Empty;
     }
+
+    private static bool IsStillOnTeleport() => Flags.BetweenAreas() || Flags.OccupiedInEvent();
 
     public void Uninit()
     {
         ResetStates();
 
+        Service.Framework.Update -= OnUpdate;
         actorControlSelfHook?.Dispose();
         teleportActionSelfHook?.Dispose();
     }
