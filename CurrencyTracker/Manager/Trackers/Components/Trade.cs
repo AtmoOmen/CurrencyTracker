@@ -27,7 +27,7 @@ public class Trade : ITrackerComponent
         var textNode = TGUI->GetTextNodeById(17);
         if (textNode == null) return;
 
-        tradeTargetName = textNode->NodeText.ExtractText();
+        tradeTargetName = textNode->NodeText.FetchText();
         inventoryHandler = new InventoryHandler();
         Service.Framework.Update += OnFrameworkUpdate;
         HandlerManager.ChatHandler.isBlocked = true;

@@ -92,7 +92,7 @@ public class Configuration : IPluginConfiguration
 
 
     [JsonIgnore]
-    public bool IsUpdated = true;
+    public static bool IsUpdated = true;
 
     [JsonIgnore]
     public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
@@ -173,15 +173,17 @@ public class Configuration : IPluginConfiguration
     public void Initialize(DalamudPluginInterface pluginInterface)
     {
         this.pluginInterface = pluginInterface;
-        presetCurrencies.OnUpdate += () => IsUpdated = true;
-        customCurrencies.OnUpdate += () => IsUpdated = true;
+        presetCurrencies.OnUpdate += SetUpdateFlag;
+        customCurrencies.OnUpdate += SetUpdateFlag;
     }
 
     public void Uninitialize()
     {
-        presetCurrencies.OnUpdate -= () => IsUpdated = true;
-        customCurrencies.OnUpdate -= () => IsUpdated = true;
+        presetCurrencies.OnUpdate -= SetUpdateFlag;
+        customCurrencies.OnUpdate -= SetUpdateFlag;
     }
+
+    private static void SetUpdateFlag() => IsUpdated = true;
 
     public void Save()
     {

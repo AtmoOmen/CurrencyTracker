@@ -1,5 +1,3 @@
-using OmenTools.Helpers;
-
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class LetterAttachments : ITrackerComponent
@@ -45,7 +43,7 @@ public class LetterAttachments : ITrackerComponent
     {
         Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", LetterSender)})", RecordChangeType.All,
             24);

@@ -1,4 +1,5 @@
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -54,12 +55,12 @@ public class TeleportCosts : ITrackerComponent
     private byte TeleportActionSelf(long p1, uint p2, byte p3)
     {
         if (!AetheryteNames.TryGetValue(p2, out tpDestination))
-            Service.Log.Warning($"Unknown Aetheryte Name {tpDestination}");
+            Service.Log.Warning($"Unknown Aetheryte Name {p2}");
 
         return teleportActionSelfHook.Original(p1, p2, p3);
     }
 
-    private void ActorControlSelf(
+    private unsafe void ActorControlSelf(
         uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6,
         ulong targetId, byte param7)
     {

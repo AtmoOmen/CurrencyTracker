@@ -131,37 +131,31 @@ public sealed class Plugin : IDalamudPlugin
 
     public static void ParseOldConfiguration(string jsonFilePath)
     {
-        if (jsonFilePath.IsNullOrEmpty() || !File.Exists(jsonFilePath)) return;
+        if (string.IsNullOrEmpty(jsonFilePath) || !File.Exists(jsonFilePath)) return;
 
         var json = File.ReadAllText(jsonFilePath);
         var jsonObj = JObject.Parse(json);
 
-        var dicts = new[]
-        {
-            jsonObj["CustomCurrencies"]?.ToObject<Dictionary<string, string>>(),
-            jsonObj["PresetCurrencies"]?.ToObject<Dictionary<string, string>>()
-        };
+        ProcessDictionary("CustomCurrencies");
+        ProcessDictionary("PresetCurrencies");
 
-        foreach (var originalDict in dicts)
+        File.WriteAllText(jsonFilePath, JsonConvert.SerializeObject(jsonObj, Formatting.Indented));
+        return;
+
+        void ProcessDictionary(string key)
         {
-            if (originalDict == null) continue;
+            var originalDict = jsonObj[key]?.ToObject<Dictionary<string, string>>();
+            if (originalDict == null) return;
 
             var swappedDict = new JObject();
-
             foreach (var entry in originalDict)
-                if (uint.TryParse(entry.Key, out var _))
-                    swappedDict.Add(entry.Key, JToken.FromObject(entry.Value));
-                else
-                    swappedDict.Add(entry.Value, JToken.FromObject(entry.Key));
-
-            if (originalDict == dicts[0])
-                jsonObj["CustomCurrencies"] = swappedDict;
-            else
-                jsonObj["PresetCurrencies"] = swappedDict;
+            {
+                var newKey = uint.TryParse(entry.Key, out _) ? entry.Key : entry.Value;
+                var newValue = JToken.FromObject(uint.TryParse(entry.Key, out _) ? entry.Value : entry.Key);
+                swappedDict.Add(newKey, newValue);
+            }
+            jsonObj[key] = swappedDict;
         }
-
-        var outputJson = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
-        File.WriteAllText(jsonFilePath, outputJson);
     }
 
     private void CommandHandler()
@@ -208,35 +202,25 @@ public sealed class Plugin : IDalamudPlugin
                 foreach (var currency in matchingCurrencies) Service.Chat.PrintError(currency);
                 break;
         }
-    }
 
-    private List<string> FindMatchingCurrencies(List<string> currencyList, string partialName)
-    {
-        var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
-        partialName = partialName.Normalize(NormalizationForm.FormKC);
+        return;
 
-        var exactMatch = currencyList
-            .FirstOrDefault(currency => string.Equals(currency, partialName, StringComparison.OrdinalIgnoreCase));
-        if (exactMatch != null) return new List<string> { exactMatch };
-
-        var matchingCurrencies = new List<string>();
-        foreach (var currency in currencyList)
+        static List<string> FindMatchingCurrencies(IReadOnlyCollection<string> currencyList, string partialName)
         {
-            var normalizedCurrency = currency.Normalize(NormalizationForm.FormKC);
-            if (normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase))
-            {
-                matchingCurrencies.Add(currency);
-                continue;
-            }
+            partialName = partialName.Normalize(NormalizationForm.FormKC);
+            var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
 
-            if (isCS)
-            {
-                var pinyin = PinyinHelper.GetPinyin(normalizedCurrency, "");
-                if (pinyin.Contains(partialName, StringComparison.OrdinalIgnoreCase)) matchingCurrencies.Add(currency);
-            }
+            var exactMatch = currencyList.FirstOrDefault(currency => string.Equals(currency, partialName, StringComparison.OrdinalIgnoreCase));
+            if (exactMatch != null) return new List<string> { exactMatch };
+
+            return currencyList
+                   .Where(currency => IsMatch(currency.Normalize(NormalizationForm.FormKC)))
+                   .ToList();
+
+            bool IsMatch(string normalizedCurrency) => 
+                normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) ||
+                (isCS && PinyinHelper.GetPinyin(normalizedCurrency, "").Contains(partialName, StringComparison.OrdinalIgnoreCase));
         }
-
-        return matchingCurrencies;
     }
 
     private void WindowsHandler()

@@ -24,7 +24,7 @@ public class MobDrops : ITrackerComponent
             Service.Framework.Update += OnFrameworkUpdate;
         }
         else
-            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
+            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(_ => EndMobDropsHandler());
     }
 
     private void OnFrameworkUpdate(IFramework framework)
@@ -47,7 +47,7 @@ public class MobDrops : ITrackerComponent
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
         Service.Framework.Update -= OnFrameworkUpdate;
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
             RecordChangeType.All, 8);

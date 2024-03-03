@@ -64,7 +64,7 @@ public class DutyRewards : ITrackerComponent
 
         Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(items, PreviousLocationName,
                                         Service.Config.ComponentProp["RecordContentName"]
                                             ? $"({contentName})"

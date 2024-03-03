@@ -47,7 +47,7 @@ public class ComponentManager
                 component.Uninit();
                 component.Initialized = false;
                 Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
-                Service.Log.Warning(ex.StackTrace ?? "Unknown");
+                Service.Log.Error(ex.StackTrace ?? "Unknown");
             }
         }
     }
@@ -72,6 +72,7 @@ public class ComponentManager
                 component.Uninit();
                 component.Initialized = false;
                 Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
+                Service.Log.Error($"{ex.StackTrace}");
             }
         }
         else
@@ -92,6 +93,7 @@ public class ComponentManager
         catch (Exception ex)
         {
             Service.Log.Error($"Failed to unload component {component.GetType().Name} due to error: {ex.Message}");
+            Service.Log.Error($"{ex.StackTrace}");
         }
     }
 
@@ -107,6 +109,7 @@ public class ComponentManager
             catch (Exception ex)
             {
                 Service.Log.Error($"Failed to unload component {component.GetType().Name} due to error: {ex.Message}");
+                Service.Log.Error($"{ex.StackTrace}");
             }
     }
 }

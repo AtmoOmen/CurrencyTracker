@@ -1,4 +1,4 @@
-namespace CurrencyTracker.Manager;
+namespace CurrencyTracker.Manager.Tools;
 
 // From KamiLib, used to extract some res
 public class LuminaCache<T> : IEnumerable<T> where T : ExcelRow

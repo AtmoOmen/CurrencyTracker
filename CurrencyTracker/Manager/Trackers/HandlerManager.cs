@@ -2,8 +2,8 @@ namespace CurrencyTracker.Manager.Trackers;
 
 public class HandlerManager
 {
-    public static HashSet<ITrackerHandler> Handlers = new();
-    public static ChatHandler? ChatHandler;
+    public static HashSet<ITrackerHandler> Handlers { get; private set; } = new();
+    public static ChatHandler? ChatHandler { get; private set; }
 
     public HandlerManager()
     {
@@ -25,13 +25,24 @@ public class HandlerManager
     public static void Init()
     {
         foreach (var handler in Handlers)
-            if (!handler.Initialized)
+            try
             {
-                handler.Init();
-                Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
+                if (!handler.Initialized)
+                {
+                    handler.Init();
+                    Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
+                }
+                else
+                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
             }
-            else
-                Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
+            catch (Exception ex)
+            {
+                handler.Uninit();
+                handler.Initialized = false;
+
+                Service.Log.Error($"Failed to load handler {handler.GetType().Name} due to error: {ex.Message}");
+                Service.Log.Error(ex.StackTrace ?? "Unknown");
+            }
     }
 
     public static void Nullify<T>(ref T handler) where T : ITrackerHandler?
@@ -45,9 +56,15 @@ public class HandlerManager
     public static void Uninit()
     {
         foreach (var handler in Handlers)
-        {
-            handler.Uninit();
-            Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
-        }
+            try
+            {
+                handler.Uninit();
+                Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
+            }
+            catch (Exception ex)
+            {
+                Service.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
+                Service.Log.Error(ex.StackTrace ?? "Unknown");
+            }
     }
 }

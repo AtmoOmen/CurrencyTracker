@@ -8,7 +8,7 @@ public class LanguageUpdater
     {
         var httpClient = new HttpClient();
         const string baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
-        const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
+        const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/"; // Mainly for CN players
 
         if (!Directory.Exists(LanguageManager.LangsDirectory))
             Directory.CreateDirectory(LanguageManager.LangsDirectory);

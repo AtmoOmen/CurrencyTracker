@@ -7,6 +7,7 @@ global using CurrencyTracker.Manager.Trackers.Handlers;
 global using CurrencyTracker.Manager.Transactions;
 global using CurrencyTracker.Windows;
 global using Dalamud;
+global using OmenTools.Helpers;
 global using Dalamud.Game.Addon.Events;
 global using Dalamud.Memory;
 global using Dalamud.Configuration;

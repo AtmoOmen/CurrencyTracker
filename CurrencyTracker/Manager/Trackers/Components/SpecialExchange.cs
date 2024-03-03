@@ -56,7 +56,7 @@ public class SpecialExchange : ITrackerComponent
         Service.Framework.Update -= OnFrameworkUpdate;
         isOnExchange = false;
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(items, "", $"({windowName})", RecordChangeType.All, 10);
 
         windowName = string.Empty;

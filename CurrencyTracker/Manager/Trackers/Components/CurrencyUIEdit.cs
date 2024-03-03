@@ -60,7 +60,7 @@ public class CurrencyUIEdit : ITrackerComponent
                                                TooltipHandler);
     }
 
-    private unsafe void TooltipHandler(AddonEventType type, nint addon, nint node)
+    private static unsafe void TooltipHandler(AddonEventType type, nint addon, nint node)
     {
         var addonId = ((AtkUnitBase*)addon)->ID;
         var inventoryAmount =

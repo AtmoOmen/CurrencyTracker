@@ -14,7 +14,7 @@ public class FateRewards : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
     }
 
-    private void FateHandler(AddonEvent type, AddonArgs args)
+    private static void FateHandler(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
@@ -30,7 +30,7 @@ public class FateRewards : ITrackerComponent
         }
     }
 
-    private unsafe void BeginFateHandler(AddonArgs args)
+    private static unsafe void BeginFateHandler(AddonArgs args)
     {
         var FR = (AtkUnitBase*)args.Addon;
         if (!HelpersOm.IsAddonAndNodesReady(FR)) return;

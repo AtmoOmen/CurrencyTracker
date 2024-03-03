@@ -23,7 +23,7 @@ public class TripleTriad : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = true;
 
         var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
-        if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ExtractText();
+        if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.FetchText();
 
         inventoryHandler = new InventoryHandler();
 

@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Manager;
 
-public class LanguageManager
+public partial class LanguageManager
 {
     public static string LangsDirectory { get; private set; } = null!;
     public string Language { get; private set; }
@@ -96,7 +96,7 @@ public class LanguageManager
                      fbResourceData.GetValueOrDefault(key);
 
         var ssb = new SeStringBuilder();
-        var regex = new Regex(@"\{(\d+)\}");
+        var regex = GetSeStringRegex();
 
         var lastIndex = 0;
         foreach (var match in regex.Matches(format).Cast<Match>())
@@ -121,6 +121,9 @@ public class LanguageManager
 
         return ssb.Build();
     }
+
+    [GeneratedRegex("\\{(\\d+)\\}")]
+    private static partial Regex GetSeStringRegex();
 }
 
 public class TranslationInfo

@@ -53,7 +53,7 @@ public class Exchange : ITrackerComponent
 
         Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(
             items, "",
             $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : Service.Lang.GetText("ExchangeWith", currentTargetName))})",

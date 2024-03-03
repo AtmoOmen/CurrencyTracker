@@ -86,29 +86,32 @@ public static class CurrencyInfo
         return amount;
     }
 
-    public static Dictionary<TransactionFileCategoryInfo, long> GetCharacterCurrencyAmountDictionary(uint currencyID, CharacterInfo character)
+    public static Dictionary<TransactionFileCategoryInfo, long> GetCharacterCurrencyAmountDictionary(
+        uint currencyID, CharacterInfo character)
     {
         var amountDic = new Dictionary<TransactionFileCategoryInfo, long>();
 
-        foreach (var category in new[] { TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag })
-        {
-            AddCurrencyAmountToDictionary(currencyID, character, category, 0, amountDic);
-        }
+        foreach (var category in new[]
+                 {
+                     TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
+                     TransactionFileCategory.PremiumSaddleBag
+                 }) AddCurrencyAmountToDictionary(currencyID, character, category, 0, amountDic);
 
         if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
         {
             foreach (var retainer in retainers)
-            {
-                AddCurrencyAmountToDictionary(currencyID, character, TransactionFileCategory.Retainer, retainer.Key, amountDic);
-            }
+                AddCurrencyAmountToDictionary(currencyID, character, TransactionFileCategory.Retainer, retainer.Key,
+                                              amountDic);
         }
 
         return amountDic;
 
-        void AddCurrencyAmountToDictionary(uint currencyID, CharacterInfo character, TransactionFileCategory category, ulong ID, IDictionary<TransactionFileCategoryInfo, long> dictionary)
+        void AddCurrencyAmountToDictionary(
+            uint currencyID, CharacterInfo character, TransactionFileCategory category, ulong ID,
+            IDictionary<TransactionFileCategoryInfo, long> dictionary)
         {
             var currencyAmount = GetCurrencyAmountFromFile(currencyID, character, category, ID);
-            var key = new TransactionFileCategoryInfo{Category = category, Id = ID};
+            var key = new TransactionFileCategoryInfo { Category = category, Id = ID };
             dictionary[key] = currencyAmount ?? 0;
         }
     }
@@ -132,9 +135,7 @@ public static class CurrencyInfo
     public static IDalamudTextureWrap? GetIcon(uint currencyID)
     {
         if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
-        {
             return Service.TextureProvider.GetIcon(iconId);
-        }
 
         Service.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
         return null;

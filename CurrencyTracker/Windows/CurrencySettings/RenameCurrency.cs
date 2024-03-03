@@ -108,7 +108,7 @@ public partial class CurrencySettings
 
         var targetCurrency = C.PresetCurrencies.ContainsKey(currencyId) ? C.PresetCurrencies : C.CustomCurrencies;
         targetCurrency[currencyId] = newName;
-        C.IsUpdated = true;
+        Configuration.IsUpdated = true;
         C.Save();
 
         return true;

@@ -48,17 +48,13 @@ public static class Helpers
         try
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
                 Process.Start("explorer.exe", $"/select,\"{filePath}\"");
-            }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-            {
                 Process.Start("open", $"-R \"{filePath}\"");
-            }
             else
                 Service.Log.Error("Unsupported OS");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             Service.Log.Error($"Error :{ex.Message}");
         }
@@ -91,7 +87,7 @@ public static class Helpers
             TransactionFileCategory.SaddleBag => Service.Lang.GetText("SaddleBag"),
             TransactionFileCategory.PremiumSaddleBag => Service.Lang.GetText("PSaddleBag"),
             TransactionFileCategory.Retainer => Service.Config.CharacterRetainers[
-                Plugin.P.CurrentCharacter.ContentID][id],
+                P.CurrentCharacter.ContentID][id],
             _ => string.Empty
         };
         return text;
@@ -120,7 +116,7 @@ public static class Helpers
 
     public static unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
     {
-        textNodeIDs ??= new uint[] {3, 4};
+        textNodeIDs ??= new uint[] { 3, 4 };
 
         var UI = (AtkUnitBase*)addon;
 
@@ -143,9 +139,9 @@ public static class Helpers
     {
         return view switch
         {
-            TransactionFileCategory.Inventory => Plugin.P.CurrentCharacter.ContentID.ToString(),
-            TransactionFileCategory.SaddleBag => $"{Plugin.P.CurrentCharacter.ContentID}_SB",
-            TransactionFileCategory.PremiumSaddleBag => $"{Plugin.P.CurrentCharacter.ContentID}_PSB",
+            TransactionFileCategory.Inventory => P.CurrentCharacter.ContentID.ToString(),
+            TransactionFileCategory.SaddleBag => $"{P.CurrentCharacter.ContentID}_SB",
+            TransactionFileCategory.PremiumSaddleBag => $"{P.CurrentCharacter.ContentID}_PSB",
             TransactionFileCategory.Retainer => ID.ToString(),
             _ => string.Empty
         };
@@ -165,7 +161,7 @@ public static class Helpers
             var container = inventoryManager->GetInventoryContainer(inventory);
             if (container == null) continue;
 
-            for (var i = 0; i < 34; i++)
+            for (var i = 0; i < container->Size; i++)
             {
                 var slot = inventoryManager->GetInventorySlot(inventory, i);
                 if (slot == null) continue;
@@ -183,12 +179,6 @@ public static class Helpers
         foreach (var kvp in inventoryItemCount)
             if (!itemCountDict.ContainsKey(kvp.Key) && kvp.Key != 1)
                 inventoryItemCount[kvp.Key] = 0;
-    }
-
-    public static void Restart(this Timer timer)
-    {
-        timer.Stop();
-        timer.Start();
     }
 
     public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable

@@ -1,5 +1,3 @@
-using OmenTools.Helpers;
-
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class QuestRewards : ITrackerComponent

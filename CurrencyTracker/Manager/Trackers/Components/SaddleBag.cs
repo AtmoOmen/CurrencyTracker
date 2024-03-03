@@ -45,7 +45,7 @@ public class SaddleBag : ITrackerComponent
         }
     }
 
-    private void SaddleBagScanner(IFramework framework)
+    private static void SaddleBagScanner(IFramework framework)
     {
         InventoryScanner(SaddleBagInventories, ref InventoryItemCount);
     }

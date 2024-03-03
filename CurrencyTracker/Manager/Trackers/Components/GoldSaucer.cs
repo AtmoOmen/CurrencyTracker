@@ -14,7 +14,7 @@ public class GoldSaucer : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
     }
 
-    private void GoldSaucerHandler(AddonEvent type, AddonArgs args)
+    private static void GoldSaucerHandler(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
@@ -30,7 +30,7 @@ public class GoldSaucer : ITrackerComponent
         }
     }
 
-    private unsafe void BeginGoldSaucerHandler(AddonArgs args)
+    private static unsafe void BeginGoldSaucerHandler(AddonArgs args)
     {
         var GSR = (AtkUnitBase*)args.Addon;
         if (!HelpersOm.IsAddonAndNodesReady(GSR)) return;

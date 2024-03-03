@@ -26,7 +26,7 @@ public class AutoSave : ITrackerComponent
         }
     }
 
-    private void AutoSaveHandler()
+    private static void AutoSaveHandler()
     {
         switch (Service.Config.AutoSaveMode)
         {

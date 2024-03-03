@@ -1,6 +1,6 @@
 namespace CurrencyTracker.Manager.Trackers;
 
-public class Tracker : IDisposable
+public class Tracker
 {
     public delegate void CurrencyChangedDelegate(uint currencyID, TransactionFileCategory category, ulong ID);
 
@@ -13,11 +13,6 @@ public class Tracker : IDisposable
     private readonly Plugin? P = Plugin.P;
 
     public Tracker()
-    {
-        Init();
-    }
-
-    private void Init()
     {
         InitCurrencies();
 
@@ -182,7 +177,7 @@ public class Tracker : IDisposable
         foreach (var currency in enumerable)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
-        
+
 
         return isChanged;
     }
@@ -195,7 +190,7 @@ public class Tracker : IDisposable
         foreach (var currency in C.AllCurrencyID)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
-        
+
         return isChanged;
     }
 
@@ -209,7 +204,7 @@ public class Tracker : IDisposable
         if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
     }
 
-    public void Uninit()
+    internal void Uninit()
     {
         HandlerManager.Uninit();
         ComponentManager.Uninit();
@@ -217,7 +212,7 @@ public class Tracker : IDisposable
         Service.Log.Debug("Currency Tracker Deactivated");
     }
 
-    public void Dispose()
+    internal void Dispose()
     {
         Uninit();
     }

@@ -16,7 +16,7 @@ public static class TransactionsHandler
     {
         var suffix = GetTransactionFileSuffix(category, ID);
         var currencyName = CurrencyInfo.GetCurrencyName(CurrencyID);
-        var path = Path.Join(Plugin.P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
+        var path = Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
         return path;
     }
 
@@ -34,7 +34,7 @@ public static class TransactionsHandler
 
     private static bool ValidityCheck(uint currencyID)
     {
-        if (Plugin.P.PlayerDataFolder.IsNullOrEmpty())
+        if (P.PlayerDataFolder.IsNullOrEmpty())
         {
             Service.Log.Warning("Player data folder Missed.");
             return false;
@@ -60,9 +60,9 @@ public static class TransactionsHandler
         uint currencyID, CharacterInfo? characterInfo = null, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var playerDataFolder = characterInfo != null
-                                   ? Path.Join(Plugin.P.PluginInterface.ConfigDirectory.FullName,
+                                   ? Path.Join(P.PluginInterface.ConfigDirectory.FullName,
                                                $"{characterInfo.Name}_{characterInfo.Server}")
-                                   : Plugin.P.PlayerDataFolder;
+                                   : P.PlayerDataFolder;
 
         var filePath = characterInfo != null
                            ? Path.Join(playerDataFolder,
@@ -284,7 +284,7 @@ public static class TransactionsHandler
 
         if (exportType != 0 && exportType != 1) return "Fail";
 
-        var playerDataFolder = Path.Combine(Plugin.P.PlayerDataFolder, "Exported");
+        var playerDataFolder = Path.Combine(P.PlayerDataFolder, "Exported");
         Directory.CreateDirectory(playerDataFolder);
 
         var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
