@@ -1,3 +1,6 @@
 [submodule "OmenTools"]
 	path = OmenTools
 	url = https://github.com/AtmoOmen/OmenTools.git
+[submodule "ECommons"]
+	path = ECommons
+	url = https://github.com/AtmoOmen/ECommons.git
