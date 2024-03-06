@@ -199,7 +199,7 @@ public partial class Main
         using var popup = ImRaii.Popup("TableViewSwitch");
         if (popup.Success)
         {
-            var boolUI = false;
+            const bool boolUI = false;
             if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
                 currentTypeTransactions =
@@ -213,6 +213,9 @@ public partial class Main
                     currentTypeTransactions =
                         ApplyFilters(TransactionsHandler.LoadAllTransactions(
                                          selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+
+                    currentView = TransactionFileCategory.Retainer;
+                    currentViewID = retainer.Key;
                 }
 
             if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))

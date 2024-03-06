@@ -13,7 +13,7 @@ public class ItemHandler : ITrackerHandler
     {
         ItemNames = Service.DataManager.GetExcelSheet<Item>()
                            .Where(x => x.ItemSortCategory.Row != 5 && x.IsUnique == false &&
-                                       !x.Name.RawString.IsNullOrEmpty())
+                                       !string.IsNullOrEmpty(x.Name.RawString))
                            .ToDictionary(x => x.Name.RawString, x => x.RowId);
         ItemIDs = ItemNames.Values.ToHashSet();
 

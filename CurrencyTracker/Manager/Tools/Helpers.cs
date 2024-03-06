@@ -4,7 +4,7 @@ public static class Helpers
 {
     public static void OpenDirectory(string path)
     {
-        if (path.IsNullOrEmpty()) return;
+        if (string.IsNullOrEmpty(path)) return;
 
         try
         {
@@ -109,7 +109,7 @@ public static class Helpers
         var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
         var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
-        var windowTitle = !smallTitle.IsNullOrEmpty() ? smallTitle : bigTitle;
+        var windowTitle = !string.IsNullOrEmpty(smallTitle) ? smallTitle : bigTitle;
 
         return windowTitle;
     }
@@ -130,7 +130,7 @@ public static class Helpers
         var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
         var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
 
-        var windowTitle = !smallTitle.IsNullOrEmpty() ? smallTitle : bigTitle;
+        var windowTitle = !string.IsNullOrEmpty(smallTitle) ? smallTitle : bigTitle;
 
         return windowTitle;
     }

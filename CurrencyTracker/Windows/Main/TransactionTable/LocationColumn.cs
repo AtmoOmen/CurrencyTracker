@@ -22,7 +22,7 @@ public partial class Main
             ImGui.SetNextItemWidth(250);
             if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
-                isLocationFilterEnabled = !searchLocationName.IsNullOrEmpty();
+                isLocationFilterEnabled = !string.IsNullOrEmpty(searchLocationName);
                 searchTimer.Restart();
             }
         }
@@ -34,7 +34,7 @@ public partial class Main
 
         ImGui.Selectable($"{locationName}##_{i}");
 
-        if (!locationName.IsNullOrEmpty()) ImGuiOm.TooltipHover(locationName);
+        if (!string.IsNullOrEmpty(locationName)) ImGuiOm.TooltipHover(locationName);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
         {
@@ -45,7 +45,7 @@ public partial class Main
         using var popup = ImRaii.Popup($"EditLocationName##_{i}");
         if (popup.Success)
         {
-            if (!editedLocationName.IsNullOrEmpty()) ImGui.TextWrapped(editedLocationName);
+            if (!string.IsNullOrEmpty(editedLocationName)) ImGui.TextWrapped(editedLocationName);
 
             ImGui.SetNextItemWidth(270);
             if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))

@@ -282,7 +282,7 @@ public class Settings : Window, IDisposable
                         ImGui.SameLine();
                         if (ImGui.Button("Load"))
                         {
-                            if (devLangFilePath.IsNullOrEmpty() || !File.Exists(devLangFilePath)) return;
+                            if (string.IsNullOrEmpty(devLangFilePath) || !File.Exists(devLangFilePath)) return;
                             Service.Lang = new LanguageManager("Dev", true, devLangFilePath);
                         }
                     }
@@ -325,7 +325,7 @@ public class Settings : Window, IDisposable
             C.Save();
         }
 
-        if (!help.IsNullOrEmpty())
+        if (!string.IsNullOrEmpty(help))
         {
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
@@ -346,7 +346,7 @@ public class Settings : Window, IDisposable
             C.Save();
         }
 
-        if (!help.IsNullOrEmpty())
+        if (!string.IsNullOrEmpty(help))
         {
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
@@ -377,7 +377,7 @@ public class Settings : Window, IDisposable
             C.Save();
         }
 
-        if (!help.IsNullOrEmpty())
+        if (!string.IsNullOrEmpty(help))
         {
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
@@ -410,7 +410,7 @@ public class Settings : Window, IDisposable
             C.Save();
         }
 
-        if (!help.IsNullOrEmpty())
+        if (!string.IsNullOrEmpty(help))
         {
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
@@ -437,7 +437,7 @@ public class Settings : Window, IDisposable
         if (ImGui.IsItemHovered())
         {
             ImGui.BeginTooltip();
-            if (!textToShow.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(textToShow))
             {
                 ImGui.Text(textToShow);
                 if (paramsEP != null)

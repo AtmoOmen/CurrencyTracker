@@ -43,7 +43,7 @@ public class Exchange : ITrackerComponent
             currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
 
         isOnExchange = true;
-        inventoryHandler = new InventoryHandler();
+        inventoryHandler ??= new InventoryHandler();
         HandlerManager.ChatHandler.isBlocked = true;
     }
 

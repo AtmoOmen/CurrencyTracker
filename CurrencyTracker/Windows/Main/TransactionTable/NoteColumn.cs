@@ -22,7 +22,7 @@ public partial class Main
             ImGui.SetNextItemWidth(250);
             if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
             {
-                isNoteFilterEnabled = !searchNoteContent.IsNullOrEmpty();
+                isNoteFilterEnabled = !string.IsNullOrEmpty(searchNoteContent);
                 searchTimer.Restart();
             }
         }
@@ -32,7 +32,7 @@ public partial class Main
     {
         ImGui.Selectable($"{transaction.Note}##_{i}");
 
-        if (!transaction.Note.IsNullOrEmpty()) ImGuiOm.TooltipHover(transaction.Note);
+        if (!string.IsNullOrEmpty(transaction.Note)) ImGuiOm.TooltipHover(transaction.Note);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
         {
@@ -44,7 +44,7 @@ public partial class Main
         {
             if (popup.Success)
             {
-                if (!editedNoteContent.IsNullOrEmpty()) ImGui.TextWrapped(editedNoteContent);
+                if (!string.IsNullOrEmpty(editedNoteContent)) ImGui.TextWrapped(editedNoteContent);
 
                 ImGui.SetNextItemWidth(270);
                 if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))

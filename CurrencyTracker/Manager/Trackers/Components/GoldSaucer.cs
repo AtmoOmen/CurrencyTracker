@@ -1,5 +1,3 @@
-using OmenTools.Helpers;
-
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
@@ -14,7 +12,7 @@ public class GoldSaucer : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
     }
 
-    private static void GoldSaucerHandler(AddonEvent type, AddonArgs args)
+    private static unsafe void GoldSaucerHandler(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
@@ -22,25 +20,18 @@ public class GoldSaucer : ITrackerComponent
                 HandlerManager.ChatHandler.isBlocked = true;
                 break;
             case AddonEvent.PostSetup:
-                BeginGoldSaucerHandler(args);
+                var GSR = (AtkUnitBase*)args.Addon;
+                if (!HelpersOm.IsAddonAndNodesReady(GSR)) return;
+
+                var textNode = GSR->GetTextNodeById(5);
+                if (textNode == null) return;
+
+                var gameName = textNode->NodeText.ExtractText();
+                Service.Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:
                 if (!Flags.OccupiedInEvent()) HandlerManager.ChatHandler.isBlocked = false;
                 break;
-        }
-    }
-
-    private static unsafe void BeginGoldSaucerHandler(AddonArgs args)
-    {
-        var GSR = (AtkUnitBase*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(GSR)) return;
-
-        var textNode = GSR->GetTextNodeById(5);
-        if (textNode != null)
-        {
-            var GameName = textNode->NodeText.ToString();
-            if (!GameName.IsNullOrEmpty())
-                Service.Tracker.CheckCurrency(29, "", $"({GameName})", RecordChangeType.All, 23);
         }
     }
 

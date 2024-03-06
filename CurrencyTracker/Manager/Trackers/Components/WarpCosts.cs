@@ -39,7 +39,7 @@ public class WarpCosts : ITrackerComponent
         if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return;
 
         var text = SYN->PromptText->NodeText.FetchText();
-        if (text.IsNullOrEmpty()) return;
+        if (string.IsNullOrEmpty(text)) return;
 
         if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
         {

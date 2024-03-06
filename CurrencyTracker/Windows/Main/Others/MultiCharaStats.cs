@@ -108,7 +108,7 @@ public partial class Main : Window, IDisposable
             {
                 Info = characterCurrencyInfo,
                 IsCurrent = characterCurrencyInfo.Character.ContentID == contentId,
-                MatchesFilter = searchFilterMCS.IsNullOrEmpty() ||
+                MatchesFilter = string.IsNullOrEmpty(searchFilterMCS) ||
                                 characterCurrencyInfo.Character.Name.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase) ||
                                 characterCurrencyInfo.Character.Server.Contains(searchFilterMCS, StringComparison.OrdinalIgnoreCase)
             })

@@ -1,5 +1,3 @@
-using OmenTools.Helpers;
-
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
@@ -14,7 +12,7 @@ public class FateRewards : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
     }
 
-    private static void FateHandler(AddonEvent type, AddonArgs args)
+    private static unsafe void FateHandler(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
@@ -22,24 +20,19 @@ public class FateRewards : ITrackerComponent
                 HandlerManager.ChatHandler.isBlocked = true;
                 break;
             case AddonEvent.PostSetup:
-                BeginFateHandler(args);
+                var FR = (AtkUnitBase*)args.Addon;
+                if (!HelpersOm.IsAddonAndNodesReady(FR)) return;
+
+                var textNode = FR->GetTextNodeById(6);
+                if (textNode == null) return;
+
+                var fateName = textNode->NodeText.ExtractText();
+                Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", fateName)})",
+                                                   RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:
                 if (!Flags.OccupiedInEvent()) HandlerManager.ChatHandler.isBlocked = false;
                 break;
-        }
-    }
-
-    private static unsafe void BeginFateHandler(AddonArgs args)
-    {
-        var FR = (AtkUnitBase*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(FR)) return;
-        var textNode = FR->GetTextNodeById(6);
-        if (textNode != null)
-        {
-            var FateName = textNode->NodeText.ToString();
-            Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", FateName)})",
-                                               RecordChangeType.All, 23);
         }
     }
 

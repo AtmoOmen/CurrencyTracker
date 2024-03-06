@@ -17,7 +17,7 @@ public class AutoSave : ITrackerComponent
         AutoSaveTimer.Enabled = true;
     }
 
-    private void OnAutoSave(object? sender, ElapsedEventArgs e)
+    private static void OnAutoSave(object? sender, ElapsedEventArgs e)
     {
         if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval))
         {
@@ -33,22 +33,21 @@ public class AutoSave : ITrackerComponent
             case 0:
             {
                 var filePath =
-                    TransactionsHandler.BackupTransactions(Plugin.P.PlayerDataFolder,
-                                                    Service.Config.MaxBackupFilesCount);
+                    TransactionsHandler.BackupTransactions(P.PlayerDataFolder,
+                                                           Service.Config.MaxBackupFilesCount);
                 if (Service.Config.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
                 break;
             }
             case 1:
             {
                 var failCharacters = Service.Config.CurrentActiveCharacter
-                                      .Where(character =>
-                                                 TransactionsHandler
-                                                     .BackupTransactions(
-                                                         Path.Join(Plugin.P.PluginInterface.ConfigDirectory.FullName,
-                                                                   $"{character.Name}_{character.Server}"),
-                                                         Service.Config.MaxBackupFilesCount).IsNullOrEmpty())
-                                      .Select(character => $"{character.Name}@{character.Server}")
-                                      .ToList();
+                                            .Where(character => string.IsNullOrEmpty(TransactionsHandler
+                                                           .BackupTransactions(
+                                                               Path.Join(P.PluginInterface.ConfigDirectory.FullName,
+                                                                         $"{character.Name}_{character.Server}"),
+                                                               Service.Config.MaxBackupFilesCount)))
+                                            .Select(character => $"{character.Name}@{character.Server}")
+                                            .ToList();
 
                 var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
                 if (Service.Config.AutoSaveMessage)

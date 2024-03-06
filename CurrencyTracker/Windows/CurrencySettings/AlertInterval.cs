@@ -138,14 +138,11 @@ public partial class CurrencySettings
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
-                if (!textToShow.IsNullOrEmpty())
+                if (!string.IsNullOrEmpty(textToShow))
                 {
                     ImGui.Text(textToShow);
-                    if (paramsEP != null)
-                    {
-                        ImGui.Separator();
-                        for (var i = 0; i < paramsEP.Length; i++) ImGui.Text("{" + i + "}" + $" - {paramsEP[i]}");
-                    }
+                    ImGui.Separator();
+                    for (var i = 0; i < paramsEP.Length; i++) ImGui.Text("{" + i + "}" + $" - {paramsEP[i]}");
                 }
 
                 ImGui.EndTooltip();

@@ -26,7 +26,7 @@ public class DutyRewards : ITrackerComponent
     public void Init()
     {
         ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                              .Where(x => !x.Name.ToString().IsNullOrEmpty() &&
+                              .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
                                           IgnoredContents.All(y => y != x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
                               .ToDictionary(x => x.TerritoryType.Row, x => x.Name.ToString());
@@ -45,7 +45,7 @@ public class DutyRewards : ITrackerComponent
             isDutyStarted = true;
             contentName = dutyName;
             HandlerManager.ChatHandler.isBlocked = true;
-            inventoryHandler = new InventoryHandler();
+            inventoryHandler ??= new InventoryHandler();
 
             Service.Log.Debug($"Duty {dutyName} Starts");
         }

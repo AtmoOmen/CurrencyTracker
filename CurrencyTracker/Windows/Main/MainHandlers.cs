@@ -60,9 +60,9 @@ public partial class Main
                 clusteredTransactions.Add(clusterTime, cluster);
             }
 
-            if (!transaction.LocationName.IsNullOrEmpty() && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
+            if (!string.IsNullOrEmpty(transaction.LocationName) && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
             {
-                if (cluster.LocationName.IsNullOrEmpty())
+                if (string.IsNullOrEmpty(cluster.LocationName))
                 {
                     cluster.LocationName = transaction.LocationName;
                 }
@@ -103,7 +103,7 @@ public partial class Main
 
     private IEnumerable<TransactionsConvertor> ApplyLocationFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
-        if (query.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(query))
         {
             return transactions;
         }
@@ -115,7 +115,7 @@ public partial class Main
                                Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
                                Pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
                            })
-                           .Where(q => !q.Normalized.IsNullOrEmpty())
+                           .Where(q => !string.IsNullOrEmpty(q.Normalized))
                            .ToList();
 
         return transactions.Where(transaction =>
@@ -136,7 +136,7 @@ public partial class Main
 
     private IEnumerable<TransactionsConvertor> ApplyNoteFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
-        if (query.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(query))
         {
             return transactions;
         }
@@ -148,7 +148,7 @@ public partial class Main
                                Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
                                Pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
                            })
-                           .Where(q => !q.Normalized.IsNullOrEmpty())
+                           .Where(q => !string.IsNullOrEmpty(q.Normalized))
                            .ToList();
 
         return transactions.Where(transaction =>

@@ -17,7 +17,6 @@ public class IslandSanctuary : ITrackerComponent
         { "MJIBuilding", 25 }
     };
 
-    private bool isInIsland;
     private bool isOnWorkshop;
     private string windowTitle = string.Empty;
 
@@ -26,10 +25,7 @@ public class IslandSanctuary : ITrackerComponent
     public void Init()
     {
         if (CurrentLocationID == 1055)
-        {
-            isInIsland = true;
-            Service.Framework.Update += OnFrameworkUpdate;
-        }
+            OnZoneChanged(1055);
 
         Service.ClientState.TerritoryChanged += OnZoneChanged;
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
@@ -38,55 +34,15 @@ public class IslandSanctuary : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
     }
 
-    private void OnZoneChanged(ushort obj)
+    private void OnZoneChanged(ushort zone)
     {
-        var IntoMJI = !isInIsland && CurrentLocationID == 1055;
-
-        if (IntoMJI) Service.Framework.Update += OnFrameworkUpdate;
-        else Service.Framework.Update -= OnFrameworkUpdate;
+        if (zone == 1055)
+            Service.Framework.Update += OnUpdate;
+        else
+            Service.Framework.Update -= OnUpdate;
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
-    {
-        WorkshopHandler();
-    }
-
-    private void BeginMJI(AddonEvent type, AddonArgs args)
-    {
-        inventoryHandler = new InventoryHandler();
-        HandlerManager.ChatHandler.isBlocked = true;
-    }
-
-    private void EndMJI(AddonEvent type, AddonArgs args)
-    {
-        if (Flags.OccupiedInEvent()) return;
-
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
-        Service.Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
-
-        HandlerManager.ChatHandler.isBlocked = false;
-        HandlerManager.Nullify(ref inventoryHandler);
-    }
-
-    private void BeginMJIWindow(AddonEvent type, AddonArgs args)
-    {
-        windowTitle = GetWindowTitle(args, MJIWindowModules[args.AddonName]);
-        inventoryHandler = new InventoryHandler();
-        HandlerManager.ChatHandler.isBlocked = true;
-    }
-
-    private void EndMJIWindow(AddonEvent type, AddonArgs args)
-    {
-        if (Flags.OccupiedInEvent()) return;
-
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
-        Service.Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
-
-        HandlerManager.ChatHandler.isBlocked = false;
-        HandlerManager.Nullify(ref inventoryHandler);
-    }
-
-    private void WorkshopHandler()
+    private void OnUpdate(IFramework framework)
     {
         var currentTarget = Service.TargetManager.Target;
         var prevTarget = Service.TargetManager.PreviousTarget;
@@ -96,7 +52,7 @@ public class IslandSanctuary : ITrackerComponent
             if (!isOnWorkshop)
             {
                 isOnWorkshop = true;
-                inventoryHandler = new InventoryHandler();
+                inventoryHandler ??= new InventoryHandler();
                 HandlerManager.ChatHandler.isBlocked = true;
             }
         }
@@ -106,7 +62,7 @@ public class IslandSanctuary : ITrackerComponent
             {
                 isOnWorkshop = false;
 
-                var items = inventoryHandler?.Items ?? new HashSet<uint>();
+                var items = inventoryHandler?.Items ?? new();
                 Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
                                                 RecordChangeType.All, 7);
 
@@ -116,9 +72,44 @@ public class IslandSanctuary : ITrackerComponent
         }
     }
 
+    private void BeginMJI(AddonEvent type, AddonArgs args)
+    {
+        inventoryHandler ??= new InventoryHandler();
+        HandlerManager.ChatHandler.isBlocked = true;
+    }
+
+    private void EndMJI(AddonEvent type, AddonArgs args)
+    {
+        if (Flags.OccupiedInEvent()) return;
+
+        var items = inventoryHandler?.Items ?? new();
+        Service.Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
+
+        HandlerManager.ChatHandler.isBlocked = false;
+        HandlerManager.Nullify(ref inventoryHandler);
+    }
+
+    private void BeginMJIWindow(AddonEvent type, AddonArgs args)
+    {
+        windowTitle = GetWindowTitle(args, MJIWindowModules[args.AddonName]);
+        inventoryHandler ??= new InventoryHandler();
+        HandlerManager.ChatHandler.isBlocked = true;
+    }
+
+    private void EndMJIWindow(AddonEvent type, AddonArgs args)
+    {
+        if (Flags.OccupiedInEvent()) return;
+
+        var items = inventoryHandler?.Items ?? new();
+        Service.Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
+
+        HandlerManager.ChatHandler.isBlocked = false;
+        HandlerManager.Nullify(ref inventoryHandler);
+    }
+
     public void Uninit()
     {
-        Service.Framework.Update -= OnFrameworkUpdate;
+        Service.Framework.Update -= OnUpdate;
         Service.ClientState.TerritoryChanged -= OnZoneChanged;
 
         Service.AddonLifecycle.UnregisterListener(BeginMJIWindow);
@@ -128,7 +119,6 @@ public class IslandSanctuary : ITrackerComponent
 
         HandlerManager.Nullify(ref inventoryHandler);
 
-        isInIsland = false;
         isOnWorkshop = false;
         windowTitle = string.Empty;
     }

@@ -40,7 +40,7 @@ public partial class Main : Window, IDisposable
             foreach (var character in C.CurrentActiveCharacter)
             {
                 var backupPath = Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}");
-                if (TransactionsHandler.BackupTransactions(backupPath, C.MaxBackupFilesCount).IsNullOrEmpty()) failCharacters.Add($"{character.Name}@{character.Server}");
+                if (string.IsNullOrEmpty(TransactionsHandler.BackupTransactions(backupPath, C.MaxBackupFilesCount))) failCharacters.Add($"{character.Name}@{character.Server}");
                 else successCount++;
             }
 

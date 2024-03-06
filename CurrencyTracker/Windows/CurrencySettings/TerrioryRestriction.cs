@@ -51,7 +51,7 @@ public partial class CurrencySettings
             ImGui.EndCombo();
         }
 
-        if (!selectedAreaName.IsNullOrEmpty()) ImGuiOm.TooltipHover(selectedAreaName);
+        if (!string.IsNullOrEmpty(selectedAreaName)) ImGuiOm.TooltipHover(selectedAreaName);
 
         ImGui.SameLine();
         if (ImGuiOm.ButtonIcon("AddRestrictedAreas", FontAwesomeIcon.Plus) && !rules.RestrictedAreas.Contains(selectedAreaIDTR))
@@ -84,7 +84,7 @@ public partial class CurrencySettings
 
     private void LoadDataTR()
     {
-        if (searchFilterTR.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(searchFilterTR))
         {
             TerritoryNamesTR = TerrioryHandler.TerritoryNames;
         }

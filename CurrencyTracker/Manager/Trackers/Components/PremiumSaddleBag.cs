@@ -12,8 +12,12 @@ public class PremiumSaddleBag : ITrackerComponent
     internal static Dictionary<uint, long> InventoryItemCount = new();
     private string windowTitle = string.Empty;
 
+    private static TaskManager? TaskManager;
+
     public void Init()
     {
+        TaskManager ??= new TaskManager() { TimeLimitMS = int.MaxValue, ShowDebug = false };
+
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
     }
@@ -23,39 +27,37 @@ public class PremiumSaddleBag : ITrackerComponent
         switch (type)
         {
             case AddonEvent.PostSetup:
-            {
                 windowTitle = GetWindowTitle(args.Addon, 86);
-                Service.Framework.Update += PSaddleBagScanner;
+                TaskManager.Enqueue(PSaddleBagScanner);
 
                 break;
-            }
             case AddonEvent.PreFinalize:
-                {
-                    Service.Framework.Update -= PSaddleBagScanner;
-                    Service.Framework.Update -= PSaddleBagScanner;
+                TaskManager.Abort();
 
-                    Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
                 Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 
                 InventoryItemCount.Clear();
 
                 break;
-            }
         }
     }
 
-    private static void PSaddleBagScanner(IFramework framework)
+    private static bool? PSaddleBagScanner()
     {
         InventoryScanner(PSaddleBagInventories, ref InventoryItemCount);
+
+        return false;
     }
 
     public void Uninit()
     {
-        Service.Framework.Update -= PSaddleBagScanner;
         Service.AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
 
         windowTitle = string.Empty;
         InventoryItemCount.Clear();
+
+        TaskManager?.Abort();
     }
 }

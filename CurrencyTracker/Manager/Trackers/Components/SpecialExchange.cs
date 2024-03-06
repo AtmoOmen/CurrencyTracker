@@ -29,7 +29,7 @@ public class SpecialExchange : ITrackerComponent
 
         isOnExchange = true;
         windowName = GetWindowTitle(args, UI[args.AddonName]);
-        inventoryHandler = new InventoryHandler();
+        inventoryHandler ??= new InventoryHandler();
 
         Service.Framework.Update += OnFrameworkUpdate;
     }

@@ -34,7 +34,7 @@ public static class TransactionsHandler
 
     private static bool ValidityCheck(uint currencyID)
     {
-        if (P.PlayerDataFolder.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(P.PlayerDataFolder))
         {
             Service.Log.Warning("Player data folder Missed.");
             return false;
@@ -309,7 +309,7 @@ public static class TransactionsHandler
     // 备份数据 Backup transactions
     public static string BackupTransactions(string dataFolder, int maxBackupFilesCount)
     {
-        if (dataFolder.IsNullOrEmpty()) return "Fail";
+        if (string.IsNullOrEmpty(dataFolder)) return "Fail";
 
         var backupFolder = Path.Combine(dataFolder, "Backups");
         Directory.CreateDirectory(backupFolder);

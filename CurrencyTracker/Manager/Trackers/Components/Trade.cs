@@ -28,7 +28,7 @@ public class Trade : ITrackerComponent
         if (textNode == null) return;
 
         tradeTargetName = textNode->NodeText.FetchText();
-        inventoryHandler = new InventoryHandler();
+        inventoryHandler ??= new InventoryHandler();
         Service.Framework.Update += OnFrameworkUpdate;
         HandlerManager.ChatHandler.isBlocked = true;
 

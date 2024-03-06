@@ -1,5 +1,3 @@
-using OmenTools.Helpers;
-
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class CurrencyUIEdit : ITrackerComponent
@@ -29,7 +27,7 @@ public class CurrencyUIEdit : ITrackerComponent
         }
     }
 
-    private unsafe void UITextEdit(AddonArgs args)
+    private static unsafe void UITextEdit(AddonArgs args)
     {
         var UI = (AtkUnitBase*)args.Addon;
         if (!HelpersOm.IsAddonAndNodesReady(UI)) return;

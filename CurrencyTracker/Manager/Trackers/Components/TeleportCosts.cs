@@ -48,7 +48,7 @@ public class TeleportCosts : ITrackerComponent
                              Name = P.PluginInterface.Sanitizer.Sanitize(
                                  row.PlaceName.Value?.Name?.ToString())
                          })
-                         .Where(x => !x.Name.IsNullOrEmpty())
+                         .Where(x => !string.IsNullOrEmpty(x.Name))
                          .ToDictionary(x => x.RowId, x => x.Name);
     }
 

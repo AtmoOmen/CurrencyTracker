@@ -43,7 +43,7 @@ public partial class CurrencySettings
             shouldUpdate = true;
         }
 
-        if (!C.SelectedLanguage.IsNullOrEmpty() && lastLanguage != C.SelectedLanguage)
+        if (!string.IsNullOrEmpty(C.SelectedLanguage) && lastLanguage != C.SelectedLanguage)
         {
             lastLanguage = C.SelectedLanguage;
             shouldUpdate = true;

@@ -25,7 +25,7 @@ public class TripleTriad : ITrackerComponent
         var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
         if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.FetchText();
 
-        inventoryHandler = new InventoryHandler();
+        inventoryHandler ??= new InventoryHandler();
 
         Service.Log.Debug("Triple Triad Starts");
     }

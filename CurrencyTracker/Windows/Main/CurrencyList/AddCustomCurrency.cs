@@ -35,7 +35,7 @@ public partial class Main
                 using (var combo =
                        ImRaii.Combo(
                            "",
-                           !currencyNameAAC.IsNullOrEmpty() ? currencyNameAAC : Service.Lang.GetText("PleaseSelect"),
+                           !string.IsNullOrEmpty(currencyNameAAC) ? currencyNameAAC : Service.Lang.GetText("PleaseSelect"),
                            ImGuiComboFlags.HeightLarge))
                 {
                     if (combo)
@@ -97,7 +97,7 @@ public partial class Main
                 ImGui.SameLine();
                 if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
                 {
-                    if (currencyNameAAC.IsNullOrEmpty())
+                    if (string.IsNullOrEmpty(currencyNameAAC))
                     {
                         Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                         return;
@@ -141,7 +141,7 @@ public partial class Main
 
     private string[] LoadSearchResultACC(string searchFilterCCT = "")
     {
-        if (!searchFilterCCT.IsNullOrEmpty())
+        if (!string.IsNullOrEmpty(searchFilterCCT))
         {
             var isCS = C.SelectedLanguage == "ChineseSimplified";
             return ItemNames

@@ -20,8 +20,12 @@ public class Retainer : ITrackerComponent
     internal static Dictionary<ulong, Dictionary<uint, long>>
         InventoryItemCount = new(); // Retainer ID - Currency ID : Amount
 
+    private static TaskManager? TaskManager;
+
     public void Init()
     {
+        TaskManager ??= new TaskManager { TimeLimitMS = int.MaxValue, ShowDebug = false };
+
         if (!Service.Config.CharacterRetainers.ContainsKey(P.CurrentCharacter.ContentID))
         {
             Service.Config.CharacterRetainers.Add(P.CurrentCharacter.ContentID, new Dictionary<ulong, string>());
@@ -40,15 +44,14 @@ public class Retainer : ITrackerComponent
 
         if (inventoryManager == null || retainerManager == null) return;
 
-        for (var i = 0U; i < 10; i++)
+        for (var i = 0U; i < retainerManager->GetRetainerCount(); i++)
         {
             var retainer = retainerManager->GetRetainerBySortedIndex(i);
-            if (retainer == null) continue;
+            if (retainer == null) break;
 
             var retainerID = retainer->RetainerID;
-            var retainerName = MemoryHelper.ReadStringNullTerminated((nint)retainer->Name);
+            var retainerName = MemoryHelper.ReadSeStringNullTerminated((nint)retainer->Name).ExtractText();
             var retainerGil = retainer->Gil;
-            Service.Log.Debug($"Successfully get retainer {retainerName} ({retainerID})");
 
             var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
 
@@ -56,8 +59,8 @@ public class Retainer : ITrackerComponent
 
             if (!InventoryItemCount.TryGetValue(retainerID, out var itemCount))
             {
-                itemCount = new Dictionary<uint, long>();
-                InventoryItemCount[retainerID] = new Dictionary<uint, long>();
+                itemCount = new();
+                InventoryItemCount[retainerID] = itemCount;
             }
 
             itemCount[1] = retainerGil;
@@ -88,19 +91,17 @@ public class Retainer : ITrackerComponent
         currentRetainerID = retainerManager->LastSelectedRetainerId;
         if (!InventoryItemCount.TryGetValue(currentRetainerID, out var value))
         {
-            value = new Dictionary<uint, long>();
+            value = new();
             InventoryItemCount[currentRetainerID] = value;
         }
 
         switch (type)
         {
             case AddonEvent.PostSetup:
-                Service.Framework.Update += RetainerInventoryScanner;
+                TaskManager.Enqueue(RetainerInventoryScanner);
                 break;
             case AddonEvent.PreFinalize:
-
-                Service.Framework.Update -= RetainerInventoryScanner;
-                Service.Framework.Update -= RetainerInventoryScanner;
+                TaskManager.Abort();
 
                 var retainerName =
                     MemoryHelper.ReadStringNullTerminated((nint)retainerManager->GetActiveRetainer()->Name);
@@ -114,11 +115,13 @@ public class Retainer : ITrackerComponent
         }
     }
 
-    private void RetainerInventoryScanner(IFramework framework)
+    private bool? RetainerInventoryScanner()
     {
         var tempDict = InventoryItemCount[currentRetainerID];
         InventoryScanner(RetainerInventories, ref tempDict);
         InventoryItemCount[currentRetainerID] = tempDict;
+
+        return false;
     }
 
     private void RetainerUIWatcher(IFramework framework)
@@ -151,6 +154,7 @@ public class Retainer : ITrackerComponent
         InventoryItemCount.Clear();
 
         Service.Framework.Update -= RetainerUIWatcher;
-        Service.Framework.Update -= RetainerInventoryScanner;
+
+        TaskManager?.Abort();
     }
 }

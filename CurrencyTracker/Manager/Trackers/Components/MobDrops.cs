@@ -7,8 +7,12 @@ public class MobDrops : ITrackerComponent
     private readonly HashSet<string> enemiesList = new();
     private InventoryHandler? inventoryHandler;
 
+    private static TaskManager? TaskManager;
+
     public void Init()
     {
+        TaskManager ??= new TaskManager() { TimeLimitMS = int.MaxValue, ShowDebug = false };
+
         Service.Condition.ConditionChange += OnConditionChange;
     }
 
@@ -18,35 +22,44 @@ public class MobDrops : ITrackerComponent
 
         if (value)
         {
-            if (FateManager.Instance()->CurrentFate != null || inventoryHandler != null) return;
+            if (TaskManager.IsBusy || inventoryHandler != null || FateManager.Instance()->CurrentFate != null) return;
+
             HandlerManager.ChatHandler.isBlocked = true;
-            inventoryHandler = new InventoryHandler();
-            Service.Framework.Update += OnFrameworkUpdate;
+            inventoryHandler ??= new InventoryHandler();
+
+            TaskManager.Enqueue(TryScanMobsName);
         }
         else
-            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(_ => EndMobDropsHandler());
+        {
+            TaskManager.Abort();
+            TaskManager.DelayNext(5000);
+            TaskManager.Enqueue(EndMobDropsHandler);
+        }
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private bool? TryScanMobsName()
     {
         var target = Service.TargetManager.Target;
-        if (target is BattleNpc battleNPC && target.ObjectKind == ObjectKind.BattleNpc &&
-            (battleNPC.StatusFlags & (StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut)) != 0 &&
-            enemiesList.Add(battleNPC.Name.TextValue))
-            Service.Log.Debug($"{battleNPC.Name.TextValue}");
+        if (target.ObjectKind == ObjectKind.BattleNpc && target is BattleNpc battleNpc &&
+            battleNpc.StatusFlags.HasFlag(StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut))
+        {
+            enemiesList.Add(battleNpc.Name.ExtractText());
+        }
+
+        return false;
     }
 
-    private void EndMobDropsHandler()
+    private bool? EndMobDropsHandler()
     {
         if (Service.Condition[ConditionFlag.InCombat])
         {
-            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith(t => EndMobDropsHandler());
-            return;
+            TaskManager.Abort();
+            TaskManager.DelayNext(5000);
+            TaskManager.Enqueue(EndMobDropsHandler);
+            return true;
         }
 
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
-        Service.Framework.Update -= OnFrameworkUpdate;
-
         var items = inventoryHandler?.Items ?? new();
         Service.Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
@@ -55,16 +68,15 @@ public class MobDrops : ITrackerComponent
         enemiesList.Clear();
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
-
         Service.Log.Debug("Currency Change Check Completes.");
+
+        return true;
     }
 
     public void Uninit()
     {
         Service.Condition.ConditionChange -= OnConditionChange;
-        Service.Framework.Update -= OnFrameworkUpdate;
         HandlerManager.Nullify(ref inventoryHandler);
-
-        Initialized = false;
+        TaskManager?.Abort();
     }
 }

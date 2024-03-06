@@ -16,7 +16,7 @@ public class Service
     private static void InitLanguage()
     {
         var playerLang = Config.SelectedLanguage;
-        if (playerLang.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(playerLang))
         {
             playerLang = ClientState.ClientLanguage.ToString();
             if (LanguageManager.LanguageNames.All(x => x.Language != playerLang))

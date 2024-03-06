@@ -156,10 +156,10 @@ public partial class Main
         {
             if (isOnMergingTT)
             {
-                var t1 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !t.LocationName.IsNullOrEmpty());
+                var t1 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
                 editedLocationName = t1?.LocationName;
 
-                var t2 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !t.Note.IsNullOrEmpty());
+                var t2 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
                 editedNoteContent = t2?.Note;
 
                 if (isOnEdit) isOnEdit = false;
@@ -186,7 +186,7 @@ public partial class Main
 
             var mergeCount = TransactionsHandler.MergeSpecificTransactions(
                 selectedCurrencyID, editedLocationName, selectedTransactions[selectedCurrencyID],
-                editedNoteContent.IsNullOrEmpty() ? "-1" : editedNoteContent, currentView, currentViewID);
+                string.IsNullOrEmpty(editedNoteContent) ? "-1" : editedNoteContent, currentView, currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
             UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
@@ -204,10 +204,10 @@ public partial class Main
                 if (isOnEdit)
                 {
                     var t1 = selectedTransactions[selectedCurrencyID]
-                        .FirstOrDefault(t => !t.LocationName.IsNullOrEmpty());
+                        .FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
                     editedLocationName = t1?.LocationName;
 
-                    var t2 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !t.Note.IsNullOrEmpty());
+                    var t2 = selectedTransactions[selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
                     editedNoteContent = t2?.Note;
 
                     if (isOnMergingTT) isOnMergingTT = !isOnMergingTT;
@@ -238,7 +238,7 @@ public partial class Main
         if (ImGui.InputTextWithHint("##EditNoteContent", Service.Lang.GetText("PressEnterToConfirm"),
                                     ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue)) EditNoteContent();
 
-        if (!editedNoteContent.IsNullOrEmpty()) ImGui.TextWrapped(editedNoteContent);
+        if (!string.IsNullOrEmpty(editedNoteContent)) ImGui.TextWrapped(editedNoteContent);
     }
 
     // 编辑地名 Edit Location Name
@@ -273,10 +273,10 @@ public partial class Main
         {
             Service.Chat.Print(
                 Service.Lang.GetText("EditHelp1", selectedTransactions[selectedCurrencyID].Count,
-                                     locationName.IsNullOrEmpty()
+                                     string.IsNullOrEmpty(locationName)
                                          ? Service.Lang.GetText("Note")
                                          : Service.Lang.GetText("Location")) + " " +
-                (locationName.IsNullOrEmpty() ? noteContent : locationName));
+                (string.IsNullOrEmpty(locationName) ? noteContent : locationName));
 
             UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
         }
@@ -284,10 +284,10 @@ public partial class Main
         {
             Service.Chat.Print(
                 Service.Lang.GetText("EditHelp1", selectedTransactions[selectedCurrencyID].Count - failCount,
-                                     locationName.IsNullOrEmpty()
+                                     string.IsNullOrEmpty(locationName)
                                          ? Service.Lang.GetText("Note")
                                          : Service.Lang.GetText("Location")) + " " +
-                (locationName.IsNullOrEmpty() ? noteContent : locationName));
+                (string.IsNullOrEmpty(locationName) ? noteContent : locationName));
             Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCount})");
 
             UpdateTransactions(selectedCurrencyID, currentView, currentViewID);

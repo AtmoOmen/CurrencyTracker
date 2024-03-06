@@ -24,6 +24,7 @@ public sealed class Plugin : IDalamudPlugin
 
         ConfigHandler(pluginInterface);
 
+        ECommonsMain.Init(pluginInterface, this, ECommons.Module.DalamudReflector);
         Service.Initialize(pluginInterface);
 
         Service.ClientState.Login += HandleLogin;
@@ -59,7 +60,7 @@ public sealed class Plugin : IDalamudPlugin
         var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name?.RawString;
         var contentID = Service.ClientState.LocalContentId;
 
-        if (playerName.IsNullOrEmpty() || serverName.IsNullOrEmpty() || contentID == 0)
+        if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName) || contentID == 0)
             Service.Log.Error("Fail to load current character info");
 
         var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
@@ -168,7 +169,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         if (Main.visibleColumns == Array.Empty<string>())
             Main.visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
-        if (args.IsNullOrEmpty())
+        if (string.IsNullOrEmpty(args))
         {
             Main.IsOpen = !Main.IsOpen;
             return;
@@ -271,7 +272,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.Logout -= HandleLogout;
 
         Service.CommandManager.RemoveHandler(CommandName);
-
+        ECommonsMain.Dispose();
         Service.Config.Uninitialize();
     }
 }

@@ -28,7 +28,7 @@ public class Tracker
             if (!C.PresetCurrencies.ContainsKey(currency))
             {
                 var currencyName = CurrencyInfo.GetCurrencyLocalName(currency);
-                if (!currencyName.IsNullOrEmpty()) C.PresetCurrencies.Add(currency, currencyName);
+                if (!string.IsNullOrEmpty(currencyName)) C.PresetCurrencies.Add(currency, currencyName);
             }
 
         C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
@@ -41,7 +41,7 @@ public class Tracker
             {
                 var currencyName = CurrencyInfo.GetCurrencyLocalName(currencyID);
 
-                if (currencyName.IsNullOrEmpty()) continue;
+                if (string.IsNullOrEmpty(currencyName)) continue;
 
                 C.CustomCurrencies.TryAdd(currencyID, currencyName);
             }
@@ -75,7 +75,7 @@ public class Tracker
         if (currencyChange == 0 ||
             !CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID)) return false;
 
-        locationName = locationName.IsNullOrEmpty() ? CurrentLocationName : locationName;
+        locationName = string.IsNullOrEmpty(locationName) ? CurrentLocationName : locationName;
 
         if (recordChangeType == RecordChangeType.All ||
             (recordChangeType == RecordChangeType.Positive && currencyChange > 0) ||
