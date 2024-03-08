@@ -1,3 +1,12 @@
+using System.Text;
+using CurrencyTracker.Manager.Infos;
+using Dalamud.Game.Addon.Events;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using OmenTools.Helpers;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class CurrencyUIEdit : ITrackerComponent

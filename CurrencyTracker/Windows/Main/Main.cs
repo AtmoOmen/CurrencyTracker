@@ -1,3 +1,8 @@
+using System;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Windowing;
+using ImGuiNET;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable

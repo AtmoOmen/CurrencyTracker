@@ -1,6 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tools;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using ECommons.Automation;
 using Lumina.Excel.GeneratedSheets2;
+using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -8,9 +15,7 @@ public class TeleportCosts : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private delegate void ActorControlSelfDelegate(
-        uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6,
-        ulong targetId, byte param7);
+    private delegate void ActorControlSelfDelegate(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10);
     [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelf))]
     private Hook<ActorControlSelfDelegate>? actorControlSelfHook;
 
@@ -22,34 +27,27 @@ public class TeleportCosts : ITrackerComponent
     private static Dictionary<uint, string> AetheryteNames = new();
     private static readonly uint[] TpCostCurrencies = { 1, 7569 };
 
-    private bool isReadyTP;
-    private bool tpBetweenAreas;
-    private bool tpInAreas;
     private string tpDestination = string.Empty; // Aetheryte Name
+
+    private static TaskManager? TaskManager;
 
     public void Init()
     {
-        GetAetherytes();
+        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 60000, ShowDebug = false };
 
-        Service.Framework.Update += OnUpdate;
         Service.Hook.InitializeFromAttributes(this);
         actorControlSelfHook?.Enable();
         teleportActionSelfHook?.Enable();
-    }
 
-    private static void GetAetherytes()
-    {
-        var sheet = Service.DataManager.GetExcelSheet<Aetheryte>()!;
-        AetheryteNames.Clear();
-        AetheryteNames = sheet
-                         .Select(row => new
-                         {
-                             row.RowId,
-                             Name = P.PluginInterface.Sanitizer.Sanitize(
-                                 row.PlaceName.Value?.Name?.ToString())
-                         })
-                         .Where(x => !string.IsNullOrEmpty(x.Name))
-                         .ToDictionary(x => x.RowId, x => x.Name);
+        AetheryteNames = Service.DataManager.GetExcelSheet<Aetheryte>()
+                                .Select(row => new
+                                {
+                                    row.RowId,
+                                    Name = P.PluginInterface.Sanitizer.Sanitize(
+                                        row.PlaceName.Value?.Name?.ToString())
+                                })
+                                .Where(x => !string.IsNullOrEmpty(x.Name))
+                                .ToDictionary(x => x.RowId, x => x.Name);
     }
 
     private byte TeleportActionSelf(long p1, uint p2, byte p3)
@@ -60,42 +58,44 @@ public class TeleportCosts : ITrackerComponent
         return teleportActionSelfHook.Original(p1, p2, p3);
     }
 
-    private unsafe void ActorControlSelf(
-        uint category, uint eventId, uint param1, uint param2, uint param3, uint param4, uint param5, uint param6,
-        ulong targetId, byte param7)
+    private void ActorControlSelf(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10)
     {
-        actorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, targetId,
-                                      param7);
+        actorControlSelfHook.Original(category, eventId, a3, a4, a5, a6, a7, a8, targetId,
+                                      a10);
 
-        if (eventId == 517 && param1 is 4590 or 4591 && param2 != 0)
+        if (eventId == 517 && a3 is 4590 or 4591 && a4 != 0)
         {
             HandlerManager.ChatHandler.isBlocked = true;
-            isReadyTP = true;
+            TaskManager.Enqueue(GetTeleportResult);
         }
     }
 
-    private void OnUpdate(IFramework framework)
+    private bool? GetTeleportResult()
     {
-        if (!isReadyTP) return;
-
         switch (Service.Condition[ConditionFlag.BetweenAreas])
         {
             case true when Service.Condition[ConditionFlag.BetweenAreas51]:
-                tpBetweenAreas = true;
+                TaskManager.Enqueue(() => UpdateTeleportTransactions(true));
                 break;
             case true:
-                tpInAreas = true;
+                TaskManager.Enqueue(() => UpdateTeleportTransactions(false));
                 break;
         }
 
-        if (IsStillOnTeleport()) return;
+        return true;
+    }
 
-        if (tpBetweenAreas)
+    private bool? UpdateTeleportTransactions(bool isBetweenArea)
+    {
+        if (IsStillOnTeleport()) return false;
+
+        if (isBetweenArea)
         {
             Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
+
         }
-        else if (tpInAreas)
+        else
         {
             Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             Service.Config.ComponentProp["RecordDesAetheryteName"]
@@ -103,26 +103,16 @@ public class TeleportCosts : ITrackerComponent
                                                 : $"{Service.Lang.GetText("TeleportWithinArea")}");
         }
 
-        if (!IsStillOnTeleport())
-        {
-            ResetStates();
-            HandlerManager.ChatHandler.isBlocked = false;
-        }
-    }
-
-    private void ResetStates()
-    {
-        isReadyTP = tpBetweenAreas = tpInAreas = false;
         tpDestination = string.Empty;
+        HandlerManager.ChatHandler.isBlocked = false;
+        return true;
     }
 
     private static bool IsStillOnTeleport() => Flags.BetweenAreas() || Flags.OccupiedInEvent();
 
     public void Uninit()
     {
-        ResetStates();
-
-        Service.Framework.Update -= OnUpdate;
+        TaskManager?.Abort();
         actorControlSelfHook?.Dispose();
         teleportActionSelfHook?.Dispose();
     }

@@ -1,3 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker.Manager.Transactions;
 
 public class TransactionsConvertor

@@ -1,3 +1,18 @@
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Timers;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
+using ImGuiNET;
+using OmenTools.ImGuiOm;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main
@@ -17,7 +32,7 @@ public partial class Main
     {
         { "Order", Plugin.P.Main.OrderColumnCellUI },
         { "Time", Plugin.P.Main.TimeColumnCellUI },
-        { "Amount", Plugin.P.Main.AmountColumnCellUI },
+        { "Amount", AmountColumnCellUI },
         { "Change", Plugin.P.Main.ChangeColumnCellUI },
         { "Location", Plugin.P.Main.LocationColumnCellUI },
         { "Note", Plugin.P.Main.NoteColumnCellUI },

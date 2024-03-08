@@ -1,3 +1,21 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Trackers;
+using CurrencyTracker.Manager.Trackers.Components;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility.Raii;
+using Dalamud.Interface.Windowing;
+using Dalamud.Utility;
+using ImGuiNET;
+using OmenTools.ImGuiOm;
+using static CurrencyTracker.Manager.Tools.Helpers;
+
 namespace CurrencyTracker.Windows;
 
 public class Settings : Window, IDisposable

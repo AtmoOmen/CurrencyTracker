@@ -1,3 +1,11 @@
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tools;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using ECommons;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using OmenTools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite

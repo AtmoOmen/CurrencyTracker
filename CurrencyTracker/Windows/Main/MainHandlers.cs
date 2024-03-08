@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Timers;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Transactions;
+using ImGuiNET;
+using TinyPinyin;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main

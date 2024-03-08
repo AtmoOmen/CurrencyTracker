@@ -1,3 +1,11 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
+using Dalamud.Game.Text.SeStringHandling;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker.Manager;
 
 public partial class LanguageManager

@@ -1,4 +1,12 @@
+using System;
+using System.Numerics;
 using System.Threading;
+using System.Threading.Tasks;
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface.Utility.Raii;
+using ImGuiNET;
+using OmenTools.Helpers;
+using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 

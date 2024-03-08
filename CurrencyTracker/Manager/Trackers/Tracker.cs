@@ -1,3 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Manager.Trackers.Handlers;
+using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Windows;
+using Dalamud.Game.Text.SeStringHandling;
+using IntervalUtility;
+using static CurrencyTracker.Manager.Tools.Helpers;
+using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+
 namespace CurrencyTracker.Manager.Trackers;
 
 public class Tracker

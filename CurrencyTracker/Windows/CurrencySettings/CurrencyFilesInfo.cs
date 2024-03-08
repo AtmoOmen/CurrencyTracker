@@ -1,3 +1,13 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface.Colors;
+using ImGuiNET;
+using OmenTools.ImGuiOm;
+using static CurrencyTracker.Manager.Tools.Helpers;
+
 namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
@@ -12,16 +22,27 @@ public partial class CurrencySettings
     {
         UiStateWatcherCFI();
 
-        ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("DataFiles")}:");
-
         if (filesInfo.Any())
         {
-            foreach (var file in filesInfo)
+            if (YellowTextHeader($"{Service.Lang.GetText("DataFiles")}:"))
             {
-                if (ImGui.Selectable($"{file.Key}")) OpenAndSelectFile(file.Value);
+                foreach (var file in filesInfo)
+                {
+                    if (ImGui.Selectable($"{file.Key}")) OpenAndSelectFile(file.Value);
 
-                ImGuiOm.TooltipHover(Path.GetFileName(file.Value));
+                    ImGuiOm.TooltipHover(Path.GetFileName(file.Value));
+                }
             }
+        }
+
+        return;
+
+        bool YellowTextHeader(string text)
+        {
+            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
+            var result = ImGui.CollapsingHeader(text);
+            ImGui.PopStyleColor();
+            return result;
         }
     }
 

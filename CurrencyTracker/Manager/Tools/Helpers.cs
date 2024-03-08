@@ -1,3 +1,15 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
+using CurrencyTracker.Manager.Infos;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Component.GUI;
+using IntervalUtility;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker.Manager.Tools;
 
 public static class Helpers

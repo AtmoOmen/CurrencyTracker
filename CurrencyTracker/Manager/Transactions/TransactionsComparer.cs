@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace CurrencyTracker.Manager.Transactions;
 
 public class TransactionComparer : IEqualityComparer<TransactionsConvertor>

@@ -1,3 +1,13 @@
+using System.Linq;
+using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Trackers;
+using Dalamud.Game;
+using Dalamud.Game.ClientState.Objects;
+using Dalamud.IoC;
+using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker;
 
 public class Service

@@ -1,3 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tools;
+using Dalamud.Configuration;
+using Dalamud.Interface.Internal;
+using Dalamud.Plugin;
+using Newtonsoft.Json;
+
 namespace CurrencyTracker;
 
 [Serializable]

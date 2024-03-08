@@ -1,3 +1,9 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Dalamud;
+using Lumina.Excel;
+
 namespace CurrencyTracker.Manager.Tools;
 
 // From KamiLib, used to extract some res

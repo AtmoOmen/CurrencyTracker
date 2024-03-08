@@ -1,3 +1,12 @@
+using System;
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility.Raii;
+using ImGuiNET;
+using OmenTools.ImGuiOm;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main

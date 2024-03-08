@@ -1,3 +1,17 @@
+using System.Collections.Generic;
+using CurrencyTracker.Manager.Infos;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Memory;
+using Dalamud.Plugin.Services;
+using ECommons;
+using ECommons.Automation;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using static CurrencyTracker.Manager.Tools.Helpers;
+using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+using static CurrencyTracker.Plugin;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class Retainer : ITrackerComponent

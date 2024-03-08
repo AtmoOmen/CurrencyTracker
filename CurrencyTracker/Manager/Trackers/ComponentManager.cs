@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using CurrencyTracker.Manager.Infos;
+
 namespace CurrencyTracker.Manager.Trackers;
 
 public class ComponentManager

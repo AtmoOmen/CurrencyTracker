@@ -1,3 +1,22 @@
+global using static CurrencyTracker.Manager.Tools.Helpers;
+global using static CurrencyTracker.Plugin;
+global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Windows;
+using Dalamud.Game.Command;
+using Dalamud.Interface.Windowing;
+using Dalamud.Plugin;
+using ECommons;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using TinyPinyin;
+
 namespace CurrencyTracker;
 
 public sealed class Plugin : IDalamudPlugin
@@ -24,7 +43,7 @@ public sealed class Plugin : IDalamudPlugin
 
         ConfigHandler(pluginInterface);
 
-        ECommonsMain.Init(pluginInterface, this, ECommons.Module.DalamudReflector);
+        ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
         Service.Initialize(pluginInterface);
 
         Service.ClientState.Login += HandleLogin;

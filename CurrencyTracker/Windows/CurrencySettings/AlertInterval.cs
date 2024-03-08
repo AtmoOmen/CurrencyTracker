@@ -1,3 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tools;
+using Dalamud.Interface;
+using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility.Raii;
+using ImGuiNET;
+using IntervalUtility;
+using OmenTools.ImGuiOm;
+using static CurrencyTracker.Manager.Tools.Helpers;
+
 namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings

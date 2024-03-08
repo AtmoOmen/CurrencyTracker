@@ -1,3 +1,9 @@
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface;
+using ImGuiNET;
+using OmenTools.Helpers;
+using OmenTools.ImGuiOm;
+
 namespace CurrencyTracker.Windows;
 
 public partial class Main

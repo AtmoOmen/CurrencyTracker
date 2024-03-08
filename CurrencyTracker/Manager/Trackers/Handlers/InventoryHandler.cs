@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using CurrencyTracker.Manager.Infos;
+using Dalamud.Game.Inventory.InventoryEventArgTypes;
+
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 
 public class InventoryHandler : ITrackerHandler

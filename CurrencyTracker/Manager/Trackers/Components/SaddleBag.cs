@@ -1,3 +1,11 @@
+using System.Collections.Generic;
+using CurrencyTracker.Manager.Infos;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game;
+using static CurrencyTracker.Manager.Tools.Helpers;
+
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class SaddleBag : ITrackerComponent

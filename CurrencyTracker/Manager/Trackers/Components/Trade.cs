@@ -1,3 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Trackers.Handlers;
+using Dalamud.Game.Addon.Lifecycle;
+using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;

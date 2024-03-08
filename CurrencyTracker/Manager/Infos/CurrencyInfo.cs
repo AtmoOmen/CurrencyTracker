@@ -1,3 +1,11 @@
+using System.Collections.Generic;
+using System.Linq;
+using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Manager.Trackers.Components;
+using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface.Internal;
+using Dalamud.Utility;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Infos;
