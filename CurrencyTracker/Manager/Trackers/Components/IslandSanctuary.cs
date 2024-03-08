@@ -5,8 +5,7 @@ using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
-using static CurrencyTracker.Manager.Tools.Helpers;
-using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+using ECommons.Throttlers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -54,30 +53,33 @@ public class IslandSanctuary : ITrackerComponent
 
     private void OnUpdate(IFramework framework)
     {
-        var currentTarget = Service.TargetManager.Target;
-        var prevTarget = Service.TargetManager.PreviousTarget;
-
-        if (currentTarget?.DataId == 1043078)
+        if (EzThrottler.Throttle("IslandSanctuary-CheckWorkshop"))
         {
-            if (!isOnWorkshop)
+            var currentTarget = Service.TargetManager.Target;
+            var prevTarget = Service.TargetManager.PreviousTarget;
+
+            if (currentTarget?.DataId == 1043078)
             {
-                isOnWorkshop = true;
-                inventoryHandler ??= new InventoryHandler();
-                HandlerManager.ChatHandler.isBlocked = true;
+                if (!isOnWorkshop)
+                {
+                    isOnWorkshop = true;
+                    inventoryHandler ??= new InventoryHandler();
+                    HandlerManager.ChatHandler.isBlocked = true;
+                }
             }
-        }
-        else if (prevTarget?.DataId == 1043078 && isOnWorkshop)
-        {
-            if (currentTarget?.DataId != prevTarget.DataId)
+            else if (prevTarget?.DataId == 1043078 && isOnWorkshop)
             {
-                isOnWorkshop = false;
+                if (currentTarget?.DataId != prevTarget.DataId)
+                {
+                    isOnWorkshop = false;
 
-                var items = inventoryHandler?.Items ?? new();
-                Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
-                                                RecordChangeType.All, 7);
+                    var items = inventoryHandler?.Items ?? new();
+                    Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
+                                                    RecordChangeType.All, 7);
 
-                HandlerManager.Nullify(ref inventoryHandler);
-                HandlerManager.ChatHandler.isBlocked = false;
+                    HandlerManager.Nullify(ref inventoryHandler);
+                    HandlerManager.ChatHandler.isBlocked = false;
+                }
             }
         }
     }

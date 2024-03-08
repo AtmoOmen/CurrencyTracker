@@ -5,7 +5,6 @@ using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using ECommons;
 using Lumina.Excel.GeneratedSheets2;
-using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -15,7 +14,7 @@ public class DutyRewards : ITrackerComponent
 
     private static Dictionary<uint, string> ContentNames = new(); // Territory ID - ContentName
 
-    private static readonly uint[] IgnoredContents =
+    private static readonly HashSet<uint> IgnoredContents = new()
     {
         // Triple Triad Related
         579, 940, 941,
@@ -34,7 +33,7 @@ public class DutyRewards : ITrackerComponent
     {
         ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
                               .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
-                                          IgnoredContents.All(y => y != x.TerritoryType.Row))
+                                          !IgnoredContents.Contains(x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
                               .ToDictionary(x => x.TerritoryType.Row, x => x.Name.ToString());
 
@@ -62,7 +61,8 @@ public class DutyRewards : ITrackerComponent
     {
         if (Flags.IsBoundByDuty())
             CheckDutyStart();
-        else if (isDutyStarted) CheckDutyEnd();
+        else if (isDutyStarted)
+            CheckDutyEnd();
     }
 
     private void CheckDutyEnd()

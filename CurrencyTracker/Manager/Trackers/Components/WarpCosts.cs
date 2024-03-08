@@ -6,15 +6,17 @@ using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Plugin.Services;
+using Dalamud.Hooking;
+using ECommons;
+using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.UI;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets2;
 using OmenTools.Helpers;
-using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
-public class WarpCosts : ITrackerComponent
+public unsafe class WarpCosts : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
@@ -23,88 +25,115 @@ public class WarpCosts : ITrackerComponent
     private static readonly uint[] tpCostCurrencies = { 1, 7569 };
 
     // 包含金币传送点的区域 Territories that Have a Gil-Cost Warp
-    private List<uint> ValidGilWarpTerritories = new();
+    private HashSet<uint> ValidGilWarpTerritories = new();
 
-    private bool isReadyWarpTP;
-    private bool warpTPBetweenAreas;
-    private bool warpTPInAreas;
+    private delegate nint AddonReceiveEventDelegate(
+        AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData);
+    private Hook<AddonReceiveEventDelegate>? SelectYesHook;
+
+    private static TaskManager? TaskManager;
 
     public void Init()
     {
+        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 60000, ShowDebug = false };
+
         ValidGilWarpTerritories = Service.DataManager.GetExcelSheet<Warp>()
                                         .Where(x => Service.DataManager.GetExcelSheet<WarpCondition>()
                                                            .Any(y => y.Gil != 0 &&
                                                                      x.WarpCondition.Value.RowId == y.RowId))
                                         .Select(x => x.TerritoryType.Value.RowId)
-                                        .ToList();
+                                        .ToHashSet();
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
     }
 
-    private unsafe void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
+    private void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
     {
-        if (ValidGilWarpTerritories.All(x => Service.ClientState.TerritoryType != x)) return;
-
-        var SYN = (AddonSelectYesno*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return;
-
-        var text = SYN->PromptText->NodeText.FetchText();
-        if (string.IsNullOrEmpty(text)) return;
-
-        if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
+        switch (type)
         {
-            isReadyWarpTP = true;
-            HandlerManager.ChatHandler.isBlocked = true;
-
-            Service.Framework.Update += OnFrameworkUpdate;
+            case AddonEvent.PostSetup:
+                var addon = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
+                var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.vfunc[2];
+                SelectYesHook ??= Service.Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
+                SelectYesHook?.Enable();
+                break;
+            case AddonEvent.PreFinalize:
+                SelectYesHook?.Dispose();
+                SelectYesHook = null;
+                break;
         }
+
+        
     }
 
-    private void OnFrameworkUpdate(IFramework framework)
+    private nint SelectYesDetour(AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData)
     {
-        if (!isReadyWarpTP)
+        if (eventType == AtkEventType.MouseClick)
         {
-            Service.Framework.Update -= OnFrameworkUpdate;
-            return;
+            if (!ValidGilWarpTerritories.Contains(Service.ClientState.TerritoryType)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+
+            var SYN = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
+            if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+
+            var text = SYN->PromptText->NodeText.ExtractText();
+            if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+
+            if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
+            {
+                HandlerManager.ChatHandler.isBlocked = true;
+                TaskManager.Enqueue(GetTeleportType);
+            }
         }
 
+        return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+    }
+
+    private static bool? GetTeleportType()
+    {
         switch (Service.Condition[ConditionFlag.BetweenAreas])
         {
             case true when Service.Condition[ConditionFlag.BetweenAreas51]:
-                warpTPBetweenAreas = true;
+                TaskManager.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
-                warpTPInAreas = true;
+                TaskManager.Enqueue(() => GetTeleportResult(false));
                 break;
+            default:
+                return false;
         }
 
-        if (Flags.BetweenAreas() || Flags.OccupiedInEvent()) return;
+        return true;
+    }
 
-        if (warpTPBetweenAreas)
+    private static bool? GetTeleportResult(bool isBetweenArea)
+    {
+        if (IsStillOnTeleport()) return false;
+
+        if (isBetweenArea)
+        {
             Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
                                             $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})",
                                             RecordChangeType.Negative, 15);
-        else if (warpTPInAreas)
+        }
+        else
+        {
             Service.Tracker.CheckCurrencies(tpCostCurrencies, CurrentLocationName,
                                             $"({Service.Lang.GetText("TeleportWithinArea")})",
                                             RecordChangeType.Negative, 16);
-
-        if (!Flags.BetweenAreas() && !Flags.OccupiedInEvent())
-        {
-            ResetStates();
-            HandlerManager.ChatHandler.isBlocked = false;
         }
+
+        HandlerManager.ChatHandler.isBlocked = false;
+        return true;
     }
 
-    private void ResetStates()
-    {
-        Service.Framework.Update -= OnFrameworkUpdate;
-        isReadyWarpTP = warpTPBetweenAreas = warpTPInAreas = false;
-    }
+    private static bool IsStillOnTeleport() => Flags.BetweenAreas() || Flags.OccupiedInEvent();
 
     public void Uninit()
     {
-        ValidGilWarpTerritories.Clear();
-        ResetStates();
+        Service.AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
+        SelectYesHook?.Dispose();
+        SelectYesHook = null;
+        TaskManager?.Abort();
     }
 }

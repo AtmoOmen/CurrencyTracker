@@ -7,7 +7,6 @@ using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using ECommons.Automation;
 using Lumina.Excel.GeneratedSheets2;
-using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -27,7 +26,7 @@ public class TeleportCosts : ITrackerComponent
     private static Dictionary<uint, string> AetheryteNames = new();
     private static readonly uint[] TpCostCurrencies = { 1, 7569 };
 
-    private string tpDestination = string.Empty; // Aetheryte Name
+    private static string tpDestination = string.Empty; // Aetheryte Name
 
     private static TaskManager? TaskManager;
 
@@ -66,26 +65,26 @@ public class TeleportCosts : ITrackerComponent
         if (eventId == 517 && a3 is 4590 or 4591 && a4 != 0)
         {
             HandlerManager.ChatHandler.isBlocked = true;
-            TaskManager.Enqueue(GetTeleportResult);
+            TaskManager.Enqueue(GetTeleportType);
         }
     }
 
-    private bool? GetTeleportResult()
+    private static bool? GetTeleportType()
     {
         switch (Service.Condition[ConditionFlag.BetweenAreas])
         {
             case true when Service.Condition[ConditionFlag.BetweenAreas51]:
-                TaskManager.Enqueue(() => UpdateTeleportTransactions(true));
+                TaskManager.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
-                TaskManager.Enqueue(() => UpdateTeleportTransactions(false));
+                TaskManager.Enqueue(() => GetTeleportResult(false));
                 break;
         }
 
         return true;
     }
 
-    private bool? UpdateTeleportTransactions(bool isBetweenArea)
+    private static bool? GetTeleportResult(bool isBetweenArea)
     {
         if (IsStillOnTeleport()) return false;
 

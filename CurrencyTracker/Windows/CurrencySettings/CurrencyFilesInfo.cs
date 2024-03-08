@@ -3,10 +3,8 @@ using System.IO;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
-using Dalamud.Interface.Colors;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Windows;
 
@@ -24,7 +22,7 @@ public partial class CurrencySettings
 
         if (filesInfo.Any())
         {
-            if (YellowTextHeader($"{Service.Lang.GetText("DataFiles")}:"))
+            if (ImGui.CollapsingHeader($"{Service.Lang.GetText("DataFiles")}"))
             {
                 foreach (var file in filesInfo)
                 {
@@ -33,16 +31,6 @@ public partial class CurrencySettings
                     ImGuiOm.TooltipHover(Path.GetFileName(file.Value));
                 }
             }
-        }
-
-        return;
-
-        bool YellowTextHeader(string text)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
-            var result = ImGui.CollapsingHeader(text);
-            ImGui.PopStyleColor();
-            return result;
         }
     }
 

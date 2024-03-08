@@ -17,7 +17,7 @@ public class ChatHandler : ITrackerHandler
         0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006
     };
 
-    private readonly Timer checkTimer = new(500);
+    private readonly Timer checkTimer = new(100);
 
 
     public void Init()
@@ -39,7 +39,7 @@ public class ChatHandler : ITrackerHandler
         checkTimer.Restart();
     }
 
-    private void CheckTimerElapsed(object? sender, ElapsedEventArgs e)
+    private static void CheckTimerElapsed(object? sender, ElapsedEventArgs e)
     {
         Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
     }

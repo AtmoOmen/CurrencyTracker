@@ -1,6 +1,7 @@
 global using static CurrencyTracker.Manager.Tools.Helpers;
 global using static CurrencyTracker.Plugin;
 global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+global using static ECommons.GenericHelpers;
 using System;
 using System.Collections.Generic;
 using System.IO;

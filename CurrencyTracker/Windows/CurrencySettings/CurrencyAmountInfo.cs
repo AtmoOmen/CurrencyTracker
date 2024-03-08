@@ -1,7 +1,5 @@
 using System.Linq;
-using Dalamud.Interface.Colors;
 using ImGuiNET;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Windows;
 
@@ -13,7 +11,7 @@ public partial class CurrencySettings
 
         if (infoDic.Any())
         {
-            if (YellowTextHeader($"{Service.Lang.GetText("Amount")}:"))
+            if (ImGui.CollapsingHeader($"{Service.Lang.GetText("Amount")}"))
             {
                 ImGui.BeginGroup();
                 foreach (var source in infoDic)
@@ -37,16 +35,6 @@ public partial class CurrencySettings
 
                 ImGui.EndGroup();
             }
-        }
-
-        return;
-
-        bool YellowTextHeader(string text)
-        {
-            ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudYellow);
-            var result = ImGui.CollapsingHeader(text);
-            ImGui.PopStyleColor();
-            return result;
         }
     }
 }

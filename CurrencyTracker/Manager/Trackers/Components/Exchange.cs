@@ -4,7 +4,6 @@ using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

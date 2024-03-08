@@ -13,8 +13,6 @@ public class QuestRewards : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private string questName = string.Empty;
-
     private InventoryHandler? inventoryHandler;
     private static TaskManager? TaskManager;
 
@@ -34,18 +32,19 @@ public class QuestRewards : ITrackerComponent
         switch (type)
         {
             case AddonEvent.PostSetup:
-                questName = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[1].String);
                 inventoryHandler ??= new InventoryHandler();
                 HandlerManager.ChatHandler.isBlocked = true;
-                Service.Log.Debug($"Quest {questName} Ready to Finish!");
                 break;
             case AddonEvent.PreFinalize:
-                TaskManager.Enqueue(CheckQuestRewards);
+                var questName = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[1].String);
+                Service.Log.Debug($"Quest {questName} Ready to Finish!");
+
+                TaskManager.Enqueue(() => CheckQuestRewards(questName));
                 break;
         }
     }
 
-    private bool? CheckQuestRewards()
+    private bool? CheckQuestRewards(string questName)
     {
         if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return false;
 
@@ -56,20 +55,14 @@ public class QuestRewards : ITrackerComponent
         Service.Log.Debug("Currency Change Check Completes.");
 
         HandlerManager.ChatHandler.isBlocked = false;
-        ResetQuestState();
-        return true;
-    }
-
-    private void ResetQuestState()
-    {
-        questName = string.Empty;
         HandlerManager.Nullify(ref inventoryHandler);
+        return true;
     }
 
     public void Uninit()
     {
         Service.AddonLifecycle.UnregisterListener(OnQuestRewards);
-        ResetQuestState();
+        HandlerManager.Nullify(ref inventoryHandler);
         TaskManager?.Abort();
     }
 }
