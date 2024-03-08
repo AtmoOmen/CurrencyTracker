@@ -4,7 +4,6 @@ using System.Linq;
 using System.Timers;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
-using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
