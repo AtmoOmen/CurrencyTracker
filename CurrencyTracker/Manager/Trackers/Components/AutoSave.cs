@@ -12,13 +12,13 @@ public class AutoSave : ITrackerComponent
     public bool Initialized { get; set; }
     public static DateTime LastAutoSave { get; set; } = DateTime.MinValue;
 
-    private static Timer AutoSaveTimer = new(1000);
+    private static Timer? AutoSaveTimer;
 
     public void Init()
     {
         LastAutoSave = DateTime.Now;
 
-        AutoSaveTimer = new Timer(1000);
+        AutoSaveTimer ??= new Timer(1000);
         AutoSaveTimer.Elapsed += OnAutoSave;
         AutoSaveTimer.AutoReset = true;
         AutoSaveTimer.Enabled = true;
@@ -80,8 +80,11 @@ public class AutoSave : ITrackerComponent
     {
         AutoSaveHandler();
 
-        AutoSaveTimer.Stop();
-        AutoSaveTimer.Dispose();
+        AutoSaveTimer?.Stop();
+        if (AutoSaveTimer != null) AutoSaveTimer.Elapsed -= OnAutoSave;
+        AutoSaveTimer?.Dispose();
+        AutoSaveTimer = null;
+
         LastAutoSave = DateTime.MinValue;
     }
 }
