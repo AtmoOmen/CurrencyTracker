@@ -5,9 +5,12 @@ using System.IO;
 using System.Runtime.InteropServices;
 using CurrencyTracker.Manager.Infos;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using ImGuiNET;
 using IntervalUtility;
+using OmenTools.ImGuiOm;
 using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Tools;
@@ -206,5 +209,28 @@ public static class Helpers
         var updateDictionary = new UpdateDictionary<TKey, TValue>();
         foreach (var pair in pairs) updateDictionary.Add(keySelector(pair), valueSelector(pair));
         return updateDictionary;
+    }
+
+    public static void PagingComponent(Action firstPageAction, Action previousPageAction, Action nextPageAction, Action lastPageAction)
+    {
+        if (ImGuiOm.ButtonIcon("FirstPage", FontAwesomeIcon.Backward))
+            firstPageAction.Invoke();
+
+        ImGui.SameLine();
+        if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left))
+            previousPageAction.Invoke();
+
+        ImGui.SameLine();
+        if (ImGui.ArrowButton("NextPage", ImGuiDir.Right))
+            nextPageAction.Invoke();
+
+        ImGui.SameLine();
+        if (ImGuiOm.ButtonIcon("LastPage", FontAwesomeIcon.Forward))
+            lastPageAction.Invoke();
+
+        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0)
+            previousPageAction.Invoke();
+        if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel < 0)
+            nextPageAction.Invoke();
     }
 }

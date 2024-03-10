@@ -14,15 +14,11 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Windows;
 
 public class Settings : Window, IDisposable
 {
-    private Configuration? C = Service.Config;
-    private Plugin? P = Plugin.P;
-
     private string devLangFilePath = string.Empty;
 
     public Settings(Plugin plugin) : base($"Settings##{Plugin.Name}")
@@ -136,6 +132,7 @@ public class Settings : Window, IDisposable
                     if (item0)
                     {
                         ModuleCheckbox(typeof(CurrencyUIEdit), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
+                        ModuleCheckbox(typeof(ServerBar), "在服务器信息栏显示货币信息");
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(Retainer), Service.Lang.GetText("Retainer-RecordRetainerInventory"));
@@ -309,7 +306,7 @@ public class Settings : Window, IDisposable
         }
     }
 
-    private void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
+    private static void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
     {
         var boolName = type.Name;
         if (!C.ComponentEnabled.TryGetValue(boolName, out var cbool)) return;

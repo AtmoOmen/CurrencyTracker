@@ -11,7 +11,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal uint selectedCurrencyID;
+    internal static uint selectedCurrencyID;
     internal int selectedOptionIndex = -1;
     private int currencyListboxWidth = 150;
 

@@ -3,7 +3,6 @@ using System.Linq;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OmenTools.Helpers;
 using OmenTools.ImGuiOm;
 using OmenTools.Widgets;
 
@@ -11,21 +10,21 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private bool isClusteredByTime;
-    private bool isTimeFilterEnabled;
+    private static bool isClusteredByTime;
+    private static bool isTimeFilterEnabled;
 
-    private DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
-    private DateTime filterEndDate = DateTime.Now;
-    private DatePicker startDatePicker = new(Service.Lang.GetText("WeekDays"));
-    private DatePicker endDatePicker = new(Service.Lang.GetText("WeekDays"));
+    private static DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
+    private static DateTime filterEndDate = DateTime.Now;
+    private static DatePicker startDatePicker = new(Service.Lang.GetText("WeekDays"));
+    private static DatePicker endDatePicker = new(Service.Lang.GetText("WeekDays"));
 
-    private string lastLangTF = string.Empty;
+    private static string lastLangTF = string.Empty;
 
-    private int clusterHour;
-    private bool startDateEnable;
-    private bool endDateEnable;
+    private static int clusterHour;
+    private static bool startDateEnable;
+    private static bool endDateEnable;
 
-    private void TimeColumnHeaderUI()
+    private static void TimeColumnHeaderUI()
     {
         ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
@@ -49,9 +48,10 @@ public partial class Main
         }
     }
 
-    private void ClusterByTimeUI()
+    private static void ClusterByTimeUI()
     {
-        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref isClusteredByTime)) OnDateSelected();
+        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref isClusteredByTime)) 
+            RefreshTransactionsView();
 
         if (isClusteredByTime)
         {
@@ -59,7 +59,7 @@ public partial class Main
             if (ImGui.InputInt(Service.Lang.GetText("Hours"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 clusterHour = Math.Max(0, clusterHour);
-                OnDateSelected();
+                RefreshTransactionsView();
             }
 
             ImGui.SameLine();
@@ -67,9 +67,10 @@ public partial class Main
         }
     }
 
-    private void FilterByTimeUI()
+    private static void FilterByTimeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled)) OnDateSelected();
+        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled)) 
+            RefreshTransactionsView();
 
         DateInput(ref filterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
         DateInput(ref filterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
@@ -103,12 +104,7 @@ public partial class Main
         }
     }
 
-    private void OnDateSelected()
-    {
-        searchTimer.Restart();
-    }
-
-    private void TimeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void TimeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
         var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);

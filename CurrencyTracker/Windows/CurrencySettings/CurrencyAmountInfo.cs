@@ -7,7 +7,7 @@ public partial class CurrencySettings
 {
     private void CurrencyAmountInfoUI()
     {
-        M.characterCurrencyInfos[P.CurrentCharacter].SubCurrencyAmount.TryGetValue(selectedCurrencyID, out var infoDic);
+        Main.characterCurrencyInfos[P.CurrentCharacter].SubCurrencyAmount.TryGetValue(selectedCurrencyID, out var infoDic);
 
         if (infoDic.Any())
         {

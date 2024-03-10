@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Timers;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using ImGuiNET;
@@ -12,7 +11,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal void ReloadOrderedOptions()
+    internal static void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
         var allCurrenciesSet = new HashSet<uint>(C.AllCurrencyID);
@@ -24,9 +23,9 @@ public partial class Main
         }
     }
 
-    internal List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> currentTypeTransactions)
+    internal static List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> transactions)
     {
-        IEnumerable<TransactionsConvertor> filteredTransactions = currentTypeTransactions;
+        IEnumerable<TransactionsConvertor> filteredTransactions = transactions;
 
         if (isClusteredByTime && clusterHour > 0)
             filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(clusterHour));
@@ -46,7 +45,7 @@ public partial class Main
         return (C.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
     }
 
-    private IEnumerable<TransactionsConvertor> ApplyChangeFilter(IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<TransactionsConvertor> ApplyChangeFilter(IEnumerable<TransactionsConvertor> transactions)
     {
         return transactions.Where(transaction => filterMode == 0 ? transaction.Change > filterValue : transaction.Change < filterValue);
     }
@@ -105,13 +104,13 @@ public partial class Main
         return clusteredTransactions.Values;
     }
 
-    private IEnumerable<TransactionsConvertor> ApplyDateTimeFilter(IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<TransactionsConvertor> ApplyDateTimeFilter(IEnumerable<TransactionsConvertor> transactions)
     {
         var nextDay = filterEndDate.AddDays(1);
         return transactions.Where(transaction => transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= nextDay);
     }
 
-    private IEnumerable<TransactionsConvertor> ApplyLocationFilter(IEnumerable<TransactionsConvertor> transactions, string query)
+    private static IEnumerable<TransactionsConvertor> ApplyLocationFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
         if (string.IsNullOrEmpty(query))
         {
@@ -135,7 +134,8 @@ public partial class Main
             {
                 return true;
             }
-            else if (isChineseSimplified)
+
+            if (isChineseSimplified)
             {
                 var pinyin = PinyinHelper.GetPinyin(normalizedLocation, "");
                 return queries.Any(q => pinyin.Contains(q.Pinyin, StringComparison.OrdinalIgnoreCase));
@@ -144,7 +144,7 @@ public partial class Main
         });
     }
 
-    private IEnumerable<TransactionsConvertor> ApplyNoteFilter(IEnumerable<TransactionsConvertor> transactions, string query)
+    private static IEnumerable<TransactionsConvertor> ApplyNoteFilter(IEnumerable<TransactionsConvertor> transactions, string query)
     {
         if (string.IsNullOrEmpty(query))
         {
@@ -177,14 +177,14 @@ public partial class Main
         });
     }
 
-    public void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
+    public static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
     {
         UpdateTransactions(currencyID, category, ID);
     }
 
-    public void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
+    public static void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (!IsOpen || selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+        if (selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
 
         selectedStates.Clear();
         selectedTransactions.Clear();
@@ -200,8 +200,11 @@ public partial class Main
         ImGui.CloseCurrentPopup();
     }
 
-    private void SearchTimerElapsed(object? sender, ElapsedEventArgs e)
+    private static void RefreshTransactionsView()
     {
-        UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
+        TaskManager.Abort();
+
+        TaskManager.DelayNext(250);
+        TaskManager.Enqueue(() => UpdateTransactions(selectedCurrencyID, currentView, currentViewID));
     }
 }

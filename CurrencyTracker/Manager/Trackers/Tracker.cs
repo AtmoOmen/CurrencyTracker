@@ -8,8 +8,6 @@ using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Text.SeStringHandling;
 using IntervalUtility;
-using static CurrencyTracker.Manager.Tools.Helpers;
-using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
 
 namespace CurrencyTracker.Manager.Trackers;
 

@@ -69,7 +69,7 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
-        ImGui.SetNextItemWidth(alertIntervalWidth.X - M.checkboxColumnWidth + 48);
+        ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 48);
         using (var combo = ImRaii.Combo("##IntervalSelectCombo",
                                         selectedInterval != null ? selectedInterval.ToIntervalString() :
                                         intervals.Any() ? Service.Lang.GetText("PleaseSelect") : ""))
@@ -142,7 +142,7 @@ public partial class CurrencySettings
                                  : Service.Lang.GetOrigText(key);
 
             ImGui.SameLine();
-            ImGui.SetNextItemWidth(alertIntervalWidth.X - M.checkboxColumnWidth + 8);
+            ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 8);
             if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
                 C.CustomNoteContents[key] = textToShow;

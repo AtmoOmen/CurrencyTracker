@@ -6,7 +6,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private void AmountColumnHeaderUI()
+    private static void AmountColumnHeaderUI()
     {
         ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.Text(Service.Lang.GetText("Amount"));

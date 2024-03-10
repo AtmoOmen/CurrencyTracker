@@ -12,11 +12,11 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private bool isOnMergingTT;
-    private bool isOnEdit;
-    internal int checkboxColumnWidth = 22;
+    private static bool isOnMergingTT;
+    private static bool isOnEdit;
+    internal static int checkboxColumnWidth = 22;
 
-    private void CheckboxColumnHeaderUI()
+    private static void CheckboxColumnHeaderUI()
     {
         ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH)) ImGui.OpenPopup("TableTools");
@@ -26,7 +26,7 @@ public partial class Main
         if (popup.Success) CheckboxColumnToolUI();
     }
 
-    private void CheckboxColumnToolUI()
+    private static void CheckboxColumnToolUI()
     {
         var selectedCount = selectedTransactions[selectedCurrencyID].Count;
         ImGui.Text($"{Service.Lang.GetText("Now")}: {selectedCount} {Service.Lang.GetText("Transactions")}");
@@ -43,7 +43,7 @@ public partial class Main
     }
 
     // 取消选择 Unselect
-    private void UnselectCBCTUI(int count)
+    private static void UnselectCBCTUI(int count)
     {
         if (ImGui.Selectable(Service.Lang.GetText("Unselect")))
         {
@@ -59,7 +59,7 @@ public partial class Main
     }
 
     // 全选 Select All
-    private void SelectAllCBCTUI()
+    private static void SelectAllCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("SelectAll")))
         {
@@ -70,7 +70,7 @@ public partial class Main
     }
 
     // 反选 Inverse Select
-    private void InverseSelectCBCTUI()
+    private static void InverseSelectCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("InverseSelect")))
         {
@@ -86,7 +86,7 @@ public partial class Main
     }
 
     // 复制 Copy
-    private void CopyCBCTUI(int count)
+    private static void CopyCBCTUI(int count)
     {
         if (ImGui.Selectable(Service.Lang.GetText("Copy")))
         {
@@ -118,7 +118,7 @@ public partial class Main
     }
 
     // 删除 Delete
-    private void DeleteCBCTUI(int count)
+    private static void DeleteCBCTUI(int count)
     {
         if (ImGui.Selectable(Service.Lang.GetText("Delete")))
         {
@@ -142,7 +142,7 @@ public partial class Main
     }
 
     // 导出 Export
-    private void ExportCBCTUI(int count)
+    private static void ExportCBCTUI(int count)
     {
         if (ImGui.Selectable(Service.Lang.GetText("Export")))
         {
@@ -160,7 +160,7 @@ public partial class Main
     }
 
     // 合并 Merge
-    private void MergeCBCTUI()
+    private static void MergeCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("Merge"), ref isOnMergingTT, ImGuiSelectableFlags.DontClosePopups))
         {
@@ -205,7 +205,7 @@ public partial class Main
     }
 
     // 编辑 Edit
-    private void EditCBCTUI()
+    private static void EditCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups))
         {
@@ -252,7 +252,7 @@ public partial class Main
     }
 
     // 编辑地名 Edit Location Name
-    private void EditLocationName()
+    private static void EditLocationName()
     {
         if (editedLocationName.IsNullOrWhitespace()) return;
 
@@ -265,7 +265,7 @@ public partial class Main
     }
 
     // 编辑备注 Edit Note Content
-    private void EditNoteContent()
+    private static void EditNoteContent()
     {
         if (editedNoteContent.IsNullOrWhitespace()) return;
 
@@ -276,8 +276,8 @@ public partial class Main
         EditResultHandler(failCount, "", editedNoteContent);
     }
 
-    // 编辑结果处理 Handle Eidt Result
-    private void EditResultHandler(int failCount, string locationName = "", string noteContent = "")
+    // 编辑结果处理 Handle Edit Result
+    private static void EditResultHandler(int failCount, string locationName = "", string noteContent = "")
     {
         if (failCount == 0)
         {
@@ -308,7 +308,7 @@ public partial class Main
         isOnEdit = false;
     }
 
-    private void CheckboxColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void CheckboxColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
         if (ImGui.Checkbox($"##select_{i}", ref selected))
         {

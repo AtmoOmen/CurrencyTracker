@@ -6,7 +6,6 @@ using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker;
 
@@ -62,6 +61,7 @@ public class Service
     [PluginService] public static IAddonLifecycle AddonLifecycle { get; private set; } = null!;
     [PluginService] public static IAddonEventManager AddonEventManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
+    [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new();
     public static Tracker Tracker { get; set; } = null!;
     public static Configuration Config { get; set; } = null!;

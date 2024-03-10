@@ -69,8 +69,8 @@ public partial class CurrencySettings
                 File.Move(sourcePath, targetPath);
             }
 
-            M.UpdateTransactions(selectedCurrencyID, M.currentView, M.currentViewID);
-            M.ReloadOrderedOptions();
+            Main.UpdateTransactions(selectedCurrencyID, Main.currentView, Main.currentViewID);
+            Main.ReloadOrderedOptions();
         }
     }
 

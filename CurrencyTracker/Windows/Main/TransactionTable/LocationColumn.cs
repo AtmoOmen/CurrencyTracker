@@ -2,18 +2,17 @@ using System.Collections.Generic;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OmenTools.Helpers;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private bool isLocationFilterEnabled;
-    private string? searchLocationName = string.Empty;
-    private string? editedLocationName = string.Empty;
+    private static bool isLocationFilterEnabled;
+    private static string? searchLocationName = string.Empty;
+    private static string? editedLocationName = string.Empty;
 
-    private void LocationColumnHeaderUI()
+    private static void LocationColumnHeaderUI()
     {
         ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
@@ -30,12 +29,12 @@ public partial class Main
             if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
                 isLocationFilterEnabled = !string.IsNullOrEmpty(searchLocationName);
-                searchTimer.Restart();
+                RefreshTransactionsView();
             }
         }
     }
 
-    private void LocationColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void LocationColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
         var locationName = transaction.LocationName;
 
@@ -59,7 +58,8 @@ public partial class Main
             {
                 var failCount = TransactionsHandler.EditSpecificTransactions(selectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
 
-                if (failCount == 0) searchTimer.Restart();
+                if (failCount == 0)
+                    RefreshTransactionsView();
                 else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
         }

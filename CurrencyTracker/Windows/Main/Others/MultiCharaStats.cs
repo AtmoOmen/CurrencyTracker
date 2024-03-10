@@ -18,7 +18,7 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
 {
-    public readonly ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
+    public static readonly ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
     private IEnumerable<CharacterCurrencyInfo>? charactersToShow;
 
     private readonly Timer searchTimerMCS = new(100);
@@ -105,7 +105,7 @@ public partial class Main : Window, IDisposable
         }
     }
 
-    internal void LoadDataMCS()
+    internal static void LoadDataMCS()
     {
         Parallel.ForEach(C.CurrentActiveCharacter, character =>
         {

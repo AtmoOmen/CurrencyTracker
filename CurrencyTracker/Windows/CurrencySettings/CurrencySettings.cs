@@ -35,13 +35,13 @@ public partial class CurrencySettings : Window, IDisposable
 
     public override void Draw()
     {
-        if (M == null || M.selectedCurrencyID == 0)
+        if (M == null || Main.selectedCurrencyID == 0)
         {
             IsOpen = false;
             return;
         }
 
-        selectedCurrencyID = M.selectedCurrencyID;
+        selectedCurrencyID = Main.selectedCurrencyID;
         ImGui.BeginGroup();
         using (var tab0 = ImRaii.TabBar("CurrencySettingsCT"))
         {
@@ -113,10 +113,10 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.SameLine();
         ImGui.Text("");
 
-        if (!M.characterCurrencyInfos.Any()) M.LoadDataMCS();
+        if (!Main.characterCurrencyInfos.Any()) Main.LoadDataMCS();
         ImGui.SetWindowFontScale(1);
         ImGui.Text(
-            $"{Service.Lang.GetText("Total")}: {(M.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
+            $"{Service.Lang.GetText("Total")}: {(Main.characterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
 
         ImGui.SameLine();
         ImGui.Text("");

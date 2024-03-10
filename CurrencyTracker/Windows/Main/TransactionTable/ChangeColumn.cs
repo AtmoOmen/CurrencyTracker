@@ -5,20 +5,19 @@ using System.Threading.Tasks;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OmenTools.Helpers;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private bool isChangeFilterEnabled;
+    private static bool isChangeFilterEnabled;
 
-    private int filterMode;
-    private int filterValue;
-    private CancellationTokenSource? colorSaveCancelTokenSource;
+    private static int filterMode;
+    private static int filterValue;
+    private static CancellationTokenSource? colorSaveCancelTokenSource;
 
-    private void ChangeColumnHeaderUI()
+    private static void ChangeColumnHeaderUI()
     {
         ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
@@ -36,25 +35,29 @@ public partial class Main
         }
     }
 
-    private void FilterByChangeUI()
+    private static void FilterByChangeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeFilterEnabled")}##ChangeFilter", ref isChangeFilterEnabled)) searchTimer.Restart();
+        if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeFilterEnabled")}##ChangeFilter", ref isChangeFilterEnabled))
+            RefreshTransactionsView();
 
         if (isChangeFilterEnabled)
         {
-            if (ImGui.RadioButton($"{Service.Lang.GetText("Greater")}##FilterMode", ref filterMode, 0)) searchTimer.Restart();
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Greater")}##FilterMode", ref filterMode, 0))
+                RefreshTransactionsView();
 
             ImGui.SameLine();
-            if (ImGui.RadioButton($"{Service.Lang.GetText("Less")}##FilterMode", ref filterMode, 1)) searchTimer.Restart();
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Less")}##FilterMode", ref filterMode, 1))
+                RefreshTransactionsView();
 
             ImGui.SetNextItemWidth(130);
-            if (ImGui.InputInt($"##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue)) searchTimer.Restart();
+            if (ImGui.InputInt($"##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
+                RefreshTransactionsView();
 
             ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
         }
     }
 
-    private void ColoringByChangeUI()
+    private static void ColoringByChangeUI()
     {
         var isChangeColoring = C.ChangeTextColoring;
         if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
@@ -74,7 +77,7 @@ public partial class Main
         }
     }
 
-    private void ColoringByChangeHandler(string popupId, string text, ref Vector4 color, Action<Vector4> saveColorAction)
+    private static void ColoringByChangeHandler(string popupId, string text, ref Vector4 color, Action<Vector4> saveColorAction)
     {
         if (ImGui.ColorButton($"##{popupId}", color))
         {
@@ -84,21 +87,19 @@ public partial class Main
         ImGui.SameLine();
         ImGui.Text(text);
 
-        using (var popup = ImRaii.Popup(popupId))
+        using var popup = ImRaii.Popup(popupId);
+        if (popup.Success)
         {
-            if (popup.Success)
+            if (ImGui.ColorPicker4("", ref color))
             {
-                if (ImGui.ColorPicker4("", ref color))
-                {
-                    C.ChangeTextColoring = true;
-                    saveColorAction(color);
-                    DelayedColorSave();
-                }
+                C.ChangeTextColoring = true;
+                saveColorAction(color);
+                DelayedColorSave();
             }
         }
     }
 
-    private void DelayedColorSave()
+    private static void DelayedColorSave()
     {
         colorSaveCancelTokenSource?.Cancel();
         colorSaveCancelTokenSource = new CancellationTokenSource();
@@ -113,7 +114,7 @@ public partial class Main
         }, token);
     }
 
-    private void ChangeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void ChangeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
         var textColor = C.ChangeTextColoring
             ? transaction.Change > 0 ? C.PositiveChangeColor : transaction.Change < 0 ? C.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)

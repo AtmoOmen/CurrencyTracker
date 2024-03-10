@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Timers;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
@@ -19,40 +18,39 @@ public partial class Main
 {
     private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
     {
-        { "Order", Plugin.P.Main.OrderColumnHeaderUI },
-        { "Time", Plugin.P.Main.TimeColumnHeaderUI },
-        { "Amount", Plugin.P.Main.AmountColumnHeaderUI },
-        { "Change", Plugin.P.Main.ChangeColumnHeaderUI },
-        { "Location", Plugin.P.Main.LocationColumnHeaderUI },
-        { "Note", Plugin.P.Main.NoteColumnHeaderUI },
-        { "Checkbox", Plugin.P.Main.CheckboxColumnHeaderUI }
+        { "Order", OrderColumnHeaderUI },
+        { "Time", TimeColumnHeaderUI },
+        { "Amount", AmountColumnHeaderUI },
+        { "Change", ChangeColumnHeaderUI },
+        { "Location", LocationColumnHeaderUI },
+        { "Note", NoteColumnHeaderUI },
+        { "Checkbox", CheckboxColumnHeaderUI }
     };
 
     private static readonly Dictionary<string, Action<int, bool, TransactionsConvertor>> ColumnCellActions = new()
     {
-        { "Order", Plugin.P.Main.OrderColumnCellUI },
-        { "Time", Plugin.P.Main.TimeColumnCellUI },
+        { "Order", OrderColumnCellUI },
+        { "Time", TimeColumnCellUI },
         { "Amount", AmountColumnCellUI },
-        { "Change", Plugin.P.Main.ChangeColumnCellUI },
-        { "Location", Plugin.P.Main.LocationColumnCellUI },
-        { "Note", Plugin.P.Main.NoteColumnCellUI },
-        { "Checkbox", Plugin.P.Main.CheckboxColumnCellUI }
+        { "Change", ChangeColumnCellUI },
+        { "Location", LocationColumnCellUI },
+        { "Note", NoteColumnCellUI },
+        { "Checkbox", CheckboxColumnCellUI }
     };
 
     internal static string[] visibleColumns = Array.Empty<string>();
-    internal ConcurrentDictionary<uint, List<bool>>? selectedStates = new();
-    internal ConcurrentDictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
-    internal List<TransactionsConvertor> currentTypeTransactions = new();
-    private readonly Timer searchTimer = new(100);
+    internal static ConcurrentDictionary<uint, List<bool>>? selectedStates = new();
+    internal static ConcurrentDictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
+    internal static List<TransactionsConvertor> currentTypeTransactions = new();
 
-    private int currentPage;
-    private int visibleStartIndex;
-    private int visibleEndIndex;
-    internal TransactionFileCategory currentView = TransactionFileCategory.Inventory;
-    internal ulong currentViewID;
-    private int tablePagingComponentsWidth = 300;
+    private static int currentPage;
+    private static int visibleStartIndex;
+    private static int visibleEndIndex;
+    internal static TransactionFileCategory currentView = TransactionFileCategory.Inventory;
+    internal static ulong currentViewID;
+    private static int tablePagingComponentsWidth = 300;
 
-    private void TransactionTableUI()
+    private static void TransactionTableUI()
     {
         if (selectedCurrencyID == 0) return;
 
@@ -60,51 +58,49 @@ public partial class Main
 
         ImGui.SameLine();
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
-        using (var child = ImRaii.Child("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y),
-                                        false, ImGuiWindowFlags.NoScrollbar))
+        using var child = ImRaii.Child("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y),
+                                       false, ImGuiWindowFlags.NoScrollbar);
+        if (child)
         {
-            if (child)
+            TransactionTablePagingUI(windowWidth);
+
+            if (visibleColumns.Length == 0) return;
+
+            ImGui.SetCursorPosX(5);
+            using (var table = ImRaii.Table("Transactions", visibleColumns.Length,
+                                            ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
+                                            ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
             {
-                TransactionTablePagingUI(windowWidth);
-
-                if (visibleColumns.Length == 0) return;
-
-                ImGui.SetCursorPosX(5);
-                using (var table = ImRaii.Table("Transactions", visibleColumns.Length,
-                                                ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
-                                                ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
+                if (table)
                 {
-                    if (table)
+                    SetupTableColumns(visibleColumns);
+
+                    if (currentTypeTransactions.Count > 0)
                     {
-                        SetupTableColumns(visibleColumns);
+                        SelectedStatesWatcher(currentTypeTransactions.Count);
 
-                        if (currentTypeTransactions.Count > 0)
+                        for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                         {
-                            SelectedStatesWatcher(currentTypeTransactions.Count);
-
-                            for (var i = visibleStartIndex; i < visibleEndIndex; i++)
+                            ImGui.TableNextRow();
+                            foreach (var column in visibleColumns)
                             {
-                                ImGui.TableNextRow();
-                                foreach (var column in visibleColumns)
-                                {
-                                    ImGui.TableNextColumn();
-                                    ColumnCellActions[column]
-                                        .Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
-                                }
+                                ImGui.TableNextColumn();
+                                ColumnCellActions[column]
+                                    .Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
                             }
                         }
                     }
                 }
-
-
-                TransactionTableInfoBarUI();
             }
+
+
+            TransactionTableInfoBarUI();
         }
 
         ImGui.PopStyleColor();
     }
 
-    private void SetupTableColumns(string[] columns)
+    private static void SetupTableColumns(string[] columns)
     {
         var orderColumnWidth = ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
 
@@ -130,7 +126,7 @@ public partial class Main
         }
     }
 
-    private void SelectedStatesWatcher(int transactionCount)
+    private static void SelectedStatesWatcher(int transactionCount)
     {
         var stateList = selectedStates.GetOrAdd(selectedCurrencyID, _ => new List<bool>());
         selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new List<TransactionsConvertor>());
@@ -143,7 +139,7 @@ public partial class Main
         }
     }
 
-    private void TransactionTablePagingUI(float windowWidth)
+    private static void TransactionTablePagingUI(float windowWidth)
     {
         var pageCount = currentTypeTransactions.Any()
                             ? (int)Math.Ceiling((double)currentTypeTransactions.Count / C.RecordsPerPage)
@@ -186,7 +182,7 @@ public partial class Main
 
         // 表格外观 Table Appearance
         ImGui.SameLine();
-        TableAppearenceUI(windowWidth);
+        TableAppearanceUI(windowWidth);
 
         ImGui.EndGroup();
         tablePagingComponentsWidth = (int)ImGui.GetItemRectSize().X;
@@ -207,7 +203,7 @@ public partial class Main
         }
     }
 
-    private void TableViewSwitchUI()
+    private static void TableViewSwitchUI()
     {
         if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars)) ImGui.OpenPopup("TableViewSwitch");
 
@@ -253,7 +249,7 @@ public partial class Main
         }
     }
 
-    private void TableAppearenceUI(float windowWidth)
+    private static void TableAppearanceUI(float windowWidth)
     {
         if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance")))
             ImGui.OpenPopup("TableAppearance");
@@ -314,7 +310,7 @@ public partial class Main
         }
     }
 
-    private void ColumnDisplayCheckbox(string boolName)
+    private static void ColumnDisplayCheckbox(string boolName)
     {
         var isShowColumn = C.ColumnsVisibility[boolName];
         if (ImGui.Checkbox($"{Service.Lang.GetText(boolName)}##Display{boolName}Column", ref isShowColumn))
@@ -331,7 +327,7 @@ public partial class Main
         }
     }
 
-    private void TransactionTableInfoBarUI()
+    private static void TransactionTableInfoBarUI()
     {
         if (selectedTransactions.TryGetValue(selectedCurrencyID, out var transactions) && transactions.Any())
         {

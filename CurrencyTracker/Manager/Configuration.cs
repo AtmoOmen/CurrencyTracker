@@ -70,6 +70,7 @@ public class Configuration : IPluginConfiguration
     public Dictionary<string, bool> ComponentEnabled { get; set; } = new()
     {
         { "AutoSave", false },
+        { "ServerBar", false },
         { "CurrencyUIEdit", true },
         { "DutyRewards", true },
         { "Exchange", true },
