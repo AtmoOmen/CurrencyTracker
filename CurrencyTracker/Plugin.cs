@@ -36,7 +36,6 @@ public sealed class Plugin : IDalamudPlugin
 
     public WindowSystem WindowSystem = new("CurrencyTracker");
     internal static Plugin P = null!;
-    internal static Configuration C = null!;
 
     public Plugin(DalamudPluginInterface pluginInterface)
     {
@@ -47,8 +46,6 @@ public sealed class Plugin : IDalamudPlugin
 
         ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector);
         Service.Initialize(pluginInterface);
-
-        C = Service.Config;
 
         Service.ClientState.Login += HandleLogin;
         Service.ClientState.Logout += HandleLogout;

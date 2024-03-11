@@ -17,10 +17,10 @@ public partial class Main
 
     private void CurrencyListboxUI()
     {
-        selectedOptionIndex = C.OrderedOptions.IndexOf(selectedCurrencyID);
+        selectedOptionIndex = Service.Config.OrderedOptions.IndexOf(selectedCurrencyID);
 
         var style = ImGui.GetStyle();
-        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + C.ChildWidthOffset, ImGui.GetContentRegionAvail().Y);
+        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset, ImGui.GetContentRegionAvail().Y);
         ImGui.PushStyleColor(ImGuiCol.ChildBg, style.Colors[(int)ImGuiCol.FrameBg]);
         using (var child = ImRaii.Child("CurrencyList", childScale, false, ImGuiWindowFlags.NoScrollbar))
         {
@@ -30,11 +30,11 @@ public partial class Main
 
                 ImGui.Separator();
 
-                for (var i = 0; i < C.OrderedOptions.Count; i++)
+                for (var i = 0; i < Service.Config.OrderedOptions.Count; i++)
                 {
-                    var option = C.OrderedOptions[i];
-                    var currencyName = C.AllCurrencies[option];
-                    if (ImGuiOm.SelectableImageWithText(C.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20f), currencyName, i == selectedOptionIndex))
+                    var option = Service.Config.OrderedOptions[i];
+                    var currencyName = Service.Config.AllCurrencies[option];
+                    if (ImGuiOm.SelectableImageWithText(Service.Config.AllCurrencyIcons[option].ImGuiHandle, ImGuiHelpers.ScaledVector2(20f), currencyName, i == selectedOptionIndex))
                     {
                         selectedCurrencyID = option;
                         currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
@@ -76,23 +76,23 @@ public partial class Main
 
     private void SwapOptions(int index1, int index2)
     {
-        if (index1 < 0 || index1 >= C.OrderedOptions.Count || index2 < 0 || index2 >= C.OrderedOptions.Count) return;
+        if (index1 < 0 || index1 >= Service.Config.OrderedOptions.Count || index2 < 0 || index2 >= Service.Config.OrderedOptions.Count) return;
 
-        (C.OrderedOptions[index2], C.OrderedOptions[index1]) = (C.OrderedOptions[index1], C.OrderedOptions[index2]);
-        C.Save();
+        (Service.Config.OrderedOptions[index2], Service.Config.OrderedOptions[index1]) = (Service.Config.OrderedOptions[index1], Service.Config.OrderedOptions[index2]);
+        Service.Config.Save();
     }
 
     private void DeleteCustomCurrencyUI()
     {
-        ImGui.BeginDisabled(selectedCurrencyID == 0 || C.PresetCurrencies.ContainsKey(selectedCurrencyID));
+        ImGui.BeginDisabled(selectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(selectedCurrencyID));
         ImGuiOm.ButtonIcon("ToolsDelete", FontAwesomeIcon.Trash, $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
             var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
-            if (C.CustomCurrencies[selectedCurrencyID] != localName) P.CurrencySettings.RenameCurrencyHandler(localName);
+            if (Service.Config.CustomCurrencies[selectedCurrencyID] != localName) P.CurrencySettings.RenameCurrencyHandler(localName);
 
-            C.CustomCurrencies.Remove(selectedCurrencyID);
-            C.Save();
+            Service.Config.CustomCurrencies.Remove(selectedCurrencyID);
+            Service.Config.Save();
 
             selectedCurrencyID = 0;
             ReloadOrderedOptions();

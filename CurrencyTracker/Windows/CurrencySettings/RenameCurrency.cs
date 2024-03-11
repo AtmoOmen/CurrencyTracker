@@ -20,7 +20,7 @@ public partial class CurrencySettings
         if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
         {
             if (!editedCurrencyName.IsNullOrWhitespace() &&
-                editedCurrencyName != C.AllCurrencies[selectedCurrencyID])
+                editedCurrencyName != Service.Config.AllCurrencies[selectedCurrencyID])
             {
                 RenameCurrencyHandler(editedCurrencyName);
                 isEditingCurrencyName = false;
@@ -55,7 +55,7 @@ public partial class CurrencySettings
     {
         var (isFilesExisted, filePaths) = ConstructFilePathsRC(editedCurrencyName);
 
-        if (C.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
+        if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
         {
             Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
@@ -82,14 +82,14 @@ public partial class CurrencySettings
             TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag, TransactionFileCategory.PremiumSaddleBag
         };
 
-        categories.AddRange(C.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
+        categories.AddRange(Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
                              .Select(x => TransactionFileCategory.Retainer));
 
         foreach (var category in categories)
         {
             if (category == TransactionFileCategory.Retainer)
             {
-                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+                foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
                 {
                     AddFilePath(filePaths, category, retainer.Key, editedCurrencyName);
                 }
@@ -113,13 +113,13 @@ public partial class CurrencySettings
 
     private bool UpdateCurrencyNameRC(uint currencyId, string newName)
     {
-        if (!C.PresetCurrencies.ContainsKey(currencyId) &&
-            !C.CustomCurrencies.ContainsKey(currencyId)) return false;
+        if (!Service.Config.PresetCurrencies.ContainsKey(currencyId) &&
+            !Service.Config.CustomCurrencies.ContainsKey(currencyId)) return false;
 
-        var targetCurrency = C.PresetCurrencies.ContainsKey(currencyId) ? C.PresetCurrencies : C.CustomCurrencies;
+        var targetCurrency = Service.Config.PresetCurrencies.ContainsKey(currencyId) ? Service.Config.PresetCurrencies : Service.Config.CustomCurrencies;
         targetCurrency[currencyId] = newName;
         Configuration.IsUpdated = true;
-        C.Save();
+        Service.Config.Save();
 
         return true;
     }

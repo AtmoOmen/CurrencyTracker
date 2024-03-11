@@ -37,17 +37,17 @@ public class Tracker
     private void InitCurrencies()
     {
         foreach (var currency in CurrencyInfo.PresetCurrencies)
-            if (!C.PresetCurrencies.ContainsKey(currency))
+            if (!Service.Config.PresetCurrencies.ContainsKey(currency))
             {
                 var currencyName = CurrencyInfo.GetCurrencyLocalName(currency);
-                if (!string.IsNullOrEmpty(currencyName)) C.PresetCurrencies.Add(currency, currencyName);
+                if (!string.IsNullOrEmpty(currencyName)) Service.Config.PresetCurrencies.Add(currency, currencyName);
             }
 
-        C.PresetCurrencies = C.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
+        Service.Config.PresetCurrencies = Service.Config.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
                               .ToUpdateDictionary(kv => kv.Key, kv => kv.Value);
-        C.Save();
+        Service.Config.Save();
 
-        if (C.FisrtOpen)
+        if (Service.Config.FisrtOpen)
         {
             foreach (var currencyID in CurrencyInfo.DefaultCustomCurrencies)
             {
@@ -55,11 +55,11 @@ public class Tracker
 
                 if (string.IsNullOrEmpty(currencyName)) continue;
 
-                C.CustomCurrencies.TryAdd(currencyID, currencyName);
+                Service.Config.CustomCurrencies.TryAdd(currencyID, currencyName);
             }
 
-            C.FisrtOpen = false;
-            C.Save();
+            Service.Config.FisrtOpen = false;
+            Service.Config.Save();
         }
     }
 
@@ -117,10 +117,10 @@ public class Tracker
     {
         if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
 
-        if (!C.CurrencyRules.TryGetValue(currencyID, out var rule))
+        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
         {
-            C.CurrencyRules.Add(currencyID, rule = new CurrencyRule());
-            C.Save();
+            Service.Config.CurrencyRules.Add(currencyID, rule = new CurrencyRule());
+            Service.Config.Save();
         }
         else
         {
@@ -141,10 +141,10 @@ public class Tracker
     public bool CheckRuleAmountCap(
         uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
     {
-        if (!C.CurrencyRules.TryGetValue(currencyID, out _))
+        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out _))
         {
-            C.CurrencyRules.Add(currencyID, new CurrencyRule());
-            C.Save();
+            Service.Config.CurrencyRules.Add(currencyID, new CurrencyRule());
+            Service.Config.Save();
             return true;
         }
 
@@ -163,7 +163,7 @@ public class Tracker
         void CheckIntervals(uint currencyID, List<Interval<int>> intervals, int value, string type)
         {
             foreach (var interval in intervals)
-                if (util.InRange(interval, value, true) && C.AlertNotificationChat)
+                if (util.InRange(interval, value, true) && Service.Config.AlertNotificationChat)
                 {
                     var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"),
                                                            SeString.CreateItemLink(currencyID, false),
@@ -180,7 +180,7 @@ public class Tracker
         ulong ID = 0)
     {
         var isChanged = false;
-        foreach (var currency in C.AllCurrencyID)
+        foreach (var currency in Service.Config.AllCurrencyID)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
 
@@ -199,7 +199,7 @@ public class Tracker
         uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var isChanged = false;
-        foreach (var currency in C.AllCurrencyID)
+        foreach (var currency in Service.Config.AllCurrencyID)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;
 

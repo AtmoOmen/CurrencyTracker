@@ -10,6 +10,7 @@ using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
@@ -42,33 +43,33 @@ public class Settings : Window, IDisposable
                         // 邮件附件 Letter Attachments
                         ModuleCheckbox(typeof(LetterAttachments),
                                        Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
-                        if (C.ComponentEnabled["LetterAttachments"])
+                        if (Service.Config.ComponentEnabled["LetterAttachments"])
                             NoteContentInputText("LetterAttachments-LetterFrom",
-                                                 new string[1] { Service.Lang.GetText("ParamEP-SenderName") });
+                                                 new[] { Service.Lang.GetText("ParamEP-SenderName") });
 
                         // 传送 Teleport
                         ImGui.Separator();
                         ModuleCheckbox(typeof(TeleportCosts), Service.Lang.GetText("TeleportCosts-RecordTPCosts"));
-                        if (C.ComponentEnabled["TeleportCosts"])
+                        if (Service.Config.ComponentEnabled["TeleportCosts"])
                             SecondaryRadioButtons(boolName1: "RecordDesAetheryteName", "RecordDesAreaName",
                                                   Service.Lang.GetText("TeleportCosts-RecordAetheryteName"),
                                                   Service.Lang.GetText("TeleportCosts-RecordAreaName"));
                         ModuleCheckbox(typeof(WarpCosts), Service.Lang.GetText("WarpCosts-RecordTPCosts"));
-                        if (C.ComponentEnabled["TeleportCosts"] || C.ComponentEnabled["WarpCosts"])
+                        if (Service.Config.ComponentEnabled["TeleportCosts"] || Service.Config.ComponentEnabled["WarpCosts"])
                             NoteContentInputText("TeleportTo",
-                                                 new string[1] { Service.Lang.GetText("ParamEP-DestinationName") });
-                        if (C.ComponentEnabled["WarpCosts"]) NoteContentInputText("TeleportWithinArea", null);
+                                                 new[] { Service.Lang.GetText("ParamEP-DestinationName") });
+                        if (Service.Config.ComponentEnabled["WarpCosts"]) NoteContentInputText("TeleportWithinArea", null);
 
                         // 任务 Quest
                         ImGui.Separator();
                         ModuleCheckbox(typeof(QuestRewards), Service.Lang.GetText("QuestRewards-RecordQuestRewards"));
-                        if (C.ComponentEnabled["QuestRewards"])
-                            NoteContentInputText("Quest", new string[1] { Service.Lang.GetText("ParamEP-QuestName") });
+                        if (Service.Config.ComponentEnabled["QuestRewards"])
+                            NoteContentInputText("Quest", new[] { Service.Lang.GetText("ParamEP-QuestName") });
 
                         // 无人岛 Island Sanctuary
                         ImGui.Separator();
                         ModuleCheckbox(typeof(IslandSanctuary), Service.Lang.GetText("IslandSanctuary-RecordISResult"));
-                        if (C.ComponentEnabled["IslandSanctuary"])
+                        if (Service.Config.ComponentEnabled["IslandSanctuary"])
                         {
                             NoteContentInputText("IslandFarm", null);
                             NoteContentInputText("IslandPasture", null);
@@ -81,18 +82,18 @@ public class Settings : Window, IDisposable
                     if (ImGui.BeginTabItem(Service.Lang.GetText("Combat")))
                     {
                         ModuleCheckbox(typeof(DutyRewards), Service.Lang.GetText("DutyRewards-RecordDutyRewards"));
-                        if (C.ComponentEnabled["DutyRewards"])
+                        if (Service.Config.ComponentEnabled["DutyRewards"])
                             SecondaryCheckbox("RecordContentName",
                                               Service.Lang.GetText("DutyRewards-RecordContentName"));
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(FateRewards), Service.Lang.GetText("FateRewards-RecordFateRewards"));
-                        if (C.ComponentEnabled["FateRewards"])
+                        if (Service.Config.ComponentEnabled["FateRewards"])
                             NoteContentInputText("Fate", new[] { Service.Lang.GetText("ParamEP-FateName") });
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(MobDrops), Service.Lang.GetText("MobDrops-RecordMobDrops"));
-                        if (C.ComponentEnabled["MobDrops"])
+                        if (Service.Config.ComponentEnabled["MobDrops"])
                             NoteContentInputText("MobDrops-MobDropsNote",
                                                  new[] { Service.Lang.GetText("ParamEP-MobNames") });
                         ImGui.EndTabItem();
@@ -105,13 +106,13 @@ public class Settings : Window, IDisposable
                         ModuleCheckbox(typeof(Exchange), Service.Lang.GetText("Exchange-RecordExchangeResult"));
                         ModuleCheckbox(typeof(SpecialExchange),
                                        Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
-                        if (C.ComponentEnabled["Exchange"] || C.ComponentEnabled["SpecialExchange"])
+                        if (Service.Config.ComponentEnabled["Exchange"] || Service.Config.ComponentEnabled["SpecialExchange"])
                             NoteContentInputText("ExchangeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
 
                         // 交易 Trade
                         ImGui.Separator();
                         ModuleCheckbox(typeof(Trade), Service.Lang.GetText("Trade-RecordTradeTarget"));
-                        if (C.ComponentEnabled["Trade"])
+                        if (Service.Config.ComponentEnabled["Trade"])
                             NoteContentInputText("TradeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
                         ImGui.EndTabItem();
                     }
@@ -123,7 +124,7 @@ public class Settings : Window, IDisposable
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(TripleTriad), Service.Lang.GetText("TripleTriad-RecordTTResult"));
-                        if (C.ComponentEnabled["TripleTriad"])
+                        if (Service.Config.ComponentEnabled["TripleTriad"])
                             NoteContentInputText("TripleTriadWith", new[]
                                                  {
                                                      Service.Lang.GetText("ParamEP-TTOutcome"),
@@ -140,6 +141,33 @@ public class Settings : Window, IDisposable
             {
                 ModuleCheckbox(typeof(CurrencyUIEdit), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
                 ModuleCheckbox(typeof(ServerBar), "在服务器信息栏显示货币信息");
+                if (Service.Config.ComponentEnabled["ServerBar"])
+                {
+                    ImGui.Indent();
+
+                    ImGui.AlignTextToFramePadding();
+                    ImGui.Text("待展示货币:");
+
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
+                    if (ImGui.BeginCombo("###ServerBarDisplayCurrency", CurrencyInfo.GetCurrencyName(Service.Config.ServerBarDisplayCurrency), ImGuiComboFlags.HeightLarge))
+                    {
+                        foreach (var currency in Service.Config.AllCurrencies)
+                        {
+                            if (ImGui.Selectable(currency.Value,
+                                                 currency.Key == Service.Config.ServerBarDisplayCurrency))
+                            {
+                                Service.Config.ServerBarDisplayCurrency = currency.Key;
+                                ServerBar.OnCurrencyChanged(currency.Key, TransactionFileCategory.Inventory, 0);
+
+                                Service.Config.Save();
+                            }
+                        }
+                        ImGui.EndCombo();
+                    }
+
+                    ImGui.Unindent();
+                }
 
                 ImGui.Separator();
                 ModuleCheckbox(typeof(Retainer), Service.Lang.GetText("Retainer-RecordRetainerInventory"));
@@ -156,24 +184,24 @@ public class Settings : Window, IDisposable
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
                 ImGui.SameLine();
 
-                var exportDataFileType = C.ExportDataFileType;
+                var exportDataFileType = Service.Config.ExportDataFileType;
                 if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
                 {
-                    C.ExportDataFileType = 0;
-                    C.Save();
+                    Service.Config.ExportDataFileType = 0;
+                    Service.Config.Save();
                 }
 
                 ImGui.SameLine();
                 if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
                 {
-                    C.ExportDataFileType = 1;
-                    C.Save();
+                    Service.Config.ExportDataFileType = 1;
+                    Service.Config.Save();
                 }
 
                 // 备份 Backup
                 ImGui.Separator();
                 ModuleCheckbox(typeof(AutoSave), Service.Lang.GetText("AutoBackup"));
-                if (C.ComponentEnabled["AutoSave"])
+                if (Service.Config.ComponentEnabled["AutoSave"])
                 {
                     SecondaryRadioButtons("AutoSaveMode", Service.Lang.GetText("BackupCurrentCharacter"),
                                           Service.Lang.GetText("BackupAllCharacter"));
@@ -184,19 +212,19 @@ public class Settings : Window, IDisposable
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(140f);
-                    var autoSaveInterval = C.AutoSaveInterval;
+                    var autoSaveInterval = Service.Config.AutoSaveInterval;
                     if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
                     {
                         if (autoSaveInterval < 5) autoSaveInterval = 5;
-                        C.AutoSaveInterval = autoSaveInterval;
-                        C.Save();
+                        Service.Config.AutoSaveInterval = autoSaveInterval;
+                        Service.Config.Save();
                     }
 
-                    var isNotification = C.AutoSaveMessage;
+                    var isNotification = Service.Config.AutoSaveMessage;
                     if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
                     {
-                        C.AutoSaveMessage = !C.AutoSaveMessage;
-                        C.Save();
+                        Service.Config.AutoSaveMessage = !Service.Config.AutoSaveMessage;
+                        Service.Config.Save();
                     }
                     ImGui.Unindent();
                 }
@@ -206,12 +234,12 @@ public class Settings : Window, IDisposable
 
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                var maxBackupFilesCount = C.MaxBackupFilesCount;
+                var maxBackupFilesCount = Service.Config.MaxBackupFilesCount;
                 if (ImGui.InputInt("##MaxBackupFilesCount", ref maxBackupFilesCount))
                 {
                     if (maxBackupFilesCount < 0) maxBackupFilesCount = 0;
-                    C.MaxBackupFilesCount = maxBackupFilesCount;
-                    C.Save();
+                    Service.Config.MaxBackupFilesCount = maxBackupFilesCount;
+                    Service.Config.Save();
                 }
 
                 ImGui.EndTabItem();
@@ -245,7 +273,7 @@ public class Settings : Window, IDisposable
                 ImGui.TextColored(ImGuiColors.DalamudYellow, "Languages & Translators:");
                 foreach (var languageInfo in LanguageManager.LanguageNames)
                 {
-                    if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != C.SelectedLanguage)
+                    if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != Service.Config.SelectedLanguage)
                         P.Main.LanguageSwitchHandler(languageInfo.Language);
 
                     ImGui.SameLine();
@@ -269,7 +297,7 @@ public class Settings : Window, IDisposable
                             await LanguageUpdater.DownloadLanguageFilesAsync();
                             P.Main.isLangDownloading = false;
                             P.Main.isLangDownloaded = true;
-                            P.Main.LanguageSwitchHandler(C.SelectedLanguage);
+                            P.Main.LanguageSwitchHandler(Service.Config.SelectedLanguage);
                         });
                     }
                 }
@@ -301,7 +329,7 @@ public class Settings : Window, IDisposable
     private static void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
     {
         var boolName = type.Name;
-        if (!C.ComponentEnabled.TryGetValue(boolName, out var cbool)) return;
+        if (!Service.Config.ComponentEnabled.TryGetValue(boolName, out var cbool)) return;
 
         if (!typeof(ITrackerComponent).IsAssignableFrom(type))
         {
@@ -311,11 +339,11 @@ public class Settings : Window, IDisposable
 
         if (ImGuiOm.CheckboxColored($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
         {
-            C.ComponentEnabled[boolName] = !C.ComponentEnabled[boolName];
+            Service.Config.ComponentEnabled[boolName] = !Service.Config.ComponentEnabled[boolName];
             var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
             if (component != null)
             {
-                if (C.ComponentEnabled[boolName])
+                if (Service.Config.ComponentEnabled[boolName])
                     ComponentManager.Load(component);
                 else
                     ComponentManager.Unload(component);
@@ -323,7 +351,7 @@ public class Settings : Window, IDisposable
             else
                 Service.Log.Error($"Fail to fetch component {type.Name}");
 
-            C.Save();
+            Service.Config.Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -335,14 +363,14 @@ public class Settings : Window, IDisposable
 
     private static void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")
     {
-        var cbool = C.ComponentProp[boolName];
+        var cbool = Service.Config.ComponentProp[boolName];
 
         ImGui.Indent();
 
         if (ImGui.Checkbox(checkboxLabel, ref cbool))
         {
-            C.ComponentProp[boolName] = !C.ComponentProp[boolName];
-            C.Save();
+            Service.Config.ComponentProp[boolName] = !Service.Config.ComponentProp[boolName];
+            Service.Config.Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -357,24 +385,24 @@ public class Settings : Window, IDisposable
     private static void SecondaryRadioButtons(
         string boolName1, string boolName2, string buttonLabel1, string buttonLabel2, string help = "")
     {
-        var cbool1 = C.ComponentProp[boolName1];
-        var cbool2 = C.ComponentProp[boolName2];
+        var cbool1 = Service.Config.ComponentProp[boolName1];
+        var cbool2 = Service.Config.ComponentProp[boolName2];
 
         ImGui.Indent();
 
         if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
         {
-            C.ComponentProp[boolName1] = true;
-            C.ComponentProp[boolName2] = false;
-            C.Save();
+            Service.Config.ComponentProp[boolName1] = true;
+            Service.Config.ComponentProp[boolName2] = false;
+            Service.Config.Save();
         }
 
         ImGui.SameLine();
         if (ImGui.RadioButton($"{buttonLabel2}##{buttonLabel1}", cbool2))
         {
-            C.ComponentProp[boolName1] = false;
-            C.ComponentProp[boolName2] = true;
-            C.Save();
+            Service.Config.ComponentProp[boolName1] = false;
+            Service.Config.ComponentProp[boolName2] = true;
+            Service.Config.Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -388,7 +416,7 @@ public class Settings : Window, IDisposable
     private static void SecondaryRadioButtons(
         string propertyName, string buttonLabel1, string buttonLabel2, string help = "")
     {
-        var propertyValue = typeof(Configuration).GetProperty(propertyName)?.GetValue(C);
+        var propertyValue = typeof(Configuration).GetProperty(propertyName)?.GetValue(Service.Config);
 
         if (propertyValue is null) return;
 
@@ -399,15 +427,15 @@ public class Settings : Window, IDisposable
 
         if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
         {
-            typeof(Configuration).GetProperty(propertyName)?.SetValue(C, 0);
-            C.Save();
+            typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 0);
+            Service.Config.Save();
         }
 
         ImGui.SameLine();
         if (ImGui.RadioButton($"{buttonLabel2}##{buttonLabel1}", cbool2))
         {
-            typeof(Configuration).GetProperty(propertyName)?.SetValue(C, 1);
-            C.Save();
+            typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 1);
+            Service.Config.Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -420,19 +448,19 @@ public class Settings : Window, IDisposable
 
     private static void NoteContentInputText(string key, IReadOnlyList<string>? paramsEP)
     {
-        var textToShow = C.CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
-
+        var textToShow = Service.Config.CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
+        ImGui.PushID(key);
         ImGui.Indent();
 
         ImGui.AlignTextToFramePadding();
         ImGui.Text($"{Service.Lang.GetText("Note")}:");
 
         ImGui.SameLine();
-        ImGui.SetNextItemWidth(270f);
-        if (ImGui.InputText($"##{key}", ref textToShow, 50))
+        ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+        if (ImGui.InputText("", ref textToShow, 50))
         {
-            C.CustomNoteContents[key] = textToShow;
-            C.Save();
+            Service.Config.CustomNoteContents[key] = textToShow;
+            Service.Config.Save();
         }
 
         if (ImGui.IsItemHovered())
@@ -452,13 +480,14 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon($"ResetContext_{key}", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+        if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
         {
-            C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
-            C.Save();
+            Service.Config.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
+            Service.Config.Save();
         }
 
         ImGui.Unindent();
+        ImGui.PopID();
     }
 
     public void Dispose() { }

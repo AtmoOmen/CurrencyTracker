@@ -45,16 +45,16 @@ public partial class CurrencySettings
         }
 
         if (selectedCurrencyID != 0 &&
-            (lastCurrency != selectedCurrencyID || lastCurrencyName != C.AllCurrencies[selectedCurrencyID]))
+            (lastCurrency != selectedCurrencyID || lastCurrencyName != Service.Config.AllCurrencies[selectedCurrencyID]))
         {
             lastCurrency = selectedCurrencyID;
-            lastCurrencyName = C.AllCurrencies[selectedCurrencyID];
+            lastCurrencyName = Service.Config.AllCurrencies[selectedCurrencyID];
             shouldUpdate = true;
         }
 
-        if (!string.IsNullOrEmpty(C.SelectedLanguage) && lastLanguage != C.SelectedLanguage)
+        if (!string.IsNullOrEmpty(Service.Config.SelectedLanguage) && lastLanguage != Service.Config.SelectedLanguage)
         {
-            lastLanguage = C.SelectedLanguage;
+            lastLanguage = Service.Config.SelectedLanguage;
             shouldUpdate = true;
         }
 
@@ -69,13 +69,13 @@ public partial class CurrencySettings
             TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
             TransactionFileCategory.PremiumSaddleBag
         };
-        categories.AddRange(C.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
+        categories.AddRange(Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
                              .Select(_ => TransactionFileCategory.Retainer));
 
         foreach (var category in categories)
             if (category == TransactionFileCategory.Retainer)
             {
-                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+                foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
                     AddFilePath(category, retainer.Key);
             }
             else

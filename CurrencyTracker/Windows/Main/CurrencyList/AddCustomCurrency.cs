@@ -87,7 +87,7 @@ public partial class Main
                 }
             }
 
-            if (ImGui.IsItemClicked() && !currenciesACC.SequenceEqual(C.AllCurrencyID))
+            if (ImGui.IsItemClicked() && !currenciesACC.SequenceEqual(Service.Config.AllCurrencyID))
                 LoadDataACC();
             ImGui.EndGroup();
 
@@ -100,14 +100,14 @@ public partial class Main
                     return;
                 }
 
-                if (C.AllCurrencies.ContainsValue(currencyNameAAC) || C.AllCurrencyID.Contains(currencyIDACC))
+                if (Service.Config.AllCurrencies.ContainsValue(currencyNameAAC) || Service.Config.AllCurrencyID.Contains(currencyIDACC))
                 {
                     Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 
-                C.CustomCurrencies.Add(currencyIDACC, currencyNameAAC);
-                C.Save();
+                Service.Config.CustomCurrencies.Add(currencyIDACC, currencyNameAAC);
+                Service.Config.Save();
 
                 ReloadOrderedOptions();
 
@@ -125,8 +125,8 @@ public partial class Main
 
     private static void LoadDataACC()
     {
-        var currencyNames = C.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
-        currenciesACC = C.AllCurrencyID;
+        var currencyNames = Service.Config.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
+        currenciesACC = Service.Config.AllCurrencyID;
 
         ItemNames = ItemHandler.ItemNames
                                .Where(x => !currencyNames.Contains(x.Key))
@@ -139,7 +139,7 @@ public partial class Main
     {
         if (!string.IsNullOrEmpty(filter))
         {
-            var isCS = C.SelectedLanguage == "ChineseSimplified";
+            var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
             return ItemNames
                    .Keys
                    .Where(itemName => itemName.Contains(filter, StringComparison.OrdinalIgnoreCase)

@@ -97,7 +97,7 @@ namespace CurrencyTracker.Windows
                     for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
                     {
                         var languageInfo = LanguageManager.LanguageNames[i];
-                        if (ImGui.Selectable(languageInfo.DisplayName, C.SelectedLanguage == languageInfo.Language))
+                        if (ImGui.Selectable(languageInfo.DisplayName, Service.Config.SelectedLanguage == languageInfo.Language))
                         {
                             LanguageSwitchHandler(languageInfo.Language);
                         }
@@ -120,7 +120,7 @@ namespace CurrencyTracker.Windows
                                 await LanguageUpdater.DownloadLanguageFilesAsync();
                                 isLangDownloading = false;
                                 isLangDownloaded = true;
-                                LanguageSwitchHandler(C.SelectedLanguage);
+                                LanguageSwitchHandler(Service.Config.SelectedLanguage);
                             });
                         }
                     }
@@ -136,15 +136,15 @@ namespace CurrencyTracker.Windows
 
         internal void LanguageSwitchHandler(string languageName)
         {
-            C.SelectedLanguage = languageName;
-            Service.Lang = new LanguageManager(C.SelectedLanguage);
+            Service.Config.SelectedLanguage = languageName;
+            Service.Lang = new LanguageManager(Service.Config.SelectedLanguage);
             Service.CommandManager.RemoveHandler(Plugin.CommandName);
             Service.CommandManager.AddHandler(Plugin.CommandName, new CommandInfo(P.OnCommand)
             {
                 HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
             });
 
-            C.Save();
+            Service.Config.Save();
         }
 
         private void TestingFeaturesUI()

@@ -11,8 +11,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings : Window, IDisposable
 {
-    private readonly Configuration? C = Service.Config;
-    private readonly Plugin? P = Plugin.P;
     private readonly Main? M = Plugin.P.Main;
 
     private uint selectedCurrencyID;
@@ -83,7 +81,7 @@ public partial class CurrencySettings : Window, IDisposable
 
         var areaStart = ImGui.GetCursorPos();
         ImGui.SetCursorPosX((region.X / 2.0f) - (minDimension / 2.0f));
-        ImGui.Image(C.AllCurrencyIcons[1].ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One,
+        ImGui.Image(Service.Config.AllCurrencyIcons[1].ImGuiHandle, new Vector2(minDimension), Vector2.Zero, Vector2.One,
                     Vector4.One with { W = 0.10f });
         ImGui.SetCursorPos(areaStart);
     }
@@ -91,12 +89,12 @@ public partial class CurrencySettings : Window, IDisposable
     private void CurrencyInfoGroupUI()
     {
         ImGui.BeginGroup();
-        ImGui.Image(C.AllCurrencyIcons[selectedCurrencyID].ImGuiHandle, new Vector2(48 * ImGuiHelpers.GlobalScale));
+        ImGui.Image(Service.Config.AllCurrencyIcons[selectedCurrencyID].ImGuiHandle, new Vector2(48 * ImGuiHelpers.GlobalScale));
 
         ImGui.SameLine();
         ImGui.BeginGroup();
         ImGui.SetWindowFontScale(1.6f);
-        var currencyName = C.AllCurrencies[selectedCurrencyID];
+        var currencyName = Service.Config.AllCurrencies[selectedCurrencyID];
         currencyTextWidth = (int)ImGui.CalcTextSize(currencyName).X;
         if (!isEditingCurrencyName)
         {

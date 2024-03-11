@@ -42,7 +42,7 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.Button(Service.Lang.GetText("BackupCurrentCharacter")))
         {
-            var filePath = TransactionsHandler.BackupTransactions(P.PlayerDataFolder, C.MaxBackupFilesCount);
+            var filePath = TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
         }
 
@@ -52,10 +52,10 @@ public partial class Main : Window, IDisposable
             var failCharacters = new List<string>();
             var successCount = 0;
 
-            foreach (var character in C.CurrentActiveCharacter)
+            foreach (var character in Service.Config.CurrentActiveCharacter)
             {
                 var backupPath = Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}");
-                if (string.IsNullOrEmpty(TransactionsHandler.BackupTransactions(backupPath, C.MaxBackupFilesCount))) failCharacters.Add($"{character.Name}@{character.Server}");
+                if (string.IsNullOrEmpty(TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount))) failCharacters.Add($"{character.Name}@{character.Server}");
                 else successCount++;
             }
 
@@ -71,10 +71,10 @@ public partial class Main : Window, IDisposable
 
     private void AutoBackupUI()
     {
-        var autoSaveEnabled = C.ComponentEnabled["AutoSave"];
+        var autoSaveEnabled = Service.Config.ComponentEnabled["AutoSave"];
         var autoSaveComponent = ComponentManager.Components.OfType<AutoSave>().FirstOrDefault();
         var nextAutoSaveTime = DateTime.Today.Add(autoSaveComponent?.Initialized == true
-            ? (AutoSave.LastAutoSave + TimeSpan.FromMinutes(C.AutoSaveInterval) - DateTime.Now)
+            ? (AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now)
             : TimeSpan.Zero);
         var timeFormat = nextAutoSaveTime.Hour == 0 ? "mm:ss" : "HH:mm:ss";
         var autoBackupText = autoSaveEnabled
@@ -86,7 +86,7 @@ public partial class Main : Window, IDisposable
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            C.ComponentEnabled["AutoSave"] = !autoSaveEnabled;
+            Service.Config.ComponentEnabled["AutoSave"] = !autoSaveEnabled;
             if (autoSaveComponent != null)
             {
                 if (autoSaveEnabled) ComponentManager.Load(autoSaveComponent);
@@ -96,7 +96,7 @@ public partial class Main : Window, IDisposable
             {
                 Service.Log.Error("Fail to fetch AutoSave component");
             }
-            C.Save();
+            Service.Config.Save();
         }
 
         if (autoSaveEnabled)
@@ -115,32 +115,32 @@ public partial class Main : Window, IDisposable
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Interval")}:");
 
-            var autoSaveInterval = C.AutoSaveInterval;
+            var autoSaveInterval = Service.Config.AutoSaveInterval;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(140f);
             if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
             {
-                C.AutoSaveInterval = Math.Max(autoSaveInterval, 5);
-                C.Save();
+                Service.Config.AutoSaveInterval = Math.Max(autoSaveInterval, 5);
+                Service.Config.Save();
             }
 
-            var isNotification = C.AutoSaveMessage;
+            var isNotification = Service.Config.AutoSaveMessage;
             if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
             {
-                C.AutoSaveMessage = isNotification;
-                C.Save();
+                Service.Config.AutoSaveMessage = isNotification;
+                Service.Config.Save();
             }
         }
     }
 
     private void AutoSaveRadioButton(string textKey, int mode)
     {
-        var isSelected = C.AutoSaveMode == mode;
+        var isSelected = Service.Config.AutoSaveMode == mode;
         ImGui.RadioButton(Service.Lang.GetText(textKey), isSelected);
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            C.AutoSaveMode = mode;
-            C.Save();
+            Service.Config.AutoSaveMode = mode;
+            Service.Config.Save();
         }
     }
 
@@ -149,13 +149,13 @@ public partial class Main : Window, IDisposable
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
         ImGui.Separator();
 
-        var maxBackupFilesCount = C.MaxBackupFilesCount;
+        var maxBackupFilesCount = Service.Config.MaxBackupFilesCount;
         ImGui.SetNextItemWidth(210f);
         if (ImGui.InputInt("", ref maxBackupFilesCount))
         {
             maxBackupFilesCount = Math.Max(maxBackupFilesCount, 0);
-            C.MaxBackupFilesCount = maxBackupFilesCount;
-            C.Save();
+            Service.Config.MaxBackupFilesCount = maxBackupFilesCount;
+            Service.Config.Save();
         }
 
         ImGuiOm.HelpMarker(Service.Lang.GetText("BackupHelp6"));

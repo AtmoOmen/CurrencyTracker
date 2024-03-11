@@ -24,7 +24,7 @@ public partial class CurrencySettings
 
     private void TerrioryRestrictedUI()
     {
-        var rules = C.CurrencyRules[selectedCurrencyID];
+        var rules = Service.Config.CurrencyRules[selectedCurrencyID];
         var isBlacklist = !rules.RegionRulesMode;
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-AreaRestriction")}:");
@@ -33,14 +33,14 @@ public partial class CurrencySettings
         if (ImGui.RadioButton($"{Service.Lang.GetText("Blacklist")}", isBlacklist))
         {
             rules.RegionRulesMode = false;
-            C.Save();
+            Service.Config.Save();
         }
 
         ImGui.SameLine();
         if (ImGui.RadioButton($"{Service.Lang.GetText("Whitelist")}", !isBlacklist))
         {
             rules.RegionRulesMode = true;
-            C.Save();
+            Service.Config.Save();
         }
 
         ImGui.SameLine();
@@ -70,7 +70,7 @@ public partial class CurrencySettings
         {
             rules.RestrictedAreas.Add(selectedAreaIDTR);
             selectedAreaIDTR = 0;
-            C.Save();
+            Service.Config.Save();
         }
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
@@ -88,7 +88,7 @@ public partial class CurrencySettings
             {
                 rules.RestrictedAreas.Remove(selectedAreaIDDeleteTR);
                 selectedAreaIDDeleteTR = 0;
-                C.Save();
+                Service.Config.Save();
             }
         }
 

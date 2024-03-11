@@ -75,10 +75,10 @@ public partial class Main : Window, IDisposable
                     if (ImGui.BeginCombo($"##{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", $"{characterCurrencyInfo.Character.Name}@{characterCurrencyInfo.Character.Server}", ImGuiComboFlags.HeightLarge))
                     {
                         ImGui.BeginGroup();
-                        foreach (var currency in C.AllCurrencies)
+                        foreach (var currency in Service.Config.AllCurrencies)
                         {
                             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
-                            ImGui.Image(C.AllCurrencyIcons[currency.Key].ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                            ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
 
                             ImGui.SameLine();
                             ImGui.Text($"{currency.Value}");
@@ -90,7 +90,7 @@ public partial class Main : Window, IDisposable
 
                         ImGui.SameLine();
                         ImGui.BeginGroup();
-                        foreach (var currency in C.AllCurrencies)
+                        foreach (var currency in Service.Config.AllCurrencies)
                         {
                             var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
                             ImGui.SetCursorPosY(ImGui.GetCursorPosY() + 3.0f);
@@ -107,7 +107,7 @@ public partial class Main : Window, IDisposable
 
     internal static void LoadDataMCS()
     {
-        Parallel.ForEach(C.CurrentActiveCharacter, character =>
+        Parallel.ForEach(Service.Config.CurrentActiveCharacter, character =>
         {
             var existingInfo = characterCurrencyInfos.GetOrAdd(character, new CharacterCurrencyInfo { Character = character });
             existingInfo.GetCharacterCurrencyAmount();

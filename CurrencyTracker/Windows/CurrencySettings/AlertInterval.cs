@@ -53,7 +53,7 @@ public partial class CurrencySettings
             if (combo)
             {
                 DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
-                foreach (var retainer in C.CharacterRetainers[P.CurrentCharacter.ContentID])
+                foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
                     DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
                 DrawViewSelectableIA(TransactionFileCategory.SaddleBag, 0);
                 DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
@@ -87,7 +87,7 @@ public partial class CurrencySettings
         {
             if (selectedInterval == null) return;
             RemoveIntervalHandler(selectedCurrencyID, selectedInterval.Start, selectedInterval.End);
-            C.Save();
+            Service.Config.Save();
         }
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalInput")}:");
@@ -110,7 +110,7 @@ public partial class CurrencySettings
         if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add")))
         {
             AddIntervalHandler(selectedCurrencyID, intervalStart, intervalEnd);
-            C.Save();
+            Service.Config.Save();
         }
     }
 
@@ -120,12 +120,12 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("NotificationType")}:");
 
-        var b1 = C.AlertNotificationChat;
+        var b1 = Service.Config.AlertNotificationChat;
         if (ImGui.Checkbox(
-                C.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref b1))
+                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref b1))
         {
-            C.AlertNotificationChat = b1;
-            C.Save();
+            Service.Config.AlertNotificationChat = b1;
+            Service.Config.Save();
         }
 
         if (b1)
@@ -137,7 +137,7 @@ public partial class CurrencySettings
                 Service.Lang.GetText("Interval")
             };
             var key = "AlertIntervalMessage";
-            var textToShow = C.CustomNoteContents.TryGetValue(key, out var value)
+            var textToShow = Service.Config.CustomNoteContents.TryGetValue(key, out var value)
                                  ? value
                                  : Service.Lang.GetOrigText(key);
 
@@ -145,8 +145,8 @@ public partial class CurrencySettings
             ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 8);
             if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
-                C.CustomNoteContents[key] = textToShow;
-                C.Save();
+                Service.Config.CustomNoteContents[key] = textToShow;
+                Service.Config.Save();
             }
 
             if (ImGui.IsItemHovered())
@@ -165,8 +165,8 @@ public partial class CurrencySettings
             ImGui.SameLine();
             if (ImGuiOm.ButtonIcon($"ResetContent_{key}", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
             {
-                C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
-                C.Save();
+                Service.Config.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
+                Service.Config.Save();
             }
         }
     }
@@ -193,7 +193,7 @@ public partial class CurrencySettings
         if (!intervals.Contains(newInterval))
         {
             intervals.Add(newInterval);
-            C.Save();
+            Service.Config.Save();
         }
     }
 
@@ -204,7 +204,7 @@ public partial class CurrencySettings
 
         if (intervals.Remove(newInterval))
         {
-            C.Save();
+            Service.Config.Save();
             selectedInterval = null;
         }
     }

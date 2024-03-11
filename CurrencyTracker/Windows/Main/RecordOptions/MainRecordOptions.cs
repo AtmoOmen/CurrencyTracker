@@ -84,19 +84,19 @@ public partial class Main
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
 
-            var exportDataFileType = C.ExportDataFileType;
+            var exportDataFileType = Service.Config.ExportDataFileType;
             ImGui.SameLine();
             if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
             {
-                C.ExportDataFileType = 0;
-                C.Save();
+                Service.Config.ExportDataFileType = 0;
+                Service.Config.Save();
             }
 
             ImGui.SameLine();
             if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
             {
-                C.ExportDataFileType = 1;
-                C.Save();
+                Service.Config.ExportDataFileType = 1;
+                Service.Config.Save();
             }
 
             var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
@@ -110,10 +110,10 @@ public partial class Main
 
                 Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, selectedCurrencyID, exportDataFileType)}");
             }
-            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {C.AllCurrencies[selectedCurrencyID]}_{nowTime}.csv");
+            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[selectedCurrencyID]}_{nowTime}.csv");
 
             ImGui.SameLine();
-            ImGui.Text($"_{C.AllCurrencies[selectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
+            ImGui.Text($"_{Service.Config.AllCurrencies[selectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
         }
     }
 }

@@ -13,13 +13,13 @@ public partial class Main
 {
     internal static void ReloadOrderedOptions()
     {
-        var orderedOptionsSet = new HashSet<uint>(C.OrderedOptions);
-        var allCurrenciesSet = new HashSet<uint>(C.AllCurrencyID);
+        var orderedOptionsSet = new HashSet<uint>(Service.Config.OrderedOptions);
+        var allCurrenciesSet = new HashSet<uint>(Service.Config.AllCurrencyID);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
-            C.OrderedOptions = allCurrenciesSet.ToList();
-            C.Save();
+            Service.Config.OrderedOptions = allCurrenciesSet.ToList();
+            Service.Config.Save();
         }
     }
 
@@ -42,7 +42,7 @@ public partial class Main
         if (isNoteFilterEnabled)
             filteredTransactions = ApplyNoteFilter(filteredTransactions, searchNoteContent);
 
-        return (C.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
+        return (Service.Config.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
     }
 
     private static IEnumerable<TransactionsConvertor> ApplyChangeFilter(IEnumerable<TransactionsConvertor> transactions)
@@ -117,7 +117,7 @@ public partial class Main
             return transactions;
         }
 
-        var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+        var isChineseSimplified = Service.Config.SelectedLanguage == "ChineseSimplified";
         var queries = query.Split(',')
                            .Select(q => new
                            {
@@ -151,7 +151,7 @@ public partial class Main
             return transactions;
         }
 
-        var isChineseSimplified = C.SelectedLanguage == "ChineseSimplified";
+        var isChineseSimplified = Service.Config.SelectedLanguage == "ChineseSimplified";
         var queries = query.Split(',')
                            .Select(q => new
                            {

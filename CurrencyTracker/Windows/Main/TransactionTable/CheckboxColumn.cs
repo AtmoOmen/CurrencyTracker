@@ -96,7 +96,7 @@ public partial class Main
                 return;
             }
 
-            var isCSV = C.ExportDataFileType == 0;
+            var isCSV = Service.Config.ExportDataFileType == 0;
             var header = isCSV
                              ? Service.Lang.GetText("ExportFileCSVHeader")
                              : Service.Lang.GetText("ExportFileMDHeader1");
@@ -153,7 +153,7 @@ public partial class Main
             }
 
             var filePath = TransactionsHandler.ExportData(selectedTransactions[selectedCurrencyID], "",
-                                                          selectedCurrencyID, C.ExportDataFileType, currentView,
+                                                          selectedCurrencyID, Service.Config.ExportDataFileType, currentView,
                                                           currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }

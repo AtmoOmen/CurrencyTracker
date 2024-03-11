@@ -59,21 +59,21 @@ public partial class Main
 
     private static void ColoringByChangeUI()
     {
-        var isChangeColoring = C.ChangeTextColoring;
+        var isChangeColoring = Service.Config.ChangeTextColoring;
         if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
         {
-            C.ChangeTextColoring = isChangeColoring;
-            C.Save();
+            Service.Config.ChangeTextColoring = isChangeColoring;
+            Service.Config.Save();
         }
 
-        if (C.ChangeTextColoring)
+        if (Service.Config.ChangeTextColoring)
         {
-            var positiveChangeColor = C.PositiveChangeColor;
-            var negativeChangeColor = C.NegativeChangeColor;
+            var positiveChangeColor = Service.Config.PositiveChangeColor;
+            var negativeChangeColor = Service.Config.NegativeChangeColor;
 
-            ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor, color => C.PositiveChangeColor = color);
+            ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor, color => Service.Config.PositiveChangeColor = color);
             ImGui.SameLine();
-            ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor, color => C.NegativeChangeColor = color);
+            ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor, color => Service.Config.NegativeChangeColor = color);
         }
     }
 
@@ -92,7 +92,7 @@ public partial class Main
         {
             if (ImGui.ColorPicker4("", ref color))
             {
-                C.ChangeTextColoring = true;
+                Service.Config.ChangeTextColoring = true;
                 saveColorAction(color);
                 DelayedColorSave();
             }
@@ -109,15 +109,15 @@ public partial class Main
         {
             if (!t.IsCanceled)
             {
-                C.Save();
+                Service.Config.Save();
             }
         }, token);
     }
 
     private static void ChangeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
     {
-        var textColor = C.ChangeTextColoring
-            ? transaction.Change > 0 ? C.PositiveChangeColor : transaction.Change < 0 ? C.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+        var textColor = Service.Config.ChangeTextColoring
+            ? transaction.Change > 0 ? Service.Config.PositiveChangeColor : transaction.Change < 0 ? Service.Config.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
             : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
         using (ImRaii.PushColor(ImGuiCol.Text, textColor))

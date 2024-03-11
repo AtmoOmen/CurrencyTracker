@@ -60,7 +60,7 @@ public static class TransactionsHandler
 
         return ValidityCheck(currencyID) && File.Exists(filePath)
                    ? TransactionsConvertor.FromFile(filePath)
-                   : new List<TransactionsConvertor>();
+                   : new();
     }
 
     // 加载最新一条记录 Load Latest Transaction
@@ -82,7 +82,7 @@ public static class TransactionsHandler
 
         var lastLine = File.ReadLines(filePath).Reverse().FirstOrDefault();
 
-        return lastLine == null ? new TransactionsConvertor() : TransactionsConvertor.FromFileLine(lastLine.AsSpan());
+        return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine.AsSpan());
     }
 
     // 编辑指定记录 Edit Specific Transactions
