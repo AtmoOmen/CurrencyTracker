@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;

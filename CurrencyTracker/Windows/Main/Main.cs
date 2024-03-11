@@ -1,4 +1,5 @@
 using System;
+using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
 using ECommons.Automation;
@@ -25,6 +26,7 @@ public partial class Main : Window, IDisposable
     private void Initialize(Plugin plugin)
     {
         Service.Tracker.CurrencyChanged += OnCurrencyChanged;
+        Service.Tracker.CurrencyChanged += ServerBar.OnCurrencyChanged;
 
         searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
         searchTimerMCS.AutoReset = false;
@@ -73,6 +75,9 @@ public partial class Main : Window, IDisposable
     public void Dispose()
     {
         Service.Tracker.CurrencyChanged -= OnCurrencyChanged;
+        Service.Tracker.CurrencyChanged -= ServerBar.OnCurrencyChanged;
+
+        ServerBar.DtrEntry.Dispose();
 
         TaskManager.Abort();
 
