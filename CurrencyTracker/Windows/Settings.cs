@@ -30,18 +30,14 @@ public class Settings : Window, IDisposable
 
     public override void Draw()
     {
-        using var tabSettingsCT = ImRaii.TabBar("SettingsCT");
-        if (tabSettingsCT)
+        if (ImGui.BeginTabBar("SettingsCT"))
         {
-            using var itemRecord = ImRaii.TabItem(Service.Lang.GetText("Record"));
-            if (itemRecord)
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Record")))
             {
-                using var tabRecordSettings = ImRaii.TabBar("RecordSettings");
-                if (tabRecordSettings)
+                if (ImGui.BeginTabBar("RecordSettings"))
                 {
                     // 一般 General
-                    using var itemGeneral = ImRaii.TabItem(Service.Lang.GetText("General"));
-                    if (itemGeneral)
+                    if (ImGui.BeginTabItem(Service.Lang.GetText("General")))
                     {
                         // 邮件附件 Letter Attachments
                         ModuleCheckbox(typeof(LetterAttachments),
@@ -78,11 +74,11 @@ public class Settings : Window, IDisposable
                             NoteContentInputText("IslandPasture", null);
                             NoteContentInputText("IslandWorkshop", null);
                         }
+                        ImGui.EndTabItem();
                     }
 
                     // 战斗 Combat
-                    using var itemCombat = ImRaii.TabItem(Service.Lang.GetText("Combat"));
-                    if (itemCombat)
+                    if (ImGui.BeginTabItem(Service.Lang.GetText("Combat")))
                     {
                         ModuleCheckbox(typeof(DutyRewards), Service.Lang.GetText("DutyRewards-RecordDutyRewards"));
                         if (C.ComponentEnabled["DutyRewards"])
@@ -92,56 +88,55 @@ public class Settings : Window, IDisposable
                         ImGui.Separator();
                         ModuleCheckbox(typeof(FateRewards), Service.Lang.GetText("FateRewards-RecordFateRewards"));
                         if (C.ComponentEnabled["FateRewards"])
-                            NoteContentInputText("Fate", new string[1] { Service.Lang.GetText("ParamEP-FateName") });
+                            NoteContentInputText("Fate", new[] { Service.Lang.GetText("ParamEP-FateName") });
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(MobDrops), Service.Lang.GetText("MobDrops-RecordMobDrops"));
                         if (C.ComponentEnabled["MobDrops"])
                             NoteContentInputText("MobDrops-MobDropsNote",
-                                                 new string[1] { Service.Lang.GetText("ParamEP-MobNames") });
+                                                 new[] { Service.Lang.GetText("ParamEP-MobNames") });
+                        ImGui.EndTabItem();
                     }
 
                     // 交易 Trade
-                    using var itemTrade = ImRaii.TabItem(Service.Lang.GetText("Trade"));
-                    if (itemTrade)
+                    if (ImGui.BeginTabItem(Service.Lang.GetText("Trade")))
                     {
                         // 交换 Exchange
                         ModuleCheckbox(typeof(Exchange), Service.Lang.GetText("Exchange-RecordExchangeResult"));
                         ModuleCheckbox(typeof(SpecialExchange),
                                        Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
                         if (C.ComponentEnabled["Exchange"] || C.ComponentEnabled["SpecialExchange"])
-                            NoteContentInputText("ExchangeWith",
-                                                 new string[1] { Service.Lang.GetText("ParamEP-TargetName") });
+                            NoteContentInputText("ExchangeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
 
                         // 交易 Trade
                         ImGui.Separator();
                         ModuleCheckbox(typeof(Trade), Service.Lang.GetText("Trade-RecordTradeTarget"));
                         if (C.ComponentEnabled["Trade"])
-                            NoteContentInputText("TradeWith",
-                                                 new string[1] { Service.Lang.GetText("ParamEP-TargetName") });
+                            NoteContentInputText("TradeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
+                        ImGui.EndTabItem();
                     }
 
                     // 金碟 Gold Saucer
-                    using var itemGoldSaucer = ImRaii.TabItem(Service.Lang.GetText("GoldSaucer"));
-                    if (itemGoldSaucer)
+                    if (ImGui.BeginTabItem(Service.Lang.GetText("GoldSaucer")))
                     {
                         ModuleCheckbox(typeof(GoldSaucer), Service.Lang.GetText("GoladSaucer-RecordMGPSource"));
 
                         ImGui.Separator();
                         ModuleCheckbox(typeof(TripleTriad), Service.Lang.GetText("TripleTriad-RecordTTResult"));
                         if (C.ComponentEnabled["TripleTriad"])
-                            NoteContentInputText("TripleTriadWith",
-                                                 new string[2]
+                            NoteContentInputText("TripleTriadWith", new[]
                                                  {
                                                      Service.Lang.GetText("ParamEP-TTOutcome"),
                                                      Service.Lang.GetText("ParamEP-TTRivalName")
                                                  });
+                        ImGui.EndTabItem();
                     }
+                    ImGui.EndTabBar();
                 }
+                ImGui.EndTabItem();
             }
 
-            using var itemFeatures = ImRaii.TabItem(Service.Lang.GetText("Features"));
-            if (itemFeatures)
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Features")))
             {
                 ModuleCheckbox(typeof(CurrencyUIEdit), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
                 ModuleCheckbox(typeof(ServerBar), "在服务器信息栏显示货币信息");
@@ -151,10 +146,10 @@ public class Settings : Window, IDisposable
                 ModuleCheckbox(typeof(SaddleBag), Service.Lang.GetText("SaddleBag-RecordSaddleBag"));
                 ModuleCheckbox(typeof(PremiumSaddleBag),
                                Service.Lang.GetText("PremiumSaddleBag-RecordPremiumSaddleBag"));
+                ImGui.EndTabItem();
             }
 
-            using var itemPlugin = ImRaii.TabItem(Service.Lang.GetText("Plugin"));
-            if (itemPlugin)
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Plugin")))
             {
                 // 导出文件类型 Export File Type
                 ImGui.AlignTextToFramePadding();
@@ -183,10 +178,8 @@ public class Settings : Window, IDisposable
                     SecondaryRadioButtons("AutoSaveMode", Service.Lang.GetText("BackupCurrentCharacter"),
                                           Service.Lang.GetText("BackupAllCharacter"));
 
+                    ImGui.Indent();
                     ImGui.AlignTextToFramePadding();
-                    ImGui.BulletText("");
-
-                    ImGui.SameLine();
                     ImGui.Text($"{Service.Lang.GetText("Interval")}:");
 
                     ImGui.SameLine();
@@ -200,23 +193,19 @@ public class Settings : Window, IDisposable
                     }
 
                     var isNotification = C.AutoSaveMessage;
-
-                    ImGui.AlignTextToFramePadding();
-                    ImGui.BulletText("");
-
-                    ImGui.SameLine();
                     if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
                     {
                         C.AutoSaveMessage = !C.AutoSaveMessage;
                         C.Save();
                     }
+                    ImGui.Unindent();
                 }
 
                 ImGui.AlignTextToFramePadding();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
 
                 ImGui.SameLine();
-                ImGui.PushItemWidth(ImGui.GetContentRegionAvail().X);
+                ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
                 var maxBackupFilesCount = C.MaxBackupFilesCount;
                 if (ImGui.InputInt("##MaxBackupFilesCount", ref maxBackupFilesCount))
                 {
@@ -225,11 +214,10 @@ public class Settings : Window, IDisposable
                     C.Save();
                 }
 
-                ImGui.PopItemWidth();
+                ImGui.EndTabItem();
             }
 
-            using var itemInfo = ImRaii.TabItem(Service.Lang.GetText("Info"));
-            if (itemInfo)
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Info")))
             {
                 ImGui.TextColored(ImGuiColors.DalamudYellow, "Author:");
 
@@ -289,10 +277,10 @@ public class Settings : Window, IDisposable
                 if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language,
                                                  Service.Lang.GetText("HelpTranslate")))
                     Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
+                ImGui.EndTabItem();
             }
 
-            using var itemDev = ImRaii.TabItem("Dev");
-            if (itemDev)
+            if (ImGui.BeginTabItem("Dev"))
             {
                 if (ImGui.Button("Open Local Language Files Directory")) OpenDirectory(LanguageManager.LangsDirectory);
 
@@ -304,7 +292,9 @@ public class Settings : Window, IDisposable
                     if (string.IsNullOrEmpty(devLangFilePath) || !File.Exists(devLangFilePath)) return;
                     Service.Lang = new LanguageManager("Dev", true, devLangFilePath);
                 }
+                ImGui.EndTabItem();
             }
+            ImGui.EndTabBar();
         }
     }
 
@@ -347,10 +337,8 @@ public class Settings : Window, IDisposable
     {
         var cbool = C.ComponentProp[boolName];
 
-        ImGui.AlignTextToFramePadding();
-        ImGui.BulletText("");
+        ImGui.Indent();
 
-        ImGui.SameLine();
         if (ImGui.Checkbox(checkboxLabel, ref cbool))
         {
             C.ComponentProp[boolName] = !C.ComponentProp[boolName];
@@ -362,6 +350,8 @@ public class Settings : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
         }
+
+        ImGui.Unindent();
     }
 
     private static void SecondaryRadioButtons(
@@ -370,10 +360,8 @@ public class Settings : Window, IDisposable
         var cbool1 = C.ComponentProp[boolName1];
         var cbool2 = C.ComponentProp[boolName2];
 
-        ImGui.AlignTextToFramePadding();
-        ImGui.BulletText("");
+        ImGui.Indent();
 
-        ImGui.SameLine();
         if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
         {
             C.ComponentProp[boolName1] = true;
@@ -394,6 +382,7 @@ public class Settings : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
         }
+        ImGui.Unindent();
     }
 
     private static void SecondaryRadioButtons(
@@ -406,10 +395,8 @@ public class Settings : Window, IDisposable
         var cbool1 = (int)propertyValue == 0;
         var cbool2 = (int)propertyValue == 1;
 
-        ImGui.AlignTextToFramePadding();
-        ImGui.BulletText("");
+        ImGui.Indent();
 
-        ImGui.SameLine();
         if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
         {
             typeof(Configuration).GetProperty(propertyName)?.SetValue(C, 0);
@@ -428,16 +415,16 @@ public class Settings : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
         }
+        ImGui.Unindent();
     }
 
     private static void NoteContentInputText(string key, IReadOnlyList<string>? paramsEP)
     {
         var textToShow = C.CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
 
-        ImGui.AlignTextToFramePadding();
-        ImGui.BulletText("");
+        ImGui.Indent();
 
-        ImGui.SameLine();
+        ImGui.AlignTextToFramePadding();
         ImGui.Text($"{Service.Lang.GetText("Note")}:");
 
         ImGui.SameLine();
@@ -470,6 +457,8 @@ public class Settings : Window, IDisposable
             C.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
             C.Save();
         }
+
+        ImGui.Unindent();
     }
 
     public void Dispose() { }
