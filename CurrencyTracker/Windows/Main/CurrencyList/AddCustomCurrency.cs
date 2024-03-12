@@ -7,33 +7,27 @@ using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
-using TinyPinyin;
 
 namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private static Dictionary<string, uint>? ItemNames;
-    private static string[]? itemNamesACC;
-    private static uint[]? currenciesACC;
-    private static string searchFilterCCT = string.Empty;
-    private static uint currencyIDACC = uint.MaxValue;
-    private static string currencyNameAAC = string.Empty;
-    private static int currentPageACC;
+    private static Dictionary<string, uint>? _currencyDicACC;
+    private static string _searchFilterACC = string.Empty;
+    private static uint _currencyIDACC;
+    private static int _currentPageACC;
 
-    private static void AddCustomCurrencyUI()
+    private static void AddCustomCurrencyUI(float buttonWidth)
     {
-        if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
+        if (ButtonIconSelectable("AddCurrency", buttonWidth, FontAwesomeIcon.Plus))
         {
-            if (ItemNames == null) LoadDataACC();
             ImGui.OpenPopup("AddCustomCurrency");
+            _currencyDicACC ??= ItemHandler.ItemNames;
         }
 
-        using var popup = ImRaii.Popup("AddCustomCurrency", ImGuiWindowFlags.AlwaysAutoResize);
-        if (popup.Success)
+        if (ImGui.BeginPopup("AddCustomCurrency", ImGuiWindowFlags.AlwaysAutoResize))
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("AddCustomCurrency"));
             ImGuiOm.HelpMarker(Service.Lang.GetText("CustomCurrencyHelp"));
@@ -46,121 +40,94 @@ public partial class Main
 
             ImGui.SetNextItemWidth(210f);
             ImGui.SameLine();
-            using var combo =
-                ImRaii.Combo(
-                    "",
-                    !string.IsNullOrEmpty(currencyNameAAC) ? currencyNameAAC : Service.Lang.GetText("PleaseSelect"),
-                    ImGuiComboFlags.HeightLarge);
-            if (combo)
+            if (ImGui.BeginCombo("###AddCustomCurrency",
+                                 _currencyIDACC != 0 ? CurrencyInfo.GetCurrencyLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
+                                 ImGuiComboFlags.HeightLarge))
             {
-                var startIndex = currentPageACC * 10;
-                var endIndex = Math.Min(startIndex + 10, itemNamesACC.Length);
+                var startIndex = _currentPageACC * 10;
+                var endIndex = Math.Min(startIndex + 10, _currencyDicACC.Count);
 
                 ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
                 if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"),
-                                            ref searchFilterCCT, 100))
-                    RefreshCustomCurrencyResultView();
+                                            ref _searchFilterACC, 100))
+                {
+                    LoadSearchResultForACC();
+                }
 
                 ImGui.SameLine();
                 ImGui.PushID("AddCustomCurrencyPagingComponent");
                 PagingComponent(
-                    () => currentPageACC = 0, 
-                    () => { if (currentPageACC > 0) currentPageACC--; }, 
-                    () => { if (itemNamesACC.Any() && currentPageACC < (itemNamesACC.Length / 10) - 1) currentPageACC++; }, 
-                    () => { if (itemNamesACC.Any()) currentPageACC = (itemNamesACC.Length / 10) - 1; });
+                    () => _currentPageACC = 0, 
+                    () => { if (_currentPageACC > 0) _currentPageACC--; }, 
+                    () => { if (_currentPageACC < (_currencyDicACC.Count / 10) - 1) _currentPageACC++; }, 
+                    () => { _currentPageACC = (_currencyDicACC.Count / 10) - 1; });
                 ImGui.PopID();
 
-                if (itemNamesACC.Any())
-                {
-                    ImGui.Separator();
-                    var items = itemNamesACC.Skip(startIndex).Take(endIndex - startIndex).ToArray();
-                    foreach (var itemName in items)
-                    {
-                        if (ItemNames.TryGetValue(itemName, out var itemID) && ImGui.Selectable(itemName))
-                        {
-                            currencyIDACC = itemID;
-                            currencyNameAAC = itemName;
-                        }
+                ImGui.Separator();
 
-                        if (ImGui.IsWindowAppearing() && currencyIDACC == itemID) ImGui.SetScrollHereY();
-                    }
+                var items = _currencyDicACC.Skip(startIndex).Take(endIndex - startIndex);
+                foreach (var item in items)
+                {
+                    ImGui.BeginDisabled(Service.Config.AllCurrencies.ContainsKey(item.Value));
+                    if (ImGui.Selectable($"{item.Key} ({item.Value})", item.Value == _currencyIDACC))
+                        _currencyIDACC = item.Value;
+                    ImGui.EndDisabled();
+
+                    if (ImGui.IsWindowAppearing() && _currencyIDACC == item.Value) ImGui.SetScrollHereY();
                 }
+
+                ImGui.EndCombo();
             }
 
-            if (ImGui.IsItemClicked() && !currenciesACC.SequenceEqual(Service.Config.AllCurrencyID))
-                LoadDataACC();
             ImGui.EndGroup();
 
             ImGui.SameLine();
             if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
             {
-                if (string.IsNullOrEmpty(currencyNameAAC))
+                if (_currencyIDACC == 0)
                 {
                     Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                     return;
                 }
 
-                if (Service.Config.AllCurrencies.ContainsValue(currencyNameAAC) || Service.Config.AllCurrencyID.Contains(currencyIDACC))
+                if (Service.Config.AllCurrencyID.Contains(_currencyIDACC))
                 {
                     Service.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 
-                Service.Config.CustomCurrencies.Add(currencyIDACC, currencyNameAAC);
+                Service.Config.CustomCurrencies.Add(_currencyIDACC, CurrencyInfo.GetCurrencyLocalName(_currencyIDACC));
                 Service.Config.Save();
 
                 ReloadOrderedOptions();
 
-                Service.Tracker.CheckCurrency(currencyIDACC, "", "", RecordChangeType.All, 1);
+                Service.Tracker.CheckCurrency(_currencyIDACC, "", "", RecordChangeType.All, 1);
                 currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
 
-                searchFilterCCT = string.Empty;
-                currencyIDACC = 0;
-                currencyNameAAC = string.Empty;
+                _searchFilterACC = string.Empty;
+                _currencyIDACC = 0;
 
                 ImGui.CloseCurrentPopup();
+                ImGui.EndCombo();
             }
+
+            ImGui.EndPopup();
         }
     }
 
-    private static void LoadDataACC()
-    {
-        var currencyNames = Service.Config.AllCurrencyID.Select(CurrencyInfo.GetCurrencyLocalName).ToHashSet();
-        currenciesACC = Service.Config.AllCurrencyID;
-
-        ItemNames = ItemHandler.ItemNames
-                               .Where(x => !currencyNames.Contains(x.Key))
-                               .ToDictionary(x => x.Key, x => x.Value);
-
-        itemNamesACC = ItemNames.Keys.ToArray();
-    }
-
-    private static string[] LoadSearchResultACC(string filter = "")
-    {
-        if (!string.IsNullOrEmpty(filter))
-        {
-            var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
-            return ItemNames
-                   .Keys
-                   .Where(itemName => itemName.Contains(filter, StringComparison.OrdinalIgnoreCase)
-                                      || 
-                                      (isCS && PinyinHelper.GetPinyin(itemName, "")
-                                                           .Contains(filter, StringComparison.OrdinalIgnoreCase)))
-                   .ToArray();
-        }
-
-        return ItemNames.Keys.ToArray();
-    }
-
-    private static void RefreshCustomCurrencyResultView()
+    private static void LoadSearchResultForACC()
     {
         TaskManager.Abort();
 
         TaskManager.DelayNext(250);
         TaskManager.Enqueue(() =>
         {
-            itemNamesACC = LoadSearchResultACC(searchFilterCCT);
-            currentPageACC = 0;
+            _currentPageACC = 0;
+            _currencyDicACC = string.IsNullOrWhiteSpace(_searchFilterACC) 
+                                  ? ItemHandler.ItemNames 
+                                  : ItemHandler.ItemNames
+                                               .Where(x => x.Key.Contains(_searchFilterACC))
+                                               .ToDictionary(x => x.Key, x => x.Value);
         });
     }
 }
