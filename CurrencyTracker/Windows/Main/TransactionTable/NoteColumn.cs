@@ -15,7 +15,7 @@ public partial class Main
 
     private static void NoteColumnHeaderUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Note"));
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -55,7 +55,7 @@ public partial class Main
             ImGui.SetNextItemWidth(270);
             if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(_selectedCurrencyID, new List<TransactionsConvertor> { transaction }, "None", editedNoteContent, currentView, currentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, new List<TransactionsConvertor> { transaction }, "None", editedNoteContent, currentView, currentViewID);
 
                 if (failCount == 0) 
                     RefreshTransactionsView();

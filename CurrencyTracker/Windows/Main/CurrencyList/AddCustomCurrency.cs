@@ -44,8 +44,10 @@ public partial class Main
                                  _currencyIDACC != 0 ? CurrencyInfo.GetCurrencyLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
                                  ImGuiComboFlags.HeightLarge))
             {
+                var itemCount = _currencyDicACC.Count;
+
                 var startIndex = _currentPageACC * 10;
-                var endIndex = Math.Min(startIndex + 10, _currencyDicACC.Count);
+                var endIndex = Math.Min(startIndex + 10, itemCount);
 
                 ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
                 if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"),
@@ -59,8 +61,8 @@ public partial class Main
                 PagingComponent(
                     () => _currentPageACC = 0, 
                     () => { if (_currentPageACC > 0) _currentPageACC--; }, 
-                    () => { if (_currentPageACC < (_currencyDicACC.Count / 10) - 1) _currentPageACC++; }, 
-                    () => { _currentPageACC = (_currencyDicACC.Count / 10) - 1; });
+                    () => { if (_currentPageACC < (itemCount / 10) - 1) _currentPageACC++; }, 
+                    () => { _currentPageACC = (itemCount / 10) - 1; });
                 ImGui.PopID();
 
                 ImGui.Separator();
@@ -102,7 +104,7 @@ public partial class Main
                 ReloadOrderedOptions();
 
                 Service.Tracker.CheckCurrency(_currencyIDACC, "", "", RecordChangeType.All, 1);
-                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(_selectedCurrencyID));
+                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
 
                 _searchFilterACC = string.Empty;
                 _currencyIDACC = 0;
@@ -119,7 +121,7 @@ public partial class Main
     {
         TaskManager.Abort();
 
-        TaskManager.DelayNext(250);
+        TaskManager.DelayNext(500);
         TaskManager.Enqueue(() =>
         {
             _currentPageACC = 0;

@@ -9,7 +9,7 @@ public partial class Main
 {
     private static void OrderColumnHeaderUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         var icon = Service.Config.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
         if (ImGuiOm.SelectableIconCentered("ReverseSort", icon))
         {

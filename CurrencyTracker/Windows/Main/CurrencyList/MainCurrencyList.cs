@@ -11,7 +11,6 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    public static uint _selectedCurrencyID;
     private static int _dragDropIndex = -1;
 
     private static unsafe void CurrencyListboxUI()
@@ -35,11 +34,11 @@ public partial class Main
                 ImGui.PushID(option.ToString());
                 ImGui.Indent(3f);
                 if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
-                                                    option == _selectedCurrencyID))
+                                                    option == SelectedCurrencyID))
                 {
-                    _selectedCurrencyID = option;
+                    SelectedCurrencyID = option;
                     currentTypeTransactions =
-                        ApplyFilters(TransactionsHandler.LoadAllTransactions(_selectedCurrencyID));
+                        ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
                     currentView = TransactionFileCategory.Inventory;
                     currentViewID = 0;
                 }
@@ -115,21 +114,21 @@ public partial class Main
     private static void DeleteCustomCurrencyUI(float buttonWidth)
     {
         ImGui.BeginDisabled(
-            _selectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(_selectedCurrencyID));
+            SelectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(SelectedCurrencyID));
 
         ButtonIconSelectable("DeleteCurrency", buttonWidth, FontAwesomeIcon.Trash,
                              $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
 
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
-            var localName = CurrencyInfo.GetCurrencyLocalName(_selectedCurrencyID);
-            if (Service.Config.CustomCurrencies[_selectedCurrencyID] != localName)
+            var localName = CurrencyInfo.GetCurrencyLocalName(SelectedCurrencyID);
+            if (Service.Config.CustomCurrencies[SelectedCurrencyID] != localName)
                 P.CurrencySettings.RenameCurrencyHandler(localName);
 
-            Service.Config.CustomCurrencies.Remove(_selectedCurrencyID);
+            Service.Config.CustomCurrencies.Remove(SelectedCurrencyID);
             Service.Config.Save();
 
-            _selectedCurrencyID = 0;
+            SelectedCurrencyID = 0;
             ReloadOrderedOptions();
         }
 
@@ -138,7 +137,7 @@ public partial class Main
 
     private static void CurrencySettingsUI(float buttonWidth)
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0);
         if (ButtonIconSelectable("CurrencySettings", buttonWidth, FontAwesomeIcon.Cog))
             P.CurrencySettings.IsOpen ^= true;
         ImGui.EndDisabled();

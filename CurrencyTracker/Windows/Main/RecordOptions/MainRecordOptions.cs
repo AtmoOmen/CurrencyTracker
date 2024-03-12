@@ -32,7 +32,7 @@ public partial class Main
 
     private void MergeTransactionUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("Merge"))) ImGui.OpenPopup("MergeTransactions");
         ImGui.EndDisabled();
 
@@ -62,19 +62,19 @@ public partial class Main
     private void MergeTransactionHandler(bool oneWay)
     {
         var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
-        var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(_selectedCurrencyID, threshold, oneWay);
+        var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(SelectedCurrencyID, threshold, oneWay);
 
         if (mergeCount > 0)
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
         else
             Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
-        UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+        UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
     }
 
     private void ExportDataUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.FileExport, Service.Lang.GetText("Export"))) ImGui.OpenPopup("ExportFileRename");
         ImGui.EndDisabled();
 
@@ -108,12 +108,12 @@ public partial class Main
             {
                 if (currentTypeTransactions.Count == 0) return;
 
-                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, _selectedCurrencyID, exportDataFileType)}");
+                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
             }
-            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[_selectedCurrencyID]}_{nowTime}.csv");
+            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
 
             ImGui.SameLine();
-            ImGui.Text($"_{Service.Config.AllCurrencies[_selectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
+            ImGui.Text($"_{Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
         }
     }
 }

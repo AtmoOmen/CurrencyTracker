@@ -274,7 +274,7 @@ public class Settings : Window, IDisposable
                 foreach (var languageInfo in LanguageManager.LanguageNames)
                 {
                     if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != Service.Config.SelectedLanguage)
-                        P.Main.LanguageSwitchHandler(languageInfo.Language);
+                        Main.LanguageSwitchHandler(languageInfo.Language);
 
                     ImGui.SameLine();
                     ImGui.Text($"{string.Join(", ", languageInfo.Translators)}");
@@ -297,7 +297,7 @@ public class Settings : Window, IDisposable
                             await LanguageUpdater.DownloadLanguageFilesAsync();
                             P.Main.isLangDownloading = false;
                             P.Main.isLangDownloaded = true;
-                            P.Main.LanguageSwitchHandler(Service.Config.SelectedLanguage);
+                            Main.LanguageSwitchHandler(Service.Config.SelectedLanguage);
                         });
                     }
                 }

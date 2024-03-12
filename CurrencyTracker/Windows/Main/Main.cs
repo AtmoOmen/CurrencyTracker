@@ -10,6 +10,8 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main : Window, IDisposable
 {
+    public static uint SelectedCurrencyID { get; set; } = 0;
+
     private bool showRecordOptions = true;
     private bool showOthers = true;
 
@@ -29,9 +31,6 @@ public partial class Main : Window, IDisposable
         Service.Tracker.CurrencyChanged += OnCurrencyChanged;
         Service.Tracker.CurrencyChanged += ServerBar.OnCurrencyChanged;
 
-        searchTimerMCS.Elapsed += SearchTimerMCSElapsed;
-        searchTimerMCS.AutoReset = false;
-
         startDatePicker.DateSelected += RefreshTransactionsView;
         endDatePicker.DateSelected += RefreshTransactionsView;
 
@@ -45,8 +44,8 @@ public partial class Main : Window, IDisposable
         if (visibleColumns == Array.Empty<string>())
             visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
-        if (_selectedCurrencyID != 0)
-            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+        if (SelectedCurrencyID != 0)
+            UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
 
         base.OnOpen();
     }
@@ -91,11 +90,7 @@ public partial class Main : Window, IDisposable
 
         ServerBar.DtrEntry.Dispose();
 
-        TaskManager.Abort();
-
-        searchTimerMCS.Elapsed -= SearchTimerMCSElapsed;
-        searchTimerMCS.Stop();
-        searchTimerMCS.Dispose();
+        TaskManager?.Abort();
 
         startDatePicker.DateSelected -= RefreshTransactionsView;
         endDatePicker.DateSelected -= RefreshTransactionsView;

@@ -19,7 +19,7 @@ public partial class Main
 
     private static void ChangeColumnHeaderUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {

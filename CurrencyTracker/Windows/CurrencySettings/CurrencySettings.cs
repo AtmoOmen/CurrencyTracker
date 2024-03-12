@@ -11,13 +11,13 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings : Window, IDisposable
 {
-    private readonly Main? M = Plugin.P.Main;
+    private readonly Main? M = P.Main;
 
     private uint selectedCurrencyID;
     private bool isEditingCurrencyName;
     private int currencyTextWidth = 200;
 
-    public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Plugin.Name}")
+    public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
@@ -33,13 +33,13 @@ public partial class CurrencySettings : Window, IDisposable
 
     public override void Draw()
     {
-        if (M == null || Main._selectedCurrencyID == 0)
+        if (M == null || Main.SelectedCurrencyID == 0)
         {
             IsOpen = false;
             return;
         }
 
-        selectedCurrencyID = Main._selectedCurrencyID;
+        selectedCurrencyID = Main.SelectedCurrencyID;
         ImGui.BeginGroup();
         using (var tab0 = ImRaii.TabBar("CurrencySettingsCT"))
         {

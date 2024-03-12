@@ -184,12 +184,12 @@ public partial class Main
 
     public static void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (!P.Main.IsOpen || _selectedCurrencyID == 0 || currencyID != _selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+        if (!P.Main.IsOpen || SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
 
         selectedStates.Clear();
         selectedTransactions.Clear();
 
-        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(_selectedCurrencyID, currentView, currentViewID));
+        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID));
         if (!characterCurrencyInfos.Any()) LoadDataMCS();
         else
         {
@@ -205,6 +205,6 @@ public partial class Main
         TaskManager.Abort();
 
         TaskManager.DelayNext(250);
-        TaskManager.Enqueue(() => UpdateTransactions(_selectedCurrencyID, currentView, currentViewID));
+        TaskManager.Enqueue(() => UpdateTransactions(SelectedCurrencyID, currentView, currentViewID));
     }
 }

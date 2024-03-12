@@ -18,7 +18,7 @@ public partial class Main
 
     private static void CheckboxColumnHeaderUI()
     {
-        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH)) ImGui.OpenPopup("TableTools");
         ImGui.EndDisabled();
 
@@ -28,7 +28,7 @@ public partial class Main
 
     private static void CheckboxColumnToolUI()
     {
-        var selectedCount = selectedTransactions[_selectedCurrencyID].Count;
+        var selectedCount = selectedTransactions[SelectedCurrencyID].Count;
         ImGui.Text($"{Service.Lang.GetText("Now")}: {selectedCount} {Service.Lang.GetText("Transactions")}");
         ImGui.Separator();
 
@@ -53,8 +53,8 @@ public partial class Main
                 return;
             }
 
-            selectedStates[_selectedCurrencyID].Clear();
-            selectedTransactions[_selectedCurrencyID].Clear();
+            selectedStates[SelectedCurrencyID].Clear();
+            selectedTransactions[SelectedCurrencyID].Clear();
         }
     }
 
@@ -63,9 +63,9 @@ public partial class Main
     {
         if (ImGui.Selectable(Service.Lang.GetText("SelectAll")))
         {
-            selectedTransactions[_selectedCurrencyID] = new List<TransactionsConvertor>(currentTypeTransactions);
-            selectedStates[_selectedCurrencyID] =
-                Enumerable.Repeat(true, selectedStates[_selectedCurrencyID].Count).ToList();
+            selectedTransactions[SelectedCurrencyID] = new List<TransactionsConvertor>(currentTypeTransactions);
+            selectedStates[SelectedCurrencyID] =
+                Enumerable.Repeat(true, selectedStates[SelectedCurrencyID].Count).ToList();
         }
     }
 
@@ -74,12 +74,12 @@ public partial class Main
     {
         if (ImGui.Selectable(Service.Lang.GetText("InverseSelect")))
         {
-            selectedStates[_selectedCurrencyID] = selectedStates[_selectedCurrencyID].Select(state => !state).ToList();
+            selectedStates[SelectedCurrencyID] = selectedStates[SelectedCurrencyID].Select(state => !state).ToList();
 
             var selectedSet =
-                new HashSet<TransactionsConvertor>(selectedTransactions[_selectedCurrencyID], new TransactionComparer());
+                new HashSet<TransactionsConvertor>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
 
-            selectedTransactions[_selectedCurrencyID] = currentTypeTransactions
+            selectedTransactions[SelectedCurrencyID] = currentTypeTransactions
                                                        .Where(transaction => !selectedSet.Contains(transaction))
                                                        .ToList();
         }
@@ -103,7 +103,7 @@ public partial class Main
             var stringBuilder = new StringBuilder();
             stringBuilder.AppendLine(header);
 
-            foreach (var record in selectedTransactions[_selectedCurrencyID])
+            foreach (var record in selectedTransactions[SelectedCurrencyID])
             {
                 var change = $"{record.Change:+ #,##0;- #,##0;0}";
                 var line = isCSV
@@ -128,16 +128,16 @@ public partial class Main
                 return;
             }
 
-            var filePath = TransactionsHandler.GetTransactionFilePath(_selectedCurrencyID, currentView, currentViewID);
+            var filePath = TransactionsHandler.GetTransactionFilePath(SelectedCurrencyID, currentView, currentViewID);
             var editedTransactions =
-                TransactionsHandler.LoadAllTransactions(_selectedCurrencyID, currentView, currentViewID);
+                TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID);
 
             var selectedSet =
-                new HashSet<TransactionsConvertor>(selectedTransactions[_selectedCurrencyID], new TransactionComparer());
+                new HashSet<TransactionsConvertor>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
             editedTransactions.RemoveAll(selectedSet.Contains);
 
             TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
-            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+            UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
         }
     }
 
@@ -152,8 +152,8 @@ public partial class Main
                 return;
             }
 
-            var filePath = TransactionsHandler.ExportData(selectedTransactions[_selectedCurrencyID], "",
-                                                          _selectedCurrencyID, Service.Config.ExportDataFileType, currentView,
+            var filePath = TransactionsHandler.ExportData(selectedTransactions[SelectedCurrencyID], "",
+                                                          SelectedCurrencyID, Service.Config.ExportDataFileType, currentView,
                                                           currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }
@@ -166,10 +166,10 @@ public partial class Main
         {
             if (isOnMergingTT)
             {
-                var t1 = selectedTransactions[_selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
+                var t1 = selectedTransactions[SelectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
                 editedLocationName = t1?.LocationName;
 
-                var t2 = selectedTransactions[_selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
+                var t2 = selectedTransactions[SelectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
                 editedNoteContent = t2?.Note;
 
                 if (isOnEdit) isOnEdit = false;
@@ -192,14 +192,14 @@ public partial class Main
 
         if (ImGui.SmallButton(Service.Lang.GetText("Confirm")))
         {
-            if (selectedTransactions[_selectedCurrencyID].Count < 2 || editedLocationName.IsNullOrWhitespace()) return;
+            if (selectedTransactions[SelectedCurrencyID].Count < 2 || editedLocationName.IsNullOrWhitespace()) return;
 
             var mergeCount = TransactionsHandler.MergeSpecificTransactions(
-                _selectedCurrencyID, editedLocationName, selectedTransactions[_selectedCurrencyID],
+                SelectedCurrencyID, editedLocationName, selectedTransactions[SelectedCurrencyID],
                 string.IsNullOrEmpty(editedNoteContent) ? "-1" : editedNoteContent, currentView, currentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
-            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+            UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
             isOnMergingTT = false;
         }
     }
@@ -209,15 +209,15 @@ public partial class Main
     {
         if (ImGui.Selectable(Service.Lang.GetText("Edit"), ref isOnEdit, ImGuiSelectableFlags.DontClosePopups))
         {
-            if (selectedTransactions[_selectedCurrencyID].Any())
+            if (selectedTransactions[SelectedCurrencyID].Any())
             {
                 if (isOnEdit)
                 {
-                    var t1 = selectedTransactions[_selectedCurrencyID]
+                    var t1 = selectedTransactions[SelectedCurrencyID]
                         .FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
                     editedLocationName = t1?.LocationName;
 
-                    var t2 = selectedTransactions[_selectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
+                    var t2 = selectedTransactions[SelectedCurrencyID].FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
                     editedNoteContent = t2?.Note;
 
                     if (isOnMergingTT) isOnMergingTT = !isOnMergingTT;
@@ -256,8 +256,8 @@ public partial class Main
     {
         if (editedLocationName.IsNullOrWhitespace()) return;
 
-        var failCount = TransactionsHandler.EditSpecificTransactions(_selectedCurrencyID,
-                                                                     selectedTransactions[_selectedCurrencyID],
+        var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID,
+                                                                     selectedTransactions[SelectedCurrencyID],
                                                                      editedLocationName, "None", currentView,
                                                                      currentViewID);
 
@@ -269,8 +269,8 @@ public partial class Main
     {
         if (editedNoteContent.IsNullOrWhitespace()) return;
 
-        var failCount = TransactionsHandler.EditSpecificTransactions(_selectedCurrencyID,
-                                                                     selectedTransactions[_selectedCurrencyID], "None",
+        var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID,
+                                                                     selectedTransactions[SelectedCurrencyID], "None",
                                                                      editedNoteContent, currentView, currentViewID);
 
         EditResultHandler(failCount, "", editedNoteContent);
@@ -282,25 +282,25 @@ public partial class Main
         if (failCount == 0)
         {
             Service.Chat.Print(
-                Service.Lang.GetText("EditHelp1", selectedTransactions[_selectedCurrencyID].Count,
+                Service.Lang.GetText("EditHelp1", selectedTransactions[SelectedCurrencyID].Count,
                                      string.IsNullOrEmpty(locationName)
                                          ? Service.Lang.GetText("Note")
                                          : Service.Lang.GetText("Location")) + " " +
                 (string.IsNullOrEmpty(locationName) ? noteContent : locationName));
 
-            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+            UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
         }
-        else if (failCount > 0 && failCount < selectedTransactions[_selectedCurrencyID].Count)
+        else if (failCount > 0 && failCount < selectedTransactions[SelectedCurrencyID].Count)
         {
             Service.Chat.Print(
-                Service.Lang.GetText("EditHelp1", selectedTransactions[_selectedCurrencyID].Count - failCount,
+                Service.Lang.GetText("EditHelp1", selectedTransactions[SelectedCurrencyID].Count - failCount,
                                      string.IsNullOrEmpty(locationName)
                                          ? Service.Lang.GetText("Note")
                                          : Service.Lang.GetText("Location")) + " " +
                 (string.IsNullOrEmpty(locationName) ? noteContent : locationName));
             Service.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCount})");
 
-            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
+            UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
         }
         else
             Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
@@ -312,20 +312,20 @@ public partial class Main
     {
         if (ImGui.Checkbox($"##select_{i}", ref selected))
         {
-            selectedStates[_selectedCurrencyID][i] = selected;
+            selectedStates[SelectedCurrencyID][i] = selected;
 
             if (selected)
             {
                 var comparer = new TransactionComparer();
-                var exists = selectedTransactions[_selectedCurrencyID].Any(t => comparer.Equals(t, transaction));
+                var exists = selectedTransactions[SelectedCurrencyID].Any(t => comparer.Equals(t, transaction));
 
-                if (!exists) selectedTransactions[_selectedCurrencyID].Add(transaction);
+                if (!exists) selectedTransactions[SelectedCurrencyID].Add(transaction);
             }
             else
             {
                 var comparer = new TransactionComparer();
 
-                selectedTransactions[_selectedCurrencyID].RemoveAll(t => comparer.Equals(t, transaction));
+                selectedTransactions[SelectedCurrencyID].RemoveAll(t => comparer.Equals(t, transaction));
             }
         }
 
