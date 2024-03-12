@@ -45,6 +45,8 @@ public class Configuration : IPluginConfiguration
     public bool AutoSaveMessage { get; set; } = false;
     public int AutoSaveMode { get; set; } = 0;      // 0 - Save Current ; 1 - Save All
     public int AutoSaveInterval { get; set; } = 60; // Minutes
+    public uint ServerBarDisplayCurrency { get; set; } = 1;
+    public int ServerBarDisplayMode { get; set; } = 0; // 0 - Today; 1 - Past 24 Hours; 2 - Past 3 Days; 3 - Past 7 Days;
     public bool AlertNotificationChat { get; set; } = false;
     public int RecordsPerPage { get; set; } = 20;
     public bool ChangeTextColoring { get; set; } = true;

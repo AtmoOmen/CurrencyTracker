@@ -184,7 +184,7 @@ public partial class Main
 
     public static void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+        if (!P.Main.IsOpen || selectedCurrencyID == 0 || currencyID != selectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
 
         selectedStates.Clear();
         selectedTransactions.Clear();

@@ -1,6 +1,6 @@
 global using static CurrencyTracker.Manager.Tools.Helpers;
 global using static CurrencyTracker.Plugin;
-global using static CurrencyTracker.Manager.Trackers.TerrioryHandler;
+global using static CurrencyTracker.Manager.Trackers.TerritoryHandler;
 global using static ECommons.GenericHelpers;
 using System;
 using System.Collections.Generic;
@@ -187,11 +187,9 @@ public sealed class Plugin : IDalamudPlugin
 
     public void OnCommand(string command, string args)
     {
-        if (Main.visibleColumns == Array.Empty<string>())
-            Main.visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
         if (string.IsNullOrEmpty(args))
         {
-            Main.IsOpen = !Main.IsOpen;
+            Main.IsOpen ^= true;
             return;
         }
 
@@ -272,10 +270,7 @@ public sealed class Plugin : IDalamudPlugin
         var currentCharacter = GetCurrentCharacter();
         if (currentCharacter == null) return;
 
-        if (Main.visibleColumns == Array.Empty<string>())
-            Main.visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
-
-        Main.IsOpen = !Main.IsOpen;
+        Main.IsOpen ^= true;
     }
 
     public void Dispose()

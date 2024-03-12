@@ -16,7 +16,7 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     public static readonly ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> characterCurrencyInfos = new();
     private IEnumerable<CharacterCurrencyInfo>? charactersToShow;

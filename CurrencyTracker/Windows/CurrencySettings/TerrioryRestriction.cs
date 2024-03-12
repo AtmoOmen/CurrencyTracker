@@ -52,14 +52,14 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
-        if (ImGui.BeginCombo("##AreaResticted", TerrioryHandler.TerritoryNames.TryGetValue(selectedAreaIDTR, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+        if (ImGui.BeginCombo("##AreaResticted", TerritoryHandler.TerritoryNames.TryGetValue(selectedAreaIDTR, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
         {
             ImGui.TextUnformatted("");
             ImGui.SameLine(8f, 0);
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - 8f);
             if (ImGui.InputText("", ref searchFilterTR, 50)) searchTimerTR.Restart();
 
-            foreach (var area in TerritoryNamesTR ?? TerrioryHandler.TerritoryNames) if (ImGui.Selectable($"{area.Key} | {area.Value}")) selectedAreaIDTR = area.Key;
+            foreach (var area in TerritoryNamesTR ?? TerritoryHandler.TerritoryNames) if (ImGui.Selectable($"{area.Key} | {area.Value}")) selectedAreaIDTR = area.Key;
             ImGui.EndCombo();
         }
 
@@ -76,9 +76,9 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
 
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
-        using (var combo = ImRaii.Combo("##RestrictedAreas", selectedAreaIDDeleteTR != 0 ? TerrioryHandler.TerritoryNames[selectedAreaIDDeleteTR] : "", ImGuiComboFlags.HeightLarge))
+        using (var combo = ImRaii.Combo("##RestrictedAreas", selectedAreaIDDeleteTR != 0 ? TerritoryHandler.TerritoryNames[selectedAreaIDDeleteTR] : "", ImGuiComboFlags.HeightLarge))
         {
-            if (combo) foreach (var area in rules.RestrictedAreas) if (ImGui.Selectable($"{area} | {TerrioryHandler.TerritoryNames[area]}")) selectedAreaIDDeleteTR = area;
+            if (combo) foreach (var area in rules.RestrictedAreas) if (ImGui.Selectable($"{area} | {TerritoryHandler.TerritoryNames[area]}")) selectedAreaIDDeleteTR = area;
         }
 
         ImGui.SameLine();
@@ -98,11 +98,11 @@ public partial class CurrencySettings
     {
         if (string.IsNullOrEmpty(searchFilterTR))
         {
-            TerritoryNamesTR = TerrioryHandler.TerritoryNames;
+            TerritoryNamesTR = TerritoryHandler.TerritoryNames;
         }
         else
         {
-            TerritoryNamesTR = TerrioryHandler.TerritoryNames
+            TerritoryNamesTR = TerritoryHandler.TerritoryNames
                 .Where(x => x.Value.Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase) || x.Key.ToString().Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase))
                 .ToDictionary(x => x.Key, x => x.Value);
         }

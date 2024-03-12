@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
@@ -39,6 +40,17 @@ public partial class Main : Window, IDisposable
         ReloadOrderedOptions();
     }
 
+    public override void OnOpen()
+    {
+        if (visibleColumns == Array.Empty<string>())
+            visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
+
+        if (selectedCurrencyID != 0)
+            UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
+
+        base.OnOpen();
+    }
+
     public override void Draw()
     {
         if (!Service.ClientState.IsLoggedIn) return;
@@ -55,7 +67,7 @@ public partial class Main : Window, IDisposable
         TransactionTableUI();
     }
 
-    private static void DrawCategory(ref bool showUI, string labelText, System.Action uiAction)
+    private static void DrawCategory(ref bool showUI, string labelText, Action uiAction)
     {
         ImGui.TextColored(showUI ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, labelText);
         if (ImGui.IsItemClicked())

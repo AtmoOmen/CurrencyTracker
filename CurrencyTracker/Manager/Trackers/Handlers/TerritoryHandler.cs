@@ -5,7 +5,7 @@ using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers;
 
-public class TerrioryHandler : ITrackerHandler
+public class TerritoryHandler : ITrackerHandler
 {
     public bool Initialized { get; set; }
     public bool isBlocked { get; set; }
@@ -22,7 +22,7 @@ public class TerrioryHandler : ITrackerHandler
                                 .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
                                 .ToDictionary(
                                     x => x.RowId,
-                                    x => Plugin.P.PluginInterface.Sanitizer.Sanitize(
+                                    x => P.PluginInterface.Sanitizer.Sanitize(
                                         x.PlaceName?.Value?.Name?.ToString()));
 
         PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
@@ -32,18 +32,16 @@ public class TerrioryHandler : ITrackerHandler
                                        : Service.Lang.GetText("UnknownLocation");
 
         Service.ClientState.TerritoryChanged += OnZoneChange;
-
-        Initialized = true;
     }
 
-    private void OnZoneChange(ushort obj)
+    private void OnZoneChange(ushort zone)
     {
         if (isBlocked) return;
 
         PreviousLocationID = CurrentLocationID;
         PreviousLocationName = CurrentLocationName;
 
-        CurrentLocationID = Service.ClientState.TerritoryType;
+        CurrentLocationID = zone;
         CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation)
                                   ? currentLocation
                                   : Service.Lang.GetText("UnknownLocation");
@@ -56,7 +54,5 @@ public class TerrioryHandler : ITrackerHandler
         TerritoryNames.Clear();
         PreviousLocationID = CurrentLocationID = 0;
         PreviousLocationName = CurrentLocationName = string.Empty;
-
-        Initialized = false;
     }
 }

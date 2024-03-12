@@ -15,7 +15,7 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main : Window, IDisposable
+public partial class Main
 {
     private void BackupUI()
     {

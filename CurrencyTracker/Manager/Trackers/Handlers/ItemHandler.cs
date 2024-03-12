@@ -19,12 +19,7 @@ public class ItemHandler : ITrackerHandler
                                        !string.IsNullOrEmpty(x.Name.RawString))
                            .ToDictionary(x => x.Name.RawString, x => x.RowId);
         ItemIDs = ItemNames.Values.ToHashSet();
-
-        Initialized = true;
     }
 
-    public void Uninit()
-    {
-        Initialized = false;
-    }
+    public void Uninit() { }
 }

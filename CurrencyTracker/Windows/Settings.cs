@@ -337,7 +337,8 @@ public class Settings : Window, IDisposable
             return;
         }
 
-        if (ImGuiOm.CheckboxColored($"{checkboxLabel}##{boolName}-{type.Name}", ref cbool))
+        ImGui.PushID($"{boolName}-{type.Name}");
+        if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref cbool))
         {
             Service.Config.ComponentEnabled[boolName] = !Service.Config.ComponentEnabled[boolName];
             var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
@@ -359,12 +360,14 @@ public class Settings : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
         }
+        ImGui.PopID();
     }
 
     private static void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")
     {
         var cbool = Service.Config.ComponentProp[boolName];
 
+        ImGui.PushID($"{checkboxLabel}-{boolName}");
         ImGui.Indent();
 
         if (ImGui.Checkbox(checkboxLabel, ref cbool))
@@ -380,6 +383,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.Unindent();
+        ImGui.PopID();
     }
 
     private static void SecondaryRadioButtons(
@@ -388,9 +392,10 @@ public class Settings : Window, IDisposable
         var cbool1 = Service.Config.ComponentProp[boolName1];
         var cbool2 = Service.Config.ComponentProp[boolName2];
 
+        ImGui.PushID($"{buttonLabel1}-{buttonLabel2}-{buttonLabel1}-{buttonLabel2}");
         ImGui.Indent();
 
-        if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
+        if (ImGui.RadioButton(buttonLabel1, cbool1))
         {
             Service.Config.ComponentProp[boolName1] = true;
             Service.Config.ComponentProp[boolName2] = false;
@@ -398,7 +403,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (ImGui.RadioButton($"{buttonLabel2}##{buttonLabel1}", cbool2))
+        if (ImGui.RadioButton(buttonLabel2, cbool2))
         {
             Service.Config.ComponentProp[boolName1] = false;
             Service.Config.ComponentProp[boolName2] = true;
@@ -411,6 +416,7 @@ public class Settings : Window, IDisposable
             ImGuiComponents.HelpMarker(help);
         }
         ImGui.Unindent();
+        ImGui.PopID();
     }
 
     private static void SecondaryRadioButtons(
@@ -423,16 +429,17 @@ public class Settings : Window, IDisposable
         var cbool1 = (int)propertyValue == 0;
         var cbool2 = (int)propertyValue == 1;
 
+        ImGui.PushID($"{buttonLabel1}-{buttonLabel2}-{buttonLabel1}-{buttonLabel2}");
         ImGui.Indent();
 
-        if (ImGui.RadioButton($"{buttonLabel1}##{buttonLabel2}", cbool1))
+        if (ImGui.RadioButton(buttonLabel1, cbool1))
         {
             typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 0);
             Service.Config.Save();
         }
 
         ImGui.SameLine();
-        if (ImGui.RadioButton($"{buttonLabel2}##{buttonLabel1}", cbool2))
+        if (ImGui.RadioButton(buttonLabel2, cbool2))
         {
             typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 1);
             Service.Config.Save();
@@ -443,7 +450,9 @@ public class Settings : Window, IDisposable
             ImGui.SameLine();
             ImGuiComponents.HelpMarker(help);
         }
+
         ImGui.Unindent();
+        ImGui.PopID();
     }
 
     private static void NoteContentInputText(string key, IReadOnlyList<string>? paramsEP)

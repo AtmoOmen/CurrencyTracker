@@ -37,6 +37,7 @@ public class HandlerManager
                 if (!handler.Initialized)
                 {
                     handler.Init();
+                    handler.Initialized = true;
                     Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
                 }
                 else
@@ -56,8 +57,17 @@ public class HandlerManager
     {
         if (handler == null) return;
 
-        handler.Uninit();
-        handler = default;
+        try
+        {
+            handler.Uninit();
+            handler.Initialized = false;
+            handler = default;
+        }
+        catch (Exception ex)
+        {
+            Service.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
+            Service.Log.Error(ex.StackTrace ?? "Unknown");
+        }
     }
 
     public static void Uninit()
@@ -66,6 +76,7 @@ public class HandlerManager
             try
             {
                 handler.Uninit();
+                handler.Initialized = false;
                 Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
             }
             catch (Exception ex)
