@@ -52,7 +52,7 @@ public partial class Main
 
     private static void TransactionTableUI()
     {
-        if (selectedCurrencyID == 0) return;
+        if (_selectedCurrencyID == 0) return;
 
         var windowWidth = ImGui.GetContentRegionAvail().X - Service.Config.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
 
@@ -83,7 +83,7 @@ public partial class Main
                         {
                             ImGui.TableNextColumn();
                             ColumnCellActions[column]
-                                .Invoke(i, selectedStates[selectedCurrencyID][i], currentTypeTransactions[i]);
+                                .Invoke(i, selectedStates[_selectedCurrencyID][i], currentTypeTransactions[i]);
                         }
                     }
                 }
@@ -125,8 +125,8 @@ public partial class Main
 
     private static void SelectedStatesWatcher(int transactionCount)
     {
-        var stateList = selectedStates.GetOrAdd(selectedCurrencyID, _ => new());
-        selectedTransactions.GetOrAdd(selectedCurrencyID, _ => new());
+        var stateList = selectedStates.GetOrAdd(_selectedCurrencyID, _ => new());
+        selectedTransactions.GetOrAdd(_selectedCurrencyID, _ => new());
 
         var itemsToAdd = transactionCount - stateList.Count;
         if (itemsToAdd > 0)
@@ -211,7 +211,7 @@ public partial class Main
             if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
                 currentTypeTransactions =
-                    ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
+                    ApplyFilters(TransactionsHandler.LoadAllTransactions(_selectedCurrencyID));
             }
 
             foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
@@ -220,7 +220,7 @@ public partial class Main
                 {
                     currentTypeTransactions =
                         ApplyFilters(TransactionsHandler.LoadAllTransactions(
-                                         selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                                         _selectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
 
                     currentView = TransactionFileCategory.Retainer;
                     currentViewID = retainer.Key;
@@ -230,7 +230,7 @@ public partial class Main
             {
                 currentTypeTransactions =
                     ApplyFilters(
-                        TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                        TransactionsHandler.LoadAllTransactions(_selectedCurrencyID,
                                                                 TransactionFileCategory.SaddleBag));
                 currentView = TransactionFileCategory.SaddleBag;
                 currentViewID = 0;
@@ -240,7 +240,7 @@ public partial class Main
             {
                 currentTypeTransactions =
                     ApplyFilters(
-                        TransactionsHandler.LoadAllTransactions(selectedCurrencyID,
+                        TransactionsHandler.LoadAllTransactions(_selectedCurrencyID,
                                                                 TransactionFileCategory.PremiumSaddleBag));
             }
         }
@@ -326,7 +326,7 @@ public partial class Main
 
     private static void TransactionTableInfoBarUI()
     {
-        if (selectedTransactions.TryGetValue(selectedCurrencyID, out var transactions) && transactions.Any())
+        if (selectedTransactions.TryGetValue(_selectedCurrencyID, out var transactions) && transactions.Any())
         {
             var count = transactions.Count;
             var sum = transactions.Sum(x => x.Change);

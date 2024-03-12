@@ -40,7 +40,7 @@ namespace CurrencyTracker.Windows
         // 图表窗口 Graphs Window
         private void GraphWindowUI()
         {
-            ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+            ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
             if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs"))) P.Graph.IsOpen = !P.Graph.IsOpen;
             ImGui.EndDisabled();
         }

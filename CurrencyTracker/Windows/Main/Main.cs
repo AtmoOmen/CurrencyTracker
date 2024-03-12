@@ -45,8 +45,8 @@ public partial class Main : Window, IDisposable
         if (visibleColumns == Array.Empty<string>())
             visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
-        if (selectedCurrencyID != 0)
-            UpdateTransactions(selectedCurrencyID, currentView, currentViewID);
+        if (_selectedCurrencyID != 0)
+            UpdateTransactions(_selectedCurrencyID, currentView, currentViewID);
 
         base.OnOpen();
     }

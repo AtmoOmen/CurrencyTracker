@@ -26,7 +26,7 @@ public partial class Main
 
     private static void TimeColumnHeaderUI()
     {
-        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
         {
@@ -115,7 +115,7 @@ public partial class Main
         {
             if (isLeftCtrl && !isRightMouse)
             {
-                selectedStates[selectedCurrencyID][i] = selected;
+                selectedStates[_selectedCurrencyID][i] = selected;
 
                 CheckAndUpdateSelectedStates(selected, transaction);
             }
@@ -125,7 +125,7 @@ public partial class Main
         {
             if (ImGui.IsItemHovered())
             {
-                selectedStates[selectedCurrencyID][i] = selected = true;
+                selectedStates[_selectedCurrencyID][i] = selected = true;
 
                 CheckAndUpdateSelectedStates(selected, transaction);
             }
@@ -137,7 +137,7 @@ public partial class Main
 
         void CheckAndUpdateSelectedStates(bool selected, TransactionsConvertor transaction)
         {
-            var selectedList = selectedTransactions[selectedCurrencyID];
+            var selectedList = selectedTransactions[_selectedCurrencyID];
 
             var comparer = new TransactionComparer();
 

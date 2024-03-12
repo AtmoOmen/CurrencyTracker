@@ -30,7 +30,7 @@ public class Graph : Window, IDisposable
 
     private void Initialize()
     {
-        if (Main.selectedCurrencyID == 0)
+        if (Main._selectedCurrencyID == 0)
             return;
 
         if (Main.currentTypeTransactions == null)
@@ -50,7 +50,7 @@ public class Graph : Window, IDisposable
 
         ImGui.Text($"{Service.Lang.GetText("Now")}:");
         ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, Service.Config.AllCurrencies[Main.selectedCurrencyID]);
+        ImGui.TextColored(ImGuiColors.DalamudOrange, Service.Config.AllCurrencies[Main._selectedCurrencyID]);
         ImGui.SameLine();
         ImGui.Text(Service.Lang.GetText("GraphLabel"));
         ImGui.SameLine();

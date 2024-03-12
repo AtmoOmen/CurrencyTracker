@@ -11,17 +11,14 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal static uint selectedCurrencyID;
-    internal int selectedOptionIndex = -1;
-
+    public static uint _selectedCurrencyID;
     private static int _dragDropIndex = -1;
 
-    private unsafe void CurrencyListboxUI()
+    private static unsafe void CurrencyListboxUI()
     {
-        selectedOptionIndex = Service.Config.OrderedOptions.IndexOf(selectedCurrencyID);
-
         var style = ImGui.GetStyle();
-        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset, ImGui.GetContentRegionAvail().Y);
+        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset,
+                                     ImGui.GetContentRegionAvail().Y);
         ImGui.PushStyleColor(ImGuiCol.ChildBg, style.Colors[(int)ImGuiCol.FrameBg]);
         if (ImGui.BeginChild("CurrencyList", childScale, false, ImGuiWindowFlags.NoScrollbar))
         {
@@ -37,21 +34,21 @@ public partial class Main
 
                 ImGui.PushID(option.ToString());
                 ImGui.Indent(3f);
-                if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName, i == selectedOptionIndex))
+                if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
+                                                    option == _selectedCurrencyID))
                 {
-                    selectedCurrencyID = option;
-                    currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(selectedCurrencyID));
+                    _selectedCurrencyID = option;
+                    currentTypeTransactions =
+                        ApplyFilters(TransactionsHandler.LoadAllTransactions(_selectedCurrencyID));
                     currentView = TransactionFileCategory.Inventory;
                     currentViewID = 0;
                 }
+
                 ImGui.Unindent(3f);
 
                 if (ImGui.BeginDragDropSource())
                 {
-                    if (ImGui.SetDragDropPayload("CurrencyListReorder", nint.Zero, 0))
-                    {
-                        _dragDropIndex = i;
-                    }
+                    if (ImGui.SetDragDropPayload("CurrencyListReorder", nint.Zero, 0)) _dragDropIndex = i;
 
                     ImGui.TextColored(ImGuiColors.DalamudYellow, currencyName);
 
@@ -65,6 +62,7 @@ public partial class Main
                         SwapOptions(_dragDropIndex, i);
                         _dragDropIndex = -1;
                     }
+
                     ImGui.EndDragDropTarget();
                 }
 
@@ -85,13 +83,13 @@ public partial class Main
 
             ImGui.EndChild();
         }
+
         ImGui.PopStyleColor();
     }
 
     private static void CurrencyListboxToolUI()
     {
         var buttonWidth = ImGui.GetContentRegionMax().X / 3;
-        ImGui.BeginGroup();
         AddCustomCurrencyUI(buttonWidth);
 
         ImGui.SameLine(0, 0);
@@ -99,7 +97,6 @@ public partial class Main
 
         ImGui.SameLine(0, 0);
         CurrencySettingsUI(buttonWidth);
-        ImGui.EndGroup();
     }
 
     private static void SwapOptions(int index1, int index2)
@@ -117,31 +114,33 @@ public partial class Main
 
     private static void DeleteCustomCurrencyUI(float buttonWidth)
     {
-        ImGui.BeginDisabled(selectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(selectedCurrencyID));
+        ImGui.BeginDisabled(
+            _selectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(_selectedCurrencyID));
 
-        ButtonIconSelectable("DeleteCurrency", buttonWidth, FontAwesomeIcon.Trash, $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
+        ButtonIconSelectable("DeleteCurrency", buttonWidth, FontAwesomeIcon.Trash,
+                             $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
 
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
-            var localName = CurrencyInfo.GetCurrencyLocalName(selectedCurrencyID);
-            if (Service.Config.CustomCurrencies[selectedCurrencyID] != localName) P.CurrencySettings.RenameCurrencyHandler(localName);
+            var localName = CurrencyInfo.GetCurrencyLocalName(_selectedCurrencyID);
+            if (Service.Config.CustomCurrencies[_selectedCurrencyID] != localName)
+                P.CurrencySettings.RenameCurrencyHandler(localName);
 
-            Service.Config.CustomCurrencies.Remove(selectedCurrencyID);
+            Service.Config.CustomCurrencies.Remove(_selectedCurrencyID);
             Service.Config.Save();
 
-            selectedCurrencyID = 0;
+            _selectedCurrencyID = 0;
             ReloadOrderedOptions();
         }
+
         ImGui.EndDisabled();
     }
 
     private static void CurrencySettingsUI(float buttonWidth)
     {
-        ImGui.BeginDisabled(selectedCurrencyID == 0);
+        ImGui.BeginDisabled(_selectedCurrencyID == 0);
         if (ButtonIconSelectable("CurrencySettings", buttonWidth, FontAwesomeIcon.Cog))
-        {
             P.CurrencySettings.IsOpen ^= true;
-        }
         ImGui.EndDisabled();
     }
 
@@ -152,13 +151,10 @@ public partial class Main
         var style = ImGui.GetStyle();
         var padding = style.FramePadding.X;
 
-        ImGui.PushFont(UiBuilder.IconFont);
-        var size = new Vector2(buttonWidth, ImGui.CalcTextSize(icon.ToIconString()).Y + 2 * padding);
-        ImGui.PopFont();
-
         ImGui.PushStyleColor(ImGuiCol.Button, 0);
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}", size);
+        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}",
+                                  new Vector2(buttonWidth, ImGui.CalcTextSize(icon.ToIconString()).Y + (2 * padding)));
         ImGui.PopFont();
         ImGui.PopStyleColor();
 

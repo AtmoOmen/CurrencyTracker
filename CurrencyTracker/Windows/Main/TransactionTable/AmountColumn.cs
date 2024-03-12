@@ -8,7 +8,7 @@ public partial class Main
 {
     private static void AmountColumnHeaderUI()
     {
-        ImGui.BeginDisabled(selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(_selectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.Text(Service.Lang.GetText("Amount"));
         ImGui.EndDisabled();
     }

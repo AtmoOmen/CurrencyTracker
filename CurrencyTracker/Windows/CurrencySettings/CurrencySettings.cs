@@ -33,13 +33,13 @@ public partial class CurrencySettings : Window, IDisposable
 
     public override void Draw()
     {
-        if (M == null || Main.selectedCurrencyID == 0)
+        if (M == null || Main._selectedCurrencyID == 0)
         {
             IsOpen = false;
             return;
         }
 
-        selectedCurrencyID = Main.selectedCurrencyID;
+        selectedCurrencyID = Main._selectedCurrencyID;
         ImGui.BeginGroup();
         using (var tab0 = ImRaii.TabBar("CurrencySettingsCT"))
         {
