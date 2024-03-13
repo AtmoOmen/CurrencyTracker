@@ -27,21 +27,15 @@ public partial class Main
 
             for (var i = 0; i < Service.Config.OrderedOptions.Count; i++)
             {
-                var option = Service.Config.OrderedOptions[i];
-                var currencyName = Service.Config.AllCurrencies[option];
-                var currencyIcon = Service.Config.AllCurrencyIcons[option].ImGuiHandle;
+                var id = Service.Config.OrderedOptions[i];
+                var currencyName = Service.Config.AllCurrencies[id];
+                var currencyIcon = Service.Config.AllCurrencyIcons[id].ImGuiHandle;
 
-                ImGui.PushID(option.ToString());
+                ImGui.PushID(id.ToString());
                 ImGui.Indent(3f);
                 if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
-                                                    option == SelectedCurrencyID))
-                {
-                    SelectedCurrencyID = option;
-                    currentTypeTransactions =
-                        ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
-                    currentView = TransactionFileCategory.Inventory;
-                    currentViewID = 0;
-                }
+                                                    id == SelectedCurrencyID))
+                    LoadCurrencyTransactions(id);
 
                 ImGui.Unindent(3f);
 
@@ -72,7 +66,7 @@ public partial class Main
 
                     ImGui.SameLine();
                     ImGui.SetCursorPosY(10f);
-                    ImGui.Text($"{currencyName} ({option})");
+                    ImGui.Text($"{currencyName} ({id})");
 
                     ImGui.EndPopup();
                 }
@@ -84,6 +78,16 @@ public partial class Main
         }
 
         ImGui.PopStyleColor();
+    }
+
+    public static void LoadCurrencyTransactions(
+        uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
+    {
+        SelectedCurrencyID = ID;
+        currentTypeTransactions =
+            ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
+        currentView = view;
+        currentViewID = 0;
     }
 
     private static void CurrencyListboxToolUI()

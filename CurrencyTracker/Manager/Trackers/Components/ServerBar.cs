@@ -15,7 +15,7 @@ public class ServerBar : ITrackerComponent
 
     internal static DtrBarEntry? DtrEntry;
 
-    internal static long? LastPeriodChanges = null;
+    internal static long LastPeriodChanges;
     private static TaskManager? TaskManager;
 
     public void Init()
@@ -51,15 +51,14 @@ public class ServerBar : ITrackerComponent
     private static void UpdateDtrEntry()
     {
         var thisPeriodChanges = GetChanges(ApplyDateTimeFilter);
-        var previousPeriodChanges = LastPeriodChanges ?? GetChanges(ApplyPreviousPeriodDateTimeFilter);
-        LastPeriodChanges = previousPeriodChanges;
+        LastPeriodChanges = GetChanges(ApplyPreviousPeriodDateTimeFilter);
 
         DtrEntry.Text = new SeStringBuilder()
                         .AddText(
                             $"$ {CurrencyInfo.GetCurrencyName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}")
                         .Build();
-        DtrEntry.Tooltip = $"周期模式: {"今天"}\n" +
-                           $"上一周期: {previousPeriodChanges:+ #,##0;- #,##0;0}";
+        DtrEntry.Tooltip = $"{Service.Lang.GetText("CycleMode")}: {GetCycleModeLoc(Service.Config.ServerBarCycleMode)}\n\n" +
+                           $"{Service.Lang.GetText("PreviousCycle")}: {LastPeriodChanges:+ #,##0;- #,##0;0}";
     }
 
     private static long GetChanges(
@@ -114,7 +113,7 @@ public class ServerBar : ITrackerComponent
         var endTime = DateTime.Now;
 
         // 0 - Today; 1 - Past 24 Hours; 2 - Past 3 Days; 3 - Past 7 Days;
-        startTime = Service.Config.ServerBarDisplayMode switch
+        startTime = Service.Config.ServerBarCycleMode switch
         {
             0 => DateTime.Today,
             1 => DateTime.Now.AddDays(-1),
@@ -136,6 +135,18 @@ public class ServerBar : ITrackerComponent
         return (previousStartTime, previousEndTime);
     }
 
+    internal static string GetCycleModeLoc(int mode)
+    {
+        var loc = mode switch
+        {
+            0 => Service.Lang.GetText("Today"),
+            1 => Service.Lang.GetText("Past24Hours"),
+            2 => Service.Lang.GetText("Past3Days"),
+            3 => Service.Lang.GetText("Past7Days"),
+            _ => string.Empty
+        };
+        return loc;
+    }
 
     public void Uninit()
     {

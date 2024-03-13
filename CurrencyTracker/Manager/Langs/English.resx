@@ -728,4 +728,28 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Total" xml:space="preserve">
     <value>Total</value>
   </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>Cycle Mode</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>Display Currency Changes in Server Bar</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>Displayed Currency</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>Past 24 Hours</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>Past 3 Days</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>Pasy 7 Days</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>Previous Cycle</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Today</value>
+  </data>
 </root>

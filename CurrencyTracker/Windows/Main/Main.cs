@@ -12,8 +12,9 @@ public partial class Main : Window, IDisposable
 {
     public static uint SelectedCurrencyID { get; set; } = 0;
 
-    private bool showRecordOptions = true;
-    private bool showOthers = true;
+    private static bool _showRecordOptions = true;
+    private static bool _showOthers = true;
+    private static bool _shouldRefreshTransactions;
 
     private static TaskManager? TaskManager;
 
@@ -44,7 +45,7 @@ public partial class Main : Window, IDisposable
         if (visibleColumns == Array.Empty<string>())
             visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
-        if (SelectedCurrencyID != 0)
+        if (SelectedCurrencyID != 0 && _shouldRefreshTransactions)
             UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
 
         base.OnOpen();
@@ -54,9 +55,9 @@ public partial class Main : Window, IDisposable
     {
         if (!Service.ClientState.IsLoggedIn) return;
 
-        DrawCategory(ref showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
-        if (!showRecordOptions && !showOthers) ImGui.SameLine();
-        DrawCategory(ref showOthers, Service.Lang.GetText("Category-Others"), OthersUI);
+        DrawCategory(ref _showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
+        if (!_showRecordOptions && !_showOthers) ImGui.SameLine();
+        DrawCategory(ref _showOthers, Service.Lang.GetText("Category-Others"), OthersUI);
 
         ImGui.Spacing();
         ImGui.Separator();

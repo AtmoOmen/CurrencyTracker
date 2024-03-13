@@ -140,13 +140,13 @@ public class Settings : Window, IDisposable
             if (ImGui.BeginTabItem(Service.Lang.GetText("Features")))
             {
                 ModuleCheckbox(typeof(CurrencyUIEdit), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
-                ModuleCheckbox(typeof(ServerBar), "在服务器信息栏显示货币信息");
+                ModuleCheckbox(typeof(ServerBar), Service.Lang.GetText("DisplayChangesInServerBar"));
                 if (Service.Config.ComponentEnabled["ServerBar"])
                 {
                     ImGui.Indent();
 
                     ImGui.AlignTextToFramePadding();
-                    ImGui.Text("待展示货币:");
+                    ImGui.Text($"{Service.Lang.GetText("DisplayedCurrency")}:");
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
@@ -159,6 +159,26 @@ public class Settings : Window, IDisposable
                             {
                                 Service.Config.ServerBarDisplayCurrency = currency.Key;
                                 ServerBar.OnCurrencyChanged(currency.Key, TransactionFileCategory.Inventory, 0);
+
+                                Service.Config.Save();
+                            }
+                        }
+                        ImGui.EndCombo();
+                    }
+
+                    ImGui.AlignTextToFramePadding();
+                    ImGui.Text($"{Service.Lang.GetText("CycleMode")}:");
+
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
+                    if (ImGui.BeginCombo("###ServerBarCycleMode", ServerBar.GetCycleModeLoc(Service.Config.ServerBarCycleMode)))
+                    {
+                        for (var i = 0; i < 4; i++)
+                        {
+                            if (ImGui.Selectable(ServerBar.GetCycleModeLoc(i), i == Service.Config.ServerBarCycleMode))
+                            {
+                                Service.Config.ServerBarCycleMode = i;
+                                ServerBar.OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
 
                                 Service.Config.Save();
                             }

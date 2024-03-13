@@ -184,7 +184,13 @@ public partial class Main
 
     public static void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (!P.Main.IsOpen || SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+        if (SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+
+        if (!P.Main.IsOpen)
+        {
+            _shouldRefreshTransactions = true;
+            return;
+        }
 
         selectedStates.Clear();
         selectedTransactions.Clear();
