@@ -3,15 +3,16 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace CurrencyTracker.Manager;
+namespace CurrencyTracker.Manager.Langs;
 
 public class LanguageUpdater
 {
+    private const string baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
+    private const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/"; // Mainly for CN players
+
     public static async Task DownloadLanguageFilesAsync()
     {
         var httpClient = new HttpClient();
-        const string baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
-        const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/"; // Mainly for CN players
 
         if (!Directory.Exists(LanguageManager.LangsDirectory))
             Directory.CreateDirectory(LanguageManager.LangsDirectory);

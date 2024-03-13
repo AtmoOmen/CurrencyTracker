@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Langs;
 using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
@@ -7,6 +8,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Utility;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
+using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Windows;
 
@@ -87,9 +89,8 @@ public partial class Main
             for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
             {
                 var languageInfo = LanguageManager.LanguageNames[i];
-                if (ImGui.Selectable(languageInfo.DisplayName,
-                                     Service.Config.SelectedLanguage == languageInfo.Language))
-                    LanguageSwitchHandler(languageInfo.Language);
+                if (ImGui.Selectable(languageInfo.DisplayName, Service.Config.SelectedLanguage == languageInfo.Language))
+                    Service.Lang.SwitchLanguage(languageInfo.Language);
                 ImGuiOm.TooltipHover($"By: {string.Join(", ", languageInfo.Translators)}");
 
                 if (i + 1 != LanguageManager.LanguageNames.Length) ImGui.Separator();
@@ -114,7 +115,7 @@ public partial class Main
                         await LanguageUpdater.DownloadLanguageFilesAsync();
                         isLangDownloading = false;
                         isLangDownloaded = true;
-                        LanguageSwitchHandler(Service.Config.SelectedLanguage);
+                        Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
                     });
                 }
             }
@@ -126,19 +127,6 @@ public partial class Main
 
             ImGui.EndPopup();
         }
-    }
-
-    internal static void LanguageSwitchHandler(string languageName)
-    {
-        Service.Config.SelectedLanguage = languageName;
-        Service.Lang = new LanguageManager(Service.Config.SelectedLanguage);
-        Service.CommandManager.RemoveHandler(CommandName);
-        Service.CommandManager.AddHandler(CommandName, new CommandInfo(P.OnCommand)
-        {
-            HelpMessage = Service.Lang.GetText("CommandHelp") + "\n" + Service.Lang.GetText("CommandHelp1")
-        });
-
-        Service.Config.Save();
     }
 
     private static void TestingFeaturesUI() { }

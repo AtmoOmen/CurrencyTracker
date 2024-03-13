@@ -1,13 +1,13 @@
 using System.Linq;
-using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
-namespace CurrencyTracker;
+namespace CurrencyTracker.Manager;
 
 public class Service
 {
@@ -29,9 +29,8 @@ public class Service
         {
             playerLang = ClientState.ClientLanguage.ToString();
             if (LanguageManager.LanguageNames.All(x => x.Language != playerLang))
-            {
                 playerLang = "English";
-            }
+
             Config.SelectedLanguage = playerLang;
             Config.Save();
         }
@@ -41,10 +40,8 @@ public class Service
 
     private static void InitCharacter()
     {
-        if (ClientState.LocalPlayer != null || ClientState.LocalContentId != 0)
-        {
+        if (ClientState.LocalPlayer != null && ClientState.LocalContentId != 0)
             P.CurrentCharacter = P.GetCurrentCharacter();
-        }
     }
 
     [PluginService] public static IClientState ClientState { get; private set; } = null!;

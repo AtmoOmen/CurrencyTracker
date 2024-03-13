@@ -1,3 +1,4 @@
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using ImGuiNET;
 using OmenTools.ImGuiOm;

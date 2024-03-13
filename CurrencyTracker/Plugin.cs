@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;

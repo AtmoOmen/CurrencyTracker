@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;

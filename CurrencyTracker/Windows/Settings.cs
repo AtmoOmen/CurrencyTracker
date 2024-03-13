@@ -5,17 +5,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
+using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Windows;
 
@@ -294,7 +295,7 @@ public class Settings : Window, IDisposable
                 foreach (var languageInfo in LanguageManager.LanguageNames)
                 {
                     if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != Service.Config.SelectedLanguage)
-                        Main.LanguageSwitchHandler(languageInfo.Language);
+                        Service.Lang.SwitchLanguage(languageInfo.Language);
 
                     ImGui.SameLine();
                     ImGui.Text($"{string.Join(", ", languageInfo.Translators)}");
@@ -317,7 +318,7 @@ public class Settings : Window, IDisposable
                             await LanguageUpdater.DownloadLanguageFilesAsync();
                             P.Main.isLangDownloading = false;
                             P.Main.isLangDownloaded = true;
-                            Main.LanguageSwitchHandler(Service.Config.SelectedLanguage);
+                            Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
                         });
                     }
                 }

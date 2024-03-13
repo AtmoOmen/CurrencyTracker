@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
@@ -18,8 +19,6 @@ public partial class Main
     private static DatePicker startDatePicker = new(Service.Lang.GetText("WeekDays"));
     private static DatePicker endDatePicker = new(Service.Lang.GetText("WeekDays"));
 
-    private static string lastLangTF = string.Empty;
-
     private static int clusterHour;
     private static bool startDateEnable;
     private static bool endDateEnable;
@@ -29,15 +28,7 @@ public partial class Main
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-        {
-            if (lastLangTF != Service.Lang.Language)
-            {
-                startDatePicker = new(Service.Lang.GetText("WeekDays"));
-                endDatePicker = new(Service.Lang.GetText("WeekDays"));
-                lastLangTF = Service.Lang.Language;
-            }
             ImGui.OpenPopup("TimeFunctions");
-        }
         ImGui.EndDisabled();
 
         using var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar);
@@ -150,5 +141,11 @@ public partial class Main
                 selectedList.RemoveAll(t => comparer.Equals(t, transaction));
             }
         }
+    }
+
+    private static void SwitchDatePickerLanguage(string lang)
+    {
+        startDatePicker = new(Service.Lang.GetText("WeekDays"));
+        endDatePicker = new(Service.Lang.GetText("WeekDays"));
     }
 }

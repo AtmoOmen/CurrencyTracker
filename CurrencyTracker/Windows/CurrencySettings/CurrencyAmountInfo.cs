@@ -1,4 +1,5 @@
 using System.Linq;
+using CurrencyTracker.Manager;
 using ImGuiNET;
 
 namespace CurrencyTracker.Windows;

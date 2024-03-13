@@ -3,57 +3,36 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Dalamud.Game.Command;
 using Dalamud.Game.Text.SeStringHandling;
 
-namespace CurrencyTracker.Manager;
+namespace CurrencyTracker.Manager.Langs;
 
 public partial class LanguageManager
 {
     public static string LangsDirectory { get; private set; } = null!;
-    public string Language { get; private set; }
+    public string? Language { get; private set; }
 
-    private readonly Dictionary<string, string>? resourceData;
-    private readonly Dictionary<string, string>? fbResourceData;
+    public delegate void LanguageChangeDelegate(string language);
+    public event LanguageChangeDelegate? LanguageChange;
+
+    private Dictionary<string, string>? resourceData;
+    private Dictionary<string, string>? fbResourceData;
 
     public static readonly TranslationInfo[] LanguageNames =
     {
         new() { Language = "English", DisplayName = "English", Translators = new string[1] { "AtmoOmen" } },
         new() { Language = "Spanish", DisplayName = "Español", Translators = new string[1] { "Risu" } },
         new() { Language = "German", DisplayName = "Deutsch", Translators = new string[2] { "vyrnius", "alex97000" } },
-        new()
-        {
-            Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" }
-        },
+        new() { Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" } },
         new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" } },
         new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[2] { "Fluxus", "AtmoOmen" } }
     };
 
-    public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")
-    {
-        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName),
-                                   "Manager", "Langs");
+    public LanguageManager(string languageName, bool isDev = false, string devLangPath = "") 
+        => SwitchLanguage(languageName, isDev, devLangPath);
 
-        if (isDev)
-            resourceData = LoadResourceFile(devLangPath);
-        else
-        {
-            if (LanguageNames.All(x => x.Language != languageName)) languageName = "English";
-
-            var resourcePath = Path.Join(LangsDirectory, languageName + ".resx");
-            if (!File.Exists(resourcePath)) LanguageUpdater.DownloadLanguageFilesAsync().GetAwaiter().GetResult();
-            resourceData = LoadResourceFile(resourcePath);
-        }
-
-        var fbResourcePath = languageName == "ChineseTraditional"
-                                 ? Path.Join(LangsDirectory, "ChineseSimplified.resx")
-                                 : Path.Join(LangsDirectory, "English.resx");
-
-        fbResourceData = LoadResourceFile(fbResourcePath);
-
-        Language = languageName;
-    }
-
-    private Dictionary<string, string> LoadResourceFile(string filePath)
+    private static Dictionary<string, string> LoadResourceFile(string filePath)
     {
         var data = new Dictionary<string, string>();
 
@@ -73,6 +52,43 @@ public partial class LanguageManager
         }
 
         return data;
+    }
+
+    public void SwitchLanguage(string languageName, bool isDev = false, string devLangPath = "")
+    {
+        if (languageName == Language) return;
+
+        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName),
+                                   "Manager", "Langs");
+
+        if (isDev)
+            resourceData = LoadResourceFile(devLangPath);
+        else
+        {
+            if (LanguageNames.All(x => x.Language != languageName)) languageName = "English";
+
+            var resourcePath = Path.Join(LangsDirectory, languageName + ".resx");
+            if (!File.Exists(resourcePath)) LanguageUpdater.DownloadLanguageFilesAsync().GetAwaiter().GetResult();
+
+            resourceData = LoadResourceFile(resourcePath);
+        }
+
+        var fbResourcePath = languageName == "ChineseTraditional"
+                                 ? Path.Join(LangsDirectory, "ChineseSimplified.resx")
+                                 : Path.Join(LangsDirectory, "English.resx");
+        fbResourceData = LoadResourceFile(fbResourcePath);
+
+        Language = languageName;
+        LanguageChange?.Invoke(languageName);
+
+        Service.CommandManager.RemoveHandler(CommandName);
+        Service.CommandManager.AddHandler(CommandName, new CommandInfo(P.OnCommand)
+        {
+            HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1")
+        });
+
+        Service.Config.SelectedLanguage = languageName;
+        Service.Config.Save();
     }
 
     public string GetText(string key, params object[] args)

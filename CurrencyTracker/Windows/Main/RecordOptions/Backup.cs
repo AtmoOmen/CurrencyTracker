@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;

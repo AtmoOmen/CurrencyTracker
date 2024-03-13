@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
@@ -24,18 +25,13 @@ public partial class Main : Window, IDisposable
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus;
 
         TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
-        Initialize(plugin);
-    }
-
-    private void Initialize(Plugin plugin)
-    {
+        
         Service.Tracker.CurrencyChanged += OnCurrencyChanged;
         Service.Tracker.CurrencyChanged += ServerBar.OnCurrencyChanged;
 
         startDatePicker.DateSelected += RefreshTransactionsView;
         endDatePicker.DateSelected += RefreshTransactionsView;
-
-        lastLangTF = Service.Lang.Language;
+        Service.Lang.LanguageChange += SwitchDatePickerLanguage;
 
         ReloadOrderedOptions();
     }
@@ -95,5 +91,6 @@ public partial class Main : Window, IDisposable
 
         startDatePicker.DateSelected -= RefreshTransactionsView;
         endDatePicker.DateSelected -= RefreshTransactionsView;
+        Service.Lang.LanguageChange -= SwitchDatePickerLanguage;
     }
 }

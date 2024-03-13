@@ -1,3 +1,4 @@
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
 using ImGuiNET;

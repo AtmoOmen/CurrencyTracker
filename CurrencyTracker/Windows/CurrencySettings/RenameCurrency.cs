@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;

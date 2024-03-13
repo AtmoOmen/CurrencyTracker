@@ -1,4 +1,5 @@
 using System.Numerics;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;

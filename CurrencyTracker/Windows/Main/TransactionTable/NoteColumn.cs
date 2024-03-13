@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;

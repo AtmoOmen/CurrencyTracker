@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
