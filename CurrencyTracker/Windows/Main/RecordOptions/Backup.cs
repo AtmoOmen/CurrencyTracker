@@ -9,7 +9,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -24,18 +23,17 @@ public partial class Main
             ImGui.OpenPopup("BackupUI");
         }
 
-        using (var popup = ImRaii.Popup("BackupUI"))
+        if (ImGui.BeginPopup("BackupUI"))
         {
-            if (popup.Success)
-            {
-                ManualBackupUI();
-                AutoBackupUI();
-                MaxBackupFileUI();
-            }
+            ManualBackupUI();
+            AutoBackupUI();
+            MaxBackupFileUI();
+
+            ImGui.EndPopup();
         }
     }
 
-    private void ManualBackupUI()
+    private static void ManualBackupUI()
     {
         ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("ManualBackup"));
         ImGui.Separator();
@@ -69,12 +67,12 @@ public partial class Main
         }
     }
 
-    private void AutoBackupUI()
+    private static void AutoBackupUI()
     {
         var autoSaveEnabled = Service.Config.ComponentEnabled["AutoSave"];
-        var autoSaveComponent = ComponentManager.Components.OfType<AutoSave>().FirstOrDefault();
-        var nextAutoSaveTime = DateTime.Today.Add(autoSaveComponent?.Initialized == true
-            ? (AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now)
+        var nextAutoSaveTime = DateTime.Today.Add(
+            autoSaveEnabled
+            ? AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now
             : TimeSpan.Zero);
         var timeFormat = nextAutoSaveTime.Hour == 0 ? "mm:ss" : "HH:mm:ss";
         var autoBackupText = autoSaveEnabled
@@ -86,16 +84,18 @@ public partial class Main
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            Service.Config.ComponentEnabled["AutoSave"] = !autoSaveEnabled;
-            if (autoSaveComponent != null)
+            Service.Config.ComponentEnabled["AutoSave"] ^= true;
+            var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == typeof(AutoSave));
+            if (component != null)
             {
-                if (autoSaveEnabled) ComponentManager.Load(autoSaveComponent);
-                else ComponentManager.Unload(autoSaveComponent);
+                if (Service.Config.ComponentEnabled["AutoSave"])
+                    ComponentManager.Load(component);
+                else
+                    ComponentManager.Unload(component);
             }
             else
-            {
-                Service.Log.Error("Fail to fetch AutoSave component");
-            }
+                Service.Log.Error($"Fail to fetch component {nameof(AutoSave)}");
+
             Service.Config.Save();
         }
 
@@ -133,7 +133,7 @@ public partial class Main
         }
     }
 
-    private void AutoSaveRadioButton(string textKey, int mode)
+    private static void AutoSaveRadioButton(string textKey, int mode)
     {
         var isSelected = Service.Config.AutoSaveMode == mode;
         ImGui.RadioButton(Service.Lang.GetText(textKey), isSelected);
@@ -144,7 +144,7 @@ public partial class Main
         }
     }
 
-    private void MaxBackupFileUI()
+    private static void MaxBackupFileUI()
     {
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
         ImGui.Separator();

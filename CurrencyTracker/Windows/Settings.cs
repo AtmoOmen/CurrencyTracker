@@ -340,7 +340,7 @@ public class Settings : Window, IDisposable
         ImGui.PushID($"{boolName}-{type.Name}");
         if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref cbool))
         {
-            Service.Config.ComponentEnabled[boolName] = !Service.Config.ComponentEnabled[boolName];
+            Service.Config.ComponentEnabled[boolName] ^= true;
             var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
             if (component != null)
             {
