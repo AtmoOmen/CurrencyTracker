@@ -51,8 +51,6 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.Login += HandleLogin;
         Service.ClientState.Logout += HandleLogout;
 
-        CommandHandler();
-
         WindowsHandler();
     }
 
@@ -180,12 +178,6 @@ public sealed class Plugin : IDalamudPlugin
         }
     }
 
-    private void CommandHandler()
-    {
-        var helpMessage = $"{Service.Lang.GetText("CommandHelp")}\n{Service.Lang.GetText("CommandHelp1")}";
-        Service.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) { HelpMessage = helpMessage });
-    }
-
     public void OnCommand(string command, string args)
     {
         if (string.IsNullOrEmpty(args))
@@ -301,6 +293,7 @@ public sealed class Plugin : IDalamudPlugin
         Service.ClientState.Logout -= HandleLogout;
 
         Service.CommandManager.RemoveHandler(CommandName);
+
         ECommonsMain.Dispose();
         Service.Config.Uninitialize();
     }
