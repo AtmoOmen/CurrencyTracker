@@ -8,7 +8,6 @@ using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -16,12 +15,10 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private void BackupUI()
+    private static void BackupUI()
     {
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Save, Service.Lang.GetText("Backup")))
-        {
             ImGui.OpenPopup("BackupUI");
-        }
 
         if (ImGui.BeginPopup("BackupUI"))
         {
@@ -40,7 +37,8 @@ public partial class Main
 
         if (ImGui.Button(Service.Lang.GetText("BackupCurrentCharacter")))
         {
-            var filePath = TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            var filePath =
+                TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
         }
 
@@ -52,12 +50,16 @@ public partial class Main
 
             foreach (var character in Service.Config.CurrentActiveCharacter)
             {
-                var backupPath = Path.Join(P.PluginInterface.ConfigDirectory.FullName, $"{character.Name}_{character.Server}");
-                if (string.IsNullOrEmpty(TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount))) failCharacters.Add($"{character.Name}@{character.Server}");
+                var backupPath = Path.Join(P.PluginInterface.ConfigDirectory.FullName,
+                                           $"{character.Name}_{character.Server}");
+                if (string.IsNullOrEmpty(
+                        TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount)))
+                    failCharacters.Add($"{character.Name}@{character.Server}");
                 else successCount++;
             }
 
-            Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) + (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
+            Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
+                               (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
 
             if (failCharacters.Any())
             {
@@ -72,12 +74,12 @@ public partial class Main
         var autoSaveEnabled = Service.Config.ComponentEnabled["AutoSave"];
         var nextAutoSaveTime = DateTime.Today.Add(
             autoSaveEnabled
-            ? AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now
-            : TimeSpan.Zero);
+                ? AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now
+                : TimeSpan.Zero);
         var timeFormat = nextAutoSaveTime.Hour == 0 ? "mm:ss" : "HH:mm:ss";
         var autoBackupText = autoSaveEnabled
-            ? $"{Service.Lang.GetText("AutoBackup")} ({nextAutoSaveTime.ToString(timeFormat)})"
-            : Service.Lang.GetText("AutoBackup");
+                                 ? $"{Service.Lang.GetText("AutoBackup")} ({nextAutoSaveTime.ToString(timeFormat)})"
+                                 : Service.Lang.GetText("AutoBackup");
 
         ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
         ImGuiOm.TooltipHover(Service.Lang.GetText("BackupHelp7"));

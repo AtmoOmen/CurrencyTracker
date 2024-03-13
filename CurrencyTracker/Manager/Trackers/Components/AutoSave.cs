@@ -34,32 +34,41 @@ public class AutoSave : ITrackerComponent
     }
 
     private static void AutoSaveHandler()
-{
-    switch (Service.Config.AutoSaveMode)
     {
-        case 0:
-            var filePath = TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            if (Service.Config.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
-            break;
-        case 1:
-            var failCharacters = Service.Config.CurrentActiveCharacter
-                .Where(c => string.IsNullOrEmpty(TransactionsHandler.BackupTransactions(Path.Combine(P.PluginInterface.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"), Service.Config.MaxBackupFilesCount)))
-                .Select(c => $"{c.Name}@{c.Server}")
-                .ToList();
+        switch (Service.Config.AutoSaveMode)
+        {
+            case 0:
+                var filePath =
+                    TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+                if (Service.Config.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                break;
+            case 1:
+                var failCharacters = Service.Config.CurrentActiveCharacter
+                                            .Where(c => string.IsNullOrEmpty(
+                                                       TransactionsHandler.BackupTransactions(
+                                                           Path.Combine(P.PluginInterface.ConfigDirectory.FullName,
+                                                                        $"{c.Name}_{c.Server}"),
+                                                           Service.Config.MaxBackupFilesCount)))
+                                            .Select(c => $"{c.Name}@{c.Server}")
+                                            .ToList();
 
-            var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
-            if (Service.Config.AutoSaveMessage)
-            {
-                Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) + (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
-                if (failCharacters.Any())
+                var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
+                if (Service.Config.AutoSaveMessage)
                 {
-                    Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
-                    failCharacters.ForEach(x => Service.Chat.PrintError(x));
+                    Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
+                                       (failCharacters.Any()
+                                            ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
+                                            : ""));
+                    if (failCharacters.Any())
+                    {
+                        Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                        failCharacters.ForEach(x => Service.Chat.PrintError(x));
+                    }
                 }
-            }
-            break;
+
+                break;
+        }
     }
-}
 
 
     public void Uninit()
