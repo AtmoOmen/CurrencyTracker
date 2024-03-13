@@ -727,4 +727,28 @@
   <data name="Total" xml:space="preserve">
     <value>总计</value>
   </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>周期模式</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>在服务器信息栏显示货币变化</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>待显示货币</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>过去 24 小时</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>过去 3 天</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>过去 7 天</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>上一周期</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>今天</value>
+  </data>
 </root>
