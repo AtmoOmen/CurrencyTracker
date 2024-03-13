@@ -247,6 +247,7 @@ public sealed class Plugin : IDalamudPlugin
     {
         PluginInterface.UiBuilder.Draw += DrawUI;
         PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
+        PluginInterface.UiBuilder.OpenMainUi += DrawMainUI;
 
         Main = new Main(this);
         WindowSystem.AddWindow(Main);
@@ -271,6 +272,14 @@ public sealed class Plugin : IDalamudPlugin
         var currentCharacter = GetCurrentCharacter();
         if (currentCharacter == null) return;
 
+        Settings.IsOpen ^= true;
+    }
+
+    private void DrawMainUI()
+    {
+        var currentCharacter = GetCurrentCharacter();
+        if (currentCharacter == null) return;
+
         Main.IsOpen ^= true;
     }
 
@@ -282,6 +291,10 @@ public sealed class Plugin : IDalamudPlugin
         Graph.Dispose();
         Settings.Dispose();
         CurrencySettings.Dispose();
+
+        PluginInterface.UiBuilder.Draw -= DrawUI;
+        PluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
+        PluginInterface.UiBuilder.OpenMainUi -= DrawMainUI;
 
         Service.Tracker.Dispose();
         Service.ClientState.Login -= HandleLogin;

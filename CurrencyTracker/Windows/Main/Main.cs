@@ -85,7 +85,7 @@ public partial class Main : Window, IDisposable
         Service.Tracker.CurrencyChanged -= OnCurrencyChanged;
         Service.Tracker.CurrencyChanged -= ServerBar.OnCurrencyChanged;
 
-        ServerBar.DtrEntry.Dispose();
+        ServerBar.DtrEntry?.Dispose();
 
         TaskManager?.Abort();
 
