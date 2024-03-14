@@ -42,7 +42,10 @@ public partial class Main : Window, IDisposable
             visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
 
         if (SelectedCurrencyID != 0 && _shouldRefreshTransactions)
+        {
             UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
+            _shouldRefreshTransactions = false;
+        }
 
         base.OnOpen();
     }
