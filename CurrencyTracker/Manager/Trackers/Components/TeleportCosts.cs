@@ -90,13 +90,13 @@ public class TeleportCosts : ITrackerComponent
 
         if (isBetweenArea)
         {
-            Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
+            Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
 
         }
         else
         {
-            Service.Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
+            Tracker.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
                                             Service.Config.ComponentProp["RecordDesAetheryteName"]
                                                 ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
                                                 : $"{Service.Lang.GetText("TeleportWithinArea")}");

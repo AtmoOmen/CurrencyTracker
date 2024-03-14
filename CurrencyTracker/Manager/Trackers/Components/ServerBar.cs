@@ -31,6 +31,7 @@ public class ServerBar : ITrackerComponent
         DtrEntry.Shown = true;
         DtrEntry.OnClick += OnClick;
 
+        Tracker.CurrencyChanged += OnCurrencyChanged;
         OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
     }
 
@@ -152,6 +153,7 @@ public class ServerBar : ITrackerComponent
 
     public void Uninit()
     {
+        Tracker.CurrencyChanged -= OnCurrencyChanged;
         if (DtrEntry == null) return;
 
         DtrEntry.OnClick -= OnClick;

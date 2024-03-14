@@ -36,7 +36,7 @@ public class ChatHandler : ITrackerHandler
         TaskManager.Enqueue(UpdateAllCurrencies);
     }
 
-    private static void UpdateAllCurrencies() => Service.Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
+    private static void UpdateAllCurrencies() => Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
 
     public void Uninit()
     {

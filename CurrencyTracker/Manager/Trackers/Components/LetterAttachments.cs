@@ -52,7 +52,7 @@ public class LetterAttachments : ITrackerComponent
     {
         Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(
+        Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
             24);
 

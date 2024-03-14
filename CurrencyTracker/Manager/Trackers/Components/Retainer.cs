@@ -76,9 +76,9 @@ public class Retainer : ITrackerComponent
             itemCount[1] = retainerGil;
 
             retainerWindowName = GetWindowTitle(args.Addon, 28);
-            Service.Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName, "", RecordChangeType.All, 22,
+            Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName, "", RecordChangeType.All, 22,
                                             TransactionFileCategory.Retainer, retainerID);
-            Service.Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName,
+            Tracker.CheckCurrencies(retainerCurrencies, CurrentLocationName,
                                             $"({retainerWindowName} {retainerName})", RecordChangeType.All, 22,
                                             TransactionFileCategory.Inventory, retainerID);
         }
@@ -116,9 +116,9 @@ public class Retainer : ITrackerComponent
                 var retainerName =
                     MemoryHelper.ReadStringNullTerminated((nint)retainerManager->GetActiveRetainer()->Name);
 
-                Service.Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
+                Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
                                                 24, TransactionFileCategory.Retainer, currentRetainerID);
-                Service.Tracker.CheckCurrencies(value.Keys, "",
+                Tracker.CheckCurrencies(value.Keys, "",
                                                 $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
                                                 TransactionFileCategory.Inventory, currentRetainerID);
                 break;

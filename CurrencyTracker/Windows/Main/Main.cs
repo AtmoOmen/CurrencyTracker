@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tasks;
+using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
@@ -26,8 +27,7 @@ public partial class Main : Window, IDisposable
 
         TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
         
-        Service.Tracker.CurrencyChanged += OnCurrencyChanged;
-        Service.Tracker.CurrencyChanged += ServerBar.OnCurrencyChanged;
+        Tracker.CurrencyChanged += OnCurrencyChanged;
 
         startDatePicker.DateSelected += RefreshTransactionsView;
         endDatePicker.DateSelected += RefreshTransactionsView;
@@ -85,8 +85,7 @@ public partial class Main : Window, IDisposable
 
     public void Dispose()
     {
-        Service.Tracker.CurrencyChanged -= OnCurrencyChanged;
-        Service.Tracker.CurrencyChanged -= ServerBar.OnCurrencyChanged;
+        Tracker.CurrencyChanged -= OnCurrencyChanged;
 
         ServerBar.DtrEntry?.Dispose();
 

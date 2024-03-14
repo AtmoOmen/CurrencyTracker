@@ -66,7 +66,7 @@ public class SpecialExchange : ITrackerComponent
         isOnExchange = false;
 
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(items, "", $"({windowName})", RecordChangeType.All, 10);
+        Tracker.CheckCurrencies(items, "", $"({windowName})", RecordChangeType.All, 10);
 
         windowName = string.Empty;
         HandlerManager.ChatHandler.isBlocked = false;

@@ -19,7 +19,10 @@ public class Service
 
         InitLanguage();
         InitCharacter();
-        Tracker = new Tracker();
+
+        HandlerManager = new();
+        Tracker.Init();
+        ComponentManager = new();
     }
 
     private static void InitLanguage()
@@ -60,7 +63,8 @@ public class Service
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
     [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new();
-    public static Tracker Tracker { get; set; } = null!;
     public static Configuration Config { get; set; } = null!;
     public static LanguageManager Lang { get; set; } = null!;
+    public static HandlerManager HandlerManager { get; set; } = null!;
+    public static ComponentManager ComponentManager { get; set; } = null!;
 }

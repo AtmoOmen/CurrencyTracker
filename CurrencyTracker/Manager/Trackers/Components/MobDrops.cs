@@ -72,7 +72,7 @@ public class MobDrops : ITrackerComponent
 
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(
+        Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
             RecordChangeType.All, 8);
 

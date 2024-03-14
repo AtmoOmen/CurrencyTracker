@@ -14,24 +14,12 @@ namespace CurrencyTracker.Manager.Trackers;
 public class Tracker
 {
     public delegate void CurrencyChangedDelegate(uint currencyID, TransactionFileCategory category, ulong ID);
+    public static event CurrencyChangedDelegate? CurrencyChanged;
 
-    public event CurrencyChangedDelegate? CurrencyChanged;
-
-    public HandlerManager? HandlerManager;
-    public ComponentManager? ComponentManager;
-
-    public Tracker()
+    internal static void Init()
     {
-        InitCurrencies();
-
-        HandlerManager ??= new HandlerManager();
-        ComponentManager ??= new ComponentManager();
-
         if (Service.ClientState.IsLoggedIn) InitializeTracking();
-    }
 
-    private static void InitCurrencies()
-    {
         foreach (var currency in CurrencyInfo.PresetCurrencies)
             if (!Service.Config.PresetCurrencies.ContainsKey(currency))
             {
@@ -59,7 +47,7 @@ public class Tracker
         }
     }
 
-    public void InitializeTracking()
+    internal static void InitializeTracking()
     {
         HandlerManager.Init();
         ComponentManager.Init();
@@ -68,7 +56,7 @@ public class Tracker
         Service.Log.Debug("Currency Tracker Activated");
     }
 
-    public bool CheckCurrency(
+    internal static bool CheckCurrency(
         uint currencyID, string locationName = "", string noteContent = "", RecordChangeType recordChangeType = 0,
         uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -170,7 +158,7 @@ public class Tracker
         }
     }
 
-    internal bool CheckCurrencies(
+    internal static bool CheckCurrencies(
         IEnumerable<uint> currencies, string locationName = "", string noteContent = "",
         RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0,
         ulong ID = 0)
@@ -190,7 +178,7 @@ public class Tracker
         return isChanged;
     }
 
-    internal bool CheckAllCurrencies(
+    internal static bool CheckAllCurrencies(
         string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All,
         uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -202,7 +190,7 @@ public class Tracker
         return isChanged;
     }
 
-    private void PostTransactionUpdate(
+    private static void PostTransactionUpdate(
         uint currencyID, long currencyChange, uint source, TransactionFileCategory category, ulong ID)
     {
         var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
@@ -212,7 +200,7 @@ public class Tracker
         if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
     }
 
-    internal void Uninit()
+    internal static void Uninit()
     {
         HandlerManager.Uninit();
         ComponentManager.Uninit();
@@ -220,8 +208,5 @@ public class Tracker
         Service.Log.Debug("Currency Tracker Deactivated");
     }
 
-    internal void Dispose()
-    {
-        Uninit();
-    }
+    internal static void Dispose() => Uninit();
 }

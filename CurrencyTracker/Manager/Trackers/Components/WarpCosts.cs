@@ -111,13 +111,13 @@ public unsafe class WarpCosts : ITrackerComponent
 
         if (isBetweenArea)
         {
-            Service.Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
+            Tracker.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
                                             $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})",
                                             RecordChangeType.Negative, 15);
         }
         else
         {
-            Service.Tracker.CheckCurrencies(tpCostCurrencies, CurrentLocationName,
+            Tracker.CheckCurrencies(tpCostCurrencies, CurrentLocationName,
                                             $"({Service.Lang.GetText("TeleportWithinArea")})",
                                             RecordChangeType.Negative, 16);
         }

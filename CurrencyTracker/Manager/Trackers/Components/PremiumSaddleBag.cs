@@ -41,9 +41,9 @@ public class PremiumSaddleBag : ITrackerComponent
             case AddonEvent.PreFinalize:
                 TaskManager.Abort();
 
-                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
-                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
+                Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 
                 InventoryItemCount.Clear();
 

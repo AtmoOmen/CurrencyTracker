@@ -42,9 +42,9 @@ public class SaddleBag : ITrackerComponent
                 Service.Framework.Update -= SaddleBagScanner;
                 Service.Framework.Update -= SaddleBagScanner;
 
-                    Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
+                    Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
-                Service.Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
+                Tracker.CheckCurrencies(InventoryItemCount.Keys, "", $"({windowTitle})", 0, 21);
 
                 InventoryItemCount.Clear();
 

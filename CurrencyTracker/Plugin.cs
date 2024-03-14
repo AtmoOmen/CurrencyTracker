@@ -10,6 +10,7 @@ using System.Text;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tasks;
+using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Windowing;
@@ -54,7 +55,7 @@ public sealed class Plugin : IDalamudPlugin
 
     private void HandleLogout()
     {
-        Service.Tracker.Uninit();
+        Tracker.Uninit();
         CurrentCharacter = null;
     }
 
@@ -65,7 +66,7 @@ public sealed class Plugin : IDalamudPlugin
         if (WindowSystem.Windows.Contains(Main) && Main.SelectedCurrencyID != 0)
             Main.currentTypeTransactions = TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID);
 
-        Service.Tracker.InitializeTracking();
+        Tracker.InitializeTracking();
     }
 
     public CharacterInfo? GetCurrentCharacter()
@@ -73,8 +74,8 @@ public sealed class Plugin : IDalamudPlugin
         if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null ||
             !Service.ClientState.IsLoggedIn) return null;
 
-        var playerName = Service.ClientState.LocalPlayer?.Name?.TextValue;
-        var serverName = Service.ClientState.LocalPlayer?.HomeWorld?.GameData?.Name?.RawString;
+        var playerName = Service.ClientState.LocalPlayer?.Name.FetchText();
+        var serverName = Service.ClientState.LocalPlayer?.HomeWorld.GameData?.Name?.RawString;
         var contentID = Service.ClientState.LocalContentId;
 
         if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName) || contentID == 0)
@@ -136,44 +137,10 @@ public sealed class Plugin : IDalamudPlugin
         return path;
     }
 
-    private void ConfigHandler(DalamudPluginInterface pluginInterface)
+    private void ConfigHandler(DalamudPluginInterface _)
     {
-        var configDirectory = Path.GetDirectoryName(pluginInterface.GetPluginConfigDirectory());
-        var configPath = Path.Combine(configDirectory, "CurrencyTracker.json");
-
-        if (File.Exists(configPath)) ParseOldConfiguration(configPath);
-
         Service.Config = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Service.Config.Initialize(PluginInterface);
-    }
-
-    public static void ParseOldConfiguration(string jsonFilePath)
-    {
-        if (string.IsNullOrEmpty(jsonFilePath) || !File.Exists(jsonFilePath)) return;
-
-        var json = File.ReadAllText(jsonFilePath);
-        var jsonObj = JObject.Parse(json);
-
-        ProcessDictionary("CustomCurrencies");
-        ProcessDictionary("PresetCurrencies");
-
-        File.WriteAllText(jsonFilePath, JsonConvert.SerializeObject(jsonObj, Formatting.Indented));
-        return;
-
-        void ProcessDictionary(string key)
-        {
-            var originalDict = jsonObj[key]?.ToObject<Dictionary<string, string>>();
-            if (originalDict == null) return;
-
-            var swappedDict = new JObject();
-            foreach (var entry in originalDict)
-            {
-                var newKey = uint.TryParse(entry.Key, out _) ? entry.Key : entry.Value;
-                var newValue = JToken.FromObject(uint.TryParse(entry.Key, out _) ? entry.Value : entry.Key);
-                swappedDict.Add(newKey, newValue);
-            }
-            jsonObj[key] = swappedDict;
-        }
     }
 
     public void OnCommand(string command, string args)
@@ -286,7 +253,7 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
         PluginInterface.UiBuilder.OpenMainUi -= DrawMainUI;
 
-        Service.Tracker.Dispose();
+        Tracker.Dispose();
         Service.ClientState.Login -= HandleLogin;
         Service.ClientState.Logout -= HandleLogout;
 

@@ -74,7 +74,7 @@ public class IslandSanctuary : ITrackerComponent
                     isOnWorkshop = false;
 
                     var items = inventoryHandler?.Items ?? new();
-                    Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
+                    Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
                                                     RecordChangeType.All, 7);
 
                     HandlerManager.Nullify(ref inventoryHandler);
@@ -95,7 +95,7 @@ public class IslandSanctuary : ITrackerComponent
         if (Flags.OccupiedInEvent()) return;
 
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
+        Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
 
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
@@ -113,7 +113,7 @@ public class IslandSanctuary : ITrackerComponent
         if (Flags.OccupiedInEvent()) return;
 
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
+        Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
 
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);

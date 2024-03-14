@@ -34,7 +34,7 @@ public class GoldSaucer : ITrackerComponent
                 if (textNode == null) return;
 
                 var gameName = textNode->NodeText.FetchText();
-                Service.Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
+                Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:
                 if (!Flags.OccupiedInEvent()) HandlerManager.ChatHandler.isBlocked = false;

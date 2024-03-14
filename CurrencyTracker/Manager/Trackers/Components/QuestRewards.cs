@@ -50,7 +50,7 @@ public class QuestRewards : ITrackerComponent
 
         Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? new();
-        Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})",
+        Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})",
                                         RecordChangeType.All, 9);
         Service.Log.Debug("Currency Change Check Completes.");
 

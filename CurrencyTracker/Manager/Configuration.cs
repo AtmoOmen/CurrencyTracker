@@ -55,9 +55,8 @@ public class Configuration : IPluginConfiguration
     public Vector4 NegativeChangeColor { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
     public int ChildWidthOffset { get; set; } = 0;
     public int ExportDataFileType { get; set; } = 0;
-
-    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } =
-        new(); // Content ID - Retainer ID : Retainer Name
+    // Content ID - Retainer ID : Retainer Name
+    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = new(); 
 
     public Dictionary<string, bool> ColumnsVisibility { get; set; } = new()
     {
@@ -107,7 +106,7 @@ public class Configuration : IPluginConfiguration
 
 
     [JsonIgnore]
-    public static bool IsUpdated = true;
+    internal static bool IsUpdated = true;
 
     [JsonIgnore]
     public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
@@ -185,9 +184,9 @@ public class Configuration : IPluginConfiguration
     }
 
 
-    public void Initialize(DalamudPluginInterface pluginInterface)
+    public void Initialize(DalamudPluginInterface pInterface)
     {
-        this.pluginInterface = pluginInterface;
+        pluginInterface = pInterface;
         presetCurrencies.OnUpdate += SetUpdateFlag;
         customCurrencies.OnUpdate += SetUpdateFlag;
     }

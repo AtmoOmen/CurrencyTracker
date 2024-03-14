@@ -57,7 +57,7 @@ public class TripleTriad : ITrackerComponent
         Service.Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? new HashSet<uint>();
-        Service.Tracker.CheckCurrencies(
+        Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("TripleTriadWith", ttResultText, ttRivalName)})", RecordChangeType.All,
             14);
 

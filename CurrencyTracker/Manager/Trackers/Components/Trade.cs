@@ -36,7 +36,7 @@ public unsafe class Trade : ITrackerComponent
 
             var items = inventoryHandler?.Items ?? new();
 
-            Service.Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
+            Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
                                             RecordChangeType.All, 13);
             tradeTargetName = string.Empty;
             HandlerManager.ChatHandler.isBlocked = false;
