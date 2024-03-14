@@ -43,7 +43,7 @@ public class Tracker
                               .ToUpdateDictionary(kv => kv.Key, kv => kv.Value);
         Service.Config.Save();
 
-        if (Service.Config.FisrtOpen)
+        if (Service.Config.FirstOpen)
         {
             foreach (var currencyID in CurrencyInfo.DefaultCustomCurrencies)
             {
@@ -54,7 +54,7 @@ public class Tracker
                 Service.Config.CustomCurrencies.TryAdd(currencyID, currencyName);
             }
 
-            Service.Config.FisrtOpen = false;
+            Service.Config.FirstOpen = false;
             Service.Config.Save();
         }
     }
