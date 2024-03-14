@@ -11,7 +11,6 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 using IntervalUtility;
 using OmenTools.ImGuiOm;
-using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Tools;
 
@@ -108,46 +107,17 @@ public static class Helpers
         return text;
     }
 
-    public static unsafe string GetWindowTitle(AddonArgs args, uint windowNodeID, uint[]? textNodeIDs = null)
+    public static unsafe bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
     {
-        textNodeIDs ??= new uint[] { 3, 4 };
+        var a = Service.GameGui.GetAddonByName(Addon, 1);
+        if (a == IntPtr.Zero)
+        {
+            AddonPtr = null;
+            return false;
+        }
 
-        var UI = (AtkUnitBase*)args.Addon;
-
-        if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
-            return string.Empty;
-
-        var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
-        if (windowNode == null)
-            return string.Empty;
-
-        var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
-        var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
-
-        var windowTitle = !string.IsNullOrEmpty(smallTitle) ? smallTitle : bigTitle;
-
-        return windowTitle;
-    }
-
-    public static unsafe string GetWindowTitle(nint addon, uint windowNodeID, uint[]? textNodeIDs = null)
-    {
-        textNodeIDs ??= new uint[] { 3, 4 };
-
-        var UI = (AtkUnitBase*)addon;
-
-        if (UI == null || UI->RootNode == null || UI->RootNode->ChildNode == null || UI->UldManager.NodeList == null)
-            return string.Empty;
-
-        var windowNode = (AtkComponentBase*)UI->GetComponentNodeById(windowNodeID);
-        if (windowNode == null)
-            return string.Empty;
-
-        var bigTitle = windowNode->GetTextNodeById(textNodeIDs[0])->GetAsAtkTextNode()->NodeText.ToString();
-        var smallTitle = windowNode->GetTextNodeById(textNodeIDs[1])->GetAsAtkTextNode()->NodeText.ToString();
-
-        var windowTitle = !string.IsNullOrEmpty(smallTitle) ? smallTitle : bigTitle;
-
-        return windowTitle;
+        AddonPtr = (T*)a;
+        return true;
     }
 
     public static string GetTransactionViewKeyString(TransactionFileCategory view, ulong ID)

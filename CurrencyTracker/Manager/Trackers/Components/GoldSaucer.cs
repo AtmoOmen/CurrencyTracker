@@ -2,7 +2,6 @@ using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using ECommons;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -29,12 +28,12 @@ public class GoldSaucer : ITrackerComponent
                 break;
             case AddonEvent.PostSetup:
                 var GSR = (AtkUnitBase*)args.Addon;
-                if (!HelpersOm.IsAddonAndNodesReady(GSR)) return;
+                if (!IsAddonAndNodesReady(GSR)) return;
 
                 var textNode = GSR->GetTextNodeById(5);
                 if (textNode == null) return;
 
-                var gameName = textNode->NodeText.ExtractText();
+                var gameName = textNode->NodeText.FetchText();
                 Service.Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:

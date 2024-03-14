@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
-using ECommons.Automation;
 using ImGuiNET;
 
 namespace CurrencyTracker.Windows;

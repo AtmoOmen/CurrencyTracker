@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
-using ECommons;
-using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.GeneratedSheets2;
@@ -76,7 +75,7 @@ public unsafe class WarpCosts : ITrackerComponent
             var SYN = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
             if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
-            var text = SYN->PromptText->NodeText.ExtractText();
+            var text = SYN->PromptText->NodeText.FetchText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))

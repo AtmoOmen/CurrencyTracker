@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using ECommons.Automation;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Components;

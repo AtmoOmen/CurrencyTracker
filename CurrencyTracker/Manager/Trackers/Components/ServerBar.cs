@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text.SeStringHandling;
-using ECommons.Automation;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

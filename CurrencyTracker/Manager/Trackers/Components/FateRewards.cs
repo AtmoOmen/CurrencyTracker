@@ -2,7 +2,6 @@ using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using ECommons;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -34,7 +33,7 @@ public class FateRewards : ITrackerComponent
                 var textNode = FR->GetTextNodeById(6);
                 if (textNode == null) return;
 
-                var fateName = textNode->NodeText.ExtractText();
+                var fateName = textNode->NodeText.FetchText();
                 Service.Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", fateName)})",
                                                    RecordChangeType.All, 23);
                 break;

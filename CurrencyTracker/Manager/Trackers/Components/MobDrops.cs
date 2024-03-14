@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
-using ECommons;
-using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -55,7 +54,7 @@ public class MobDrops : ITrackerComponent
         if (target.ObjectKind == ObjectKind.BattleNpc && target is BattleNpc battleNpc &&
             battleNpc.StatusFlags.HasFlag(StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut))
         {
-            enemiesList.Add(battleNpc.Name.ExtractText());
+            enemiesList.Add(battleNpc.Name.FetchText());
         }
 
         return false;

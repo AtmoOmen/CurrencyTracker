@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

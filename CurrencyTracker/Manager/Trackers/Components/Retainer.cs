@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
-using ECommons;
-using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -61,7 +60,7 @@ public class Retainer : ITrackerComponent
             if (retainer == null) break;
 
             var retainerID = retainer->RetainerID;
-            var retainerName = MemoryHelper.ReadSeStringNullTerminated((nint)retainer->Name).ExtractText();
+            var retainerName = MemoryHelper.ReadSeStringNullTerminated((nint)retainer->Name).FetchText();
             var retainerGil = retainer->Gil;
 
             var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];

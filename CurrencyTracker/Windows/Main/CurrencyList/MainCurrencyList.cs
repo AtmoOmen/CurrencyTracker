@@ -162,7 +162,7 @@ public partial class Main
         ImGui.PopFont();
         ImGui.PopStyleColor();
 
-        if (!tooltip.IsNullOrEmpty()) ImGuiOm.TooltipHover(tooltip);
+        if (!string.IsNullOrEmpty(tooltip)) ImGuiOm.TooltipHover(tooltip);
 
         ImGui.PopID();
 

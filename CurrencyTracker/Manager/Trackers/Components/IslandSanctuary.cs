@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
-using ECommons.Throttlers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

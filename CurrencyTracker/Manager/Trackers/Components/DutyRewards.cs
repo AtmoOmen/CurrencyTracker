@@ -3,7 +3,6 @@ using System.Linq;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
-using ECommons;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -32,7 +31,7 @@ public class DutyRewards : ITrackerComponent
     public void Init()
     {
         ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                              .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
+                              .Where(x => !string.IsNullOrEmpty(x.Name.FetchText()) &&
                                           !IgnoredContents.Contains(x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
                               .ToDictionary(x => x.TerritoryType.Row, x => x.Name.ToString());

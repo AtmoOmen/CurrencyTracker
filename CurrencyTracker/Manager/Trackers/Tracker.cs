@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
-using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
@@ -21,9 +20,6 @@ public class Tracker
     public HandlerManager? HandlerManager;
     public ComponentManager? ComponentManager;
 
-    private readonly Configuration? C = Service.Config;
-    private readonly Plugin? P = Plugin.P;
-
     public Tracker()
     {
         InitCurrencies();
@@ -34,7 +30,7 @@ public class Tracker
         if (Service.ClientState.IsLoggedIn) InitializeTracking();
     }
 
-    private void InitCurrencies()
+    private static void InitCurrencies()
     {
         foreach (var currency in CurrencyInfo.PresetCurrencies)
             if (!Service.Config.PresetCurrencies.ContainsKey(currency))
@@ -113,13 +109,13 @@ public class Tracker
         return false;
     }
 
-    public bool CheckRuleAreaRestrictions(uint currencyID)
+    private static bool CheckRuleAreaRestrictions(uint currencyID)
     {
         if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
 
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
         {
-            Service.Config.CurrencyRules.Add(currencyID, rule = new CurrencyRule());
+            Service.Config.CurrencyRules.Add(currencyID, new CurrencyRule());
             Service.Config.Save();
         }
         else
@@ -138,7 +134,7 @@ public class Tracker
         return true;
     }
 
-    public bool CheckRuleAmountCap(
+    internal static bool CheckRuleAmountCap(
         uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
     {
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out _))
@@ -160,13 +156,13 @@ public class Tracker
 
         return true;
 
-        void CheckIntervals(uint currencyID, List<Interval<int>> intervals, int value, string type)
+        void CheckIntervals(uint id, List<Interval<int>> intervals, int value, string type)
         {
             foreach (var interval in intervals)
                 if (util.InRange(interval, value, true) && Service.Config.AlertNotificationChat)
                 {
                     var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"),
-                                                           SeString.CreateItemLink(currencyID, false),
+                                                           SeString.CreateItemLink(id, false),
                                                            GetSelectedViewName(category, ID),
                                                            interval.ToIntervalString());
                     Service.Chat.PrintError(message);
@@ -174,7 +170,7 @@ public class Tracker
         }
     }
 
-    public bool CheckCurrencies(
+    internal bool CheckCurrencies(
         IEnumerable<uint> currencies, string locationName = "", string noteContent = "",
         RecordChangeType recordChangeType = RecordChangeType.All, uint source = 0, TransactionFileCategory category = 0,
         ulong ID = 0)
@@ -194,7 +190,7 @@ public class Tracker
         return isChanged;
     }
 
-    public bool CheckAllCurrencies(
+    internal bool CheckAllCurrencies(
         string locationName = "", string noteContent = "", RecordChangeType recordChangeType = RecordChangeType.All,
         uint source = 0, TransactionFileCategory category = 0, ulong ID = 0)
     {

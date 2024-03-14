@@ -1,8 +1,7 @@
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
-using ECommons;
-using ECommons.Automation;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -54,7 +53,7 @@ public unsafe class Trade : ITrackerComponent
             var textNode = addon->GetTextNodeById(17);
             if (textNode == null) return false;
 
-            tradeTargetName = textNode->NodeText.ExtractText();
+            tradeTargetName = textNode->NodeText.FetchText();
             if (string.IsNullOrEmpty(tradeTargetName)) return false;
 
             inventoryHandler ??= new InventoryHandler();

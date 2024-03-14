@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using ECommons.Automation;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 
