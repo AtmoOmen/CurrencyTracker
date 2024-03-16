@@ -1,4 +1,5 @@
 using System.Numerics;
+using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
@@ -14,7 +15,7 @@ public partial class Main
 {
     private static int _dragDropIndex = -1;
 
-    private static unsafe void CurrencyListboxUI()
+    private static void CurrencyListboxUI()
     {
         var style = ImGui.GetStyle();
         var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset,
@@ -36,7 +37,9 @@ public partial class Main
                 ImGui.Indent(3f);
                 if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
                                                     id == SelectedCurrencyID))
-                    LoadCurrencyTransactions(id);
+                {
+                    Task.Run(async () => await LoadCurrencyTransactionsAsync(id));
+                }
 
                 ImGui.Unindent(3f);
 
@@ -51,10 +54,13 @@ public partial class Main
 
                 if (ImGui.BeginDragDropTarget())
                 {
-                    if (_dragDropIndex >= 0 || ImGui.AcceptDragDropPayload("CurrencyListReorder").NativePtr != null)
+                    unsafe
                     {
-                        SwapOptions(_dragDropIndex, i);
-                        _dragDropIndex = -1;
+                        if (_dragDropIndex >= 0 || ImGui.AcceptDragDropPayload("CurrencyListReorder").NativePtr != null)
+                        {
+                            SwapOptions(_dragDropIndex, i);
+                            _dragDropIndex = -1;
+                        }
                     }
 
                     ImGui.EndDragDropTarget();
@@ -81,14 +87,15 @@ public partial class Main
         ImGui.PopStyleColor();
     }
 
-    public static void LoadCurrencyTransactions(
+    public static async Task LoadCurrencyTransactionsAsync(
         uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
     {
         SelectedCurrencyID = ID;
-        currentTypeTransactions =
-            ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
+        var transactions = await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID);
+    
+        currentTypeTransactions = ApplyFilters(transactions);
         currentView = view;
-        currentViewID = 0;
+        currentViewID = viewID;
     }
 
     private static void CurrencyListboxToolUI()

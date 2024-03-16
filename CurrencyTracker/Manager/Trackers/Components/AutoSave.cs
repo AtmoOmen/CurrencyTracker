@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
@@ -38,34 +39,43 @@ public class AutoSave : ITrackerComponent
         switch (Service.Config.AutoSaveMode)
         {
             case 0:
-                var filePath =
-                    TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-                if (Service.Config.AutoSaveMessage) Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                Task.Run(async () =>
+                {
+                    var filePath = await 
+                        TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+                    if (Service.Config.AutoSaveMessage)
+                        Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                });
                 break;
             case 1:
-                var failCharacters = Service.Config.CurrentActiveCharacter
-                                            .Where(c => string.IsNullOrEmpty(
-                                                       TransactionsHandler.BackupTransactions(
-                                                           Path.Combine(P.PluginInterface.ConfigDirectory.FullName,
-                                                                        $"{c.Name}_{c.Server}"),
-                                                           Service.Config.MaxBackupFilesCount)))
-                                            .Select(c => $"{c.Name}@{c.Server}")
-                                            .ToList();
-
-                var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
-                if (Service.Config.AutoSaveMessage)
+                Task.Run(async () =>
                 {
-                    Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
-                                       (failCharacters.Any()
-                                            ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
-                                            : ""));
-                    if (failCharacters.Any())
+                    var failCharactersTasks = Service.Config.CurrentActiveCharacter.Select(async c =>
                     {
-                        Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
-                        failCharacters.ForEach(x => Service.Chat.PrintError(x));
-                    }
-                }
+                        var result = await TransactionsHandler.BackupTransactionsAsync(
+                                         Path.Combine(P.PluginInterface.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"),
+                                         Service.Config.MaxBackupFilesCount);
 
+                        return string.IsNullOrEmpty(result) ? $"{c.Name}@{c.Server}" : null;
+                    });
+
+                    var failCharactersResults = await Task.WhenAll(failCharactersTasks);
+                    var failCharacters = failCharactersResults.Where(c => c != null).ToList();
+
+                    var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
+                    if (Service.Config.AutoSaveMessage)
+                    {
+                        Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
+                                           (failCharacters.Any()
+                                                ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
+                                                : ""));
+                        if (failCharacters.Any())
+                        {
+                            Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                            failCharacters.ForEach(x => Service.Chat.PrintError(x));
+                        }
+                    }
+                });
                 break;
         }
     }

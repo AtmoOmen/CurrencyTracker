@@ -10,21 +10,21 @@ public class ComponentManager
 {
     public static List<ITrackerComponent> Components { get; private set; } = new();
 
-    public ComponentManager()
-    {
-        var types = Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(t => t.GetInterfaces().Contains(typeof(ITrackerComponent)) &&
-                                        t.GetConstructor(Type.EmptyTypes) != null);
-
-        foreach (var type in types)
-        {
-            var instance = Activator.CreateInstance(type);
-            if (instance is ITrackerComponent component) Components.Add(component);
-        }
-    }
-
     public static void Init()
     {
+        if (!Components.Any())
+        {
+            var types = Assembly.GetExecutingAssembly().GetTypes()
+                                .Where(t => t.GetInterfaces().Contains(typeof(ITrackerComponent)) &&
+                                            t.GetConstructor(Type.EmptyTypes) != null);
+
+            foreach (var type in types)
+            {
+                var instance = Activator.CreateInstance(type);
+                if (instance is ITrackerComponent component) Components.Add(component);
+            }
+        }
+
         foreach (var component in Components)
         {
             if (Service.Config.ComponentEnabled.TryGetValue(component.GetType().Name, out var enabled))

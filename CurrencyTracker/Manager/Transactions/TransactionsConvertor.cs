@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using static CurrencyTracker.Plugin;
+using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Transactions;
 
@@ -16,6 +16,18 @@ public class TransactionsConvertor
     public string Note { get; set; } = string.Empty;         // 备注 Note
 
     private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
+
+    // 清理文件名 Sanitize the file path
+    public static string SanitizeFilePath(string filePath)
+    {
+        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Distinct();
+        var fileName = Path.GetFileName(filePath);
+        var path = Path.GetDirectoryName(filePath);
+
+        foreach (var c in invalidChars) fileName = fileName.Replace(c.ToString(), "");
+
+        return Path.Combine(path, fileName);
+    }
 
     // 将单行交易记录解析为字符串 Parse a transaction into string
     public string ToFileLine()
@@ -59,23 +71,11 @@ public class TransactionsConvertor
         return transaction;
     }
 
-    // 清理文件名 Sanitize the file path
-    public static string SanitizeFilePath(string filePath)
-    {
-        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Distinct();
-        var fileName = Path.GetFileName(filePath);
-        var path = Path.GetDirectoryName(filePath);
-
-        foreach (var c in invalidChars) fileName = fileName.Replace(c.ToString(), "");
-
-        return Path.Combine(path, fileName);
-    }
-
     // 解析整个数据文件 Parse a data file
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
         filePath = SanitizeFilePath(filePath);
-        if (!File.Exists(filePath)) return new List<TransactionsConvertor>();
+        if (!File.Exists(filePath)) return new();
 
         var transactions = new List<TransactionsConvertor>();
 
@@ -91,6 +91,31 @@ public class TransactionsConvertor
         catch (IOException ex)
         {
             TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            Service.Log.Error($"Error parsing entire data file: {ex.Message}");
+        }
+
+        return transactions;
+    }
+
+    public static async Task<List<TransactionsConvertor>> FromFileAsync(string filePath)
+    {
+        filePath = SanitizeFilePath(filePath);
+        var transactions = new List<TransactionsConvertor>();
+
+        if (!File.Exists(filePath)) return transactions;
+
+        try
+        {
+            using var sr = new StreamReader(filePath);
+            while (await sr.ReadLineAsync() is { } line)
+            {
+                var transaction = FromFileLine(line.AsSpan());
+                transactions.Add(transaction);
+            }
+        }
+        catch (IOException ex)
+        {
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
@@ -118,6 +143,30 @@ public class TransactionsConvertor
         }
     }
 
+    public static async Task AppendTransactionToFileAsync(string filePath, List<TransactionsConvertor> singleTransaction)
+    {
+        filePath = SanitizeFilePath(filePath);
+        try
+        {
+            await using (var fileStream = new FileStream(filePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            await using (var writer = new StreamWriter(fileStream))
+            {
+                foreach (var transaction in singleTransaction)
+                {
+                    await writer.WriteLineAsync(transaction.ToFileLine());
+                }
+            }
+
+            singleTransaction.Clear();
+        }
+        catch (IOException ex)
+        {
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            Service.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
+        }
+    }
+
+
     // 将整个交易记录覆写进数据文件 Overwrite the data file
     public static void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
     {
@@ -131,6 +180,25 @@ public class TransactionsConvertor
         catch (IOException ex)
         {
             TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
+        }
+    }
+
+    public static async Task WriteTransactionsToFileAsync(string filePath, List<TransactionsConvertor> transactions)
+    {
+        filePath = SanitizeFilePath(filePath);
+        try
+        {
+            await using var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+            await using var writer = new StreamWriter(fileStream);
+            foreach (var transaction in transactions)
+            {
+                await writer.WriteLineAsync(transaction.ToFileLine());
+            }
+        }
+        catch (IOException ex)
+        {
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }

@@ -20,9 +20,7 @@ public class Service
         InitLanguage();
         InitCharacter();
 
-        HandlerManager = new();
         Tracker.Init();
-        ComponentManager = new();
     }
 
     private static void InitLanguage()
@@ -65,6 +63,4 @@ public class Service
     public static SigScanner SigScanner { get; private set; } = new();
     public static Configuration Config { get; set; } = null!;
     public static LanguageManager Lang { get; set; } = null!;
-    public static HandlerManager HandlerManager { get; set; } = null!;
-    public static ComponentManager ComponentManager { get; set; } = null!;
 }

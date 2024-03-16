@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using CurrencyTracker.Manager.Infos;
 
 namespace CurrencyTracker.Manager.Transactions;
@@ -51,7 +52,6 @@ public static class TransactionsHandler
         return true;
     }
 
-
     // 加载全部记录 Load All Transactions
     public static List<TransactionsConvertor> LoadAllTransactions(
         uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
@@ -61,6 +61,19 @@ public static class TransactionsHandler
         return ValidityCheck(currencyID) && File.Exists(filePath)
                    ? TransactionsConvertor.FromFile(filePath)
                    : new();
+    }
+
+    public static async Task<List<TransactionsConvertor>> LoadAllTransactionsAsync(
+        uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
+    {
+        var filePath = GetTransactionFilePath(currencyID, category, ID);
+
+        if (ValidityCheck(currencyID) && File.Exists(filePath))
+        {
+            return await TransactionsConvertor.FromFileAsync(filePath);
+        }
+
+        return new();
     }
 
     // 加载最新一条记录 Load Latest Transaction
@@ -353,4 +366,51 @@ public static class TransactionsHandler
 
         return zipFilePath;
     }
+
+    public static async Task<string> BackupTransactionsAsync(string dataFolder, int maxBackupFilesCount)
+    {
+        if (string.IsNullOrEmpty(dataFolder)) return "Fail";
+
+        var backupFolder = Path.Combine(dataFolder, "Backups");
+        Directory.CreateDirectory(backupFolder);
+
+        if (maxBackupFilesCount > 0)
+        {
+            var backupFiles = Directory.GetFiles(backupFolder, "*.zip")
+                                       .OrderBy(f => new FileInfo(f).CreationTime)
+                                       .ToList();
+
+            while (backupFiles.Count >= maxBackupFilesCount)
+            {
+                var fileInfo = new FileInfo(backupFiles[0]);
+                if (!IsFileLocked(fileInfo)) File.Delete(backupFiles[0]);
+                backupFiles.RemoveAt(0);
+            }
+        }
+
+        var tempFolder = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+        Directory.CreateDirectory(tempFolder);
+
+        string zipFilePath;
+        try
+        {
+            foreach (var file in Directory.GetFiles(dataFolder))
+            {
+                var destFile = Path.Combine(tempFolder, Path.GetFileName(file));
+                await using var sourceStream = File.Open(file, FileMode.Open);
+                await using var destinationStream = File.Create(destFile);
+                await sourceStream.CopyToAsync(destinationStream);
+            }
+
+            zipFilePath = Path.Combine(backupFolder, $"Backup_{DateTime.Now:yyyyMMddHHmmss}.zip");
+            ZipFile.CreateFromDirectory(tempFolder, zipFilePath);
+        }
+        finally
+        {
+            Directory.Delete(tempFolder, true);
+        }
+
+        return zipFilePath;
+    }
+
 }

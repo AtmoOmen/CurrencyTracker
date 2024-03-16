@@ -12,25 +12,25 @@ public class HandlerManager
     public static HashSet<ITrackerHandler> Handlers { get; private set; } = new();
     public static ChatHandler? ChatHandler { get; private set; }
 
-    public HandlerManager()
-    {
-        var types = Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(t => t.GetInterfaces().Contains(typeof(ITrackerHandler)) &&
-                                        t.GetConstructor(Type.EmptyTypes) != null);
-
-        foreach (var type in types)
-        {
-            if (type.Name.Contains("InventoryHandler")) continue;
-
-            var instance = Activator.CreateInstance(type);
-            if (instance is ITrackerHandler handler) Handlers.Add(handler);
-        }
-
-        ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
-    }
-
     public static void Init()
     {
+        if (!Handlers.Any())
+        {
+            var types = Assembly.GetExecutingAssembly().GetTypes()
+                                .Where(t => t.GetInterfaces().Contains(typeof(ITrackerHandler)) &&
+                                            t.GetConstructor(Type.EmptyTypes) != null);
+
+            foreach (var type in types)
+            {
+                if (type.Name.Contains("InventoryHandler")) continue;
+
+                var instance = Activator.CreateInstance(type);
+                if (instance is ITrackerHandler handler) Handlers.Add(handler);
+            }
+
+            ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
+        }
+
         foreach (var handler in Handlers)
             try
             {
