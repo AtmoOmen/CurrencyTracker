@@ -198,10 +198,10 @@ public partial class Main
         selectedTransactions.Clear();
 
         currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID));
-        if (!characterCurrencyInfos.Any()) LoadDataMCS();
+        if (!CharacterCurrencyInfos.Any()) LoadDataMCS();
         else
         {
-            var existingInfo = characterCurrencyInfos.GetOrAdd(P.CurrentCharacter, new CharacterCurrencyInfo { Character = P.CurrentCharacter });
+            var existingInfo = CharacterCurrencyInfos.GetOrAdd(P.CurrentCharacter, new CharacterCurrencyInfo { Character = P.CurrentCharacter });
             existingInfo.GetCharacterCurrencyAmount();
         }
 
