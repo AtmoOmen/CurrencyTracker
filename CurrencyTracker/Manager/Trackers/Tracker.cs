@@ -90,7 +90,11 @@ public class Tracker
                                                    noteContent, category, ID);
             }
 
-            PostTransactionUpdate(currencyID, currencyChange, source, category, ID);
+            var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
+            CurrencyChanged?.Invoke(currencyID, category, ID);
+
+            Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
+            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
             return true;
         }
 
@@ -190,15 +194,8 @@ public class Tracker
         return isChanged;
     }
 
-    private static void PostTransactionUpdate(
-        uint currencyID, long currencyChange, uint source, TransactionFileCategory category, ulong ID)
-    {
-        var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
-
-        CurrencyChanged?.Invoke(currencyID, category, ID);
-        Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-        if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
-    }
+    internal static void TriggerCurrencyChangedEvent(uint currencyID, TransactionFileCategory category, ulong ID)
+        => CurrencyChanged?.Invoke(currencyID, category, ID);
 
     internal static void Uninit()
     {

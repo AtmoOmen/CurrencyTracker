@@ -9,14 +9,11 @@ using System.Linq;
 using System.Text;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using TinyPinyin;
 
 namespace CurrencyTracker;
@@ -45,7 +42,7 @@ public sealed class Plugin : IDalamudPlugin
 
         ConfigHandler(pluginInterface);
 
-        Service.Initialize(pluginInterface);
+        Service.Init(pluginInterface);
 
         Service.ClientState.Login += HandleLogin;
         Service.ClientState.Logout += HandleLogout;
@@ -56,6 +53,7 @@ public sealed class Plugin : IDalamudPlugin
     private void HandleLogout()
     {
         Tracker.Uninit();
+        CurrencyInfo.CurrencyAmountCache.Clear();
         CurrentCharacter = null;
     }
 
@@ -253,13 +251,11 @@ public sealed class Plugin : IDalamudPlugin
         PluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
         PluginInterface.UiBuilder.OpenMainUi -= DrawMainUI;
 
-        Tracker.Dispose();
         Service.ClientState.Login -= HandleLogin;
         Service.ClientState.Logout -= HandleLogout;
 
         Service.CommandManager.RemoveHandler(CommandName);
 
-        TaskManager.DisposeAll();
-        Service.Config.Uninitialize();
+        Service.Uninit();
     }
 }

@@ -68,12 +68,31 @@ public partial class Main
 
                 if (ImGui.BeginPopupContextItem())
                 {
-                    var imageSize = ImGuiHelpers.ScaledVector2(20f);
-                    ImGui.Image(currencyIcon, imageSize);
+                    ImGui.SetWindowFontScale(1.2f);
+                    ImGui.SetCursorPosY(5f);
+                    ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(24f));
+
+                    var inputBoxLength = ImGui.CalcTextSize(currencyName).X + ImGui.GetStyle().FramePadding.X * 4;
+                    var textInput = currencyName;
 
                     ImGui.SameLine();
-                    ImGui.SetCursorPosY(10f);
-                    ImGui.Text($"{currencyName} ({id})");
+                    ImGui.SetNextItemWidth(inputBoxLength);
+                    if (ImGui.InputText("", ref textInput, 100, ImGuiInputTextFlags.EnterReturnsTrue))
+                    {
+                        CurrencyInfo.RenameCurrency(id, textInput);
+                    }
+
+                    ImGui.SameLine();
+                    if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+                    {
+                        CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetCurrencyLocalName(id));
+                    }
+                    ImGui.SetWindowFontScale(1f);
+
+                    ImGui.Separator();
+
+                    ImGui.Text(
+                        $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(id, P.CurrentCharacter):N0}");
 
                     ImGui.EndPopup();
                 }

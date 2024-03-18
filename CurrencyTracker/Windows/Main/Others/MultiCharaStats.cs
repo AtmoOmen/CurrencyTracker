@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager;
@@ -15,8 +14,8 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal static ConcurrentDictionary<CharacterInfo, CharacterCurrencyInfo> CharacterCurrencyInfos = new();
-    private static Dictionary<CharacterInfo, CharacterCurrencyInfo>? _characterCurrencyDicMCS;
+    internal static List<CharacterCurrencyInfo> CharacterCurrencyInfos = new();
+    private static List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
     private string searchFilterMCS = string.Empty;
     private int _currentPageMCS;
 
@@ -27,7 +26,7 @@ public partial class Main
             Task.Run(() =>
             {
                 if (!CharacterCurrencyInfos.Any()) LoadDataMCS();
-                _characterCurrencyDicMCS ??= CharacterCurrencyInfos.ToDictionary(x => x.Key, x => x.Value);
+                _characterCurrencyDicMCS ??= CharacterCurrencyInfos;
             });
 
             ImGui.OpenPopup("MultiCharStats");
@@ -65,7 +64,7 @@ public partial class Main
             var items = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
             foreach (var info in items)
             {
-                var previewValue = $"{info.Value.Character.Name}@{info.Value.Character.Server}";
+                var previewValue = $"{info.Character.Name}@{info.Character.Server}";
                 ImGui.SetNextItemWidth(itemWidth);
                 if (ImGui.BeginCombo($"###{previewValue}", previewValue, ImGuiComboFlags.HeightLarge))
                 {
@@ -73,7 +72,7 @@ public partial class Main
                     {
                         foreach (var currency in Service.Config.AllCurrencies)
                         {
-                            var amount = info.Value.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
+                            var amount = info.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
                             if (amount == 0) continue;
 
                             ImGui.TableNextRow();
@@ -93,23 +92,19 @@ public partial class Main
                     ImGui.EndCombo();
                 }
 
-                if (ImGui.BeginPopupContextItem($"{info.Value.Character.ContentID}"))
+                if (ImGui.BeginPopupContextItem($"{info.Character.ContentID}"))
                 {
                     if (ImGui.MenuItem(Service.Lang.GetText("Delete")))
                     {
-                        if (Service.Config.CurrentActiveCharacter.Remove(info.Key))
+                        if (Service.Config.CurrentActiveCharacter.Remove(Service.Config.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == info.Character.ContentID)))
                         {
                             Service.Config.Save();
                             ImGui.CloseCurrentPopup();
 
                             Task.Run(() =>
                             {
-                                CharacterCurrencyInfos.Clear();
                                 LoadDataMCS();
-
-                                _characterCurrencyDicMCS.Clear();
-                                _characterCurrencyDicMCS =
-                                    CharacterCurrencyInfos.ToDictionary(x => x.Key, x => x.Value);
+                                _characterCurrencyDicMCS = CharacterCurrencyInfos;
                             });
                         }
                     }
@@ -124,15 +119,16 @@ public partial class Main
 
     internal static void LoadDataMCS()
     {
+        CharacterCurrencyInfos.Clear();
+
         var sortedCharacters = Service.Config.CurrentActiveCharacter
                                       .OrderBy(c => c.ContentID == Service.ClientState.LocalContentId)
                                       .ToArray();
 
         foreach (var character in sortedCharacters)
         {
-            var info = CharacterCurrencyInfos.GetOrAdd(
-                character, _ => new CharacterCurrencyInfo { Character = character });
-            info.GetCharacterCurrencyAmount();
+            var info = new CharacterCurrencyInfo { Character = character };
+            CharacterCurrencyInfos.Add(info);
         }
     }
 
@@ -147,13 +143,13 @@ public partial class Main
             _currentPageMCS = 0;
 
             _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
-                                           ? CharacterCurrencyInfos.ToDictionary(x => x.Key, x => x.Value)
+                                           ? CharacterCurrencyInfos
                                            : CharacterCurrencyInfos
-                                             .Where(x => x.Key.Name.Contains(searchFilterMCS,
+                                             .Where(x => x.Character.Name.Contains(searchFilterMCS,
                                                                              StringComparison.OrdinalIgnoreCase) ||
-                                                         x.Key.Server.Contains(
+                                                         x.Character.Server.Contains(
                                                              searchFilterMCS, StringComparison.OrdinalIgnoreCase))
-                                             .ToDictionary(x => x.Key, x => x.Value);
+                                             .ToList();
         });
     }
 }

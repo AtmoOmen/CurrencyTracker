@@ -201,8 +201,11 @@ public partial class Main
         if (!CharacterCurrencyInfos.Any()) LoadDataMCS();
         else
         {
-            var existingInfo = CharacterCurrencyInfos.GetOrAdd(P.CurrentCharacter, new CharacterCurrencyInfo { Character = P.CurrentCharacter });
-            existingInfo.GetCharacterCurrencyAmount();
+            if (CharacterCurrencyInfos.All(x => x.Character.ContentID != Service.ClientState.LocalContentId))
+            {
+                var info = new CharacterCurrencyInfo { Character = P.CurrentCharacter };
+                CharacterCurrencyInfos.Add(info);
+            }
         }
 
         ImGui.CloseCurrentPopup();

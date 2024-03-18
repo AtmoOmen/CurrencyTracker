@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Windows;
 using Dalamud.Interface.Internal;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -16,17 +19,23 @@ public static class CurrencyInfo
     {
         20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
     };
-
     public static readonly uint[] PresetCurrencies = new uint[3]
     {
         1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3)
     };
 
-    /// <summary>
-    ///     Try to get currency name from configuration, if not exists, get the local name from the game client.
-    /// </summary>
-    /// <param name="currencyID"></param>
-    /// <returns></returns>
+    public static readonly Dictionary<uint, long> CurrencyAmountCache = new();
+
+    public static void Init()
+    {
+        Tracker.CurrencyChanged += OnCurrencyChanged;
+    }
+
+    private static void OnCurrencyChanged(uint currencyId, TransactionFileCategory category, ulong id)
+    {
+        CurrencyAmountCache[currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter);
+    }
+
     public static string GetCurrencyName(uint currencyID)
     {
         return Service.Config.AllCurrencies.TryGetValue(currencyID, out var currencyName)
@@ -65,9 +74,13 @@ public static class CurrencyInfo
         };
     }
 
-
     public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
     {
+        if (CurrencyAmountCache.TryGetValue(currencyID, out var characterCurrencyAmount))
+        {
+            return characterCurrencyAmount;
+        }
+
         var amount = 0L;
         var categories = new[]
         {
@@ -91,6 +104,7 @@ public static class CurrencyInfo
             }
         }
 
+        CurrencyAmountCache[currencyID] = amount;
         return amount;
     }
 
@@ -147,5 +161,85 @@ public static class CurrencyInfo
 
         Service.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
         return null;
+    }
+
+    public static void RenameCurrency(uint currencyID, string editedCurrencyName)
+    {
+        var (isFilesExisted, filePaths) = ConstructFilePaths(currencyID, editedCurrencyName);
+
+        if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
+        {
+            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+            return;
+        }
+
+        if (UpdateCurrencyName(currencyID, editedCurrencyName))
+        {
+            foreach (var (sourcePath, targetPath) in filePaths)
+            {
+                Service.Log.Debug($"Moving file from {sourcePath} to {targetPath}");
+                File.Move(sourcePath, targetPath);
+            }
+
+            Main.UpdateTransactions(currencyID, Main.currentView, Main.currentViewID);
+            Main.ReloadOrderedOptions();
+
+            Service.Config.Save();
+        }
+
+        bool UpdateCurrencyName(uint currencyId, string newName)
+        {
+            if (!Service.Config.PresetCurrencies.ContainsKey(currencyId) &&
+                !Service.Config.CustomCurrencies.ContainsKey(currencyId)) return false;
+
+            var targetCurrency = Service.Config.PresetCurrencies.ContainsKey(currencyId)
+                                     ? Service.Config.PresetCurrencies
+                                     : Service.Config.CustomCurrencies;
+            targetCurrency[currencyId] = newName;
+            Configuration.IsUpdated = true;
+            Service.Config.Save();
+
+            return true;
+        }
+
+        (bool, Dictionary<string, string>) ConstructFilePaths(uint currencyID, string editedCurrencyName)
+        {
+            var filePaths = new Dictionary<string, string>();
+            var categories = new List<TransactionFileCategory>
+            {
+                TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
+                TransactionFileCategory.PremiumSaddleBag
+            };
+
+            categories.AddRange(Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
+                                       .Select(x => TransactionFileCategory.Retainer));
+
+            foreach (var category in categories)
+                if (category == TransactionFileCategory.Retainer)
+                {
+                    foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
+                        AddFilePath(filePaths, category, retainer.Key, editedCurrencyName);
+                }
+                else
+                    AddFilePath(filePaths, category, 0, editedCurrencyName);
+
+            return (filePaths.Values.All(path => !File.Exists(path)), filePaths);
+
+            void AddFilePath(
+                IDictionary<string, string> filePaths, TransactionFileCategory category, ulong key,
+                string editedCurrencyName)
+            {
+                var editedFilePath = Path.Join(P.PlayerDataFolder,
+                                               $"{editedCurrencyName}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt");
+                var originalFilePath = TransactionsHandler.GetTransactionFilePath(currencyID, category, key);
+                if (!File.Exists(originalFilePath)) return;
+                filePaths[originalFilePath] = editedFilePath;
+            }
+        }
+    }
+
+    public static void Uninit()
+    {
+        Tracker.CurrencyChanged -= OnCurrencyChanged;
     }
 }

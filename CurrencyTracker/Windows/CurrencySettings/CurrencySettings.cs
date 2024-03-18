@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Tasks;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 
@@ -12,29 +12,21 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings : Window, IDisposable
 {
-    private readonly Main? M = P.Main;
-
     private uint selectedCurrencyID;
     private bool isEditingCurrencyName;
     private int currencyTextWidth = 200;
+    private static TaskManager? TaskManager;
 
     public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Name}")
     {
-        Flags |= ImGuiWindowFlags.NoScrollbar;
-        Flags |= ImGuiWindowFlags.AlwaysAutoResize;
+        Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize;
 
-        Initialize(plugin);
-    }
-
-    public void Initialize(Plugin plugin)
-    {
-        searchTimerTR.Elapsed += SearchTimerTRElapsed;
-        searchTimerTR.AutoReset = false;
+        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
     }
 
     public override void Draw()
     {
-        if (M == null || Main.SelectedCurrencyID == 0)
+        if (P.Main == null || Main.SelectedCurrencyID == 0)
         {
             IsOpen = false;
             return;
@@ -42,40 +34,42 @@ public partial class CurrencySettings : Window, IDisposable
 
         selectedCurrencyID = Main.SelectedCurrencyID;
         ImGui.BeginGroup();
-        using (var tab0 = ImRaii.TabBar("CurrencySettingsCT"))
+        if (ImGui.BeginTabBar("CurrencySettingsCT"))
         {
-            if (tab0)
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Info")))
             {
-                using (var item0 = ImRaii.TabItem(Service.Lang.GetText("Info")))
-                {
-                    if (item0)
-                    {
-                        CurrencyInfoGroupUI();
+                CurrencyInfoGroupUI();
 
-                        ImGui.Separator();
-                        CurrencyAmountInfoUI();
+                ImGui.Separator();
+                CurrencyAmountInfoUI();
 
-                        ImGui.Separator();
-                        CurrencyFilesInfoUI();
-                    }
-                }
+                ImGui.Separator();
+                CurrencyFilesInfoUI();
 
-                using (var item0 = ImRaii.TabItem(Service.Lang.GetText("Main-CS-AreaRestriction")))
-                {
-                    if (item0) TerrioryRestrictedUI();
-                }
-
-                using (var item0 = ImRaii.TabItem(Service.Lang.GetText("Alert")))
-                {
-                    if (item0) IntervalAlertUI();
-                }
+                ImGui.EndTabItem();
             }
+
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Main-CS-AreaRestriction")))
+            {
+                TerritoryRestrictedUI();
+
+                ImGui.EndTabItem();
+            }
+
+            if (ImGui.BeginTabItem(Service.Lang.GetText("Alert")))
+            {
+                IntervalAlertUI();
+
+                ImGui.EndTabItem();
+            }
+
+            ImGui.EndTabBar();
         }
 
         ImGui.EndGroup();
     }
 
-    private void DrawBackgroundImage()
+    private static void DrawBackgroundImage()
     {
         var region = ImGui.GetContentRegionAvail();
         var minDimension = Math.Min(region.X, region.Y);
@@ -115,7 +109,7 @@ public partial class CurrencySettings : Window, IDisposable
         if (!Main.CharacterCurrencyInfos.Any()) Main.LoadDataMCS();
         ImGui.SetWindowFontScale(1);
         ImGui.Text(
-            $"{Service.Lang.GetText("Total")}: {(Main.CharacterCurrencyInfos[P.CurrentCharacter].CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0)):N0}");
+            $"{Service.Lang.GetText("Total")}: {Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).CurrencyAmount.GetValueOrDefault(selectedCurrencyID, 0):N0}");
 
         ImGui.SameLine();
         ImGui.Text("");
@@ -126,8 +120,6 @@ public partial class CurrencySettings : Window, IDisposable
 
     public void Dispose()
     {
-        searchTimerTR.Elapsed -= SearchTimerTRElapsed;
-        searchTimerTR.Stop();
-        searchTimerTR.Dispose();
+        TaskManager?.Abort();
     }
 }

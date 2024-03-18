@@ -1,4 +1,6 @@
 using System.Linq;
+using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
@@ -11,7 +13,7 @@ namespace CurrencyTracker.Manager;
 
 public class Service
 {
-    public static void Initialize(DalamudPluginInterface pluginInterface)
+    public static void Init(DalamudPluginInterface pluginInterface)
     {
         Config = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
         Config.Initialize(pluginInterface);
@@ -21,6 +23,15 @@ public class Service
         InitCharacter();
 
         Tracker.Init();
+        CurrencyInfo.Init();
+    }
+
+    public static void Uninit()
+    {
+        Tracker.Dispose();
+        CurrencyInfo.Uninit();
+        Config.Uninit();
+        TaskManager.DisposeAll();
     }
 
     private static void InitLanguage()

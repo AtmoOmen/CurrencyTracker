@@ -191,7 +191,7 @@ public class Configuration : IPluginConfiguration
         customCurrencies.OnUpdate += SetUpdateFlag;
     }
 
-    public void Uninitialize()
+    public void Uninit()
     {
         presetCurrencies.OnUpdate -= SetUpdateFlag;
         customCurrencies.OnUpdate -= SetUpdateFlag;

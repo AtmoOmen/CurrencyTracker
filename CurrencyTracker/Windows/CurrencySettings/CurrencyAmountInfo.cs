@@ -8,7 +8,7 @@ public partial class CurrencySettings
 {
     private void CurrencyAmountInfoUI()
     {
-        Main.CharacterCurrencyInfos[P.CurrentCharacter].SubCurrencyAmount.TryGetValue(selectedCurrencyID, out var infoDic);
+        Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(selectedCurrencyID, out var infoDic);
 
         if (infoDic.Any())
         {
