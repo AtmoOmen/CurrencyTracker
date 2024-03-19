@@ -362,8 +362,7 @@ public class Settings : Window, IDisposable
         if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref cbool))
         {
             Service.Config.ComponentEnabled[boolName] ^= true;
-            var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == type);
-            if (component != null)
+            if (ComponentManager.Components.TryGetValue(type, out var component))
             {
                 if (Service.Config.ComponentEnabled[boolName])
                     ComponentManager.Load(component);

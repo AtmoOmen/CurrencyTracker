@@ -66,7 +66,7 @@ public partial class CurrencySettings
     {
         ImGui.Separator();
 
-        var intervals = GetOrCreateIntervals(selectedCurrencyID, alertMode, viewIA, idIA);
+        var intervals = GetOrCreateIntervals(Main.SelectedCurrencyID, alertMode, viewIA, idIA);
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
@@ -87,7 +87,7 @@ public partial class CurrencySettings
         if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt))
         {
             if (selectedInterval == null) return;
-            RemoveIntervalHandler(selectedCurrencyID, selectedInterval.Start, selectedInterval.End);
+            RemoveIntervalHandler(Main.SelectedCurrencyID, selectedInterval.Start, selectedInterval.End);
             Service.Config.Save();
         }
 
@@ -110,7 +110,7 @@ public partial class CurrencySettings
         ImGui.SameLine();
         if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add")))
         {
-            AddIntervalHandler(selectedCurrencyID, intervalStart, intervalEnd);
+            AddIntervalHandler(Main.SelectedCurrencyID, intervalStart, intervalEnd);
             Service.Config.Save();
         }
     }

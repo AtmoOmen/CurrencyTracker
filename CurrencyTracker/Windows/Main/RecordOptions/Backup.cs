@@ -72,32 +72,24 @@ public partial class Main
 
     private static void AutoBackupUI()
     {
-        var autoSaveEnabled = Service.Config.ComponentEnabled["AutoSave"];
-        var nextAutoSaveTime = DateTime.Today.Add(
-            autoSaveEnabled
-                ? AutoSave.LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval) - DateTime.Now
-                : TimeSpan.Zero);
-        var timeFormat = nextAutoSaveTime.Hour == 0 ? "mm:ss" : "HH:mm:ss";
-        var autoBackupText = autoSaveEnabled
-                                 ? $"{Service.Lang.GetText("AutoBackup")} ({nextAutoSaveTime.ToString(timeFormat)})"
-                                 : Service.Lang.GetText("AutoBackup");
+        var autoSaveEnabled = ComponentManager.Components.TryGetValue(typeof(AutoSave), out var component) && component.Initialized;
+
+        var autoBackupText = Service.Lang.GetText("AutoBackup");
+        if (autoSaveEnabled)
+        {
+            var countdown = AutoSave.NextAutoSaveTime - DateTime.Now;
+            autoBackupText = $"{Service.Lang.GetText("AutoBackup")} ({(countdown.TotalHours < 1 ? countdown.ToString(@"mm\:ss") : countdown.ToString(@"hh\:mm\:ss"))})";
+        }
 
         ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
         ImGuiOm.TooltipHover(Service.Lang.GetText("BackupHelp7"));
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            Service.Config.ComponentEnabled["AutoSave"] ^= true;
-            var component = ComponentManager.Components.FirstOrDefault(c => c.GetType() == typeof(AutoSave));
-            if (component != null)
-            {
-                if (Service.Config.ComponentEnabled["AutoSave"])
-                    ComponentManager.Load(component);
-                else
-                    ComponentManager.Unload(component);
-            }
+            if (component.Initialized)
+                ComponentManager.Unload(component);
             else
-                Service.Log.Error($"Fail to fetch component {nameof(AutoSave)}");
+                ComponentManager.Load(component);
 
             Service.Config.Save();
         }
@@ -125,6 +117,9 @@ public partial class Main
             {
                 Service.Config.AutoSaveInterval = Math.Max(autoSaveInterval, 5);
                 Service.Config.Save();
+
+                AutoSave.LastAutoSaveTime = DateTime.Now;
+                AutoSave.NextAutoSaveTime = AutoSave.LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
             }
 
             var isNotification = Service.Config.AutoSaveMessage;

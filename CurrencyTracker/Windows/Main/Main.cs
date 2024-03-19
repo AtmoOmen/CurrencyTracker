@@ -3,7 +3,6 @@ using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
@@ -69,25 +68,20 @@ public partial class Main : Window, IDisposable
     private static void DrawCategory(ref bool showUI, string labelText, Action uiAction)
     {
         ImGui.TextColored(showUI ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, labelText);
+
         if (ImGui.IsItemClicked())
-        {
             showUI = !showUI;
-        }
+
         if (ImGui.IsItemHovered())
-        {
             ImGui.SetTooltip(Service.Lang.GetText("Category-Help"));
-        }
+
         if (showUI)
-        {
             uiAction();
-        }
     }
 
     public void Dispose()
     {
         Tracker.CurrencyChanged -= OnCurrencyChanged;
-
-        ServerBar.DtrEntry?.Dispose();
 
         TaskManager?.Abort();
 

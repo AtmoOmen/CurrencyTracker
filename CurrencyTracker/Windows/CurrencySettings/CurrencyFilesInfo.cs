@@ -45,11 +45,11 @@ public partial class CurrencySettings
             shouldUpdate = true;
         }
 
-        if (selectedCurrencyID != 0 &&
-            (lastCurrency != selectedCurrencyID || lastCurrencyName != Service.Config.AllCurrencies[selectedCurrencyID]))
+        if (Main.SelectedCurrencyID != 0 &&
+            (lastCurrency != Main.SelectedCurrencyID || lastCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID]))
         {
-            lastCurrency = selectedCurrencyID;
-            lastCurrencyName = Service.Config.AllCurrencies[selectedCurrencyID];
+            lastCurrency = Main.SelectedCurrencyID;
+            lastCurrencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
             shouldUpdate = true;
         }
 
@@ -89,7 +89,7 @@ public partial class CurrencySettings
         void AddFilePath(TransactionFileCategory category, ulong key)
         {
             var name = GetSelectedViewName(category, key);
-            var filePath = TransactionsHandler.GetTransactionFilePath(selectedCurrencyID, category, key);
+            var filePath = TransactionsHandler.GetTransactionFilePath(Main.SelectedCurrencyID, category, key);
             if (!File.Exists(filePath)) return;
             filePaths[name] = filePath;
         }

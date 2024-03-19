@@ -11,13 +11,15 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 public class AutoSave : ITrackerComponent
 {
     public bool Initialized { get; set; }
-    public static DateTime LastAutoSave { get; set; } = DateTime.MinValue;
+    public static DateTime LastAutoSaveTime { get; set; } = DateTime.MinValue;
+    public static DateTime NextAutoSaveTime { get; set; } = DateTime.MaxValue;
 
-    private static Timer? AutoSaveTimer;
+    internal static Timer? AutoSaveTimer;
 
     public void Init()
     {
-        LastAutoSave = DateTime.Now;
+        LastAutoSaveTime = DateTime.Now;
+        NextAutoSaveTime = LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
 
         AutoSaveTimer ??= new Timer(1000);
         AutoSaveTimer.Elapsed += OnAutoSave;
@@ -27,10 +29,11 @@ public class AutoSave : ITrackerComponent
 
     private static void OnAutoSave(object? sender, ElapsedEventArgs e)
     {
-        if (DateTime.Now >= LastAutoSave + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval))
+        if (DateTime.Now >= LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval))
         {
             AutoSaveHandler();
-            LastAutoSave = DateTime.Now;
+            LastAutoSaveTime = DateTime.Now;
+            NextAutoSaveTime = LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
         }
     }
 
@@ -90,6 +93,7 @@ public class AutoSave : ITrackerComponent
         AutoSaveTimer?.Dispose();
         AutoSaveTimer = null;
 
-        LastAutoSave = DateTime.MinValue;
+        LastAutoSaveTime = DateTime.MinValue;
+        NextAutoSaveTime = DateTime.MaxValue;
     }
 }

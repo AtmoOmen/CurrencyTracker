@@ -20,7 +20,7 @@ public partial class CurrencySettings
 
     private void TerritoryRestrictedUI()
     {
-        var rules = Service.Config.CurrencyRules[selectedCurrencyID];
+        var rules = Service.Config.CurrencyRules[Main.SelectedCurrencyID];
         var isBlacklist = !rules.RegionRulesMode;
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-AreaRestriction")}:");

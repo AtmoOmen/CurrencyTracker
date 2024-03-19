@@ -6,9 +6,9 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
 {
-    private void CurrencyAmountInfoUI()
+    private static void CurrencyAmountInfoUI()
     {
-        Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(selectedCurrencyID, out var infoDic);
+        Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out var infoDic);
 
         if (infoDic.Any())
         {

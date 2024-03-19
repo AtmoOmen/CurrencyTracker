@@ -17,10 +17,9 @@ public partial class Main
 
     private static void CurrencyListboxUI()
     {
-        var style = ImGui.GetStyle();
         var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset,
                                      ImGui.GetContentRegionAvail().Y);
-        ImGui.PushStyleColor(ImGuiCol.ChildBg, style.Colors[(int)ImGuiCol.FrameBg]);
+        ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
         if (ImGui.BeginChild("CurrencyList", childScale, false, ImGuiWindowFlags.NoScrollbar))
         {
             CurrencyListboxToolUI();
@@ -68,7 +67,6 @@ public partial class Main
 
                 if (ImGui.BeginPopupContextItem())
                 {
-                    ImGui.SetWindowFontScale(1.2f);
                     ImGui.SetCursorPosY(5f);
                     ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(24f));
 
@@ -78,19 +76,13 @@ public partial class Main
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(inputBoxLength);
                     if (ImGui.InputText("", ref textInput, 100, ImGuiInputTextFlags.EnterReturnsTrue))
-                    {
                         CurrencyInfo.RenameCurrency(id, textInput);
-                    }
 
                     ImGui.SameLine();
                     if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
-                    {
                         CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetCurrencyLocalName(id));
-                    }
-                    ImGui.SetWindowFontScale(1f);
 
                     ImGui.Separator();
-
                     ImGui.Text(
                         $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(id, P.CurrentCharacter):N0}");
 
@@ -154,7 +146,7 @@ public partial class Main
         {
             var localName = CurrencyInfo.GetCurrencyLocalName(SelectedCurrencyID);
             if (Service.Config.CustomCurrencies[SelectedCurrencyID] != localName)
-                P.CurrencySettings.RenameCurrencyHandler(localName);
+                CurrencyInfo.RenameCurrency(SelectedCurrencyID, localName);
 
             Service.Config.CustomCurrencies.Remove(SelectedCurrencyID);
             Service.Config.Save();
