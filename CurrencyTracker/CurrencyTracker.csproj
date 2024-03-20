@@ -58,9 +58,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DalamudPackager" Version="2.1.12" />
-        <PackageReference Include="IntervalUtility" Version="1.0.0" />
-        <PackageReference Include="TinyPinyin.Net" Version="1.0.2" />
         <Reference Include="FFXIVClientStructs">
             <HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
             <Private>false</Private>
@@ -117,6 +114,12 @@
         <None Include="Manager\Langs\Spanish.resx">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="DalamudPackager" Version="2.1.12" />
+      <PackageReference Include="IntervalUtility" Version="1.0.0" />
+      <PackageReference Include="TinyPinyin" Version="1.1.0" />
     </ItemGroup>
 
     <ItemGroup>

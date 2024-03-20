@@ -14,11 +14,11 @@
         "resolved": "1.0.0",
         "contentHash": "3/7cz5Y0U5QCX/K1j8IRGDwQVsFVpXdjDhIVoJ1RnRkaTjmjr8nuyIEwkFjhXFs8ORykFLlrCXIt4f+AEsUXVA=="
       },
-      "TinyPinyin.Net": {
+      "TinyPinyin": {
         "type": "Direct",
-        "requested": "[1.0.2, )",
-        "resolved": "1.0.2",
-        "contentHash": "dbQcaukn7DEOsgFJn4YFQT0zfbALWHZiZMIvsvLOaMQRnCnOfYPE5Fq4PoIqCgGMnPt21NsLxEuXYRq4QQSnDA=="
+        "requested": "[1.1.0, )",
+        "resolved": "1.1.0",
+        "contentHash": "pwe99NXsWkSeJdOwzcweorlyoB2frOlTU37QwzmnnxfRT5vRENXm4UOl5g4Nxq5V9lYOBWK1mZIozFfIlDVjYA=="
       },
       "omentools": {
         "type": "Project"
