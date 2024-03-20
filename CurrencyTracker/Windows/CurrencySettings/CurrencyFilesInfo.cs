@@ -39,7 +39,7 @@ public partial class CurrencySettings
     {
         var shouldUpdate = false;
 
-        if (P.CurrentCharacter != null && lastCharacter != P.CurrentCharacter)
+        if (P.CurrentCharacter != null && !lastCharacter.Equals(P.CurrentCharacter))
         {
             lastCharacter = P.CurrentCharacter;
             shouldUpdate = true;

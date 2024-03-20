@@ -20,14 +20,14 @@ public partial class LanguageManager
     private Dictionary<string, string>? fbResourceData;
 
     public static readonly TranslationInfo[] LanguageNames =
-    {
-        new() { Language = "English", DisplayName = "English", Translators = new string[1] { "AtmoOmen" } },
-        new() { Language = "Spanish", DisplayName = "Español", Translators = new string[1] { "Risu" } },
-        new() { Language = "German", DisplayName = "Deutsch", Translators = new string[2] { "vyrnius", "alex97000" } },
-        new() { Language = "French", DisplayName = "Français", Translators = new string[2] { "Khyne Cael", "Lexideru" } },
-        new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = new string[1] { "AtmoOmen" } },
-        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = new string[2] { "Fluxus", "AtmoOmen" } }
-    };
+    [
+        new() { Language = "English", DisplayName = "English", Translators = ["AtmoOmen"] },
+        new() { Language = "Spanish", DisplayName = "Español", Translators = ["Risu"] },
+        new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000"] },
+        new() { Language = "French", DisplayName = "Français", Translators = ["Khyne Cael", "Lexideru"] },
+        new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = ["AtmoOmen"] },
+        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] }
+    ];
 
     public LanguageManager(string languageName, bool isDev = false, string devLangPath = "") 
         => SwitchLanguage(languageName, isDev, devLangPath);
@@ -124,7 +124,7 @@ public partial class LanguageManager
         var lastIndex = 0;
         foreach (var match in regex.Matches(format).Cast<Match>())
         {
-            ssb.AddText(format.Substring(lastIndex, match.Index - lastIndex));
+            ssb.AddText(format[lastIndex..match.Index]);
 
             var argIndex = int.Parse(match.Groups[1].Value);
 
@@ -140,7 +140,7 @@ public partial class LanguageManager
             lastIndex = match.Index + match.Length;
         }
 
-        ssb.AddText(format.Substring(lastIndex));
+        ssb.AddText(format[lastIndex..]);
 
         return ssb.Build();
     }

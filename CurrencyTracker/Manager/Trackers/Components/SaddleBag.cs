@@ -4,7 +4,6 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -13,11 +12,11 @@ public class SaddleBag : ITrackerComponent
     public bool Initialized { get; set; }
 
     public static readonly InventoryType[] SaddleBagInventories =
-    {
+    [
         InventoryType.SaddleBag1, InventoryType.SaddleBag2
-    };
+    ];
 
-    internal static Dictionary<uint, long> InventoryItemCount = new();
+    internal static Dictionary<uint, long> InventoryItemCount = [];
     private string windowTitle = string.Empty;
 
     public void Init()

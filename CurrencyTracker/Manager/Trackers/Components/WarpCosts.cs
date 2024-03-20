@@ -20,11 +20,11 @@ public unsafe class WarpCosts : ITrackerComponent
     public bool Initialized { get; set; }
 
     // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
-    private static readonly HashSet<string> ValidWarpText = new() { "Gils", "Gil", "金币", "金幣", "ギル" };
-    private static readonly uint[] tpCostCurrencies = { 1, 7569 };
+    private static readonly HashSet<string> ValidWarpText = ["Gils", "Gil", "金币", "金幣", "ギル"];
+    private static readonly uint[] tpCostCurrencies = [1, 7569];
 
     // 包含金币传送点的区域 Territories that Have a Gil-Cost Warp
-    private HashSet<uint> ValidGilWarpTerritories = new();
+    private HashSet<uint> ValidGilWarpTerritories = [];
 
     private delegate nint AddonReceiveEventDelegate(
         AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData);

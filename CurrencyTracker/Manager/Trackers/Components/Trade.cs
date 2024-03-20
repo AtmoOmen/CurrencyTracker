@@ -34,7 +34,7 @@ public unsafe class Trade : ITrackerComponent
         {
             Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
-            var items = inventoryHandler?.Items ?? new();
+            var items = inventoryHandler?.Items ?? [];
 
             Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
                                             RecordChangeType.All, 13);
@@ -48,7 +48,7 @@ public unsafe class Trade : ITrackerComponent
 
     private bool? GetTradeTarget()
     {
-        if (TryGetAddonByName<AtkUnitBase>("Trade", out var addon) && HelpersOm.IsAddonAndNodesReady(addon))
+        if (TryGetAddonByName<AtkUnitBase>("Trade", out var addon) && IsAddonAndNodesReady(addon))
         {
             var textNode = addon->GetTextNodeById(17);
             if (textNode == null) return false;

@@ -11,7 +11,6 @@ using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using IntervalUtility;
 using OmenTools.ImGuiOm;
-using static CurrencyTracker.Manager.Tools.Helpers;
 
 namespace CurrencyTracker.Windows;
 
@@ -49,16 +48,14 @@ public partial class CurrencySettings
     {
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ContainerType")}:");
         ImGui.SetNextItemWidth(alertIntervalWidth.X + 56);
-        using (var combo = ImRaii.Combo("##IntervalAlertViewSelect", GetSelectedViewName(viewIA, idIA)))
+        using var combo = ImRaii.Combo("##IntervalAlertViewSelect", GetSelectedViewName(viewIA, idIA));
+        if (combo)
         {
-            if (combo)
-            {
-                DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
-                foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
-                    DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
-                DrawViewSelectableIA(TransactionFileCategory.SaddleBag, 0);
-                DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
-            }
+            DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
+            foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
+                DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
+            DrawViewSelectableIA(TransactionFileCategory.SaddleBag, 0);
+            DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
         }
     }
 
@@ -73,7 +70,7 @@ public partial class CurrencySettings
         ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 48);
         using (var combo = ImRaii.Combo("##IntervalSelectCombo",
                                         selectedInterval != null ? selectedInterval.ToIntervalString() :
-                                        intervals.Any() ? Service.Lang.GetText("PleaseSelect") : ""))
+                                        intervals.Count != 0 ? Service.Lang.GetText("PleaseSelect") : ""))
         {
             if (combo)
             {
@@ -131,13 +128,13 @@ public partial class CurrencySettings
 
         if (b1)
         {
-            var paramsEP = new string[]
+            var paramsEP = new[]
             {
                 Service.Lang.GetText("AlertType"), Service.Lang.GetText("ParamEP-Value"),
                 Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType"),
                 Service.Lang.GetText("Interval")
             };
-            var key = "AlertIntervalMessage";
+            const string key = "AlertIntervalMessage";
             var textToShow = Service.Config.CustomNoteContents.TryGetValue(key, out var value)
                                  ? value
                                  : Service.Lang.GetOrigText(key);
@@ -218,7 +215,7 @@ public partial class CurrencySettings
                                : Service.Config.CurrencyRules[currencyID].AlertedChangeIntervals;
         var key = GetTransactionViewKeyString(view, ID);
 
-        if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = new List<Interval<int>>();
+        if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = [];
 
         return intervalList[key];
     }

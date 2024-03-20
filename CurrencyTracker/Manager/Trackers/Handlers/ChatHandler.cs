@@ -13,10 +13,7 @@ public class ChatHandler : ITrackerHandler
 
     private static TaskManager? TaskManager;
 
-    private static readonly HashSet<ushort> ValidChatTypes = new()
-    {
-        0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006
-    };
+    private static readonly HashSet<ushort> ValidChatTypes = [0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006];
 
     public void Init()
     {

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
@@ -198,7 +197,7 @@ public partial class Main
         selectedTransactions.Clear();
 
         currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID));
-        if (!CharacterCurrencyInfos.Any()) LoadDataMCS();
+        if (CharacterCurrencyInfos.Count == 0) LoadDataMCS();
         else
         {
             if (CharacterCurrencyInfos.All(x => x.Character.ContentID != Service.ClientState.LocalContentId))

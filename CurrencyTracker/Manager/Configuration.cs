@@ -56,7 +56,7 @@ public class Configuration : IPluginConfiguration
     public int ChildWidthOffset { get; set; } = 0;
     public int ExportDataFileType { get; set; } = 0;
     // Content ID - Retainer ID : Retainer Name
-    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = new(); 
+    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = []; 
 
     public Dictionary<string, bool> ColumnsVisibility { get; set; } = new()
     {
@@ -101,8 +101,8 @@ public class Configuration : IPluginConfiguration
         { "RecordDesAreaName", true }
     };
 
-    public Dictionary<string, string> CustomNoteContents { get; set; } = new();
-    public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = new();
+    public Dictionary<string, string> CustomNoteContents { get; set; } = [];
+    public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = [];
 
 
     [JsonIgnore]
@@ -127,7 +127,7 @@ public class Configuration : IPluginConfiguration
             {
                 allCurrencies = GetAllCurrencies();
                 GetAllCurrencyIcons();
-                allCurrencyID = allCurrencies.Keys.ToArray();
+                allCurrencyID = [.. allCurrencies.Keys];
             }
 
             return allCurrencies;
@@ -143,18 +143,18 @@ public class Configuration : IPluginConfiguration
             {
                 allCurrencies = GetAllCurrencies();
                 GetAllCurrencyIcons();
-                allCurrencyID = allCurrencies.Keys.ToArray();
+                allCurrencyID = [.. allCurrencies.Keys];
             }
 
             return allCurrencyID;
         }
     }
 
-    private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = new();
-    private Dictionary<uint, string>? allCurrencies = new();
+    private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = [];
+    private Dictionary<uint, string>? allCurrencies = [];
     private uint[]? allCurrencyID;
-    internal UpdateDictionary<uint, string> presetCurrencies = new();
-    internal UpdateDictionary<uint, string> customCurrencies = new();
+    internal UpdateDictionary<uint, string> presetCurrencies = [];
+    internal UpdateDictionary<uint, string> customCurrencies = [];
 
     [NonSerialized]
     private DalamudPluginInterface? pluginInterface;

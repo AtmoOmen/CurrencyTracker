@@ -9,7 +9,7 @@ public class ItemHandler : ITrackerHandler
 {
     public bool Initialized { get; set; }
     public bool isBlocked { get; set; } = false;
-    public static Dictionary<string, uint>? ItemNames { get; set; } = new();
+    public static Dictionary<string, uint>? ItemNames { get; set; } = [];
     public static HashSet<uint> ItemIDs { get; set; } = null!;
 
     public void Init()
@@ -18,7 +18,7 @@ public class ItemHandler : ITrackerHandler
                            .Where(x => x.ItemSortCategory.Row != 5 && x.IsUnique == false &&
                                        !string.IsNullOrEmpty(x.Name.RawString))
                            .ToDictionary(x => x.Name.RawString, x => x.RowId);
-        ItemIDs = ItemNames.Values.ToHashSet();
+        ItemIDs = [.. ItemNames.Values];
     }
 
     public void Uninit() { }

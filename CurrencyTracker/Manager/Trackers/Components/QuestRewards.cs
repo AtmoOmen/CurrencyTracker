@@ -49,7 +49,7 @@ public class QuestRewards : ITrackerComponent
         if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return false;
 
         Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})",
                                         RecordChangeType.All, 9);
         Service.Log.Debug("Currency Change Check Completes.");

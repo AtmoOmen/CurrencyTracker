@@ -11,17 +11,16 @@ public class DutyRewards : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private static Dictionary<uint, string> ContentNames = new(); // Territory ID - ContentName
+    private static Dictionary<uint, string>? ContentNames; // Territory ID - ContentName
 
-    private static readonly HashSet<uint> IgnoredContents = new()
-    {
-        // Triple Triad Related
+    private static readonly HashSet<uint> IgnoredContents =
+    [
         579, 940, 941,
         // Eureka
         732, 763, 795, 827,
         // Bozja
         920, 975
-    };
+    ];
 
     private bool isDutyStarted;
     private string contentName = string.Empty;
@@ -30,7 +29,7 @@ public class DutyRewards : ITrackerComponent
 
     public void Init()
     {
-        ContentNames = Service.DataManager.GetExcelSheet<ContentFinderCondition>()
+        ContentNames ??= Service.DataManager.GetExcelSheet<ContentFinderCondition>()
                               .Where(x => !string.IsNullOrEmpty(x.Name.FetchText()) &&
                                           !IgnoredContents.Contains(x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
@@ -70,7 +69,7 @@ public class DutyRewards : ITrackerComponent
 
         Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, PreviousLocationName,
                                         Service.Config.ComponentProp["RecordContentName"]
                                             ? $"({contentName})"

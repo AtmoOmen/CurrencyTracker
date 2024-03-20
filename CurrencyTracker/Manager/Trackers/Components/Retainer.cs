@@ -15,20 +15,20 @@ public class Retainer : ITrackerComponent
     public bool Initialized { get; set; }
 
     public static readonly InventoryType[] RetainerInventories =
-    {
+    [
         InventoryType.RetainerPage1, InventoryType.RetainerPage2, InventoryType.RetainerPage3,
         InventoryType.RetainerPage4,
         InventoryType.RetainerCrystals, InventoryType.RetainerPage5, InventoryType.RetainerPage6,
         InventoryType.RetainerPage7, InventoryType.RetainerMarket
-    };
+    ];
 
     private bool isOnRetainer;
     private ulong currentRetainerID;
     private string retainerWindowName = string.Empty;
-    private static readonly uint[] retainerCurrencies = new uint[2] { 1, 21072 }; // Gil and Venture
+    private static readonly uint[] retainerCurrencies = [1, 21072]; // Gil and Venture
 
     internal static Dictionary<ulong, Dictionary<uint, long>>
-        InventoryItemCount = new(); // Retainer ID - Currency ID : Amount
+        InventoryItemCount = []; // Retainer ID - Currency ID : Amount
 
     private static TaskManager? TaskManager;
 
@@ -38,7 +38,7 @@ public class Retainer : ITrackerComponent
 
         if (!Service.Config.CharacterRetainers.ContainsKey(P.CurrentCharacter.ContentID))
         {
-            Service.Config.CharacterRetainers.Add(P.CurrentCharacter.ContentID, new());
+            Service.Config.CharacterRetainers.Add(P.CurrentCharacter.ContentID, []);
             Service.Config.Save();
         }
 
@@ -69,7 +69,7 @@ public class Retainer : ITrackerComponent
 
             if (!InventoryItemCount.TryGetValue(retainerID, out var itemCount))
             {
-                itemCount = new();
+                itemCount = [];
                 InventoryItemCount[retainerID] = itemCount;
             }
 
@@ -101,7 +101,7 @@ public class Retainer : ITrackerComponent
         currentRetainerID = retainerManager->LastSelectedRetainerId;
         if (!InventoryItemCount.TryGetValue(currentRetainerID, out var value))
         {
-            value = new();
+            value = [];
             InventoryItemCount[currentRetainerID] = value;
         }
 

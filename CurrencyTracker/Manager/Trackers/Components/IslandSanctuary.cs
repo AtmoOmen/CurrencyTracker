@@ -73,7 +73,7 @@ public class IslandSanctuary : ITrackerComponent
                 {
                     isOnWorkshop = false;
 
-                    var items = inventoryHandler?.Items ?? new();
+                    var items = inventoryHandler?.Items ?? [];
                     Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
                                                     RecordChangeType.All, 7);
 
@@ -94,7 +94,7 @@ public class IslandSanctuary : ITrackerComponent
     {
         if (Flags.OccupiedInEvent()) return;
 
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
 
         HandlerManager.ChatHandler.isBlocked = false;
@@ -112,7 +112,7 @@ public class IslandSanctuary : ITrackerComponent
     {
         if (Flags.OccupiedInEvent()) return;
 
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
 
         HandlerManager.ChatHandler.isBlocked = false;

@@ -12,11 +12,11 @@ public class Exchange : ITrackerComponent
     public bool Initialized { get; set; }
 
     private static readonly string[] UI =
-    {
+    [
         "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency",
         "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "TripleTriadCoinExchange", "FreeCompanyChest",
         "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback", "ShopExchangeCoin"
-    };
+    ];
 
     private static readonly Dictionary<string, uint> WindowUI = new() // Addon Name - Window Node ID
     {
@@ -60,7 +60,7 @@ public class Exchange : ITrackerComponent
 
         Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, "",
             $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : Service.Lang.GetText("ExchangeWith", currentTargetName))})",

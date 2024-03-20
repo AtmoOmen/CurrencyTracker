@@ -9,7 +9,7 @@ public class InventoryHandler : ITrackerHandler
     public bool Initialized { get; set; }
     public bool isBlocked { get; set; } = false;
 
-    public HashSet<uint> Items { get; set; } = new();
+    public HashSet<uint> Items { get; set; } = [];
 
     public InventoryHandler()
     {

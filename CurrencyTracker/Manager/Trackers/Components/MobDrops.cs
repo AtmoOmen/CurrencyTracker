@@ -15,7 +15,7 @@ public class MobDrops : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private readonly HashSet<string> enemiesList = new();
+    private readonly HashSet<string> enemiesList = [];
     private InventoryHandler? inventoryHandler;
 
     private static TaskManager? TaskManager;
@@ -71,7 +71,7 @@ public class MobDrops : ITrackerComponent
         }
 
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
             RecordChangeType.All, 8);

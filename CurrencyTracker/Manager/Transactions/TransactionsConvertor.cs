@@ -45,11 +45,11 @@ public class TransactionsConvertor
         for (var i = 0; i < span.Length; i++)
             if (span[i] == ';')
             {
-                parts[partIndex++] = span.Slice(start, i - start).ToString();
+                parts[partIndex++] = span[start..i].ToString();
                 start = i + 1;
             }
 
-        parts[partIndex] = span.Slice(start).ToString();
+        parts[partIndex] = span[start..].ToString();
 
         if (!DateTime.TryParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", InvariantCulture, DateTimeStyles.None,
                                     out var timeStamp))
@@ -75,7 +75,7 @@ public class TransactionsConvertor
     public static List<TransactionsConvertor> FromFile(string filePath)
     {
         filePath = SanitizeFilePath(filePath);
-        if (!File.Exists(filePath)) return new();
+        if (!File.Exists(filePath)) return [];
 
         var transactions = new List<TransactionsConvertor>();
 

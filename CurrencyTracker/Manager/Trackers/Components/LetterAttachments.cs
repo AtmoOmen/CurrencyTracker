@@ -51,7 +51,7 @@ public class LetterAttachments : ITrackerComponent
     private bool? EndLetterAttachments(string letterSender)
     {
         Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
-        var items = inventoryHandler?.Items ?? new();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
             24);

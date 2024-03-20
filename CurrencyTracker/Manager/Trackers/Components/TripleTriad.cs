@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
@@ -56,7 +55,7 @@ public class TripleTriad : ITrackerComponent
 
         Service.Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
 
-        var items = inventoryHandler?.Items ?? new HashSet<uint>();
+        var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("TripleTriadWith", ttResultText, ttRivalName)})", RecordChangeType.All,
             14);

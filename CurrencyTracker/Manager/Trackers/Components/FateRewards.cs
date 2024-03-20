@@ -28,7 +28,7 @@ public class FateRewards : ITrackerComponent
                 break;
             case AddonEvent.PostSetup:
                 var FR = (AtkUnitBase*)args.Addon;
-                if (!HelpersOm.IsAddonAndNodesReady(FR)) return;
+                if (!IsAddonAndNodesReady(FR)) return;
 
                 var textNode = FR->GetTextNodeById(6);
                 if (textNode == null) return;

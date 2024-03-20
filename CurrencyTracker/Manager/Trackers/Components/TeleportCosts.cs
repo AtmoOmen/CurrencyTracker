@@ -23,8 +23,8 @@ public class TeleportCosts : ITrackerComponent
                DetourName = nameof(TeleportActionSelf))]
     private Hook<TeleportActionSelfDelegate>? teleportActionSelfHook;
 
-    private static Dictionary<uint, string> AetheryteNames = new();
-    private static readonly uint[] TpCostCurrencies = { 1, 7569 };
+    private static Dictionary<uint, string> AetheryteNames = [];
+    private static readonly uint[] TpCostCurrencies = [1, 7569];
 
     private static string tpDestination = string.Empty; // Aetheryte Name
 

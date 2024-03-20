@@ -18,9 +18,6 @@ public static class TransactionsHandler
     // Premium Saddle Bag - {CurrencyName}_PSB.txt
 
 
-    /// <summary>
-    ///     Returns a file path that includes PlayerDataFolder
-    /// </summary>
     public static string GetTransactionFilePath(uint CurrencyID, TransactionFileCategory category, ulong ID = 0)
     {
         var suffix = GetTransactionFileSuffix(category, ID);
@@ -60,7 +57,7 @@ public static class TransactionsHandler
 
         return ValidityCheck(currencyID) && File.Exists(filePath)
                    ? TransactionsConvertor.FromFile(filePath)
-                   : new();
+                   : [];
     }
 
     public static async Task<List<TransactionsConvertor>> LoadAllTransactionsAsync(
@@ -73,7 +70,7 @@ public static class TransactionsHandler
             return await TransactionsConvertor.FromFileAsync(filePath);
         }
 
-        return new();
+        return [];
     }
 
     // 加载最新一条记录 Load Latest Transaction
@@ -103,7 +100,7 @@ public static class TransactionsHandler
         uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "None",
         string noteContent = "None", TransactionFileCategory category = 0, ulong ID = 0)
     {
-        if (!selectedTransactions.Any()) return 0;
+        if (selectedTransactions.Count == 0) return 0;
 
         var editedTransactions = LoadAllTransactions(currencyID, category, ID);
         var filePath = GetTransactionFilePath(currencyID, category, ID);
@@ -139,8 +136,8 @@ public static class TransactionsHandler
 
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-        TransactionsConvertor.AppendTransactionToFile(filePath, new List<TransactionsConvertor>
-        {
+        TransactionsConvertor.AppendTransactionToFile(filePath,
+        [
             new()
             {
                 TimeStamp = TimeStamp,
@@ -149,7 +146,7 @@ public static class TransactionsHandler
                 LocationName = LocationName,
                 Note = Note
             }
-        });
+        ]);
     }
 
     // 新建一条数据记录 Create a New Transaction File with a transaction
@@ -161,8 +158,8 @@ public static class TransactionsHandler
 
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-        TransactionsConvertor.WriteTransactionsToFile(filePath, new List<TransactionsConvertor>
-        {
+        TransactionsConvertor.WriteTransactionsToFile(filePath,
+        [
             new()
             {
                 TimeStamp = timeStamp,
@@ -171,7 +168,7 @@ public static class TransactionsHandler
                 LocationName = locationName,
                 Note = note
             }
-        });
+        ]);
     }
 
     // 根据时间重新排序文件内记录 Sort Transactions in File by Time
@@ -181,7 +178,7 @@ public static class TransactionsHandler
 
         TransactionsConvertor.WriteTransactionsToFile(
             GetTransactionFilePath(currencyID, category, ID),
-            LoadAllTransactions(currencyID, category, ID).OrderBy(x => x.TimeStamp).ToList()
+            [.. LoadAllTransactions(currencyID, category, ID).OrderBy(x => x.TimeStamp)]
         );
     }
 

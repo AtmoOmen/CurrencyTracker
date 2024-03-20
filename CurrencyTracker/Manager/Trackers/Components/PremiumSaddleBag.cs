@@ -12,11 +12,11 @@ public class PremiumSaddleBag : ITrackerComponent
     public bool Initialized { get; set; }
 
     public static readonly InventoryType[] PSaddleBagInventories =
-    {
+    [
         InventoryType.PremiumSaddleBag1, InventoryType.PremiumSaddleBag1
-    };
+    ];
 
-    internal static Dictionary<uint, long> InventoryItemCount = new();
+    internal static Dictionary<uint, long> InventoryItemCount = [];
     private string windowTitle = string.Empty;
 
     private static TaskManager? TaskManager;

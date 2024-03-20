@@ -5,7 +5,6 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
-using static CurrencyTracker.Plugin;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -39,7 +38,7 @@ public class CurrencyUIEdit : ITrackerComponent
     private static unsafe void UITextEdit(AddonArgs args)
     {
         var UI = (AtkUnitBase*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(UI)) return;
+        if (!IsAddonAndNodesReady(UI)) return;
 
         var gilNode = (AtkComponentBase*)UI->GetComponentNodeById(12);
         var gilTextNode = gilNode->GetTextNodeById(5);
@@ -52,7 +51,7 @@ public class CurrencyUIEdit : ITrackerComponent
     private unsafe void UITooltipEdit(AddonArgs args)
     {
         var UI = (AtkUnitBase*)args.Addon;
-        if (!HelpersOm.IsAddonAndNodesReady(UI)) return;
+        if (!IsAddonAndNodesReady(UI)) return;
 
         var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
         if (gilTextNode == null) return;
@@ -109,7 +108,7 @@ public class CurrencyUIEdit : ITrackerComponent
         Service.AddonEventManager.RemoveEvent(mouseoutHandle);
 
         var UI = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
-        if (HelpersOm.IsAddonAndNodesReady(UI))
+        if (IsAddonAndNodesReady(UI))
         {
             var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
             if (gilTextNode == null) return;
