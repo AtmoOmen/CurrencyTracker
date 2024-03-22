@@ -3,7 +3,6 @@ using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
@@ -22,10 +21,7 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-        {
-            ImGui.OpenPopup("ChangeFunctions");
-        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ChangeFunctions");
         ImGui.EndDisabled();
 
         using var popup = ImRaii.Popup("ChangeFunctions");
@@ -51,10 +47,11 @@ public partial class Main
                 RefreshTransactionsView();
 
             ImGui.SetNextItemWidth(130);
-            if (ImGui.InputInt($"##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputInt("##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
                 RefreshTransactionsView();
 
-            ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
+            ImGuiOm.HelpMarker(
+                $"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
         }
     }
 
@@ -72,18 +69,18 @@ public partial class Main
             var positiveChangeColor = Service.Config.PositiveChangeColor;
             var negativeChangeColor = Service.Config.NegativeChangeColor;
 
-            ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor, color => Service.Config.PositiveChangeColor = color);
+            ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor,
+                                    color => Service.Config.PositiveChangeColor = color);
             ImGui.SameLine();
-            ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor, color => Service.Config.NegativeChangeColor = color);
+            ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor,
+                                    color => Service.Config.NegativeChangeColor = color);
         }
     }
 
-    private static void ColoringByChangeHandler(string popupId, string text, ref Vector4 color, Action<Vector4> saveColorAction)
+    private static void ColoringByChangeHandler(
+        string popupId, string text, ref Vector4 color, Action<Vector4> saveColorAction)
     {
-        if (ImGui.ColorButton($"##{popupId}", color))
-        {
-            ImGui.OpenPopup(popupId);
-        }
+        if (ImGui.ColorButton($"##{popupId}", color)) ImGui.OpenPopup(popupId);
 
         ImGui.SameLine();
         ImGui.Text(text);
@@ -108,22 +105,21 @@ public partial class Main
 
         Task.Delay(TimeSpan.FromSeconds(1), token).ContinueWith(t =>
         {
-            if (!t.IsCanceled)
-            {
-                Service.Config.Save();
-            }
+            if (!t.IsCanceled) Service.Config.Save();
         }, token);
     }
 
-    private static void ChangeColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void ChangeColumnCellUI(int i, DisplayTransaction transaction)
     {
         var textColor = Service.Config.ChangeTextColoring
-            ? transaction.Change > 0 ? Service.Config.PositiveChangeColor : transaction.Change < 0 ? Service.Config.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
-            : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+                            ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
+                              transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :
+                              new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                            : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
         using (ImRaii.PushColor(ImGuiCol.Text, textColor))
         {
-            var text = transaction.Change.ToString("+ #,##0;- #,##0;0");
+            var text = transaction.Transaction.Change.ToString("+ #,##0;- #,##0;0");
             ImGui.Selectable($"{text}##{i}");
             ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
         }

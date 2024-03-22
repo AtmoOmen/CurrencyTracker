@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
@@ -17,17 +16,15 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-        {
-            ImGui.OpenPopup("LocationSearch");
-        }
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("LocationSearch");
         ImGui.EndDisabled();
 
         using var popup = ImRaii.Popup("LocationSearch");
         if (popup.Success)
         {
             ImGui.SetNextItemWidth(250);
-            if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
+            if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"),
+                                        ref searchLocationName, 80))
             {
                 isLocationFilterEnabled = !string.IsNullOrEmpty(searchLocationName);
                 RefreshTransactionsView();
@@ -35,9 +32,9 @@ public partial class Main
         }
     }
 
-    private static void LocationColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void LocationColumnCellUI(int i, DisplayTransaction transaction)
     {
-        var locationName = transaction.LocationName;
+        var locationName = transaction.Transaction.LocationName;
 
         ImGui.Selectable($"{locationName}##_{i}");
 
@@ -55,9 +52,12 @@ public partial class Main
             if (!string.IsNullOrEmpty(editedLocationName)) ImGui.TextWrapped(editedLocationName);
 
             ImGui.SetNextItemWidth(270);
-            if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+            if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150,
+                                ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, new List<Transaction> { transaction }, editedLocationName, "None", currentView, currentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions(
+                    SelectedCurrencyID, [transaction.Transaction], editedLocationName, "None", currentView,
+                    currentViewID);
 
                 if (failCount == 0)
                     RefreshTransactionsView();

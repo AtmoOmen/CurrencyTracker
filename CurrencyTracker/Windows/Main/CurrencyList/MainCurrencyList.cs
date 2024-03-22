@@ -102,9 +102,8 @@ public partial class Main
         uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
     {
         SelectedCurrencyID = ID;
-        var transactions = await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID);
     
-        currentTypeTransactions = ApplyFilters(transactions);
+        currentTypeTransactions = ToDisplayTransaction(ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)));
         currentView = view;
         currentViewID = viewID;
     }

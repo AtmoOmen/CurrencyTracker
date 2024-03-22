@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
@@ -28,7 +27,7 @@ public partial class Main
         { "Checkbox", CheckboxColumnHeaderUI }
     };
 
-    private static readonly Dictionary<string, Action<int, bool, Transaction>> ColumnCellActions = new()
+    private static readonly Dictionary<string, Action<int, DisplayTransaction>> ColumnCellActions = new()
     {
         { "Order", OrderColumnCellUI },
         { "Time", TimeColumnCellUI },
@@ -40,9 +39,7 @@ public partial class Main
     };
 
     internal static string[] visibleColumns = [];
-    internal static ConcurrentDictionary<uint, List<bool>>? selectedStates = new();
-    internal static ConcurrentDictionary<uint, List<Transaction>>? selectedTransactions = new();
-    internal static List<Transaction> currentTypeTransactions = [];
+    internal static List<DisplayTransaction> currentTypeTransactions = [];
 
     private static int currentPage;
     private static int visibleStartIndex;
@@ -75,16 +72,13 @@ public partial class Main
 
                 if (currentTypeTransactions.Count > 0)
                 {
-                    SelectedStatesWatcher(currentTypeTransactions.Count);
-
                     for (var i = visibleStartIndex; i < visibleEndIndex; i++)
                     {
                         ImGui.TableNextRow();
                         foreach (var column in visibleColumns)
                         {
                             ImGui.TableNextColumn();
-                            ColumnCellActions[column]
-                                .Invoke(i, selectedStates[SelectedCurrencyID][i], currentTypeTransactions[i]);
+                            ColumnCellActions[column].Invoke(i, currentTypeTransactions[i]);
                         }
                     }
                 }
@@ -121,19 +115,6 @@ public partial class Main
         {
             ImGui.TableNextColumn();
             ColumnHeaderActions[column].Invoke();
-        }
-    }
-
-    private static void SelectedStatesWatcher(int transactionCount)
-    {
-        var stateList = selectedStates.GetOrAdd(SelectedCurrencyID, _ => []);
-        selectedTransactions.GetOrAdd(SelectedCurrencyID, _ => []);
-
-        var itemsToAdd = transactionCount - stateList.Count;
-        if (itemsToAdd > 0)
-        {
-            for (var i = 0; i < itemsToAdd; i++)
-                stateList.Add(false);
         }
     }
 
@@ -211,8 +192,7 @@ public partial class Main
             const bool boolUI = false;
             if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions =
-                    ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
+                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)));
             }
 
             foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
@@ -221,7 +201,11 @@ public partial class Main
                 {
                     currentTypeTransactions =
                         ApplyFilters(TransactionsHandler.LoadAllTransactions(
-                                         SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key));
+                                         SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key)).Select(transaction => new DisplayTransaction
+                        {
+                            Transaction = transaction,
+                            Selected = false
+                        }).ToList();;
 
                     currentView = TransactionFileCategory.Retainer;
                     currentViewID = retainer.Key;
@@ -229,20 +213,16 @@ public partial class Main
 
             if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions =
-                    ApplyFilters(
-                        TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
-                                                                TransactionFileCategory.SaddleBag));
+                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)));
                 currentView = TransactionFileCategory.SaddleBag;
                 currentViewID = 0;
             }
 
             if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions =
-                    ApplyFilters(
-                        TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
-                                                                TransactionFileCategory.PremiumSaddleBag));
+                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(
+                                                                   TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
+                                                                       TransactionFileCategory.PremiumSaddleBag)));
             }
         }
     }
@@ -286,7 +266,7 @@ public partial class Main
             var childWidthOffset = Service.Config.ChildWidthOffset;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(widthWidthOffset);
-            if (ImGui.InputInt("##ChildframeWidthOffset", ref childWidthOffset, 10))
+            if (ImGui.InputInt("##ChildFrameWidthOffset", ref childWidthOffset, 10))
             {
                 childWidthOffset = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
                 Service.Config.ChildWidthOffset = childWidthOffset;
@@ -327,13 +307,15 @@ public partial class Main
 
     private static void TransactionTableInfoBarUI()
     {
-        if (selectedTransactions.TryGetValue(SelectedCurrencyID, out var transactions) && transactions.Count != 0)
+        var selectedTransactions = currentTypeTransactions.Where(x => x.Selected).ToList();
+
+        if (selectedTransactions.Count != 0)
         {
-            var count = transactions.Count;
-            var sum = transactions.Sum(x => x.Change);
+            var count = selectedTransactions.Count;
+            var sum = selectedTransactions.Sum(x => x.Transaction.Change);
             var avg = Math.Round((double)sum / count, 2);
-            var max = transactions.Max(x => x.Change);
-            var min = transactions.Min(x => x.Change);
+            var max = selectedTransactions.Max(x => x.Transaction.Change);
+            var min = selectedTransactions.Min(x => x.Transaction.Change);
 
             ImGui.TextDisabled(Service.Lang.GetText("SelectedTransactionsInfo", count, sum, avg, max, min));
         }

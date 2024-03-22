@@ -106,7 +106,7 @@ public partial class Main
                 ReloadOrderedOptions();
 
                 Tracker.CheckCurrency(_currencyIDACC, "", "", RecordChangeType.All, 1);
-                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID));
+                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)));
 
                 _searchFilterACC = string.Empty;
                 _currencyIDACC = 0;

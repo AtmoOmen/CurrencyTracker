@@ -62,7 +62,7 @@ public sealed class Plugin : IDalamudPlugin
         CurrentCharacter = GetCurrentCharacter();
 
         if (WindowSystem.Windows.Contains(Main) && Main.SelectedCurrencyID != 0)
-            Main.currentTypeTransactions = TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID);
+            Main.currentTypeTransactions = Main.ToDisplayTransaction(TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID));
 
         Tracker.InitializeTracking();
     }
@@ -166,7 +166,7 @@ public sealed class Plugin : IDalamudPlugin
                 {
                     Main.IsOpen = true;
                     Main.SelectedCurrencyID = currencyID;
-                    Main.currentTypeTransactions = Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID));
+                    Main.currentTypeTransactions = Main.ToDisplayTransaction(Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID)));
                 }
                 else
                     Main.IsOpen = false;

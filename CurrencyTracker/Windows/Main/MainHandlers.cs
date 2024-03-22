@@ -19,7 +19,7 @@ public partial class Main
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
-            Service.Config.OrderedOptions = allCurrenciesSet.ToList();
+            Service.Config.OrderedOptions = [.. allCurrenciesSet];
             Service.Config.Save();
         }
     }
@@ -178,6 +178,15 @@ public partial class Main
         });
     }
 
+    internal static List<DisplayTransaction> ToDisplayTransaction(IEnumerable<Transaction> transactions)
+    {
+        return transactions.Select(transaction => new DisplayTransaction
+        {
+            Transaction = transaction,
+            Selected = false
+        }).ToList();
+    }
+
     public static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
     {
         UpdateTransactions(currencyID, category, ID);
@@ -193,10 +202,7 @@ public partial class Main
             return;
         }
 
-        selectedStates.Clear();
-        selectedTransactions.Clear();
-
-        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID));
+        currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID)));
         if (CharacterCurrencyInfos.Count == 0) LoadDataMCS();
         else
         {

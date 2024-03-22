@@ -36,15 +36,15 @@ public partial class Main
         }
     }
 
-    private static void NoteColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void NoteColumnCellUI(int i, DisplayTransaction transaction)
     {
-        ImGui.Selectable($"{transaction.Note}##_{i}");
+        ImGui.Selectable($"{transaction.Transaction.Note}##_{i}");
 
-        if (!string.IsNullOrEmpty(transaction.Note)) ImGuiOm.TooltipHover(transaction.Note);
+        if (!string.IsNullOrEmpty(transaction.Transaction.Note)) ImGuiOm.TooltipHover(transaction.Transaction.Note);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
         {
-            editedNoteContent = transaction.Note;
+            editedNoteContent = transaction.Transaction.Note;
             ImGui.OpenPopup($"EditTransactionNote##_{i}");
         }
 
@@ -56,7 +56,7 @@ public partial class Main
             ImGui.SetNextItemWidth(270);
             if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, new List<Transaction> { transaction }, "None", editedNoteContent, currentView, currentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, [transaction.Transaction], "None", editedNoteContent, currentView, currentViewID);
 
                 if (failCount == 0) 
                     RefreshTransactionsView();

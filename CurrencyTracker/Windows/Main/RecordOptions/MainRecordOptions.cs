@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
@@ -109,7 +110,8 @@ public partial class Main
             {
                 if (currentTypeTransactions.Count == 0) return;
 
-                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(currentTypeTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
+                var selectedTransactions = currentTypeTransactions.Select(x => x.Transaction).ToList();
+                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
             }
             ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
 

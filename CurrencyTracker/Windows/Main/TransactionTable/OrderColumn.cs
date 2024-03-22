@@ -1,5 +1,4 @@
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
@@ -22,7 +21,7 @@ public partial class Main
         ImGui.EndDisabled();
     }
 
-    private static void OrderColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void OrderColumnCellUI(int i, DisplayTransaction transaction)
     {
         ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{currentTypeTransactions.Count - i}" : $"{i + 1}");
     }

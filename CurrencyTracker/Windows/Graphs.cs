@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
@@ -13,40 +12,21 @@ namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    private readonly Main Main = Plugin.P.Main;
-    private List<Transaction>? currentTypeTransactions = new();
+    private readonly Main Main = P.Main;
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
 
-    public Graph(Plugin plugin) : base($"Graphs##{Plugin.Name}")
+    public Graph(Plugin plugin) : base($"Graphs##{Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
-
-        Initialize();
     }
 
-    public void Dispose()
+    public override void Draw()
     {
-    }
-
-    private void Initialize()
-    {
-        if (Main.SelectedCurrencyID == 0)
-            return;
-
-        if (Main.currentTypeTransactions == null)
+        if (!P.Main.IsOpen || Main.SelectedCurrencyID == 0)
         {
-            if (Plugin.P.Graph.IsOpen)
-                Plugin.P.Graph.IsOpen = false;
+            P.Graph.IsOpen = false;
             return;
-        }
-    }
-
-    public override unsafe void Draw()
-    {
-        if (!Plugin.P.Main.IsOpen)
-        {
-            Plugin.P.Graph.IsOpen = false;
         }
 
         ImGui.Text($"{Service.Lang.GetText("Now")}:");
@@ -57,57 +37,55 @@ public class Graph : Window, IDisposable
         ImGui.SameLine();
         ImGui.TextColored(ImGuiColors.DalamudOrange, Main.currentTypeTransactions.Count.ToString());
 
-        currentTypeTransactions = Main.currentTypeTransactions;
-
-        if (currentTypeTransactions != null)
+        if (Main.currentTypeTransactions.Count > 0)
         {
-            AmountGraph(currentTypeTransactions);
-            ChangeGraph(currentTypeTransactions);
-            LocationGraph(currentTypeTransactions);
-            LocationAmountGraph(currentTypeTransactions);
+            AmountGraph(Main.currentTypeTransactions);
+            ChangeGraph(Main.currentTypeTransactions);
+            LocationGraph(Main.currentTypeTransactions);
+            LocationAmountGraph(Main.currentTypeTransactions);
         }
     }
 
-    private void AmountGraph(List<Transaction> currentTypeTransactions)
+    private void AmountGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
     {
-        if (currentTypeTransactions == null || !currentTypeTransactions.Any())
-            return;
+        if (currentTypeTransactions.Count == 0) return;
 
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Amount));
-        var (dividedFactor, dividedName) = CaculateDividedFactor(averageAmount);
+        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Amount));
+        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
 
-        currencyAmountData = currentTypeTransactions.Select(x => (float)Math.Round(x.Amount / dividedFactor, 6))
-            .Reverse()
-            .ToArray();
+        currencyAmountData = currentTypeTransactions
+                             .Select(x => (float)Math.Round(x.Transaction.Amount / dividedFactor, 6))
+                             .Reverse()
+                             .ToArray();
 
         var graphTitle = $"{Service.Lang.GetText("AmountGraph")}{dividedName}";
 
         if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("AmountGraph1")}"))
         {
-            var plotFlags = ImPlotFlags.None;
+            const ImPlotFlags plotFlags = ImPlotFlags.None;
             var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
             if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
             {
-                ImPlot.SetupAxesLimits(0, currencyAmountData.Length, currencyAmountData.Min(), currencyAmountData.Max());
+                ImPlot.SetupAxesLimits(0, currencyAmountData.Length, currencyAmountData.Min(),
+                                       currencyAmountData.Max());
                 ImPlot.SetupMouseText(ImPlotLocation.North, ImPlotMouseTextFlags.None);
                 ImPlot.PlotLine("", ref currencyAmountData[0], currencyAmountData.Length);
                 ImPlot.EndPlot();
             }
-
         }
     }
 
-    private void ChangeGraph(List<Transaction> currentTypeTransactions)
+    private void ChangeGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
     {
-        if (currentTypeTransactions == null || !currentTypeTransactions.Any())
-            return;
+        if (currentTypeTransactions.Count == 0) return;
 
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Change));
-        var (dividedFactor, dividedName) = CaculateDividedFactor(averageAmount);
+        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change));
+        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
 
-        currencyChangeData = currentTypeTransactions.Select(x => (float)Math.Round(x.Change / dividedFactor, 6))
-            .Reverse()
-            .ToArray();
+        currencyChangeData = currentTypeTransactions
+                             .Select(x => (float)Math.Round(x.Transaction.Change / dividedFactor, 6))
+                             .Reverse()
+                             .ToArray();
 
         var graphTitle = $"{Service.Lang.GetText("ChangeGraph")}{dividedName}";
 
@@ -117,25 +95,25 @@ public class Graph : Window, IDisposable
             var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
             if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
             {
-                ImPlot.SetupAxesLimits(0, currencyChangeData.Length, currencyChangeData.Min(), currencyChangeData.Max());
+                ImPlot.SetupAxesLimits(0, currencyChangeData.Length, currencyChangeData.Min(),
+                                       currencyChangeData.Max());
                 ImPlot.SetupMouseText(ImPlotLocation.North, ImPlotMouseTextFlags.None);
-                ImPlot.PlotLine("", ref currencyChangeData[0], currencyChangeData.Length, 1, 0, ImPlotLineFlags.SkipNaN);
+                ImPlot.PlotLine("", ref currencyChangeData[0], currencyChangeData.Length, 1, 0,
+                                ImPlotLineFlags.SkipNaN);
                 ImPlot.EndPlot();
             }
-
         }
     }
 
-    private static void LocationGraph(List<Transaction> currentTypeTransactions)
+    private static void LocationGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
     {
-        if (currentTypeTransactions == null || !currentTypeTransactions.Any())
-            return;
+        if (currentTypeTransactions.Count == 0) return;
 
         var locationCounts = currentTypeTransactions
-            .GroupBy(transaction => transaction.LocationName)
-            .Select(group => new { Location = group.Key, Count = group.Count() })
-            .OrderByDescending(item => item.Count)
-            .ToList();
+                             .GroupBy(transaction => transaction.Transaction.LocationName)
+                             .Select(group => new { Location = group.Key, Count = group.Count() })
+                             .OrderByDescending(item => item.Count)
+                             .ToList();
 
         var locations = locationCounts.Select(item => item.Location).ToArray();
         var counts = locationCounts.Select(item => (float)item.Count).ToArray();
@@ -150,68 +128,71 @@ public class Graph : Window, IDisposable
             {
                 var positions = Enumerable.Range(0, locations.Length).Select(i => (double)i).ToArray();
                 ImPlot.SetupAxisTicks(ImAxis.X1, ref positions[0], locations.Length, locations);
-                ImPlot.PlotBarGroups(new string[] { "" }, ref counts[0], 1, locations.Length);
+                ImPlot.PlotBarGroups([""], ref counts[0], 1, locations.Length);
                 ImPlot.EndPlot();
             }
-
         }
     }
 
-    private static void LocationAmountGraph(List<Transaction> currentTypeTransactions)
+    private static void LocationAmountGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
     {
-        if (currentTypeTransactions == null || !currentTypeTransactions.Any())
-            return;
+        if (currentTypeTransactions.Count == 0) return;
 
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Change));
-        var (dividedFactor, dividedName) = CaculateDividedFactor(averageAmount);
+        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change));
+        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
 
         var locationAmounts = currentTypeTransactions
-            .GroupBy(transaction => transaction.LocationName)
-            .Select(group => new { Location = group.Key, AmountSum = group.Sum(item => item.Change / dividedFactor) })
-            .OrderByDescending(item => item.AmountSum)
-            .ToList();
+                              .GroupBy(transaction => transaction.Transaction.LocationName)
+                              .Select(group => new
+                              {
+                                  Location = group.Key,
+                                  AmountSum = group.Sum(item => item.Transaction.Change / dividedFactor)
+                              })
+                              .OrderByDescending(item => item.AmountSum)
+                              .ToList();
 
         var locations = locationAmounts.Select(item => item.Location).ToArray();
-        var amounts = locationAmounts.Select(item => (float)item.AmountSum).ToArray();
+        var amounts = locationAmounts.Select(item => item.AmountSum).ToArray();
 
         var graphTitle = $"{Service.Lang.GetText("LocationAmountGraph")}{dividedName}";
 
         if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("LocationAmountGraph1")}"))
         {
-            var plotFlags = ImPlotFlags.None;
+            const ImPlotFlags plotFlags = ImPlotFlags.None;
             var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
             if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
             {
                 var positions = Enumerable.Range(0, locations.Length).Select(i => (double)i).ToArray();
                 ImPlot.SetupAxisTicks(ImAxis.X1, ref positions[0], locations.Length, locations);
-                ImPlot.PlotBarGroups(new string[] { "" }, ref amounts[0], 1, locations.Length);
+                ImPlot.PlotBarGroups([""], ref amounts[0], 1, locations.Length);
                 ImPlot.EndPlot();
             }
-
         }
     }
 
-    private static (float, string) CaculateDividedFactor(int averageAmount)
+    private static (float, string) CalculateDividedFactor(int averageAmount)
     {
         var dividedFactor = 1;
         var dividedName = "";
 
-        if (averageAmount >= 1000000000)
+        switch (averageAmount)
         {
-            dividedFactor = 1000000000;
-            dividedName += Service.Lang.GetText("DividedUnitBil");
-        }
-        else if (averageAmount >= 1000000)
-        {
-            dividedFactor = 1000000;
-            dividedName += Service.Lang.GetText("DividedUnitMil");
-        }
-        else if (averageAmount >= 1000)
-        {
-            dividedFactor = 1000;
-            dividedName += Service.Lang.GetText("DividedUnitThou");
+            case >= 1000000000:
+                dividedFactor = 1000000000;
+                dividedName += Service.Lang.GetText("DividedUnitBil");
+                break;
+            case >= 1000000:
+                dividedFactor = 1000000;
+                dividedName += Service.Lang.GetText("DividedUnitMil");
+                break;
+            case >= 1000:
+                dividedFactor = 1000;
+                dividedName += Service.Lang.GetText("DividedUnitThou");
+                break;
         }
 
         return (dividedFactor, dividedName);
     }
+
+    public void Dispose() { }
 }

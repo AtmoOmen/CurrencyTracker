@@ -1,7 +1,5 @@
 using System;
-using System.Linq;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
@@ -95,20 +93,19 @@ public partial class Main
         }
     }
 
-    private static void TimeColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void TimeColumnCellUI(int i, DisplayTransaction transaction)
     {
         var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
         var flag = (isLeftCtrl || isRightMouse) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
-        var timeString = transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
+        var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
+        var selected = transaction.Selected;
         if ((!isLeftCtrl) ? ImGuiOm.Selectable($"{timeString}##{i}") : ImGuiOm.Selectable($"{timeString}##{i}", ref selected, flag))
         {
             if (isLeftCtrl && !isRightMouse)
             {
-                selectedStates[SelectedCurrencyID][i] = selected;
-
-                CheckAndUpdateSelectedStates(selected, transaction);
+                transaction.Selected = selected;
             }
         }
 
@@ -116,31 +113,11 @@ public partial class Main
         {
             if (ImGui.IsItemHovered())
             {
-                selectedStates[SelectedCurrencyID][i] = selected = true;
-
-                CheckAndUpdateSelectedStates(selected, transaction);
+                transaction.Selected = true;
             }
         }
 
         ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
-
-        return;
-
-        void CheckAndUpdateSelectedStates(bool selected, Transaction transaction)
-        {
-            var selectedList = selectedTransactions[SelectedCurrencyID];
-
-            var comparer = new TransactionComparer();
-
-            if (selected)
-            {
-                if (!selectedList.Any(t => comparer.Equals(t, transaction))) selectedList.Add(transaction);
-            }
-            else
-            {
-                selectedList.RemoveAll(t => comparer.Equals(t, transaction));
-            }
-        }
     }
 
     private static void SwitchDatePickerLanguage(string lang)

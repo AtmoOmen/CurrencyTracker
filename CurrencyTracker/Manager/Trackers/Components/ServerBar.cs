@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
@@ -33,7 +34,16 @@ public class ServerBar : ITrackerComponent
         DtrEntry.OnClick += OnClick;
 
         Tracker.CurrencyChanged += OnCurrencyChanged;
+        Service.Lang.LanguageChange += OnLangChanged;
         OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
+    }
+
+    private static void OnLangChanged(string language)
+    {
+        TaskManager.Abort();
+
+        TaskManager.DelayNext(500);
+        TaskManager.Enqueue(UpdateDtrEntry);
     }
 
     private static void OnClick()
@@ -66,7 +76,7 @@ public class ServerBar : ITrackerComponent
     }
 
     private static long GetChanges(
-        Func<IEnumerable<Transactions.Transaction>, IEnumerable<Transactions.Transaction>> applyDateTimeFilter)
+        Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter)
     {
         var periodChanges = 0L;
         var categories = new[]
@@ -93,8 +103,8 @@ public class ServerBar : ITrackerComponent
         return periodChanges;
     }
 
-    private static IEnumerable<Transactions.Transaction> ApplyDateTimeFilter(
-        IEnumerable<Transactions.Transaction> transactions)
+    private static IEnumerable<Transaction> ApplyDateTimeFilter(
+        IEnumerable<Transaction> transactions)
     {
         var period = GetPeriod();
         return transactions.Where(transaction =>
@@ -102,8 +112,8 @@ public class ServerBar : ITrackerComponent
                                       transaction.TimeStamp <= period.endTime);
     }
 
-    private static IEnumerable<Transactions.Transaction> ApplyPreviousPeriodDateTimeFilter(
-        IEnumerable<Transactions.Transaction> transactions)
+    private static IEnumerable<Transaction> ApplyPreviousPeriodDateTimeFilter(
+        IEnumerable<Transaction> transactions)
     {
         var period = GetPreviousPeriod(GetPeriod());
         return transactions.Where(transaction =>
@@ -155,6 +165,7 @@ public class ServerBar : ITrackerComponent
     public void Uninit()
     {
         Tracker.CurrencyChanged -= OnCurrencyChanged;
+        Service.Lang.LanguageChange -= OnLangChanged;
         if (DtrEntry == null) return;
 
         DtrEntry.OnClick -= OnClick;

@@ -21,7 +21,6 @@ public partial class Main : Window, IDisposable
     internal class DisplayTransaction
     {
         public Transaction Transaction { get; set; } = null!;
-        public uint Index { get; set; }
         public bool Selected { get; set; }
     }
 
@@ -30,10 +29,11 @@ public partial class Main : Window, IDisposable
 
     public Main(Plugin plugin) : base("Currency Tracker")
     {
-        Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse | ImGuiWindowFlags.NoBringToFrontOnFocus;
+        Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse |
+                 ImGuiWindowFlags.NoBringToFrontOnFocus;
 
         TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
-        
+
         Tracker.CurrencyChanged += OnCurrencyChanged;
 
         startDatePicker.DateSelected += RefreshTransactionsView;

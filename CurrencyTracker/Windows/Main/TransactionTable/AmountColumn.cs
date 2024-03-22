@@ -1,5 +1,4 @@
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -14,9 +13,9 @@ public partial class Main
         ImGui.EndDisabled();
     }
 
-    private static void AmountColumnCellUI(int i, bool selected, Transaction transaction)
+    private static void AmountColumnCellUI(int i, DisplayTransaction transaction)
     {
-        var text = transaction.Amount.ToString("#,##0");
+        var text = transaction.Transaction.Amount.ToString("#,##0");
         ImGui.Selectable($"{text}##{i}");
         ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
     }
