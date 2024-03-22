@@ -260,7 +260,7 @@ Seuil</value>
     <value>Y</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
-    <value>Montant des Transactions :</value>
+    <value>Montant des Transaction :</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>Graphique du montant</value>
@@ -302,7 +302,7 @@ Seuil</value>
     <value>Gérer</value>
   </data>
   <data name="Transactions" xml:space="preserve">
-    <value>Transactions</value>
+    <value>Transaction</value>
   </data>
   <data name="Now" xml:space="preserve">
     <value>Maintenant</value>
@@ -380,7 +380,7 @@ Seuil</value>
     <value>Note</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
-    <value># Exportation des Transactions -</value>
+    <value># Exportation des Transaction -</value>
   </data>
   <data name="ExportFileMDHeader1" xml:space="preserve">
     <value>| Heure | Montant | Monnaie | Emplacement | Note |

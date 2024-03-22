@@ -66,7 +66,7 @@ public class ServerBar : ITrackerComponent
     }
 
     private static long GetChanges(
-        Func<IEnumerable<TransactionsConvertor>, IEnumerable<TransactionsConvertor>> applyDateTimeFilter)
+        Func<IEnumerable<Transactions.Transaction>, IEnumerable<Transactions.Transaction>> applyDateTimeFilter)
     {
         var periodChanges = 0L;
         var categories = new[]
@@ -93,8 +93,8 @@ public class ServerBar : ITrackerComponent
         return periodChanges;
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyDateTimeFilter(
-        IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<Transactions.Transaction> ApplyDateTimeFilter(
+        IEnumerable<Transactions.Transaction> transactions)
     {
         var period = GetPeriod();
         return transactions.Where(transaction =>
@@ -102,8 +102,8 @@ public class ServerBar : ITrackerComponent
                                       transaction.TimeStamp <= period.endTime);
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyPreviousPeriodDateTimeFilter(
-        IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<Transactions.Transaction> ApplyPreviousPeriodDateTimeFilter(
+        IEnumerable<Transactions.Transaction> transactions)
     {
         var period = GetPreviousPeriod(GetPeriod());
         return transactions.Where(transaction =>

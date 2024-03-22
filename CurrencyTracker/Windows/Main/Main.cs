@@ -3,6 +3,7 @@ using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
+using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
@@ -16,6 +17,13 @@ public partial class Main : Window, IDisposable
     private static bool _showRecordOptions = true;
     private static bool _showOthers = true;
     private static bool _shouldRefreshTransactions;
+
+    internal class DisplayTransaction
+    {
+        public Transaction Transaction { get; set; } = null!;
+        public uint Index { get; set; }
+        public bool Selected { get; set; }
+    }
 
     private static TaskManager? TaskManager;
 

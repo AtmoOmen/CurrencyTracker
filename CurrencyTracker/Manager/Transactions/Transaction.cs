@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Transactions;
 
-public class TransactionsConvertor
+public class Transaction
 {
     public DateTime TimeStamp { get; set; }                  // 时间戳 TimeStamp
     public long Change { get; set; }                         // 收支 Change
@@ -36,7 +36,7 @@ public class TransactionsConvertor
     }
 
     // 将单行字符串解析为交易记录 Parse string into a transaction
-    public static TransactionsConvertor FromFileLine(ReadOnlySpan<char> span)
+    public static Transaction FromFileLine(ReadOnlySpan<char> span)
     {
         var parts = new string[5];
         var partIndex = 0;
@@ -59,7 +59,7 @@ public class TransactionsConvertor
 
         if (!long.TryParse(parts[2], out var change)) Service.Log.Error("Failed when try parse transaction's Change");
 
-        var transaction = new TransactionsConvertor
+        var transaction = new Transaction
         {
             TimeStamp = timeStamp,
             Amount = amount,
@@ -72,12 +72,12 @@ public class TransactionsConvertor
     }
 
     // 解析整个数据文件 Parse a data file
-    public static List<TransactionsConvertor> FromFile(string filePath)
+    public static List<Transaction> FromFile(string filePath)
     {
         filePath = SanitizeFilePath(filePath);
         if (!File.Exists(filePath)) return [];
 
-        var transactions = new List<TransactionsConvertor>();
+        var transactions = new List<Transaction>();
 
         try
         {
@@ -97,10 +97,10 @@ public class TransactionsConvertor
         return transactions;
     }
 
-    public static async Task<List<TransactionsConvertor>> FromFileAsync(string filePath)
+    public static async Task<List<Transaction>> FromFileAsync(string filePath)
     {
         filePath = SanitizeFilePath(filePath);
-        var transactions = new List<TransactionsConvertor>();
+        var transactions = new List<Transaction>();
 
         if (!File.Exists(filePath)) return transactions;
 
@@ -123,7 +123,7 @@ public class TransactionsConvertor
     }
 
     // 将单个交易记录追加入数据文件 Append a transaction into the data file
-    public static void AppendTransactionToFile(string filePath, List<TransactionsConvertor> singleTransaction)
+    public static void AppendTransactionToFile(string filePath, List<Transaction> singleTransaction)
     {
         filePath = SanitizeFilePath(filePath);
         try
@@ -143,7 +143,7 @@ public class TransactionsConvertor
         }
     }
 
-    public static async Task AppendTransactionToFileAsync(string filePath, List<TransactionsConvertor> singleTransaction)
+    public static async Task AppendTransactionToFileAsync(string filePath, List<Transaction> singleTransaction)
     {
         filePath = SanitizeFilePath(filePath);
         try
@@ -168,7 +168,7 @@ public class TransactionsConvertor
 
 
     // 将整个交易记录覆写进数据文件 Overwrite the data file
-    public static void WriteTransactionsToFile(string filePath, List<TransactionsConvertor> transactions)
+    public static void WriteTransactionsToFile(string filePath, List<Transaction> transactions)
     {
         filePath = SanitizeFilePath(filePath);
         try
@@ -184,7 +184,7 @@ public class TransactionsConvertor
         }
     }
 
-    public static async Task WriteTransactionsToFileAsync(string filePath, List<TransactionsConvertor> transactions)
+    public static async Task WriteTransactionsToFileAsync(string filePath, List<Transaction> transactions)
     {
         filePath = SanitizeFilePath(filePath);
         try

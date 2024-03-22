@@ -24,9 +24,9 @@ public partial class Main
         }
     }
 
-    internal static List<TransactionsConvertor> ApplyFilters(List<TransactionsConvertor> transactions)
+    internal static List<Transaction> ApplyFilters(List<Transaction> transactions)
     {
-        IEnumerable<TransactionsConvertor> filteredTransactions = transactions;
+        IEnumerable<Transaction> filteredTransactions = transactions;
 
         if (isClusteredByTime && clusterHour > 0)
             filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(clusterHour));
@@ -46,21 +46,21 @@ public partial class Main
         return (Service.Config.ReverseSort ? filteredTransactions.OrderByDescending(item => item.TimeStamp) : filteredTransactions).ToList();
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyChangeFilter(IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<Transaction> ApplyChangeFilter(IEnumerable<Transaction> transactions)
     {
         return transactions.Where(transaction => filterMode == 0 ? transaction.Change > filterValue : transaction.Change < filterValue);
     }
 
-    private static IEnumerable<TransactionsConvertor> ClusterTransactionsByTime(IEnumerable<TransactionsConvertor> transactions, TimeSpan interval)
+    private static IEnumerable<Transaction> ClusterTransactionsByTime(IEnumerable<Transaction> transactions, TimeSpan interval)
     {
-        var clusteredTransactions = new Dictionary<DateTime, TransactionsConvertor>();
+        var clusteredTransactions = new Dictionary<DateTime, Transaction>();
 
         foreach (var transaction in transactions)
         {
             var clusterTime = transaction.TimeStamp.AddTicks(-(transaction.TimeStamp.Ticks % interval.Ticks));
             if (!clusteredTransactions.TryGetValue(clusterTime, out var cluster))
             {
-                cluster = new TransactionsConvertor
+                cluster = new Transaction
                 {
                     TimeStamp = clusterTime,
                     Amount = 0,
@@ -105,13 +105,13 @@ public partial class Main
         return clusteredTransactions.Values;
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyDateTimeFilter(IEnumerable<TransactionsConvertor> transactions)
+    private static IEnumerable<Transaction> ApplyDateTimeFilter(IEnumerable<Transaction> transactions)
     {
         var nextDay = filterEndDate.AddDays(1);
         return transactions.Where(transaction => transaction.TimeStamp >= filterStartDate && transaction.TimeStamp <= nextDay);
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyLocationFilter(IEnumerable<TransactionsConvertor> transactions, string query)
+    private static IEnumerable<Transaction> ApplyLocationFilter(IEnumerable<Transaction> transactions, string query)
     {
         if (string.IsNullOrEmpty(query))
         {
@@ -145,7 +145,7 @@ public partial class Main
         });
     }
 
-    private static IEnumerable<TransactionsConvertor> ApplyNoteFilter(IEnumerable<TransactionsConvertor> transactions, string query)
+    private static IEnumerable<Transaction> ApplyNoteFilter(IEnumerable<Transaction> transactions, string query)
     {
         if (string.IsNullOrEmpty(query))
         {

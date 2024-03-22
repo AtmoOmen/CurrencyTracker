@@ -14,7 +14,7 @@ public partial class Main
         ImGui.EndDisabled();
     }
 
-    private static void AmountColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void AmountColumnCellUI(int i, bool selected, Transaction transaction)
     {
         var text = transaction.Amount.ToString("#,##0");
         ImGui.Selectable($"{text}##{i}");

@@ -28,7 +28,7 @@ public partial class Main
         { "Checkbox", CheckboxColumnHeaderUI }
     };
 
-    private static readonly Dictionary<string, Action<int, bool, TransactionsConvertor>> ColumnCellActions = new()
+    private static readonly Dictionary<string, Action<int, bool, Transaction>> ColumnCellActions = new()
     {
         { "Order", OrderColumnCellUI },
         { "Time", TimeColumnCellUI },
@@ -39,10 +39,10 @@ public partial class Main
         { "Checkbox", CheckboxColumnCellUI }
     };
 
-    internal static string[] visibleColumns = Array.Empty<string>();
+    internal static string[] visibleColumns = [];
     internal static ConcurrentDictionary<uint, List<bool>>? selectedStates = new();
-    internal static ConcurrentDictionary<uint, List<TransactionsConvertor>>? selectedTransactions = new();
-    internal static List<TransactionsConvertor> currentTypeTransactions = new();
+    internal static ConcurrentDictionary<uint, List<Transaction>>? selectedTransactions = new();
+    internal static List<Transaction> currentTypeTransactions = [];
 
     private static int currentPage;
     private static int visibleStartIndex;
@@ -67,7 +67,7 @@ public partial class Main
             if (visibleColumns.Length == 0) return;
 
             ImGui.SetCursorPosX(5);
-            if (ImGui.BeginTable("Transactions", visibleColumns.Length,
+            if (ImGui.BeginTable("Transaction", visibleColumns.Length,
                                  ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
                                  ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
             {
@@ -126,8 +126,8 @@ public partial class Main
 
     private static void SelectedStatesWatcher(int transactionCount)
     {
-        var stateList = selectedStates.GetOrAdd(SelectedCurrencyID, _ => new());
-        selectedTransactions.GetOrAdd(SelectedCurrencyID, _ => new());
+        var stateList = selectedStates.GetOrAdd(SelectedCurrencyID, _ => []);
+        selectedTransactions.GetOrAdd(SelectedCurrencyID, _ => []);
 
         var itemsToAdd = transactionCount - stateList.Count;
         if (itemsToAdd > 0)
@@ -139,7 +139,7 @@ public partial class Main
 
     private static void TransactionTablePagingUI(float windowWidth)
     {
-        var pageCount = currentTypeTransactions.Any()
+        var pageCount = currentTypeTransactions.Count != 0
                             ? (int)Math.Ceiling((double)currentTypeTransactions.Count / Service.Config.RecordsPerPage)
                             : 0;
         currentPage = pageCount > 0 ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
@@ -273,7 +273,7 @@ public partial class Main
             ImGui.EndGroup();
 
             var tableWidth = ImGui.GetItemRectSize().X;
-            var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
+            var textWidthOffset = $"{Service.Lang.GetText("ChildFrameWidthOffset")}:";
             var widthWidthOffset = tableWidth - ImGui.CalcTextSize(textWidthOffset).X;
             var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
             var widthPerPage = tableWidth - ImGui.CalcTextSize(textPerPage).X;
@@ -321,13 +321,13 @@ public partial class Main
                 if (column.Value)
                     tempList.Add(column.Key);
 
-            visibleColumns = tempList.ToArray();
+            visibleColumns = [.. tempList];
         }
     }
 
     private static void TransactionTableInfoBarUI()
     {
-        if (selectedTransactions.TryGetValue(SelectedCurrencyID, out var transactions) && transactions.Any())
+        if (selectedTransactions.TryGetValue(SelectedCurrencyID, out var transactions) && transactions.Count != 0)
         {
             var count = transactions.Count;
             var sum = transactions.Sum(x => x.Change);

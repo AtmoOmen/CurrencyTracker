@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace CurrencyTracker.Manager.Transactions;
 
-public class TransactionComparer : IEqualityComparer<TransactionsConvertor>
+public class TransactionComparer : IEqualityComparer<Transaction>
 {
-    public bool Equals(TransactionsConvertor? x, TransactionsConvertor? y)
+    public bool Equals(Transaction? x, Transaction? y)
     {
         if (ReferenceEquals(x, y)) return true;
         if (x is null || y is null) return false;
@@ -14,7 +14,7 @@ public class TransactionComparer : IEqualityComparer<TransactionsConvertor>
                x.LocationName == y.LocationName && x.Note == y.Note;
     }
 
-    public int GetHashCode(TransactionsConvertor? obj)
+    public int GetHashCode(Transaction? obj)
     {
         return obj is null ? 0 :
                    HashCode.Combine(obj.TimeStamp, obj.Amount, obj.Change, obj.LocationName, obj.Note);

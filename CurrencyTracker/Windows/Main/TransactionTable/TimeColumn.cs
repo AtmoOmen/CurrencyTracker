@@ -95,7 +95,7 @@ public partial class Main
         }
     }
 
-    private static void TimeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void TimeColumnCellUI(int i, bool selected, Transaction transaction)
     {
         var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
@@ -126,7 +126,7 @@ public partial class Main
 
         return;
 
-        void CheckAndUpdateSelectedStates(bool selected, TransactionsConvertor transaction)
+        void CheckAndUpdateSelectedStates(bool selected, Transaction transaction)
         {
             var selectedList = selectedTransactions[SelectedCurrencyID];
 

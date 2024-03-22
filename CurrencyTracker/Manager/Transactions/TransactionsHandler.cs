@@ -11,7 +11,7 @@ namespace CurrencyTracker.Manager.Transactions;
 
 public static class TransactionsHandler
 {
-    // Transactions Type Suffix:
+    // Transaction Type Suffix:
     // Inventory - {CurrencyName}.txt
     // Retainer - {CurrencyName}_{RetainerID}.txt
     // Saddle Bag - {CurrencyName}_SB.txt
@@ -49,32 +49,32 @@ public static class TransactionsHandler
         return true;
     }
 
-    // 加载全部记录 Load All Transactions
-    public static List<TransactionsConvertor> LoadAllTransactions(
+    // 加载全部记录 Load All Transaction
+    public static List<Transaction> LoadAllTransactions(
         uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
         return ValidityCheck(currencyID) && File.Exists(filePath)
-                   ? TransactionsConvertor.FromFile(filePath)
+                   ? Transaction.FromFile(filePath)
                    : [];
     }
 
-    public static async Task<List<TransactionsConvertor>> LoadAllTransactionsAsync(
+    public static async Task<List<Transaction>> LoadAllTransactionsAsync(
         uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
         if (ValidityCheck(currencyID) && File.Exists(filePath))
         {
-            return await TransactionsConvertor.FromFileAsync(filePath);
+            return await Transaction.FromFileAsync(filePath);
         }
 
         return [];
     }
 
     // 加载最新一条记录 Load Latest Transaction
-    public static TransactionsConvertor? LoadLatestSingleTransaction(
+    public static Transaction? LoadLatestSingleTransaction(
         uint currencyID, CharacterInfo? characterInfo = null, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var playerDataFolder = characterInfo != null
@@ -92,12 +92,12 @@ public static class TransactionsHandler
 
         var lastLine = File.ReadLines(filePath).Reverse().FirstOrDefault();
 
-        return lastLine == null ? new() : TransactionsConvertor.FromFileLine(lastLine.AsSpan());
+        return lastLine == null ? new() : Transaction.FromFileLine(lastLine.AsSpan());
     }
 
-    // 编辑指定记录 Edit Specific Transactions
+    // 编辑指定记录 Edit Specific Transaction
     public static int EditSpecificTransactions(
-        uint currencyID, List<TransactionsConvertor> selectedTransactions, string locationName = "None",
+        uint currencyID, List<Transaction> selectedTransactions, string locationName = "None",
         string noteContent = "None", TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (selectedTransactions.Count == 0) return 0;
@@ -122,7 +122,7 @@ public static class TransactionsHandler
             if (isNoteEdited) editedTransactions[index].Note = noteContent;
         }
 
-        TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+        Transaction.WriteTransactionsToFile(filePath, editedTransactions);
 
         return failCount;
     }
@@ -136,7 +136,7 @@ public static class TransactionsHandler
 
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-        TransactionsConvertor.AppendTransactionToFile(filePath,
+        Transaction.AppendTransactionToFile(filePath,
         [
             new()
             {
@@ -158,7 +158,7 @@ public static class TransactionsHandler
 
         var filePath = GetTransactionFilePath(currencyID, category, ID);
 
-        TransactionsConvertor.WriteTransactionsToFile(filePath,
+        Transaction.WriteTransactionsToFile(filePath,
         [
             new()
             {
@@ -171,18 +171,18 @@ public static class TransactionsHandler
         ]);
     }
 
-    // 根据时间重新排序文件内记录 Sort Transactions in File by Time
+    // 根据时间重新排序文件内记录 Sort Transaction in File by Time
     public static void ReorderTransactions(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (!ValidityCheck(currencyID)) return;
 
-        TransactionsConvertor.WriteTransactionsToFile(
+        Transaction.WriteTransactionsToFile(
             GetTransactionFilePath(currencyID, category, ID),
             [.. LoadAllTransactions(currencyID, category, ID).OrderBy(x => x.TimeStamp)]
         );
     }
 
-    // 按照临界值合并记录 Merge Transactions By Threshold
+    // 按照临界值合并记录 Merge Transaction By Threshold
     public static int MergeTransactionsByLocationAndThreshold(
         uint currencyID, long threshold, bool isOneWayMerge, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -191,7 +191,7 @@ public static class TransactionsHandler
         var allTransactions = LoadAllTransactions(currencyID, category, ID);
         if (allTransactions.Count <= 1) return 0;
 
-        var mergedTransactions = new List<TransactionsConvertor>();
+        var mergedTransactions = new List<Transaction>();
         var mergedCount = 0;
 
         for (var i = 0; i < allTransactions.Count;)
@@ -230,16 +230,16 @@ public static class TransactionsHandler
             mergedTransactions.Add(currentTransaction);
         }
 
-        TransactionsConvertor.WriteTransactionsToFile(GetTransactionFilePath(currencyID, category, ID),
+        Transaction.WriteTransactionsToFile(GetTransactionFilePath(currencyID, category, ID),
                                                       mergedTransactions);
         ReorderTransactions(currencyID, category, ID);
 
         return mergedCount;
     }
 
-    // 合并特定的记录 Merge Specific Transactions
+    // 合并特定的记录 Merge Specific Transaction
     public static int MergeSpecificTransactions(
-        uint currencyID, string locationName, List<TransactionsConvertor> selectedTransactions,
+        uint currencyID, string locationName, List<Transaction> selectedTransactions,
         string noteContent = "-1", TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (!ValidityCheck(currencyID) || selectedTransactions.Count <= 1) return 0;
@@ -270,7 +270,7 @@ public static class TransactionsHandler
             mergedCount++;
         }
 
-        var finalTransaction = new TransactionsConvertor
+        var finalTransaction = new Transaction
         {
             TimeStamp = latestTime,
             Change = overallChange,
@@ -280,15 +280,15 @@ public static class TransactionsHandler
         };
 
         allTransactions.Add(finalTransaction);
-        TransactionsConvertor.WriteTransactionsToFile(filePath, allTransactions);
+        Transaction.WriteTransactionsToFile(filePath, allTransactions);
         ReorderTransactions(currencyID, category, ID);
 
         return mergedCount;
     }
 
-    // 导出数据 Export Transactions Data
+    // 导出数据 Export Transaction Data
     public static string ExportData(
-        List<TransactionsConvertor> data, string fileName, uint currencyID, int exportType,
+        List<Transaction> data, string fileName, uint currencyID, int exportType,
         TransactionFileCategory category = 0, ulong ID = 0)
     {
         if (!ValidityCheck(currencyID)) return "Fail";

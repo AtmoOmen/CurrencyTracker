@@ -22,8 +22,8 @@ public partial class Main
         ImGui.EndDisabled();
     }
 
-    private static void OrderColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void OrderColumnCellUI(int i, bool selected, Transaction transaction)
     {
-        ImGuiOm.TextCentered(Service.Config.ReverseSort ? (currentTypeTransactions.Count - i).ToString() : (i + 1).ToString());
+        ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{currentTypeTransactions.Count - i}" : $"{i + 1}");
     }
 }

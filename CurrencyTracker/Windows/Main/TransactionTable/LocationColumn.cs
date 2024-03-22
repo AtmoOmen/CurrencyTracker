@@ -35,7 +35,7 @@ public partial class Main
         }
     }
 
-    private static void LocationColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void LocationColumnCellUI(int i, bool selected, Transaction transaction)
     {
         var locationName = transaction.LocationName;
 
@@ -57,7 +57,7 @@ public partial class Main
             ImGui.SetNextItemWidth(270);
             if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, new List<TransactionsConvertor> { transaction }, editedLocationName, "None", currentView, currentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, new List<Transaction> { transaction }, editedLocationName, "None", currentView, currentViewID);
 
                 if (failCount == 0)
                     RefreshTransactionsView();

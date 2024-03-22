@@ -30,7 +30,7 @@ public partial class Main
     private static void CheckboxColumnToolUI()
     {
         var selectedCount = selectedTransactions[SelectedCurrencyID].Count;
-        ImGui.Text($"{Service.Lang.GetText("Now")}: {selectedCount} {Service.Lang.GetText("Transactions")}");
+        ImGui.Text($"{Service.Lang.GetText("Now")}: {selectedCount} {Service.Lang.GetText("Transaction")}");
         ImGui.Separator();
 
         UnselectCBCTUI(selectedCount);
@@ -64,7 +64,7 @@ public partial class Main
     {
         if (ImGui.Selectable(Service.Lang.GetText("SelectAll")))
         {
-            selectedTransactions[SelectedCurrencyID] = new List<TransactionsConvertor>(currentTypeTransactions);
+            selectedTransactions[SelectedCurrencyID] = new List<Transaction>(currentTypeTransactions);
             selectedStates[SelectedCurrencyID] =
                 Enumerable.Repeat(true, selectedStates[SelectedCurrencyID].Count).ToList();
         }
@@ -78,7 +78,7 @@ public partial class Main
             selectedStates[SelectedCurrencyID] = selectedStates[SelectedCurrencyID].Select(state => !state).ToList();
 
             var selectedSet =
-                new HashSet<TransactionsConvertor>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
+                new HashSet<Transaction>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
 
             selectedTransactions[SelectedCurrencyID] = currentTypeTransactions
                                                        .Where(transaction => !selectedSet.Contains(transaction))
@@ -134,10 +134,10 @@ public partial class Main
                 TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID);
 
             var selectedSet =
-                new HashSet<TransactionsConvertor>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
+                new HashSet<Transaction>(selectedTransactions[SelectedCurrencyID], new TransactionComparer());
             editedTransactions.RemoveAll(selectedSet.Contains);
 
-            TransactionsConvertor.WriteTransactionsToFile(filePath, editedTransactions);
+            Transaction.WriteTransactionsToFile(filePath, editedTransactions);
             UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
         }
     }
@@ -309,7 +309,7 @@ public partial class Main
         isOnEdit = false;
     }
 
-    private static void CheckboxColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void CheckboxColumnCellUI(int i, bool selected, Transaction transaction)
     {
         if (ImGui.Checkbox($"##select_{i}", ref selected))
         {

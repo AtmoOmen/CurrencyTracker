@@ -115,7 +115,7 @@ public partial class Main
         }, token);
     }
 
-    private static void ChangeColumnCellUI(int i, bool selected, TransactionsConvertor transaction)
+    private static void ChangeColumnCellUI(int i, bool selected, Transaction transaction)
     {
         var textColor = Service.Config.ChangeTextColoring
             ? transaction.Change > 0 ? Service.Config.PositiveChangeColor : transaction.Change < 0 ? Service.Config.NegativeChangeColor : new Vector4(1.0f, 1.0f, 1.0f, 1.0f)

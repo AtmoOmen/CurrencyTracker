@@ -24,7 +24,7 @@ public static class CurrencyInfo
         1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3)
     ];
 
-    public static readonly Dictionary<uint, long> CurrencyAmountCache = new();
+    public static readonly Dictionary<uint, long> CurrencyAmountCache = [];
 
     public static void Init()
     {
@@ -76,7 +76,7 @@ public static class CurrencyInfo
 
     public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
     {
-        if (CurrencyAmountCache.TryGetValue(currencyID, out var characterCurrencyAmount))
+        if (character.Equals(P.CurrentCharacter) && CurrencyAmountCache.TryGetValue(currencyID, out var characterCurrencyAmount))
         {
             return characterCurrencyAmount;
         }

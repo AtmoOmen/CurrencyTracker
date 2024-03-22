@@ -14,27 +14,34 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal static List<CharacterCurrencyInfo> CharacterCurrencyInfos = new();
+    internal static List<CharacterCurrencyInfo> CharacterCurrencyInfos = [];
     private static List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
-    private string searchFilterMCS = string.Empty;
-    private int _currentPageMCS;
+    private static string searchFilterMCS = string.Empty;
+    private static int _currentPageMCS;
+    private static bool _isWindowOpenMCS;
 
-    private void MultiCharaStatsUI()
+    private static void MultiCharaStatsUI()
     {
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartColumn, Service.Lang.GetText("MultiCharaStats")))
         {
             Task.Run(() =>
             {
-                if (!CharacterCurrencyInfos.Any()) LoadDataMCS();
+                if (CharacterCurrencyInfos.Count <= 0) LoadDataMCS();
                 _characterCurrencyDicMCS ??= CharacterCurrencyInfos;
             });
 
-            ImGui.OpenPopup("MultiCharStats");
+            _isWindowOpenMCS ^= true;
         }
 
-        if (ImGui.BeginPopup("MultiCharStats"))
+        if (!_isWindowOpenMCS) return;
+
+        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse))
         {
-            if (_characterCurrencyDicMCS == null) return;
+            if (_characterCurrencyDicMCS == null)
+            {
+                ImGui.End();
+                return;
+            }
             var itemCount = _characterCurrencyDicMCS.Count;
             var startIndex = _currentPageMCS * 10;
             var endIndex = Math.Min(startIndex + 10, itemCount);
@@ -43,7 +50,23 @@ public partial class Main
             ImGui.SetNextItemWidth(240f);
             if (ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"),
                                         ref searchFilterMCS, 100))
-                LoadSearchResultMCS();
+            {
+                TaskManager.Abort();
+
+                TaskManager.DelayNext(250);
+                TaskManager.Enqueue(() =>
+                {
+                    _currentPageMCS = 0;
+                    _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
+                                                   ? CharacterCurrencyInfos
+                                                   : CharacterCurrencyInfos
+                                                     .Where(x => x.Character.Name.Contains(searchFilterMCS,
+                                                                     StringComparison.OrdinalIgnoreCase) ||
+                                                                 x.Character.Server.Contains(
+                                                                     searchFilterMCS, StringComparison.OrdinalIgnoreCase))
+                                                     .ToList();
+                });
+            }
 
             ImGui.SameLine();
             ImGui.PushID("MultiCharaStatsPagingComponent");
@@ -66,9 +89,9 @@ public partial class Main
             {
                 var previewValue = $"{info.Character.Name}@{info.Character.Server}";
                 ImGui.SetNextItemWidth(itemWidth);
-                if (ImGui.BeginCombo($"###{previewValue}", previewValue, ImGuiComboFlags.HeightLarge))
+                if (ImGui.CollapsingHeader(previewValue))
                 {
-                    if (ImGui.BeginTable($"###{previewValue}", 2, ImGuiTableFlags.Borders))
+                    if (ImGui.BeginTable($"###{info.Character.ContentID}", 2, ImGuiTableFlags.Borders))
                     {
                         foreach (var currency in Service.Config.AllCurrencies)
                         {
@@ -88,15 +111,13 @@ public partial class Main
 
                         ImGui.EndTable();
                     }
-
-                    ImGui.EndCombo();
                 }
 
                 if (ImGui.BeginPopupContextItem($"{info.Character.ContentID}"))
                 {
                     if (ImGui.MenuItem(Service.Lang.GetText("Delete")))
                     {
-                        if (Service.Config.CurrentActiveCharacter.Remove(Service.Config.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == info.Character.ContentID)))
+                        if (Service.Config.CurrentActiveCharacter.Remove(info.Character))
                         {
                             Service.Config.Save();
                             ImGui.CloseCurrentPopup();
@@ -113,7 +134,7 @@ public partial class Main
                 }
             }
 
-            ImGui.EndPopup();
+            ImGui.End();
         }
     }
 
@@ -122,34 +143,14 @@ public partial class Main
         CharacterCurrencyInfos.Clear();
 
         var sortedCharacters = Service.Config.CurrentActiveCharacter
-                                      .OrderBy(c => c.ContentID == Service.ClientState.LocalContentId)
+                                      .OrderByDescending(c => c.ContentID == Service.ClientState.LocalContentId)
                                       .ToArray();
 
         foreach (var character in sortedCharacters)
         {
             var info = new CharacterCurrencyInfo { Character = character };
             CharacterCurrencyInfos.Add(info);
+            Service.Log.Debug($"{info.Character.Name}");
         }
-    }
-
-
-    private void LoadSearchResultMCS()
-    {
-        TaskManager.Abort();
-
-        TaskManager.DelayNext(250);
-        TaskManager.Enqueue(() =>
-        {
-            _currentPageMCS = 0;
-
-            _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
-                                           ? CharacterCurrencyInfos
-                                           : CharacterCurrencyInfos
-                                             .Where(x => x.Character.Name.Contains(searchFilterMCS,
-                                                                             StringComparison.OrdinalIgnoreCase) ||
-                                                         x.Character.Server.Contains(
-                                                             searchFilterMCS, StringComparison.OrdinalIgnoreCase))
-                                             .ToList();
-        });
     }
 }

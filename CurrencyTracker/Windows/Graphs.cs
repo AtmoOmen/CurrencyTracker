@@ -14,7 +14,7 @@ namespace CurrencyTracker.Windows;
 public class Graph : Window, IDisposable
 {
     private readonly Main Main = Plugin.P.Main;
-    private List<TransactionsConvertor>? currentTypeTransactions = new();
+    private List<Transaction>? currentTypeTransactions = new();
     private float[]? currencyChangeData;
     private float[]? currencyAmountData;
 
@@ -68,7 +68,7 @@ public class Graph : Window, IDisposable
         }
     }
 
-    private void AmountGraph(List<TransactionsConvertor> currentTypeTransactions)
+    private void AmountGraph(List<Transaction> currentTypeTransactions)
     {
         if (currentTypeTransactions == null || !currentTypeTransactions.Any())
             return;
@@ -97,7 +97,7 @@ public class Graph : Window, IDisposable
         }
     }
 
-    private void ChangeGraph(List<TransactionsConvertor> currentTypeTransactions)
+    private void ChangeGraph(List<Transaction> currentTypeTransactions)
     {
         if (currentTypeTransactions == null || !currentTypeTransactions.Any())
             return;
@@ -126,7 +126,7 @@ public class Graph : Window, IDisposable
         }
     }
 
-    private static void LocationGraph(List<TransactionsConvertor> currentTypeTransactions)
+    private static void LocationGraph(List<Transaction> currentTypeTransactions)
     {
         if (currentTypeTransactions == null || !currentTypeTransactions.Any())
             return;
@@ -157,7 +157,7 @@ public class Graph : Window, IDisposable
         }
     }
 
-    private static void LocationAmountGraph(List<TransactionsConvertor> currentTypeTransactions)
+    private static void LocationAmountGraph(List<Transaction> currentTypeTransactions)
     {
         if (currentTypeTransactions == null || !currentTypeTransactions.Any())
             return;
