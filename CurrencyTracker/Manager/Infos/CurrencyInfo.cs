@@ -24,7 +24,7 @@ public static class CurrencyInfo
         1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3)
     ];
 
-    public static readonly Dictionary<uint, long> CurrencyAmountCache = [];
+    public static readonly Dictionary<ulong, Dictionary<uint, long>> CurrencyAmountCache = [];
 
     public static void Init()
     {
@@ -33,7 +33,7 @@ public static class CurrencyInfo
 
     private static void OnCurrencyChanged(uint currencyId, TransactionFileCategory category, ulong id)
     {
-        CurrencyAmountCache[currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter);
+        CurrencyAmountCache[P.CurrentCharacter.ContentID][currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter);
     }
 
     public static string GetCurrencyName(uint currencyID)
@@ -76,7 +76,13 @@ public static class CurrencyInfo
 
     public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
     {
-        if (character.Equals(P.CurrentCharacter) && CurrencyAmountCache.TryGetValue(currencyID, out var characterCurrencyAmount))
+        if (!CurrencyAmountCache.TryGetValue(character.ContentID, out var characterCache))
+        {
+            characterCache = [];
+            CurrencyAmountCache[character.ContentID] = characterCache;
+        }
+
+        if (characterCache.TryGetValue(currencyID, out var characterCurrencyAmount))
         {
             return characterCurrencyAmount;
         }
@@ -104,7 +110,7 @@ public static class CurrencyInfo
             }
         }
 
-        CurrencyAmountCache[currencyID] = amount;
+        characterCache[currencyID] = amount;
         return amount;
     }
 

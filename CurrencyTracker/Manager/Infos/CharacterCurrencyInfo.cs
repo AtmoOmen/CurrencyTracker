@@ -6,17 +6,13 @@ namespace CurrencyTracker.Manager.Infos;
 
 public class CharacterCurrencyInfo
 {
-    private CharacterInfo? character;
-
-    public CharacterInfo Character
+    public CharacterCurrencyInfo(CharacterInfo character)
     {
-        get => character;
-        set
-        {
-            character = value;
-            UpdateCharacterCurrencyAmount();
-        }
+        Character = character;
+        UpdateCharacterCurrencyAmount();
     }
+
+    public CharacterInfo Character { get; set; }
 
     public ConcurrentDictionary<uint, long> CurrencyAmount { get; } = new();
     public ConcurrentDictionary<uint, Dictionary<TransactionFileCategoryInfo, long>> SubCurrencyAmount { get; } = new();

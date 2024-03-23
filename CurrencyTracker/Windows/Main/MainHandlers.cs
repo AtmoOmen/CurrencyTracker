@@ -208,7 +208,7 @@ public partial class Main
         {
             if (CharacterCurrencyInfos.All(x => x.Character.ContentID != Service.ClientState.LocalContentId))
             {
-                var info = new CharacterCurrencyInfo { Character = P.CurrentCharacter };
+                var info = new CharacterCurrencyInfo(P.CurrentCharacter);
                 CharacterCurrencyInfos.Add(info);
             }
         }

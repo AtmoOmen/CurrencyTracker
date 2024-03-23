@@ -145,7 +145,7 @@ public partial class Main
 
         foreach (var character in sortedCharacters)
         {
-            var info = new CharacterCurrencyInfo { Character = character };
+            var info = new CharacterCurrencyInfo(character);
             CharacterCurrencyInfos.Add(info);
         }
     }
