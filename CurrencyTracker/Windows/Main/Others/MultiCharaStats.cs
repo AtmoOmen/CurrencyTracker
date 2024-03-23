@@ -24,11 +24,8 @@ public partial class Main
     {
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartColumn, Service.Lang.GetText("MultiCharaStats")))
         {
-            Task.Run(() =>
-            {
-                if (CharacterCurrencyInfos.Count <= 0) LoadDataMCS();
-                _characterCurrencyDicMCS ??= CharacterCurrencyInfos;
-            });
+            if (CharacterCurrencyInfos.Count <= 0) LoadDataMCS();
+            _characterCurrencyDicMCS ??= CharacterCurrencyInfos;
 
             _isWindowOpenMCS ^= true;
         }
@@ -150,7 +147,6 @@ public partial class Main
         {
             var info = new CharacterCurrencyInfo { Character = character };
             CharacterCurrencyInfos.Add(info);
-            Service.Log.Debug($"{info.Character.Name}");
         }
     }
 }
