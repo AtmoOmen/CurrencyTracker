@@ -108,6 +108,8 @@ public class Tracker
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
 
+        if (rule.RestrictedAreas == null) return true;
+
         // 地点限制 Location Restrictions
         if (!rule.RegionRulesMode) // 黑名单 Blacklist
         {
@@ -124,8 +126,11 @@ public class Tracker
     internal static bool CheckRuleAmountCap(
         uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
     {
-        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out _))
+        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
+
+        if (rule.AlertedAmountIntervals == null) return true;
+        if (rule.AlertedChangeIntervals == null) return true;
 
         var util = new IntervalUtil();
 

@@ -33,6 +33,8 @@ public static class CurrencyInfo
 
     private static void OnCurrencyChanged(uint currencyId, TransactionFileCategory category, ulong id)
     {
+        if (!CurrencyAmountCache.ContainsKey(P.CurrentCharacter.ContentID))
+            CurrencyAmountCache.Add(P.CurrentCharacter.ContentID, []);
         CurrencyAmountCache[P.CurrentCharacter.ContentID][currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter);
     }
 
