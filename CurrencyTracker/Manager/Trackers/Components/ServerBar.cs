@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CurrencyTracker.Manager.Infos;
-using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
@@ -49,7 +48,7 @@ public class ServerBar : ITrackerComponent
     private static void OnClick()
     {
         P.Main.IsOpen ^= true;
-        Task.Run(async () => await Main.LoadCurrencyTransactionsAsync(Service.Config.ServerBarDisplayCurrency));
+        Main.LoadCurrencyTransactions(Service.Config.ServerBarDisplayCurrency);
     }
 
     internal static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)

@@ -36,9 +36,7 @@ public partial class Main
                 ImGui.Indent(3f);
                 if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
                                                     id == SelectedCurrencyID))
-                {
-                    Task.Run(async () => await LoadCurrencyTransactionsAsync(id));
-                }
+                    LoadCurrencyTransactions(id);
 
                 ImGui.Unindent(3f);
 
@@ -96,6 +94,15 @@ public partial class Main
         }
 
         ImGui.PopStyleColor();
+    }
+
+    public static void LoadCurrencyTransactions(uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
+    {
+        SelectedCurrencyID = ID;
+    
+        currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)));
+        currentView = view;
+        currentViewID = viewID;
     }
 
     public static async Task LoadCurrencyTransactionsAsync(

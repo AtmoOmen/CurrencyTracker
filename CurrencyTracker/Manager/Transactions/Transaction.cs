@@ -1,3 +1,4 @@
+using CurrencyTracker.Manager.Infos;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Transactions;
 
-public class Transaction
+public class Transaction : IEquatable<Transaction>
 {
     public DateTime TimeStamp { get; set; }                  // 时间戳 TimeStamp
     public long Change { get; set; }                         // 收支 Change
@@ -201,5 +202,20 @@ public class Transaction
             await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
             Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return Equals(obj as Transaction);
+    }
+
+    public bool Equals(Transaction? other)
+    {
+        return other != null && TimeStamp == other.TimeStamp && Change == other.Change && Amount == other.Amount && LocationName == other.LocationName && Note == other.Note;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(TimeStamp, Amount, LocationName, Note);
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
@@ -28,6 +27,7 @@ public partial class CurrencySettings
     {
         SelectAlertTypeUI();
         SelectContainerTypeUI();
+        ImGui.Separator();
         IntervalManagerUI();
         AlertNotificationUI();
     }
@@ -61,8 +61,6 @@ public partial class CurrencySettings
 
     private void IntervalManagerUI()
     {
-        ImGui.Separator();
-
         var intervals = GetOrCreateIntervals(Main.SelectedCurrencyID, alertMode, viewIA, idIA);
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
@@ -118,15 +116,15 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("NotificationType")}:");
 
-        var b1 = Service.Config.AlertNotificationChat;
+        var isAlertInChat = Service.Config.AlertNotificationChat;
         if (ImGui.Checkbox(
-                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref b1))
+                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref isAlertInChat))
         {
-            Service.Config.AlertNotificationChat = b1;
+            Service.Config.AlertNotificationChat = isAlertInChat;
             Service.Config.Save();
         }
 
-        if (b1)
+        if (isAlertInChat)
         {
             var paramsEP = new[]
             {
@@ -134,16 +132,15 @@ public partial class CurrencySettings
                 Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType"),
                 Service.Lang.GetText("Interval")
             };
-            const string key = "AlertIntervalMessage";
-            var textToShow = Service.Config.CustomNoteContents.TryGetValue(key, out var value)
+            var textToShow = Service.Config.CustomNoteContents.TryGetValue("AlertIntervalMessage", out var value)
                                  ? value
-                                 : Service.Lang.GetOrigText(key);
+                                 : Service.Lang.GetOrigText("AlertIntervalMessage");
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 8);
             if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
-                Service.Config.CustomNoteContents[key] = textToShow;
+                Service.Config.CustomNoteContents["AlertIntervalMessage"] = textToShow;
                 Service.Config.Save();
             }
 
@@ -161,9 +158,9 @@ public partial class CurrencySettings
             }
 
             ImGui.SameLine();
-            if (ImGuiOm.ButtonIcon($"ResetContent_{key}", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+            if (ImGuiOm.ButtonIcon("ResetContent_AlertIntervalMessage", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
             {
-                Service.Config.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
+                Service.Config.CustomNoteContents.Remove("AlertIntervalMessage");
                 Service.Config.Save();
             }
         }
@@ -210,14 +207,25 @@ public partial class CurrencySettings
     public static List<Interval<int>> GetOrCreateIntervals(
         uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
     {
+        if (!Service.Config.CurrencyRules.TryGetValue(Main.SelectedCurrencyID, out var rules))
+        {
+            rules = new();
+            Service.Config.CurrencyRules.Add(Main.SelectedCurrencyID, rules);
+            Service.Config.Save();
+        }
+
+        rules.AlertedAmountIntervals ??= new();
+        rules.AlertedChangeIntervals ??= new();
+
         var intervalList = alertMode == 0
-                               ? Service.Config.CurrencyRules[currencyID].AlertedAmountIntervals
-                               : Service.Config.CurrencyRules[currencyID].AlertedChangeIntervals;
-        var key = GetTransactionViewKeyString(view, ID);
+                               ? rules.AlertedAmountIntervals
+                               : rules.AlertedChangeIntervals;
+        var viewString = GetTransactionViewKeyString(view, ID);
 
-        if (!intervalList.TryGetValue(key, out var intervals)) intervalList[key] = [];
+        if (!intervalList.ContainsKey(viewString))
+            intervalList[viewString] = [];
 
-        return intervalList[key];
+        return intervalList[viewString];
     }
 
 

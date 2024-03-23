@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Manager;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
@@ -13,14 +12,18 @@ public partial class CurrencySettings
 {
     private Dictionary<uint, string>? TerritoryNamesTR;
     private string searchFilterTR = string.Empty;
-    private uint selectedAreaIDTR;
-    private uint selectedAreaIDDeleteTR;
 
     private int radioButtonsTRWidth = 250;
 
     private void TerritoryRestrictedUI()
     {
-        var rules = Service.Config.CurrencyRules[Main.SelectedCurrencyID];
+        if (!Service.Config.CurrencyRules.TryGetValue(Main.SelectedCurrencyID, out var rules))
+        {
+            rules = new();
+            Service.Config.CurrencyRules.Add(Main.SelectedCurrencyID, rules);
+            Service.Config.Save();
+        }
+
         var isBlacklist = !rules.RegionRulesMode;
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-AreaRestriction")}:");
@@ -40,20 +43,23 @@ public partial class CurrencySettings
         }
 
         ImGui.SameLine();
-        ImGui.Text("");
+        ImGui.Spacing();
         ImGui.EndGroup();
 
         radioButtonsTRWidth = (int)ImGui.GetItemRectSize().X;
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
-        ImGui.SetNextItemWidth(radioButtonsTRWidth);
-        if (ImGui.BeginCombo("##AreaRestricted", TerritoryNames.TryGetValue(selectedAreaIDTR, out var selectedAreaName) ? selectedAreaName : Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+        ImGui.SetNextItemWidth(160f * ImGuiHelpers.GlobalScale);
+        if (ImGui.BeginCombo("##AreaRestricted", Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
         {
+            TerritoryNamesTR ??= TerritoryNames;
+            rules.RestrictedAreas ??= [];
+
             ImGui.TextUnformatted("");
             ImGui.SameLine(8f, 0);
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - 8f);
-            if (ImGui.InputText("", ref searchFilterTR, 50))
+            if (ImGui.InputTextWithHint("", Service.Lang.GetText("PleaseSearch"), ref searchFilterTR, 50))
             {
                 TaskManager.Abort();
 
@@ -67,42 +73,15 @@ public partial class CurrencySettings
                 });
             }
 
-            foreach (var area in TerritoryNamesTR ?? TerritoryNames) 
-                if (ImGui.Selectable($"{area.Value} ({area.Key})")) 
-                    selectedAreaIDTR = area.Key;
+            foreach (var area in TerritoryNamesTR)
+                if (ImGui.Selectable($"{area.Value} ({area.Key})", rules.RestrictedAreas.Contains(area.Key), ImGuiSelectableFlags.DontClosePopups))
+                {
+                    if (!rules.RestrictedAreas.Remove(area.Key))
+                        rules.RestrictedAreas.Add(area.Key);
+
+                    Service.Config.Save();
+                }
             ImGui.EndCombo();
         }
-
-        if (!string.IsNullOrEmpty(selectedAreaName)) ImGuiOm.TooltipHover(selectedAreaName);
-
-        ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("AddRestrictedAreas", FontAwesomeIcon.Plus) && !rules.RestrictedAreas.Contains(selectedAreaIDTR))
-        {
-            rules.RestrictedAreas.Add(selectedAreaIDTR);
-            selectedAreaIDTR = 0;
-            Service.Config.Save();
-        }
-
-        ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-RestrictedArea")}:");
-
-        ImGui.SetNextItemWidth(radioButtonsTRWidth);
-        if (ImGui.BeginCombo("##RestrictedAreas", selectedAreaIDDeleteTR != 0 ? TerritoryNames[selectedAreaIDDeleteTR] : "", ImGuiComboFlags.HeightLarge))
-        {
-            foreach (var area in rules.RestrictedAreas) 
-                if (ImGui.Selectable($"{TerritoryNames[area]} ({area})"))
-                    selectedAreaIDDeleteTR = area;
-            ImGui.EndCombo();
-        }
-
-        ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("DeleteRestrictedAreas", FontAwesomeIcon.TrashAlt))
-        {
-            if (rules.RestrictedAreas.Remove(selectedAreaIDDeleteTR))
-            {
-                selectedAreaIDDeleteTR = 0;
-                Service.Config.Save();
-            }
-        }
-
     }
 }

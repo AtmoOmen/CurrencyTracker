@@ -16,8 +16,6 @@ public static class TransactionsHandler
     // Retainer - {CurrencyName}_{RetainerID}.txt
     // Saddle Bag - {CurrencyName}_SB.txt
     // Premium Saddle Bag - {CurrencyName}_PSB.txt
-
-
     public static string GetTransactionFilePath(uint CurrencyID, TransactionFileCategory category, ulong ID = 0)
     {
         var suffix = GetTransactionFileSuffix(category, ID);
@@ -110,8 +108,7 @@ public static class TransactionsHandler
 
         foreach (var transaction in selectedTransactions)
         {
-            var comparer = new TransactionComparer();
-            var index = editedTransactions.FindIndex(t => comparer.Equals(t, transaction));
+            var index = editedTransactions.FindIndex(t => t.Equals(transaction));
             if (index == -1)
             {
                 failCount++;
@@ -251,11 +248,10 @@ public static class TransactionsHandler
         long overallChange = 0;
         long finalAmount = 0;
         var mergedCount = 0;
-        var comparer = new TransactionComparer();
 
         foreach (var transaction in selectedTransactions)
         {
-            var foundTransaction = allTransactions.FirstOrDefault(t => comparer.Equals(t, transaction));
+            var foundTransaction = allTransactions.FirstOrDefault(t => t.Equals(transaction));
 
             if (foundTransaction == null) continue;
 

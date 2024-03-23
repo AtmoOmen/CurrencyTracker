@@ -10,7 +10,7 @@ public partial class CurrencySettings
     {
         Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out var infoDic);
 
-        if (infoDic.Any())
+        if (infoDic.Count != 0)
         {
             if (ImGui.CollapsingHeader($"{Service.Lang.GetText("Amount")}"))
             {

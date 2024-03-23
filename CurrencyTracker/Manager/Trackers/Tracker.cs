@@ -106,21 +106,16 @@ public class Tracker
         if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
 
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
+            return true;
+
+        // 地点限制 Location Restrictions
+        if (!rule.RegionRulesMode) // 黑名单 Blacklist
         {
-            Service.Config.CurrencyRules.Add(currencyID, new CurrencyRule());
-            Service.Config.Save();
+            if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
         }
-        else
+        else // 白名单 Whitelist
         {
-            // 地点限制 Location Restrictions
-            if (!rule.RegionRulesMode) // 黑名单 Blacklist
-            {
-                if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-            }
-            else // 白名单 Whitelist
-            {
-                if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-            }
+            if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
         }
 
         return true;
@@ -130,11 +125,7 @@ public class Tracker
         uint currencyID, int currencyAmount, int currencyChange, TransactionFileCategory category, ulong ID)
     {
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out _))
-        {
-            Service.Config.CurrencyRules.Add(currencyID, new CurrencyRule());
-            Service.Config.Save();
             return true;
-        }
 
         var util = new IntervalUtil();
 

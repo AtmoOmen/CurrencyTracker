@@ -119,8 +119,7 @@ public partial class Main
 
             var filePath = TransactionsHandler.GetTransactionFilePath(SelectedCurrencyID, currentView, currentViewID);
             var editedTransactions = TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID);
-
-            var selectedSet = currentTypeTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
+            var selectedSet = currentTypeTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToHashSet();
             editedTransactions.RemoveAll(selectedSet.Contains);
 
             Transaction.WriteTransactionsToFile(filePath, editedTransactions);
