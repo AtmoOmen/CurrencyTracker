@@ -8,8 +8,8 @@ public enum TransactionFileCategory
     PremiumSaddleBag = 3
 }
 
-public class TransactionFileCategoryInfo
+public class TransactionFileCategoryInfo(TransactionFileCategory category, ulong id)
 {
-    public TransactionFileCategory Category { get; set; }
-    public ulong Id { get; set; }
+    public TransactionFileCategory Category { get; set; } = category;
+    public ulong ID { get; set; } = id;
 }

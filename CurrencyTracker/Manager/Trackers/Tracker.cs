@@ -5,7 +5,6 @@ using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
-using CurrencyTracker.Windows;
 using Dalamud.Game.Text.SeStringHandling;
 using IntervalUtility;
 
@@ -68,8 +67,7 @@ public class Tracker
         if (previousAmount == null && currencyAmount <= 0) return false;
 
         var currencyChange = currencyAmount - (previousAmount ?? 0);
-        if (currencyChange == 0 ||
-            !CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID)) return false;
+        if (currencyChange == 0) return false;
 
         locationName = string.IsNullOrEmpty(locationName) ? CurrentLocationName : locationName;
 
@@ -93,12 +91,19 @@ public class Tracker
             var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
             CurrencyChanged?.Invoke(currencyID, category, ID);
 
-            Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-            if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+            PostCurrencyChangeCheck(currencyName, currencyID, currencyAmount, currencyChange, category, ID, source);
             return true;
         }
 
         return false;
+    }
+
+    private static void PostCurrencyChangeCheck(string currencyName, uint currencyID, long currencyAmount, long currencyChange,
+                                                TransactionFileCategory category, ulong ID, uint source)
+    {
+        Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
+        if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+        CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID);
     }
 
     private static bool CheckRuleAreaRestrictions(uint currencyID)
@@ -135,11 +140,11 @@ public class Tracker
         var util = new IntervalUtil();
 
         // 数量 Amount
-        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 0, category, ID), currencyAmount,
+        CheckIntervals(currencyID, CurrencyInterval.LoadIntervals(currencyID, 0, new TransactionFileCategoryInfo(category, ID)), currencyAmount,
                        "Amount");
 
         // 收支 Change
-        CheckIntervals(currencyID, CurrencySettings.GetOrCreateIntervals(currencyID, 1, category, ID), currencyChange,
+        CheckIntervals(currencyID, CurrencyInterval.LoadIntervals(currencyID, 1, new TransactionFileCategoryInfo(category, ID)), currencyChange,
                        "Change");
 
         return true;

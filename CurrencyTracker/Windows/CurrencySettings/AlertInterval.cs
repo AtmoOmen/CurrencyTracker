@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Numerics;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
@@ -26,9 +25,12 @@ public partial class CurrencySettings
     private void IntervalAlertUI()
     {
         SelectAlertTypeUI();
+
         SelectContainerTypeUI();
+
         ImGui.Separator();
         IntervalManagerUI();
+
         AlertNotificationUI();
     }
 
@@ -61,29 +63,29 @@ public partial class CurrencySettings
 
     private void IntervalManagerUI()
     {
-        var intervals = GetOrCreateIntervals(Main.SelectedCurrencyID, alertMode, viewIA, idIA);
+        var intervals = CurrencyInterval.LoadIntervals(Main.SelectedCurrencyID, alertMode, new TransactionFileCategoryInfo(viewIA, idIA));
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
         ImGui.SetNextItemWidth(alertIntervalWidth.X - Main.checkboxColumnWidth + 48);
-        using (var combo = ImRaii.Combo("##IntervalSelectCombo",
-                                        selectedInterval != null ? selectedInterval.ToIntervalString() :
-                                        intervals.Count != 0 ? Service.Lang.GetText("PleaseSelect") : ""))
+        if (ImGui.BeginCombo("##IntervalSelectCombo",
+                             selectedInterval != null ? selectedInterval.ToIntervalString() :
+                             intervals.Count != 0 ? Service.Lang.GetText("PleaseSelect") : ""))
         {
-            if (combo)
-            {
-                foreach (var interval in intervals)
-                    if (ImGui.Selectable(interval.ToIntervalString()))
-                        selectedInterval = new Interval<int>(interval.Start, interval.End);
-            }
+            foreach (var interval in intervals)
+                if (ImGui.Selectable(interval.ToIntervalString(), selectedInterval == interval))
+                    selectedInterval = new Interval<int>(interval.Start, interval.End);
+            ImGui.EndCombo();
         }
 
         ImGui.SameLine();
         if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt))
         {
-            if (selectedInterval == null) return;
-            RemoveIntervalHandler(Main.SelectedCurrencyID, selectedInterval.Start, selectedInterval.End);
-            Service.Config.Save();
+            if (selectedInterval != null)
+            {
+                CurrencyInterval.RemoveInterval(Main.SelectedCurrencyID, alertMode, new TransactionFileCategoryInfo(viewIA, idIA), selectedInterval);
+                selectedInterval = null;
+            }
         }
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalInput")}:");
@@ -105,8 +107,11 @@ public partial class CurrencySettings
         ImGui.SameLine();
         if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add")))
         {
-            AddIntervalHandler(Main.SelectedCurrencyID, intervalStart, intervalEnd);
-            Service.Config.Save();
+            var interval = CurrencyInterval.CreateInterval(intervalStart, intervalEnd);
+            if (interval != null)
+            {
+                CurrencyInterval.AddInterval(Main.SelectedCurrencyID, alertMode, new TransactionFileCategoryInfo(viewIA, idIA), interval);
+            }
         }
     }
 
@@ -176,63 +181,5 @@ public partial class CurrencySettings
             viewIA = category;
             idIA = ID;
         }
-    }
-
-    private void AddIntervalHandler(uint currencyID, int start, int end)
-    {
-        if (end != -1 && start > end) return;
-
-        var intervals = GetOrCreateIntervals(currencyID, alertMode, viewIA, idIA);
-        var newInterval = CreateInterval(start, end);
-
-        if (!intervals.Contains(newInterval))
-        {
-            intervals.Add(newInterval);
-            Service.Config.Save();
-        }
-    }
-
-    private void RemoveIntervalHandler(uint currencyID, int? start, int? end)
-    {
-        var intervals = GetOrCreateIntervals(currencyID, alertMode, viewIA, idIA);
-        var newInterval = new Interval<int>(start, end);
-
-        if (intervals.Remove(newInterval))
-        {
-            Service.Config.Save();
-            selectedInterval = null;
-        }
-    }
-
-    public static List<Interval<int>> GetOrCreateIntervals(
-        uint currencyID, int alertMode, TransactionFileCategory view, ulong ID)
-    {
-        if (!Service.Config.CurrencyRules.TryGetValue(Main.SelectedCurrencyID, out var rules))
-        {
-            rules = new();
-            Service.Config.CurrencyRules.Add(Main.SelectedCurrencyID, rules);
-            Service.Config.Save();
-        }
-
-        rules.AlertedAmountIntervals ??= new();
-        rules.AlertedChangeIntervals ??= new();
-
-        var intervalList = alertMode == 0
-                               ? rules.AlertedAmountIntervals
-                               : rules.AlertedChangeIntervals;
-        var viewString = GetTransactionViewKeyString(view, ID);
-
-        if (!intervalList.ContainsKey(viewString))
-            intervalList[viewString] = [];
-
-        return intervalList[viewString];
-    }
-
-
-    private static Interval<int> CreateInterval(int start, int end)
-    {
-        int? end1 = start == -1 ? null : start;
-        int? end2 = end == -1 ? null : end;
-        return new Interval<int>(end1, end2);
     }
 }

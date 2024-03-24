@@ -141,7 +141,7 @@ public static class CurrencyInfo
             IDictionary<TransactionFileCategoryInfo, long> dictionary)
         {
             var currencyAmount = GetCurrencyAmountFromFile(currencyID, character, category, ID);
-            var key = new TransactionFileCategoryInfo { Category = category, Id = ID };
+            var key = new TransactionFileCategoryInfo(category, ID);
             dictionary[key] = currencyAmount ?? 0;
         }
     }
@@ -194,6 +194,8 @@ public static class CurrencyInfo
 
             Service.Config.Save();
         }
+
+        return;
 
         bool UpdateCurrencyName(uint currencyId, string newName)
         {

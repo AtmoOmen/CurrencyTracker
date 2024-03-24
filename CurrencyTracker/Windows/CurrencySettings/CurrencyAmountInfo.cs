@@ -18,7 +18,7 @@ public partial class CurrencySettings
                 foreach (var source in infoDic)
                 {
                     if (source.Value == 0) continue;
-                    ImGui.Text(GetSelectedViewName(source.Key.Category, source.Key.Id));
+                    ImGui.Text(GetSelectedViewName(source.Key.Category, source.Key.ID));
                 }
 
                 ImGui.EndGroup();
