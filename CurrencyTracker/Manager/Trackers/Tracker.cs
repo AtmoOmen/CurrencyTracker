@@ -154,7 +154,7 @@ public class Tracker
             foreach (var interval in intervals)
                 if (util.InRange(interval, value, true) && Service.Config.AlertNotificationChat)
                 {
-                    var message = Service.Lang.GetSeString("AlertIntervalMessage", type, value.ToString("N0"),
+                    var message = Service.Lang.GetSeString("AlertIntervalMessage", Service.Lang.GetText(type), value.ToString("N0"),
                                                            SeString.CreateItemLink(id, false),
                                                            GetSelectedViewName(category, ID),
                                                            interval.ToIntervalString());
