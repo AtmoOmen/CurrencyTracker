@@ -4,7 +4,9 @@ using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Memory;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -16,11 +18,12 @@ public class SpecialExchange : ITrackerComponent
     {
         { "GrandCompanySupplyList", 27 },
         { "WeeklyBingoResult", 99 },
-        { "ReconstructionBox", 31 }
+        { "ReconstructionBox", 31 },
+        { "SatisfactionSupply", 1 }
     };
 
     internal static bool isOnExchange;
-    private string windowName = string.Empty;
+    private static string windowName = string.Empty;
 
     private InventoryHandler? inventoryHandler;
 
@@ -29,14 +32,17 @@ public class SpecialExchange : ITrackerComponent
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
     }
 
-    private void BeginExchange(AddonEvent type, AddonArgs args)
+    private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
     {
         if (isOnExchange || Exchange.isOnExchange) return;
+
+        var addon = (AtkUnitBase*)args.Addon;
+        if (addon == null) return;
 
         HandlerManager.ChatHandler.isBlocked = true;
 
         isOnExchange = true;
-        windowName = GetWindowTitle(args, UI[args.AddonName]);
+        windowName = args.AddonName == "SatisfactionSupply" ? MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[7].String) : GetWindowTitle(args, UI[args.AddonName]);
         inventoryHandler ??= new InventoryHandler();
 
         Service.Framework.Update += OnFrameworkUpdate;
@@ -58,10 +64,10 @@ public class SpecialExchange : ITrackerComponent
     private void EndExchangeHandler()
     {
         if (Exchange.isOnExchange) return;
+        Service.Framework.Update -= OnFrameworkUpdate;
 
         Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
-        Service.Framework.Update -= OnFrameworkUpdate;
         isOnExchange = false;
 
         var items = inventoryHandler?.Items ?? [];
