@@ -128,38 +128,31 @@ public partial class Main
         ImGuiOm.CenterAlignFor(tablePagingComponentsWidth);
         ImGui.BeginGroup();
 
-        // 视图切换 Table View Switch
         TableViewSwitchUI();
 
-        // 首页 First Page
         ImGui.SameLine();
         ImGui.BeginDisabled(pageCount <= 0);
         if (ImGuiOm.ButtonIcon("FirstPageTransactionTable", FontAwesomeIcon.Backward)) currentPage = 0;
         ImGui.EndDisabled();
 
-        // 上一页 Last Page
         ImGui.SameLine();
         ImGui.BeginDisabled(currentPage <= 0);
         if (ImGui.ArrowButton("PreviousPage", ImGuiDir.Left)) currentPage--;
         ImGui.EndDisabled();
 
-        // 页数显示 Pages
         ImGui.SameLine();
         ImGui.Text($"{Service.Lang.GetText("PageComponent", currentPage + 1, pageCount)}");
 
-        // 下一页 Next Page
         ImGui.SameLine();
         ImGui.BeginDisabled(currentPage >= pageCount - 1);
         if (ImGui.ArrowButton("NextPage", ImGuiDir.Right)) currentPage++;
         ImGui.EndDisabled();
 
-        // 尾页 Final Page
         ImGui.SameLine();
         ImGui.BeginDisabled(pageCount <= 0);
         if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward)) currentPage = pageCount;
         ImGui.EndDisabled();
 
-        // 表格外观 Table Appearance
         ImGui.SameLine();
         TableAppearanceUI(windowWidth);
 
@@ -192,7 +185,7 @@ public partial class Main
             const bool boolUI = false;
             if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)));
+                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
             }
 
             foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
@@ -213,16 +206,15 @@ public partial class Main
 
             if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)));
+                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)).ToDisplayTransaction();
                 currentView = TransactionFileCategory.SaddleBag;
                 currentViewID = 0;
             }
 
             if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions = ToDisplayTransaction(ApplyFilters(
-                                                                   TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
-                                                                       TransactionFileCategory.PremiumSaddleBag)));
+                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
+                                                           TransactionFileCategory.PremiumSaddleBag)).ToDisplayTransaction();
             }
         }
     }
@@ -253,7 +245,7 @@ public partial class Main
             ImGui.EndGroup();
 
             var tableWidth = ImGui.GetItemRectSize().X;
-            var textWidthOffset = $"{Service.Lang.GetText("ChildFrameWidthOffset")}:";
+            var textWidthOffset = $"{Service.Lang.GetText("ChildframeWidthOffset")}:";
             var widthWidthOffset = tableWidth - ImGui.CalcTextSize(textWidthOffset).X;
             var textPerPage = $"{Service.Lang.GetText("TransactionsPerPage")}:";
             var widthPerPage = tableWidth - ImGui.CalcTextSize(textPerPage).X;

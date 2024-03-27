@@ -98,21 +98,14 @@ public partial class Main
 
     public static void LoadCurrencyTransactions(uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
     {
-        SelectedCurrencyID = ID;
+        Task.Run(async () =>
+        {
+            SelectedCurrencyID = ID;
+            currentView = view;
+            currentViewID = viewID;
     
-        currentTypeTransactions = ToDisplayTransaction(ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)));
-        currentView = view;
-        currentViewID = viewID;
-    }
-
-    public static async Task LoadCurrencyTransactionsAsync(
-        uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
-    {
-        SelectedCurrencyID = ID;
-    
-        currentTypeTransactions = ToDisplayTransaction(ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)));
-        currentView = view;
-        currentViewID = viewID;
+            currentTypeTransactions = ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)).ToDisplayTransaction();
+        });
     }
 
     private static void CurrencyListboxToolUI()

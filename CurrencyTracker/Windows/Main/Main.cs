@@ -18,7 +18,7 @@ public partial class Main : Window, IDisposable
     private static bool _showOthers = true;
     private static bool _shouldRefreshTransactions;
 
-    internal class DisplayTransaction
+    public class DisplayTransaction
     {
         public Transaction Transaction { get; set; } = null!;
         public bool Selected { get; set; }

@@ -35,7 +35,7 @@ public static class CurrencyInfo
     {
         if (!CurrencyAmountCache.ContainsKey(P.CurrentCharacter.ContentID))
             CurrencyAmountCache.Add(P.CurrentCharacter.ContentID, []);
-        CurrencyAmountCache[P.CurrentCharacter.ContentID][currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter);
+        CurrencyAmountCache[P.CurrentCharacter.ContentID][currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter, true);
     }
 
     public static string GetCurrencyName(uint currencyID)
@@ -76,7 +76,7 @@ public static class CurrencyInfo
         };
     }
 
-    public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character)
+    public static long GetCharacterCurrencyAmount(uint currencyID, CharacterInfo character, bool isOverride = false)
     {
         if (!CurrencyAmountCache.TryGetValue(character.ContentID, out var characterCache))
         {
@@ -84,9 +84,12 @@ public static class CurrencyInfo
             CurrencyAmountCache[character.ContentID] = characterCache;
         }
 
-        if (characterCache.TryGetValue(currencyID, out var characterCurrencyAmount))
+        if (!isOverride)
         {
-            return characterCurrencyAmount;
+            if (characterCache.TryGetValue(currencyID, out var characterCurrencyAmount))
+            {
+                return characterCurrencyAmount;
+            }
         }
 
         var amount = 0L;

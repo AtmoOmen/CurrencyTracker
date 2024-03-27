@@ -62,7 +62,7 @@ public sealed class Plugin : IDalamudPlugin
         CurrentCharacter = GetCurrentCharacter();
 
         if (WindowSystem.Windows.Contains(Main) && Main.SelectedCurrencyID != 0)
-            Main.currentTypeTransactions = Main.ToDisplayTransaction(TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID));
+            Main.currentTypeTransactions = TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID).ToDisplayTransaction();
 
         Tracker.InitializeTracking();
     }
@@ -166,7 +166,7 @@ public sealed class Plugin : IDalamudPlugin
                 {
                     Main.IsOpen = true;
                     Main.SelectedCurrencyID = currencyID;
-                    Main.currentTypeTransactions = Main.ToDisplayTransaction(Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID)));
+                    Main.currentTypeTransactions = Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID)).ToDisplayTransaction();
                 }
                 else
                     Main.IsOpen = false;
@@ -186,7 +186,7 @@ public sealed class Plugin : IDalamudPlugin
             var isCS = Service.Config.SelectedLanguage == "ChineseSimplified";
 
             var exactMatch = currencyList.FirstOrDefault(currency => string.Equals(currency, partialName, StringComparison.OrdinalIgnoreCase));
-            if (exactMatch != null) return new List<string> { exactMatch };
+            if (exactMatch != null) return [exactMatch];
 
             return currencyList
                    .Where(currency => IsMatch(currency.Normalize(NormalizationForm.FormKC)))

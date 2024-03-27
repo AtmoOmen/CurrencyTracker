@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;
 using IntervalUtility;
 using OmenTools.ImGuiOm;
+using static CurrencyTracker.Windows.Main;
 
 namespace CurrencyTracker.Manager.Tools;
 
@@ -168,6 +171,15 @@ public static class Helpers
     {
         return
             $"{(interval.Start == null ? "(-∞" : $"[{interval.Start}")},{(interval.End == null ? "+∞)" : $"{interval.End}]")}";
+    }
+
+    public static List<DisplayTransaction> ToDisplayTransaction(this IEnumerable<Transaction> transactions)
+    {
+        return transactions.Select(transaction => new DisplayTransaction
+        {
+            Transaction = transaction,
+            Selected = false
+        }).ToList();
     }
 
     public static UpdateDictionary<TKey, TValue> ToUpdateDictionary<TKey, TValue>(
