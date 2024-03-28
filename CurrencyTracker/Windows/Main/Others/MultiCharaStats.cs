@@ -32,13 +32,17 @@ public partial class Main
 
         if (!_isWindowOpenMCS) return;
 
-        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS, ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse))
+        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS, 
+                        ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse))
         {
+            ImGui.SetWindowFontScale(1.2f);
             if (_characterCurrencyDicMCS == null)
             {
+                ImGui.SetWindowFontScale(1f);
                 ImGui.End();
                 return;
             }
+
             var itemCount = _characterCurrencyDicMCS.Count;
             var startIndex = _currentPageMCS * 10;
             var endIndex = Math.Min(startIndex + 10, itemCount);
@@ -78,7 +82,6 @@ public partial class Main
             if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync))
                 LoadDataMCS();
             ImGui.EndGroup();
-
             var itemWidth = (int)ImGui.GetItemRectSize().X;
 
             var items = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
@@ -97,10 +100,15 @@ public partial class Main
 
                             ImGui.TableNextRow();
                             ImGui.TableNextColumn();
+
                             ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].ImGuiHandle,
                                         ImGuiHelpers.ScaledVector2(16.0f));
+
                             ImGui.SameLine();
                             ImGui.Text($"{currency.Value}");
+
+                            ImGui.SameLine();
+                            ImGui.Spacing();
 
                             ImGui.TableNextColumn();
                             ImGui.Text($"{amount:N0}");
@@ -131,6 +139,7 @@ public partial class Main
                 }
             }
 
+            ImGui.SetWindowFontScale(1f);
             ImGui.End();
         }
     }
