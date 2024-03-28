@@ -82,6 +82,7 @@ public partial class Main
                         }
                     }
                 }
+
                 ImGui.EndTable();
             }
 
@@ -309,6 +310,9 @@ public partial class Main
             var max = selectedTransactions.Max(x => x.Transaction.Change);
             var min = selectedTransactions.Min(x => x.Transaction.Change);
 
+            ImGui.Spacing();
+
+            ImGui.SameLine();
             ImGui.TextDisabled(Service.Lang.GetText("SelectedTransactionsInfo", count, sum, avg, max, min));
         }
     }

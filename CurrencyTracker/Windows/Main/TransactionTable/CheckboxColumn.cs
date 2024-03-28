@@ -22,13 +22,16 @@ public partial class Main
         if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH)) ImGui.OpenPopup("TableTools");
         ImGui.EndDisabled();
 
-        using var popup = ImRaii.Popup("TableTools");
-        if (popup.Success) CheckboxColumnToolUI();
+        if (ImGui.BeginPopup("TableTools"))
+        {
+            CheckboxColumnToolUI();
+            ImGui.EndPopup();
+        }
     }
 
     private static void CheckboxColumnToolUI()
     {
-        var selectedCount = currentTypeTransactions.Where(x => x.Selected).ToList().Count;
+        var selectedCount = currentTypeTransactions.Count(x => x.Selected);
         ImGui.Text($"{Service.Lang.GetText("Now")}: {selectedCount} {Service.Lang.GetText("Transactions")}");
         ImGui.Separator();
 

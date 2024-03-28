@@ -1,8 +1,7 @@
 using System;
 using System.Numerics;
-using System.Threading;
-using System.Threading.Tasks;
 using CurrencyTracker.Manager;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
@@ -12,10 +11,8 @@ namespace CurrencyTracker.Windows;
 public partial class Main
 {
     private static bool isChangeFilterEnabled;
-
     private static int filterMode;
     private static int filterValue;
-    private static CancellationTokenSource? colorSaveCancelTokenSource;
 
     private static void ChangeColumnHeaderUI()
     {
@@ -24,11 +21,11 @@ public partial class Main
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ChangeFunctions");
         ImGui.EndDisabled();
 
-        using var popup = ImRaii.Popup("ChangeFunctions");
-        if (popup.Success)
+        if (ImGui.BeginPopupContextItem("ChangeColumnHeaderFunctions"))
         {
             FilterByChangeUI();
             ColoringByChangeUI();
+            ImGui.EndPopup();
         }
     }
 
@@ -46,7 +43,7 @@ public partial class Main
             if (ImGui.RadioButton($"{Service.Lang.GetText("Less")}##FilterMode", ref filterMode, 1))
                 RefreshTransactionsView();
 
-            ImGui.SetNextItemWidth(130);
+            ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
             if (ImGui.InputInt("##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
                 RefreshTransactionsView();
 
@@ -88,25 +85,16 @@ public partial class Main
         using var popup = ImRaii.Popup(popupId);
         if (popup.Success)
         {
-            if (ImGui.ColorPicker4("", ref color))
+            if (ImGui.ColorPicker4($"###{popupId}{text}", ref color))
             {
                 Service.Config.ChangeTextColoring = true;
                 saveColorAction(color);
-                DelayedColorSave();
+                TaskManager.Abort();
+
+                TaskManager.DelayNext(250);
+                TaskManager.Enqueue(Service.Config.Save);
             }
         }
-    }
-
-    private static void DelayedColorSave()
-    {
-        colorSaveCancelTokenSource?.Cancel();
-        colorSaveCancelTokenSource = new CancellationTokenSource();
-        var token = colorSaveCancelTokenSource.Token;
-
-        Task.Delay(TimeSpan.FromSeconds(1), token).ContinueWith(t =>
-        {
-            if (!t.IsCanceled) Service.Config.Save();
-        }, token);
     }
 
     private static void ChangeColumnCellUI(int i, DisplayTransaction transaction)

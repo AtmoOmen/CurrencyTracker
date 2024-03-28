@@ -1,9 +1,8 @@
-using System.Collections.Generic;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
-using OmenTools.Helpers;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
@@ -18,21 +17,16 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Note"));
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-        {
-            ImGui.OpenPopup("NoteSearch");
-        }
         ImGui.EndDisabled();
-
-        using var popup = ImRaii.Popup("NoteSearch");
-        if (popup.Success)
+        if (ImGui.BeginPopupContextItem("NoteSearch"))
         {
-            ImGui.SetNextItemWidth(250);
-            if (ImGui.InputTextWithHint("##NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+            if (ImGui.InputTextWithHint("###NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
             {
                 isNoteFilterEnabled = !string.IsNullOrEmpty(searchNoteContent);
                 RefreshTransactionsView();
             }
+            ImGui.EndPopup();
         }
     }
 
@@ -42,18 +36,14 @@ public partial class Main
 
         if (!string.IsNullOrEmpty(transaction.Transaction.Note)) ImGuiOm.TooltipHover(transaction.Transaction.Note);
 
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.BeginPopupContextItem($"NoteEditPopup{i}"))
         {
-            editedNoteContent = transaction.Transaction.Note;
-            ImGui.OpenPopup($"EditTransactionNote##_{i}");
-        }
+            if (ImGui.IsWindowAppearing())
+                editedNoteContent = transaction.Transaction.Note;
 
-        using var popup = ImRaii.Popup($"EditTransactionNote##_{i}");
-        if (popup.Success)
-        {
             if (!string.IsNullOrEmpty(editedNoteContent)) ImGui.TextWrapped(editedNoteContent);
 
-            ImGui.SetNextItemWidth(270);
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
             if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
                 var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, [transaction.Transaction], "None", editedNoteContent, currentView, currentViewID);
@@ -62,6 +52,8 @@ public partial class Main
                     RefreshTransactionsView();
                 else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
+
+            ImGui.EndPopup();
         }
     }
 }

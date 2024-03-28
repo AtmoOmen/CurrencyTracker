@@ -25,15 +25,13 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
-            ImGui.OpenPopup("TimeFunctions");
         ImGui.EndDisabled();
 
-        using var popup = ImRaii.Popup("TimeFunctions", ImGuiWindowFlags.NoTitleBar);
-        if (popup.Success)
+        if (ImGui.BeginPopupContextItem("TimerColumnHeaderFunctions"))
         {
             ClusterByTimeUI();
             FilterByTimeUI();
+            ImGui.EndPopup();
         }
     }
 
@@ -64,7 +62,7 @@ public partial class Main
         DateInput(ref filterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
         DateInput(ref filterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
 
-        ImGui.Separator();
+        if (startDateEnable || endDateEnable) ImGui.Separator();
 
         if (startDateEnable)
         {
@@ -101,7 +99,7 @@ public partial class Main
         var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
         var selected = transaction.Selected;
-        if ((!isLeftCtrl) ? ImGuiOm.Selectable($"{timeString}##{i}") : ImGuiOm.Selectable($"{timeString}##{i}", ref selected, flag))
+        if (!isLeftCtrl ? ImGuiOm.Selectable($"{timeString}##{i}") : ImGuiOm.Selectable($"{timeString}##{i}", ref selected, flag))
         {
             if (isLeftCtrl && !isRightMouse)
             {
@@ -109,12 +107,18 @@ public partial class Main
             }
         }
 
-        if (isLeftCtrl && isRightMouse)
+        if (isLeftCtrl && isRightMouse && ImGui.IsItemHovered())
         {
-            if (ImGui.IsItemHovered())
-            {
-                transaction.Selected = true;
-            }
+            transaction.Selected = true;
+        }
+
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && isLeftCtrl && selected)
+            ImGui.OpenPopup($"TableToolsTimeColumn{i}");
+
+        if (ImGui.BeginPopup($"TableToolsTimeColumn{i}"))
+        {
+            CheckboxColumnToolUI();
+            ImGui.EndPopup();
         }
 
         ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);

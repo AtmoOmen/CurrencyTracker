@@ -29,8 +29,7 @@ public partial class Main : Window, IDisposable
 
     public Main(Plugin plugin) : base("Currency Tracker")
     {
-        Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse |
-                 ImGuiWindowFlags.NoBringToFrontOnFocus;
+        Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
 
         TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
 

@@ -1,6 +1,6 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
-using Dalamud.Interface.Utility.Raii;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -16,19 +16,17 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("LocationSearch");
         ImGui.EndDisabled();
 
-        using var popup = ImRaii.Popup("LocationSearch");
-        if (popup.Success)
+        if (ImGui.BeginPopupContextItem("LocationSearch"))
         {
-            ImGui.SetNextItemWidth(250);
-            if (ImGui.InputTextWithHint("##LocationSearch", Service.Lang.GetText("PleaseSearch"),
-                                        ref searchLocationName, 80))
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+            if (ImGui.InputTextWithHint("###LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
             {
                 isLocationFilterEnabled = !string.IsNullOrEmpty(searchLocationName);
                 RefreshTransactionsView();
             }
+            ImGui.EndPopup();
         }
     }
 
@@ -40,18 +38,14 @@ public partial class Main
 
         if (!string.IsNullOrEmpty(locationName)) ImGuiOm.TooltipHover(locationName);
 
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && !ImGui.IsKeyDown(ImGuiKey.LeftCtrl))
+        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.BeginPopupContextItem($"LocationEdit{i}"))
         {
-            editedLocationName = locationName;
-            ImGui.OpenPopup($"EditLocationName##_{i}");
-        }
-
-        using var popup = ImRaii.Popup($"EditLocationName##_{i}");
-        if (popup.Success)
-        {
+            if (ImGui.IsWindowAppearing())
+                editedLocationName = locationName;
+            
             if (!string.IsNullOrEmpty(editedLocationName)) ImGui.TextWrapped(editedLocationName);
 
-            ImGui.SetNextItemWidth(270);
+            ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
             if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150,
                                 ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
@@ -63,6 +57,7 @@ public partial class Main
                     RefreshTransactionsView();
                 else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
+            ImGui.EndPopup();
         }
     }
 }
