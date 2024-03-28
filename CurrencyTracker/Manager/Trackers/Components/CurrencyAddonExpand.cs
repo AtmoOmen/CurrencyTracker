@@ -1,6 +1,8 @@
+using System.Linq;
 using System.Text;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tasks;
+using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
@@ -75,28 +77,24 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
     private static void DisplayAndHideTooltip(AddonEventType type, nint addon, nint node)
     {
         var addonId = ((AtkUnitBase*)addon)->ID;
-        var inventoryAmount = CurrencyInfo.GetCurrencyAmount(1).ToString("N0");
-        var tooltipBuilder = new StringBuilder($"{Service.Lang.GetText("Inventory")}: {inventoryAmount}");
+        var tooltipBuilder = new StringBuilder();
 
-        if (Service.Config.CharacterRetainers.TryGetValue(P.CurrentCharacter.ContentID,
-                                                          out var retainers))
+        if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
+        Main.CharacterCurrencyInfos
+            .FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount
+            .TryGetValue(1, out var infoDic);
+
+        foreach (var source in infoDic)
         {
-            foreach (var retainer in retainers)
-            {
-                var retainerAmount = CurrencyInfo.GetCurrencyAmountFromFile(
-                    1, P.CurrentCharacter, TransactionFileCategory.Retainer, retainer.Key);
-                if (retainerAmount.HasValue)
-                {
-                    tooltipBuilder.AppendLine();
-                    tooltipBuilder.Append($"{retainer.Value}: {retainerAmount.Value.ToString("N0")}");
-                }
-            }
+            if (source.Value == 0) continue;
+            tooltipBuilder.Append($"{GetSelectedViewName(source.Key.Category, source.Key.ID)}: {source.Value:N0}");
+            tooltipBuilder.AppendLine();
         }
 
         switch (type)
         {
             case AddonEventType.MouseOver:
-                AtkStage.GetSingleton()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltipBuilder.ToString());
+                AtkStage.GetSingleton()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltipBuilder.ToString().Trim());
                 break;
             case AddonEventType.MouseOut:
                 AtkStage.GetSingleton()->TooltipManager.HideTooltip(addonId);
@@ -106,7 +104,12 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
 
     public void Uninit()
     {
-        ProcessCurrencyNode(false);
+        var addon = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
+        if (addon != null)
+        {
+            addon->FireCloseCallback();
+            addon->Close(true);
+        }
 
         Service.AddonLifecycle.UnregisterListener(OnCurrencyUI);
     }
