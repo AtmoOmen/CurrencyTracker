@@ -1,76 +1,78 @@
 using System.Text;
 using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
-public class CurrencyUIEdit : ITrackerComponent
+public unsafe class CurrencyUIEdit : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private IAddonEventHandle? mouseoverHandle;
-    private IAddonEventHandle? mouseoutHandle;
+    private static IAddonEventHandle? mouseoverHandle;
+    private static IAddonEventHandle? mouseoutHandle;
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
     }
 
-    private void OnCurrencyUI(AddonEvent type, AddonArgs args)
+    private static void OnCurrencyUI(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
-            case AddonEvent.PreDraw:
-                UITextEdit(args);
+            case AddonEvent.PostSetup or AddonEvent.PreDraw:
+                ProcessCurrencyNode(true);
                 break;
-
-            case AddonEvent.PostSetup:
-                UITooltipEdit(args);
+            case AddonEvent.PreFinalize:
+                ProcessCurrencyNode(false);
                 break;
         }
     }
 
-    private static unsafe void UITextEdit(AddonArgs args)
+    private static void ProcessCurrencyNode(bool isAdd)
     {
-        var UI = (AtkUnitBase*)args.Addon;
-        if (!IsAddonAndNodesReady(UI)) return;
+        if (!isAdd && mouseoverHandle != null && mouseoutHandle != null)
+        {
+            Service.AddonEventManager.RemoveEvent(mouseoverHandle);
+            mouseoverHandle = null;
+            Service.AddonEventManager.RemoveEvent(mouseoutHandle);
+            mouseoutHandle = null;
+        }
 
-        var gilNode = (AtkComponentBase*)UI->GetComponentNodeById(12);
-        var gilTextNode = gilNode->GetTextNodeById(5);
+        if (!TryGetAddonByName<AtkUnitBase>("Currency", out var addon)) return;
 
-        gilTextNode->GetAsAtkTextNode()->SetText(CurrencyInfo
-                                                 .GetCharacterCurrencyAmount(1, P.CurrentCharacter)
-                                                 .ToString("#,0"));
+        var componentNode = addon->GetNodeById(12)->GetAsAtkComponentNode();
+        if (componentNode == null) return;
+        var gilNode = componentNode->Component->GetTextNodeById(5)->GetAsAtkTextNode();
+        if (gilNode == null) return;
+
+        const NodeFlags nodeFlagsMask = NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision;
+    
+        if (isAdd)
+        {
+            gilNode->AtkResNode.NodeFlags |= nodeFlagsMask;
+
+            mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOver, DisplayAndHideTooltip);
+            mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOut, DisplayAndHideTooltip);
+
+            var currencyAmount = CurrencyInfo.GetCharacterCurrencyAmount(1, P.CurrentCharacter);
+            gilNode->SetText(currencyAmount.ToString("#,0"));
+        }
+        else
+        {
+            gilNode->AtkResNode.NodeFlags &= ~nodeFlagsMask;
+        }
     }
 
-    private unsafe void UITooltipEdit(AddonArgs args)
-    {
-        var UI = (AtkUnitBase*)args.Addon;
-        if (!IsAddonAndNodesReady(UI)) return;
-
-        var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
-        if (gilTextNode == null) return;
-
-        gilTextNode->NodeFlags |= NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision;
-
-        mouseoverHandle =
-            Service.AddonEventManager.AddEvent((nint)UI, (nint)gilTextNode, AddonEventType.MouseOver,
-                                               TooltipHandler);
-        mouseoutHandle =
-            Service.AddonEventManager.AddEvent((nint)UI, (nint)gilTextNode, AddonEventType.MouseOut,
-                                               TooltipHandler);
-    }
-
-    private static unsafe void TooltipHandler(AddonEventType type, nint addon, nint node)
+    private static void DisplayAndHideTooltip(AddonEventType type, nint addon, nint node)
     {
         var addonId = ((AtkUnitBase*)addon)->ID;
-        var inventoryAmount =
-            CurrencyInfo.GetCurrencyAmount(1).ToString("N0");
+        var inventoryAmount = CurrencyInfo.GetCurrencyAmount(1).ToString("N0");
         var tooltipBuilder = new StringBuilder($"{Service.Lang.GetText("Inventory")}: {inventoryAmount}");
 
         if (Service.Config.CharacterRetainers.TryGetValue(P.CurrentCharacter.ContentID,
@@ -88,32 +90,20 @@ public class CurrencyUIEdit : ITrackerComponent
             }
         }
 
-        var tooltip = tooltipBuilder.ToString();
-
         switch (type)
         {
             case AddonEventType.MouseOver:
-                AtkStage.GetSingleton()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltip);
+                AtkStage.GetSingleton()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltipBuilder.ToString());
                 break;
-
             case AddonEventType.MouseOut:
                 AtkStage.GetSingleton()->TooltipManager.HideTooltip(addonId);
                 break;
         }
     }
 
-    public unsafe void Uninit()
+    public void Uninit()
     {
-        Service.AddonEventManager.RemoveEvent(mouseoverHandle);
-        Service.AddonEventManager.RemoveEvent(mouseoutHandle);
-
-        var UI = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
-        if (IsAddonAndNodesReady(UI))
-        {
-            var gilTextNode = ((AtkComponentBase*)UI->GetComponentNodeById(12))->GetTextNodeById(5);
-            if (gilTextNode == null) return;
-            gilTextNode->NodeFlags &= ~(NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision);
-        }
+        ProcessCurrencyNode(false);
 
         Service.AddonLifecycle.UnregisterListener(OnCurrencyUI);
     }
