@@ -8,7 +8,7 @@ using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
-public unsafe class CurrencyUIEdit : ITrackerComponent
+public unsafe class CurrencyAddonExpand : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
@@ -19,6 +19,7 @@ public unsafe class CurrencyUIEdit : ITrackerComponent
     {
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "Currency", OnCurrencyUI);
     }
 
     private static void OnCurrencyUI(AddonEvent type, AddonArgs args)
@@ -43,6 +44,8 @@ public unsafe class CurrencyUIEdit : ITrackerComponent
             Service.AddonEventManager.RemoveEvent(mouseoutHandle);
             mouseoutHandle = null;
         }
+
+        if (!EzThrottler.Throttle("CurrencyAddonExpand", 1000)) return;
 
         if (!TryGetAddonByName<AtkUnitBase>("Currency", out var addon)) return;
 

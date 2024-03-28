@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
@@ -140,7 +139,7 @@ public class Settings : Window, IDisposable
 
             if (ImGui.BeginTabItem(Service.Lang.GetText("Features")))
             {
-                ModuleCheckbox(typeof(CurrencyUIEdit), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
+                ModuleCheckbox(typeof(CurrencyAddonExpand), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
                 ModuleCheckbox(typeof(ServerBar), Service.Lang.GetText("DisplayChangesInServerBar"));
                 if (Service.Config.ComponentEnabled["ServerBar"])
                 {
