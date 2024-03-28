@@ -752,4 +752,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="Today" xml:space="preserve">
     <value>Today</value>
   </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>Display Currency Overview in Gil HUD</value>
+  </data>
 </root>

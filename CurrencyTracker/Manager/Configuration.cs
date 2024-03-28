@@ -73,7 +73,8 @@ public class Configuration : IPluginConfiguration
     {
         { "AutoSave", false },
         { "ServerBar", false },
-        { "CurrencyUIEdit", true },
+        { "CurrencyAddonExpand", true },
+        { "MoneyAddonExpand", false },
         { "DutyRewards", true },
         { "Exchange", true },
         { "FateRewards", true },

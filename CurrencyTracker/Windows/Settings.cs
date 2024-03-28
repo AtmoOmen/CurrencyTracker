@@ -189,6 +189,8 @@ public class Settings : Window, IDisposable
                     ImGui.Unindent();
                 }
 
+                ModuleCheckbox(typeof(MoneyAddonExpand), Service.Lang.GetText("DisplayCurrencyOverviewInGilHUD"));
+                
                 ImGui.Separator();
                 ModuleCheckbox(typeof(Retainer), Service.Lang.GetText("Retainer-RecordRetainerInventory"));
                 ModuleCheckbox(typeof(SaddleBag), Service.Lang.GetText("SaddleBag-RecordSaddleBag"));
@@ -384,12 +386,12 @@ public class Settings : Window, IDisposable
 
     private static void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")
     {
-        var cbool = Service.Config.ComponentProp[boolName];
+        var tempBool = Service.Config.ComponentProp[boolName];
 
         ImGui.PushID($"{checkboxLabel}-{boolName}");
         ImGui.Indent();
 
-        if (ImGui.Checkbox(checkboxLabel, ref cbool))
+        if (ImGui.Checkbox(checkboxLabel, ref tempBool))
         {
             Service.Config.ComponentProp[boolName] = !Service.Config.ComponentProp[boolName];
             Service.Config.Save();
@@ -408,13 +410,13 @@ public class Settings : Window, IDisposable
     private static void SecondaryRadioButtons(
         string boolName1, string boolName2, string buttonLabel1, string buttonLabel2, string help = "")
     {
-        var cbool1 = Service.Config.ComponentProp[boolName1];
-        var cbool2 = Service.Config.ComponentProp[boolName2];
+        var tempBool1 = Service.Config.ComponentProp[boolName1];
+        var tempBool2 = Service.Config.ComponentProp[boolName2];
 
         ImGui.PushID($"{buttonLabel1}-{buttonLabel2}-{buttonLabel1}-{buttonLabel2}");
         ImGui.Indent();
 
-        if (ImGui.RadioButton(buttonLabel1, cbool1))
+        if (ImGui.RadioButton(buttonLabel1, tempBool1))
         {
             Service.Config.ComponentProp[boolName1] = true;
             Service.Config.ComponentProp[boolName2] = false;
@@ -422,7 +424,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (ImGui.RadioButton(buttonLabel2, cbool2))
+        if (ImGui.RadioButton(buttonLabel2, tempBool2))
         {
             Service.Config.ComponentProp[boolName1] = false;
             Service.Config.ComponentProp[boolName2] = true;
@@ -445,20 +447,20 @@ public class Settings : Window, IDisposable
 
         if (propertyValue is null) return;
 
-        var cbool1 = (int)propertyValue == 0;
-        var cbool2 = (int)propertyValue == 1;
+        var tempBool1 = (int)propertyValue == 0;
+        var tempBool2 = (int)propertyValue == 1;
 
         ImGui.PushID($"{buttonLabel1}-{buttonLabel2}-{buttonLabel1}-{buttonLabel2}");
         ImGui.Indent();
 
-        if (ImGui.RadioButton(buttonLabel1, cbool1))
+        if (ImGui.RadioButton(buttonLabel1, tempBool1))
         {
             typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 0);
             Service.Config.Save();
         }
 
         ImGui.SameLine();
-        if (ImGui.RadioButton(buttonLabel2, cbool2))
+        if (ImGui.RadioButton(buttonLabel2, tempBool2))
         {
             typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 1);
             Service.Config.Save();
@@ -500,7 +502,8 @@ public class Settings : Window, IDisposable
                 if (paramsEP != null)
                 {
                     ImGui.Separator();
-                    for (var i = 0; i < paramsEP.Count; i++) ImGui.Text("{" + i + "}" + $" - {paramsEP[i]}");
+                    for (var i = 0; i < paramsEP.Count; i++)
+                        ImGui.Text($"{{{i}}} - {paramsEP[i]}");
                 }
             }
 

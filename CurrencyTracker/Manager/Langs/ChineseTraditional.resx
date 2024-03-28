@@ -752,4 +752,7 @@
   <data name="Today" xml:space="preserve">
     <value>今天</value>
   </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>在所持金幣界面顯示貨幣一覽窗口</value>
+  </data>
 </root>
