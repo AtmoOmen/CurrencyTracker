@@ -260,7 +260,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Y</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
-    <value>Transaction Amount:</value>
+    <value>Transactions Amount:</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>Amount Graph </value>
@@ -302,7 +302,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Manage</value>
   </data>
   <data name="Transactions" xml:space="preserve">
-    <value>Transaction</value>
+    <value>Transactions</value>
   </data>
   <data name="Now" xml:space="preserve">
     <value>Now</value>
@@ -380,7 +380,7 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
     <value>Note</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
-    <value># Transaction Export -</value>
+    <value># Transactions Export -</value>
   </data>
   <data name="ExportFileMDHeader1" xml:space="preserve">
     <value>| Time | Amount | Change | Location | Note |
