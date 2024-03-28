@@ -350,7 +350,7 @@ public class Settings : Window, IDisposable
     private static void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
     {
         var boolName = type.Name;
-        if (!Service.Config.ComponentEnabled.TryGetValue(boolName, out var cbool)) return;
+        if (!Service.Config.ComponentEnabled.TryGetValue(boolName, out var tempBool)) return;
 
         if (!typeof(ITrackerComponent).IsAssignableFrom(type))
         {
@@ -359,7 +359,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.PushID($"{boolName}-{type.Name}");
-        if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref cbool))
+        if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref tempBool))
         {
             Service.Config.ComponentEnabled[boolName] ^= true;
             if (ComponentManager.Components.TryGetValue(type, out var component))
@@ -511,7 +511,7 @@ public class Settings : Window, IDisposable
         ImGui.SameLine();
         if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
         {
-            Service.Config.CustomNoteContents[key] = Service.Lang.GetOrigText(key);
+            Service.Config.CustomNoteContents.Remove(key);
             Service.Config.Save();
         }
 
