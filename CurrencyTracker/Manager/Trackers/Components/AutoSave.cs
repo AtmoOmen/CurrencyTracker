@@ -31,13 +31,13 @@ public class AutoSave : ITrackerComponent
     {
         if (DateTime.Now >= LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval))
         {
-            AutoSaveHandler();
+            AutoSaveHandlerAsync();
             LastAutoSaveTime = DateTime.Now;
             NextAutoSaveTime = LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
         }
     }
 
-    private static void AutoSaveHandler()
+    public static void AutoSaveHandlerAsync()
     {
         switch (Service.Config.AutoSaveMode)
         {
@@ -86,6 +86,8 @@ public class AutoSave : ITrackerComponent
 
     public void Uninit()
     {
+        TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+
         AutoSaveTimer?.Stop();
         if (AutoSaveTimer != null) AutoSaveTimer.Elapsed -= OnAutoSave;
         AutoSaveTimer?.Dispose();
