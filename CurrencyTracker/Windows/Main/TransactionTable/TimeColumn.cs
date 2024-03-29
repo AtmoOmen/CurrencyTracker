@@ -1,6 +1,5 @@
 using System;
 using CurrencyTracker.Manager;
-using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 using OmenTools.Widgets;
@@ -20,6 +19,7 @@ public partial class Main
     private static int clusterHour;
     private static bool startDateEnable;
     private static bool endDateEnable;
+    private static bool? timeColumnSelectMode;
 
     private static void TimeColumnHeaderUI()
     {
@@ -93,26 +93,29 @@ public partial class Main
 
     private static void TimeColumnCellUI(int i, DisplayTransaction transaction)
     {
+        var selected = transaction.Selected;
         var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
-        var flag = (isLeftCtrl || isRightMouse) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
+        var flag = (selected || isLeftCtrl) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
         var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
-        var selected = transaction.Selected;
-        if (!isLeftCtrl ? ImGuiOm.Selectable($"{timeString}##{i}") : ImGuiOm.Selectable($"{timeString}##{i}", ref selected, flag))
+        if (ImGuiOm.Selectable($"{timeString}##{i}", selected, flag))
         {
-            if (isLeftCtrl && !isRightMouse)
-            {
-                transaction.Selected = selected;
-            }
+            if (flag is ImGuiSelectableFlags.SpanAllColumns) transaction.Selected ^= true;
         }
 
-        if (isLeftCtrl && isRightMouse && ImGui.IsItemHovered())
+        switch (isLeftCtrl)
         {
-            transaction.Selected = true;
+            case true when isRightMouse && ImGui.IsItemHovered():
+                timeColumnSelectMode ??= !transaction.Selected;
+                transaction.Selected = (bool)timeColumnSelectMode;
+                break;
+            case false:
+                timeColumnSelectMode = null;
+                break;
         }
 
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && isLeftCtrl && selected)
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && selected && !isLeftCtrl)
             ImGui.OpenPopup($"TableToolsTimeColumn{i}");
 
         if (ImGui.BeginPopup($"TableToolsTimeColumn{i}"))
@@ -121,7 +124,7 @@ public partial class Main
             ImGui.EndPopup();
         }
 
-        ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+        if (!transaction.Selected) ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
     }
 
     private static void SwitchDatePickerLanguage(string lang)

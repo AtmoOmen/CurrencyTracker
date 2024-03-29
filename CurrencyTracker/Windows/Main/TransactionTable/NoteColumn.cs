@@ -36,7 +36,7 @@ public partial class Main
 
         if (!string.IsNullOrEmpty(transaction.Transaction.Note)) ImGuiOm.TooltipHover(transaction.Transaction.Note);
 
-        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.BeginPopupContextItem($"NoteEditPopup{i}"))
+        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && !transaction.Selected  && ImGui.BeginPopupContextItem($"NoteEditPopup{i}"))
         {
             if (ImGui.IsWindowAppearing())
                 editedNoteContent = transaction.Transaction.Note;

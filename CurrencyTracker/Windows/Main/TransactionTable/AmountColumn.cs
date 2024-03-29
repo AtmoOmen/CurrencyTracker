@@ -17,6 +17,6 @@ public partial class Main
     {
         var text = transaction.Transaction.Amount.ToString("#,##0");
         ImGui.Selectable($"{text}##{i}");
-        ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+        if (!transaction.Selected) ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
     }
 }

@@ -109,7 +109,7 @@ public partial class Main
         {
             var text = transaction.Transaction.Change.ToString("+ #,##0;- #,##0;0");
             ImGui.Selectable($"{text}##{i}");
-            ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+            if (!transaction.Selected) ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
         }
     }
 }

@@ -69,10 +69,10 @@ public class AutoSave : ITrackerComponent
                     if (Service.Config.AutoSaveMessage)
                     {
                         Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
-                                           (failCharacters.Any()
+                                           (failCharacters.Count != 0
                                                 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
                                                 : ""));
-                        if (failCharacters.Any())
+                        if (failCharacters.Count != 0)
                         {
                             Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
                             failCharacters.ForEach(x => Service.Chat.PrintError(x));
@@ -86,8 +86,6 @@ public class AutoSave : ITrackerComponent
 
     public void Uninit()
     {
-        AutoSaveHandler();
-
         AutoSaveTimer?.Stop();
         if (AutoSaveTimer != null) AutoSaveTimer.Elapsed -= OnAutoSave;
         AutoSaveTimer?.Dispose();

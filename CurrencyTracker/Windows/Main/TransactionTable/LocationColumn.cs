@@ -38,7 +38,7 @@ public partial class Main
 
         if (!string.IsNullOrEmpty(locationName)) ImGuiOm.TooltipHover(locationName);
 
-        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && ImGui.BeginPopupContextItem($"LocationEdit{i}"))
+        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && !transaction.Selected && ImGui.BeginPopupContextItem($"LocationEdit{i}"))
         {
             if (ImGui.IsWindowAppearing())
                 editedLocationName = locationName;
