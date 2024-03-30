@@ -82,8 +82,6 @@ public partial class Main
             {
                 bool1 = !bool1;
                 bool2 = false;
-
-                if (!isTimeFilterEnabled) isTimeFilterEnabled = true;
             }
 
             ImGui.SameLine();
