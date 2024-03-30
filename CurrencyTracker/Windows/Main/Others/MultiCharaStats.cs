@@ -18,7 +18,7 @@ public partial class Main
     private static List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
     private static string searchFilterMCS = string.Empty;
     private static int _currentPageMCS;
-    private static bool _isWindowOpenMCS;
+    internal static bool _isWindowOpenMCS;
 
     private static void MultiCharaStatsUI()
     {

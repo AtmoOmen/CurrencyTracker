@@ -1,20 +1,49 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Numerics;
 using CurrencyTracker.Manager;
+using Dalamud.Interface;
 using Dalamud.Interface.Colors;
+using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
 using ImPlotNET;
+using static CurrencyTracker.Windows.Main;
 
 namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    private readonly Main Main = P.Main;
-    private float[]? currencyChangeData;
-    private float[]? currencyAmountData;
+    private static DisplayTransactionGroup[]? changeGraphData;
+    private static DisplayTransactionGroup[]? amountGraphData;
+    private static DisplayTransactionGroup[]? locationGraphData;
+    private static DisplayTransactionGroup[]? locationAmountGraphData;
+
+    public enum GroupByInterval
+    {
+        Day,
+        Week,
+        Month,
+        Year
+    }
+
+    public class DisplayTransactionGroup
+    {
+        public string XAxis { get; set; } = string.Empty;
+        public float YAxis { get; set; }
+    }
+
+    private static readonly Dictionary<uint, string> ViewStrings = new()
+    {
+        { 0, Service.Lang.GetText("AmountGraph") },
+        { 1, Service.Lang.GetText("ChangeGraph") },
+        { 2, Service.Lang.GetText("LocationGraph") },
+        { 3, Service.Lang.GetText("LocationAmountGraph") }
+    };
+
+    private static uint _currentPlot;
+    private static GroupByInterval _groupInterval;
 
     public Graph(Plugin plugin) : base($"Graphs##{Name}")
     {
@@ -23,150 +52,337 @@ public class Graph : Window, IDisposable
 
     public override void Draw()
     {
-        if (!P.Main.IsOpen || Main.SelectedCurrencyID == 0)
+        if (SelectedCurrencyID == 0)
         {
             P.Graph.IsOpen = false;
             return;
         }
 
-        ImGui.Text($"{Service.Lang.GetText("Now")}:");
-        ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, Service.Config.AllCurrencies[Main.SelectedCurrencyID]);
-        ImGui.SameLine();
-        ImGui.Text(Service.Lang.GetText("GraphLabel"));
-        ImGui.SameLine();
-        ImGui.TextColored(ImGuiColors.DalamudOrange, Main.currentTypeTransactions.Count.ToString());
+        var currencyName = Service.Config.AllCurrencies[SelectedCurrencyID];
+        var currencyIcon = Service.Config.AllCurrencyIcons[SelectedCurrencyID].ImGuiHandle;
 
-        if (Main.currentTypeTransactions.Count > 0)
+        ImGui.SetWindowFontScale(1.3f);
+        ImGui.BeginGroup();
+        var currentCursorPos = ImGui.GetCursorPos();
+        ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+        ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(24f));
+
+        ImGui.SameLine();
+        ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+        ImGui.TextColored(ImGuiColors.DalamudOrange, currencyName);
+        ImGui.EndGroup();
+        ImGui.SetWindowFontScale(1f);
+
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
+        ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+        if (ImGui.BeginCombo("###GraphsViewSelectCombo", ViewStrings[_currentPlot], ImGuiComboFlags.HeightLarge))
         {
-            AmountGraph(Main.currentTypeTransactions);
-            ChangeGraph(Main.currentTypeTransactions);
-            LocationGraph(Main.currentTypeTransactions);
-            LocationAmountGraph(Main.currentTypeTransactions);
+            foreach (var view in ViewStrings)
+                if (ImGui.Selectable(view.Value, view.Key == _currentPlot))
+                    _currentPlot = view.Key;
+            ImGui.EndCombo();
+        }
+
+        ImGui.SameLine();
+        ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
+        ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+        if (ImGui.BeginCombo("###GraphsIntervalSelectCombo", _groupInterval.ToString(), ImGuiComboFlags.HeightLarge))
+        {
+            foreach (GroupByInterval view in Enum.GetValues(typeof(GroupByInterval)))
+                if (ImGui.Selectable(view.ToString(), view == _groupInterval))
+                    _groupInterval = view;
+            ImGui.EndCombo();
+        }
+
+        ImGui.SameLine();
+        ImGui.PushFont(UiBuilder.IconFont);
+        ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+        if (ImGui.Button(FontAwesomeIcon.SyncAlt.ToIconString()))
+        {
+            amountGraphData = null;
+            changeGraphData = null;
+            locationGraphData = null;
+            locationAmountGraphData = null;
+        }
+
+        ImGui.PopFont();
+
+
+        if (currentTypeTransactions.Count <= 0) return;
+        switch (_currentPlot)
+        {
+            case 0:
+                AmountGraph(currentTypeTransactions);
+                break;
+            case 1:
+                ChangeGraph(currentTypeTransactions);
+                break;
+            case 2:
+                LocationGraph(currentTypeTransactions);
+                break;
+            case 3:
+                LocationAmountGraph(currentTypeTransactions);
+                break;
         }
     }
 
-    private void AmountGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
+    private static void AmountGraph(IReadOnlyCollection<DisplayTransaction> currentTypeTransactions)
     {
         if (currentTypeTransactions.Count == 0) return;
 
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Amount));
-        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
+        var (dividedFactor, dividedName) =
+            CalculateDividedFactor((int)Math.Abs(currentTypeTransactions.Average(t => t.Transaction.Amount)));
 
-        currencyAmountData = currentTypeTransactions
-                             .Select(x => (float)Math.Round(x.Transaction.Amount / dividedFactor, 6))
-                             .Reverse()
-                             .ToArray();
+        amountGraphData ??= GroupTransactions(currentTypeTransactions, _groupInterval);
 
-        var graphTitle = $"{Service.Lang.GetText("AmountGraph")}{dividedName}";
-
-        if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("AmountGraph1")}"))
+        if (ImPlot.BeginPlot(Service.Lang.GetText("AmountGraph"), ImGui.GetContentRegionAvail()))
         {
-            const ImPlotFlags plotFlags = ImPlotFlags.None;
-            var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
-            if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
+            ImPlot.SetupAxesLimits(-2, amountGraphData.Length + 2, -2, amountGraphData.Max(x => x.YAxis) + 5);
+
+            ImPlot.SetupAxis(ImAxis.X1, Service.Lang.GetText("Time"));
+            ImPlot.SetupAxis(ImAxis.Y1, $"{Service.Lang.GetText("Amount")} {dividedName}", ImPlotAxisFlags.AutoFit);
+
+            var amountValues = amountGraphData.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
+            var dateTimeValues = amountGraphData.Select(x => x.XAxis).ToArray();
+
+            ImPlot.SetupAxisTicks(ImAxis.X1, 0, dateTimeValues.Length - 1, dateTimeValues.Length, dateTimeValues);
+            ImPlot.PlotBars("", ref amountValues[0], dateTimeValues.Length);
+            ImPlot.EndPlot();
+        }
+
+        return;
+
+        DisplayTransactionGroup[] GroupTransactions(
+            IEnumerable<DisplayTransaction> currentTypeTransactions, GroupByInterval interval)
+        {
+            var result = new List<DisplayTransactionGroup>();
+
+            switch (interval)
             {
-                ImPlot.SetupAxesLimits(0, currencyAmountData.Length, currencyAmountData.Min(),
-                                       currencyAmountData.Max());
-                ImPlot.SetupMouseText(ImPlotLocation.North, ImPlotMouseTextFlags.None);
-                ImPlot.PlotLine("", ref currencyAmountData[0], currencyAmountData.Length);
-                ImPlot.EndPlot();
-            }
-        }
-    }
-
-    private void ChangeGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
-    {
-        if (currentTypeTransactions.Count == 0) return;
-
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change));
-        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
-
-        currencyChangeData = currentTypeTransactions
-                             .Select(x => (float)Math.Round(x.Transaction.Change / dividedFactor, 6))
+                case GroupByInterval.Day:
+                    result = currentTypeTransactions
+                             .GroupBy(t => t.Transaction.TimeStamp.Date)
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = g.Key.ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Amount)
+                             })
                              .Reverse()
-                             .ToArray();
-
-        var graphTitle = $"{Service.Lang.GetText("ChangeGraph")}{dividedName}";
-
-        if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("ChangeGraph1")}"))
-        {
-            var plotFlags = ImPlotFlags.None;
-            var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
-            if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
-            {
-                ImPlot.SetupAxesLimits(0, currencyChangeData.Length, currencyChangeData.Min(),
-                                       currencyChangeData.Max());
-                ImPlot.SetupMouseText(ImPlotLocation.North, ImPlotMouseTextFlags.None);
-                ImPlot.PlotLine("", ref currencyChangeData[0], currencyChangeData.Length, 1, 0,
-                                ImPlotLineFlags.SkipNaN);
-                ImPlot.EndPlot();
-            }
-        }
-    }
-
-    private static void LocationGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
-    {
-        if (currentTypeTransactions.Count == 0) return;
-
-        var locationCounts = currentTypeTransactions
-                             .GroupBy(transaction => transaction.Transaction.LocationName)
-                             .Select(group => new { Location = group.Key, Count = group.Count() })
-                             .OrderByDescending(item => item.Count)
                              .ToList();
+                    break;
 
-        var locations = locationCounts.Select(item => item.Location).ToArray();
-        var counts = locationCounts.Select(item => (float)item.Count).ToArray();
+                case GroupByInterval.Week:
+                    var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+                    var calendar = CultureInfo.CurrentCulture.Calendar;
 
-        var graphTitle = Service.Lang.GetText("LocationGraph");
+                    result = currentTypeTransactions
+                             .GroupBy(t =>
+                             {
+                                 var weekStart = t.Transaction.TimeStamp.Date.AddDays(
+                                     -((7 + (int)t.Transaction.TimeStamp.DayOfWeek - (int)firstDayOfWeek) % 7));
+                                 return new
+                                 {
+                                     WeekNumber = calendar.GetWeekOfYear(t.Transaction.TimeStamp,
+                                                                         CalendarWeekRule.FirstFourDayWeek,
+                                                                         firstDayOfWeek),
+                                     t.Transaction.TimeStamp.Year
+                                 };
+                             })
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = g.Key.WeekNumber == 1
+                                             ? new DateTime(g.Key.Year, 1, 1).ToString("yy/MM/dd")
+                                             : calendar.AddDays(new DateTime(g.Key.Year, 1, 1),
+                                                                (g.Key.WeekNumber - 1) * 7).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Amount)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
 
-        if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("LocationGraph1")}"))
-        {
-            var plotFlags = ImPlotFlags.None;
-            var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
-            if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
-            {
-                var positions = Enumerable.Range(0, locations.Length).Select(i => (double)i).ToArray();
-                ImPlot.SetupAxisTicks(ImAxis.X1, ref positions[0], locations.Length, locations);
-                ImPlot.PlotBarGroups([""], ref counts[0], 1, locations.Length);
-                ImPlot.EndPlot();
+                case GroupByInterval.Month:
+                    result = currentTypeTransactions
+                             .GroupBy(t => new { t.Transaction.TimeStamp.Year, t.Transaction.TimeStamp.Month })
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Amount)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
+
+                case GroupByInterval.Year:
+                    result = currentTypeTransactions
+                             .GroupBy(t => t.Transaction.TimeStamp.Year)
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = new DateTime(g.Key, 1, 1).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Amount)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
             }
+
+            return result.ToArray();
         }
     }
 
-    private static void LocationAmountGraph(IReadOnlyCollection<Main.DisplayTransaction> currentTypeTransactions)
+    private static void ChangeGraph(IReadOnlyCollection<DisplayTransaction> currentTypeTransactions)
     {
         if (currentTypeTransactions.Count == 0) return;
 
-        var averageAmount = (int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change));
-        var (dividedFactor, dividedName) = CalculateDividedFactor(averageAmount);
+        var (dividedFactor, dividedName) =
+            CalculateDividedFactor((int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change)));
+        changeGraphData ??= GroupTransactions(currentTypeTransactions, _groupInterval);
 
-        var locationAmounts = currentTypeTransactions
-                              .GroupBy(transaction => transaction.Transaction.LocationName)
-                              .Select(group => new
-                              {
-                                  Location = group.Key,
-                                  AmountSum = group.Sum(item => item.Transaction.Change / dividedFactor)
-                              })
-                              .OrderByDescending(item => item.AmountSum)
-                              .ToList();
-
-        var locations = locationAmounts.Select(item => item.Location).ToArray();
-        var amounts = locationAmounts.Select(item => item.AmountSum).ToArray();
-
-        var graphTitle = $"{Service.Lang.GetText("LocationAmountGraph")}{dividedName}";
-
-        if (ImGui.CollapsingHeader($"{graphTitle} {Service.Lang.GetText("LocationAmountGraph1")}"))
+        if (ImPlot.BeginPlot(Service.Lang.GetText("ChangeGraph"), ImGui.GetContentRegionAvail()))
         {
-            const ImPlotFlags plotFlags = ImPlotFlags.None;
-            var plotSize = new Vector2(ImGui.GetWindowWidth() - 10, 600);
-            if (ImPlot.BeginPlot(graphTitle, plotSize, plotFlags))
+            ImPlot.SetupAxis(ImAxis.X1, Service.Lang.GetText("Time"));
+            ImPlot.SetupAxis(ImAxis.Y1, $"{Service.Lang.GetText("Change")} {dividedName}", ImPlotAxisFlags.AutoFit);
+            ImPlot.SetupAxesLimits(0, changeGraphData.Length, changeGraphData.Min(x => x.YAxis),
+                                   changeGraphData.Max(x => x.YAxis));
+
+            var changeValues = changeGraphData.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
+            var dateTimeValues = changeGraphData.Select(x => x.XAxis).ToArray();
+            ImPlot.SetupAxisTicks(ImAxis.X1, 0, dateTimeValues.Length - 1, dateTimeValues.Length, dateTimeValues);
+            ImPlot.PlotBars("", ref changeValues[0], dateTimeValues.Length);
+            ImPlot.EndPlot();
+        }
+
+        return;
+
+        DisplayTransactionGroup[] GroupTransactions(
+            IEnumerable<DisplayTransaction> currentTypeTransactions, GroupByInterval interval)
+        {
+            var result = new List<DisplayTransactionGroup>();
+
+            switch (interval)
             {
-                var positions = Enumerable.Range(0, locations.Length).Select(i => (double)i).ToArray();
-                ImPlot.SetupAxisTicks(ImAxis.X1, ref positions[0], locations.Length, locations);
-                ImPlot.PlotBarGroups([""], ref amounts[0], 1, locations.Length);
-                ImPlot.EndPlot();
+                case GroupByInterval.Day:
+                    result = currentTypeTransactions
+                             .GroupBy(t => t.Transaction.TimeStamp.Date)
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = g.Key.ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Change)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
+
+                case GroupByInterval.Week:
+                    var firstDayOfWeek = CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+                    var calendar = CultureInfo.CurrentCulture.Calendar;
+
+                    result = currentTypeTransactions
+                             .GroupBy(t =>
+                             {
+                                 var weekStart = t.Transaction.TimeStamp.Date.AddDays(
+                                     -((7 + (int)t.Transaction.TimeStamp.DayOfWeek - (int)firstDayOfWeek) % 7));
+                                 return new
+                                 {
+                                     WeekNumber = calendar.GetWeekOfYear(t.Transaction.TimeStamp,
+                                                                         CalendarWeekRule.FirstFourDayWeek,
+                                                                         firstDayOfWeek),
+                                     t.Transaction.TimeStamp.Year
+                                 };
+                             })
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = g.Key.WeekNumber == 1
+                                             ? new DateTime(g.Key.Year, 1, 1).ToString("yy/MM/dd")
+                                             : calendar.AddDays(new DateTime(g.Key.Year, 1, 1),
+                                                                (g.Key.WeekNumber - 1) * 7).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Change)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
+
+                case GroupByInterval.Month:
+                    result = currentTypeTransactions
+                             .GroupBy(t => new { t.Transaction.TimeStamp.Year, t.Transaction.TimeStamp.Month })
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Change)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
+
+                case GroupByInterval.Year:
+                    result = currentTypeTransactions
+                             .GroupBy(t => t.Transaction.TimeStamp.Year)
+                             .Select(g => new DisplayTransactionGroup
+                             {
+                                 XAxis = new DateTime(g.Key, 1, 1).ToString("yy/MM/dd"),
+                                 YAxis = (float)g.Average(t => t.Transaction.Change)
+                             })
+                             .Reverse()
+                             .ToList();
+                    break;
             }
+
+            return result.ToArray();
+        }
+    }
+
+    private static void LocationGraph(IReadOnlyCollection<DisplayTransaction> currentTypeTransactions)
+    {
+        if (currentTypeTransactions.Count == 0) return;
+
+        locationGraphData ??= currentTypeTransactions
+                              .GroupBy(transaction => transaction.Transaction.LocationName)
+                              .Select(group => new DisplayTransactionGroup { XAxis = group.Key, YAxis = group.Count() })
+                              .OrderByDescending(item => item.YAxis)
+                              .ToArray();
+
+        if (ImPlot.BeginPlot(Service.Lang.GetText("LocationGraph"), ImGui.GetContentRegionAvail()))
+        {
+            ImPlot.SetupAxis(ImAxis.X1, Service.Lang.GetText("Location"));
+            ImPlot.SetupAxis(ImAxis.Y1, $"###{Service.Lang.GetText("Change")}", ImPlotAxisFlags.AutoFit);
+            ImPlot.SetupAxesLimits(0, locationGraphData.Length, -2, locationGraphData.Max(x => x.YAxis));
+
+            var locationValues = locationGraphData.Select(x => x.YAxis).ToArray();
+            var countValues = locationGraphData.Select(x => x.XAxis).ToArray();
+            ImPlot.SetupAxisTicks(ImAxis.X1, 0, countValues.Length - 1, countValues.Length, countValues);
+            ImPlot.PlotBars("", ref locationValues[0], countValues.Length);
+            ImPlot.EndPlot();
+        }
+    }
+
+    private static void LocationAmountGraph(IReadOnlyCollection<DisplayTransaction> currentTypeTransactions)
+    {
+        if (currentTypeTransactions.Count == 0) return;
+
+        var (dividedFactor, dividedName) =
+            CalculateDividedFactor((int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change)));
+        locationAmountGraphData ??= currentTypeTransactions
+                                    .GroupBy(transaction => transaction.Transaction.LocationName)
+                                    .Select(group => new DisplayTransactionGroup
+                                    {
+                                        XAxis = group.Key,
+                                        YAxis = group.Sum(item => item.Transaction.Change / dividedFactor)
+                                    })
+                                    .OrderByDescending(item => item.YAxis)
+                                    .ToArray();
+
+        if (ImPlot.BeginPlot(Service.Lang.GetText("LocationAmountGraph"), ImGui.GetContentRegionAvail()))
+        {
+            ImPlot.SetupAxis(ImAxis.X1, Service.Lang.GetText("Location"));
+            ImPlot.SetupAxis(ImAxis.Y1, $"{Service.Lang.GetText("Amount")} ({dividedName})", ImPlotAxisFlags.AutoFit);
+            ImPlot.SetupAxesLimits(0, locationAmountGraphData.Length, locationAmountGraphData.Min(x => x.YAxis),
+                                   locationAmountGraphData.Max(x => x.YAxis));
+
+            var locationValues = locationAmountGraphData.Select(x => x.YAxis).ToArray();
+            var amountValues = locationAmountGraphData.Select(x => x.XAxis).ToArray();
+            ImPlot.SetupAxisTicks(ImAxis.X1, 0, amountValues.Length - 1, amountValues.Length, amountValues);
+            ImPlot.PlotBars("", ref locationValues[0], amountValues.Length);
+            ImPlot.EndPlot();
         }
     }
 
