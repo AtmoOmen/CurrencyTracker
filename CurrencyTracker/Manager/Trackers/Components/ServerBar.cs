@@ -165,10 +165,11 @@ public class ServerBar : ITrackerComponent
     {
         Tracker.CurrencyChanged -= OnCurrencyChanged;
         Service.Lang.LanguageChange -= OnLangChanged;
-        if (DtrEntry == null) return;
 
-        DtrEntry.OnClick -= OnClick;
-        DtrEntry.Shown = false;
+        DtrEntry?.Dispose();
+        DtrEntry = null;
+        Service.DtrBar.Remove("CurrencyTracker");
+
         TaskManager?.Abort();
     }
 }

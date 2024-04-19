@@ -128,7 +128,5 @@ public class ComponentManager
                 Service.Log.Error($"Failed to unload component {component.Key.Name} due to error: {ex.Message}");
                 Service.Log.Error($"{ex.StackTrace}");
             }
-
-        ServerBar.DtrEntry?.Dispose();
     }
 }
