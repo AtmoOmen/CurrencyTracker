@@ -90,7 +90,7 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
 
     public void Init()
     {
-        overlay = new();
+        overlay ??= new();
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
@@ -100,25 +100,25 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
     {
         if (!EzThrottler.Throttle("MoneyAddonExpand", 1000)) return;
 
+        if (mouseoutHandle != null || mouseoverHandle != null) return;
         if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon)) return;
+
         var counterNode = addon->GetNodeById(3);
         if (counterNode == null) return;
 
-        mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, DisplayAndHideTooltip);
-        mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, DisplayAndHideTooltip);
+        mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
+        mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
     }
 
-    private static void DisplayAndHideTooltip(AddonEventType type, nint addon, nint node)
+    private static void OverlayHandler(AddonEventType type, nint addon, nint node)
     {
-        switch (type)
+        if (overlay == null) return;
+        overlay.IsOpen = type switch
         {
-            case AddonEventType.MouseOver:
-                overlay.IsOpen = true;
-                break;
-            case AddonEventType.MouseOut:
-                overlay.IsOpen = false;
-                break;
-        }
+            AddonEventType.MouseOver => true,
+            AddonEventType.MouseOut => false,
+            _ => overlay.IsOpen
+        };
     }
 
     public void Uninit()
