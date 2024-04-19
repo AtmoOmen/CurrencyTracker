@@ -55,8 +55,8 @@ public class IslandSanctuary : ITrackerComponent
     {
         if (EzThrottler.Throttle("IslandSanctuary-CheckWorkshop"))
         {
-            var currentTarget = Service.TargetManager.Target;
-            var prevTarget = Service.TargetManager.PreviousTarget;
+            var currentTarget = Service.Target.Target;
+            var prevTarget = Service.Target.PreviousTarget;
 
             if (currentTarget?.DataId == 1043078)
             {

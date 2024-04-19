@@ -47,7 +47,7 @@ public class Exchange : ITrackerComponent
         if (args != null && WindowUI.TryGetValue(args.AddonName, out var windowNode))
             windowName = GetWindowTitle(args, windowNode, args.AddonName == "PvpReward" ? [4, 5] : null);
         else
-            currentTargetName = Service.TargetManager.Target?.Name.TextValue ?? string.Empty;
+            currentTargetName = Service.Target.Target?.Name.TextValue ?? string.Empty;
 
         isOnExchange = true;
         inventoryHandler ??= new InventoryHandler();

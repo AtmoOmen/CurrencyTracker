@@ -135,7 +135,6 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
             mouseoverHandle = null;
         }
         
-
         if (overlay != null && P.WindowSystem.Windows.Contains(overlay)) P.WindowSystem.RemoveWindow(overlay);
         overlay = null;
     }
