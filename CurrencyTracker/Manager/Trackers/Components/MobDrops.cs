@@ -6,79 +6,83 @@ using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.ClientState.Objects.Types;
-using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+using Dalamud.Plugin.Services;
+using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
-public class MobDrops : ITrackerComponent
+public unsafe class MobDrops : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
     private readonly HashSet<string> enemiesList = [];
-    private InventoryHandler? inventoryHandler;
+    private static readonly Dictionary<ulong, string> EnemiesList = []; // Object ID - Name
 
+    private static bool IsOnCombat;
+
+    private InventoryHandler? inventoryHandler;
     private static TaskManager? TaskManager;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager() { TimeLimitMS = int.MaxValue, ShowDebug = false };
+        TaskManager ??= new TaskManager { TimeLimitMS = 10000, ShowDebug = false };
 
         Service.Condition.ConditionChange += OnConditionChange;
+        Service.Framework.Update += OnUpdate;
     }
 
-    private unsafe void OnConditionChange(ConditionFlag flag, bool value)
+    private void OnConditionChange(ConditionFlag flag, bool value)
     {
         if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty()) return;
 
         if (value)
         {
-            if (TaskManager.IsBusy || inventoryHandler != null || FateManager.Instance()->CurrentFate != null) return;
+            if (TaskManager.IsBusy || inventoryHandler != null) return;
 
             HandlerManager.ChatHandler.isBlocked = true;
             inventoryHandler ??= new InventoryHandler();
 
-            TaskManager.Enqueue(TryScanMobsName);
+            IsOnCombat = true;
+            return;
         }
-        else
-        {
-            TaskManager.Abort();
-            TaskManager.DelayNext(5000);
-            TaskManager.Enqueue(EndMobDropsHandler);
-        }
+
+        TaskManager.Abort();
+        TaskManager.DelayNext(5000);
+        TaskManager.Enqueue(EndMobDropsHandler);
     }
 
-    private bool? TryScanMobsName()
+    private static void OnUpdate(IFramework framework)
     {
-        var target = Service.TargetManager.Target;
-        if (target.ObjectKind == ObjectKind.BattleNpc && target is BattleNpc battleNpc &&
-            battleNpc.StatusFlags.HasFlag(StatusFlags.Hostile | StatusFlags.InCombat | StatusFlags.WeaponOut))
-        {
-            enemiesList.Add(battleNpc.Name.FetchText());
-        }
+        if (!IsOnCombat) return;
 
-        return false;
+        var currentTarget = Service.Target.Target;
+        if (currentTarget == null) return;
+        var targetName = currentTarget.Name.FetchText();
+        if (EnemiesList.ContainsKey(currentTarget.ObjectId) || EnemiesList.ContainsValue(targetName)) return;
+        if (currentTarget.ObjectKind != ObjectKind.BattleNpc) return;
+
+        var gameObj = (GameObject*)currentTarget.Address;
+        if (gameObj == null) return;
+        if (gameObj->FateId != 0) return;
+        
+        EnemiesList[currentTarget.ObjectId] = targetName;
+        Service.Log.Debug($"Added {targetName} to the mob list");
     }
 
     private bool? EndMobDropsHandler()
     {
-        if (Service.Condition[ConditionFlag.InCombat])
-        {
-            TaskManager.Abort();
-            TaskManager.DelayNext(5000);
-            TaskManager.Enqueue(EndMobDropsHandler);
-            return true;
-        }
+        if (Service.Condition[ConditionFlag.InCombat] || EnemiesList.Count <= 0) return true;
 
         Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
-            items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", enemiesList.TakeLast(3)))})",
+            items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", EnemiesList.Values.TakeLast(3)))})",
             RecordChangeType.All, 8);
 
-        enemiesList.Clear();
+        EnemiesList.Clear();
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
+        IsOnCombat = false;
         Service.Log.Debug("Currency Change Check Completes.");
 
         return true;
@@ -87,6 +91,9 @@ public class MobDrops : ITrackerComponent
     public void Uninit()
     {
         Service.Condition.ConditionChange -= OnConditionChange;
+        Service.Framework.Update -= OnUpdate;
+        IsOnCombat = false;
+
         HandlerManager.Nullify(ref inventoryHandler);
         TaskManager?.Abort();
     }
