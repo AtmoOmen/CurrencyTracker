@@ -15,7 +15,6 @@ public unsafe class MobDrops : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private readonly HashSet<string> enemiesList = [];
     private static readonly Dictionary<ulong, string> EnemiesList = []; // Object ID - Name
 
     private static bool IsOnCombat;
