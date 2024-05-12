@@ -132,11 +132,20 @@
   <data name="Hours" xml:space="preserve">
     <value>Stunden</value>
   </data>
+  <data name="Category-RecordOptions" xml:space="preserve">
+    <value>Aufzeichnungseinstellungen</value>
+  </data>
   <data name="Category-Others" xml:space="preserve">
     <value>Sonstige</value>
   </data>
   <data name="Category-Help" xml:space="preserve">
     <value>Klicke zum Erweitern/Verbergen</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>Hinweis:
+1. Die 3 Standard-Währungen können nicht gelöscht werden.
+2. Es wird nicht empfohlen, andere Dinge als Währungen hiermit zu tracken - Ein anderes Plugin sollte dies machen (solltest du darauf bestehen, auch OK).
+3. Währungen zu löschen wird die bestehenden Dateien nicht entfernen. Falls notwendig, lösche die Dateien an sich selbst.</value>
   </data>
   <data name="AddCustomCurrency" xml:space="preserve">
     <value>Benutzerdefinierte Währung hinzufügen</value>
@@ -198,6 +207,9 @@
   <data name="OneWayMerge" xml:space="preserve">
     <value>Einweg-Zusammenführung</value>
   </data>
+  <data name="ManualMerge" xml:space="preserve">
+    <value>Manuelle Zusammenführung</value>
+  </data>
   <data name="NextPage" xml:space="preserve">
     <value>Nächste Seite</value>
   </data>
@@ -230,6 +242,9 @@
   </data>
   <data name="Location" xml:space="preserve">
     <value>Standort</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>Vorgänge pro Seite</value>
   </data>
   <data name="Year" xml:space="preserve">
     <value>J</value>
@@ -373,6 +388,12 @@
   <data name="UnknownContent" xml:space="preserve">
     <value>Unbekannter Inhalt</value>
   </data>
+  <data name="TripleTriadWith" xml:space="preserve">
+    <value>{0} Triple Triad mit {1}</value>
+  </data>
+  <data name="Combat" xml:space="preserve">
+    <value>Kampf</value>
+  </data>
   <data name="GoldSaucer" xml:space="preserve">
     <value>Gold Saucer</value>
   </data>
@@ -384,6 +405,12 @@
   </data>
   <data name="Record" xml:space="preserve">
     <value>Eintrag</value>
+  </data>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>Teleport-Kosten aufzeichnen</value>
+  </data>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>Triple Triad-Ergebnisse aufzeichnen</value>
   </data>
   <data name="SuggestOrReport" xml:space="preserve">
     <value>Vorschlagen oder Melden</value>
@@ -415,6 +442,9 @@
   <data name="Quest" xml:space="preserve">
     <value>Quest {0}</value>
   </data>
+  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
+    <value>Quest-Belohnungen aufzeichnen</value>
+  </data>
   <data name="TradeWith" xml:space="preserve">
     <value>Handel mit {0}</value>
   </data>
@@ -427,11 +457,17 @@
   <data name="Confirm" xml:space="preserve">
     <value>Bestätigen</value>
   </data>
+  <data name="CurrencyRenameHelp1" xml:space="preserve">
+    <value>Eine Währung/Datei mit demselben Namen ist bereits vorhanden.</value>
+  </data>
   <data name="Rename" xml:space="preserve">
     <value>Umbenennen</value>
   </data>
   <data name="Reset" xml:space="preserve">
     <value>Zurücksetzen</value>
+  </data>
+  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
+    <value>FATE-Belohnungen aufzeichnen</value>
   </data>
   <data name="IslandFarm" xml:space="preserve">
     <value>Insel-Farm</value>
@@ -441,6 +477,9 @@
   </data>
   <data name="IslandWorkshop" xml:space="preserve">
     <value>Insel-Werkstatt</value>
+  </data>
+  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
+    <value>Insel-Paradies Einnahmen und Ausgaben aufzeichnen</value>
   </data>
   <data name="Fate" xml:space="preserve">
     <value>FATE {0}</value>
@@ -457,6 +496,9 @@
   <data name="MobDrops-MobDropsNote" xml:space="preserve">
     <value>Drop von {0}</value>
   </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>Inventar</value>
+  </data>
   <data name="PSaddleBag" xml:space="preserve">
     <value>Premium-Satteltasche</value>
   </data>
@@ -472,8 +514,17 @@
   <data name="BackupCurrentCharacter" xml:space="preserve">
     <value>Aktuellen Charakter sichern</value>
   </data>
+  <data name="BackupHelp1" xml:space="preserve">
+    <value>Backup erfolgreich für {0} Charaktere</value>
+  </data>
+  <data name="BackupHelp2" xml:space="preserve">
+    <value>, mit {0} Charakter/-en mit nicht erfolgreichem Backup.</value>
+  </data>
   <data name="BackupHelp3" xml:space="preserve">
     <value>Fehlgeschlagene Charaktere:</value>
+  </data>
+  <data name="BackupHelp4" xml:space="preserve">
+    <value>Backup des aktuellen Charakters erfolgreich auf: {0}</value>
   </data>
   <data name="ManualBackup" xml:space="preserve">
     <value>Manuelle Sicherung</value>
@@ -489,6 +540,9 @@
   </data>
   <data name="BackupHelp5" xml:space="preserve">
     <value>Chat-Benachrichtigung</value>
+  </data>
+  <data name="Blacklist" xml:space="preserve">
+    <value>Sperrliste</value>
   </data>
   <data name="Main-CS-SelectArea" xml:space="preserve">
     <value>Bereich auswählen</value>
@@ -508,11 +562,26 @@
   <data name="ParamEP-FateName" xml:space="preserve">
     <value>Name des FATE</value>
   </data>
+  <data name="ParamEP-MobNames" xml:space="preserve">
+    <value>Monsternamen </value>
+  </data>
   <data name="ParamEP-QuestName" xml:space="preserve">
     <value>Quest-Name</value>
   </data>
+  <data name="ParamEP-TargetName" xml:space="preserve">
+    <value>Name des Ziels</value>
+  </data>
   <data name="ParamEP-TTOutcome" xml:space="preserve">
     <value>Sieg/Unentschieden/Niederlage</value>
+  </data>
+  <data name="PremiumSaddleBag-RecordPremiumSaddleBag" xml:space="preserve">
+    <value>Premium-Satteltasche aufzeichnen</value>
+  </data>
+  <data name="Retainer-RecordRetainerInventory" xml:space="preserve">
+    <value>Gehilfen aufzeichnen</value>
+  </data>
+  <data name="SaddleBag-RecordSaddleBag" xml:space="preserve">
+    <value>Satteltasche aufzeichnen</value>
   </data>
   <data name="TripleTriad-Draw" xml:space="preserve">
     <value>Unentschieden</value>
@@ -522,6 +591,9 @@
   </data>
   <data name="TripleTriad-Win" xml:space="preserve">
     <value>Sieg</value>
+  </data>
+  <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
+    <value>Zeige Gil (ingesamt) in der Währungsoberfläche</value>
   </data>
   <data name="Features" xml:space="preserve">
     <value>Funktionen</value>
@@ -538,6 +610,9 @@
   <data name="LetterAttachments-LetterFrom" xml:space="preserve">
     <value>Brief von {0}</value>
   </data>
+  <data name="LetterAttachments-RecordMailAttachments" xml:space="preserve">
+    <value>MoogleMail-Anhänge aufzeichnen</value>
+  </data>
   <data name="ParamEP-SenderName" xml:space="preserve">
     <value>Absender</value>
   </data>
@@ -547,16 +622,64 @@
   <data name="AlertIntervalHelp1" xml:space="preserve">
     <value>-1 entspricht unendlich.</value>
   </data>
+  <data name="IntervalList" xml:space="preserve">
+    <value>Intervalliste</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>Maximum</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>Minimum</value>
+  </data>
   <data name="NotificationType" xml:space="preserve">
     <value>Benachrichtigungstyp</value>
   </data>
+  <data name="ParamEP-CurrencyName" xml:space="preserve">
+    <value>Währungsname</value>
+  </data>
   <data name="ParamEP-Value" xml:space="preserve">
     <value>Wert</value>
+  </data>
+  <data name="UpdateTranslations" xml:space="preserve">
+    <value>Update-Übersetzungen</value>
   </data>
   <data name="Add" xml:space="preserve">
     <value>Hinzufügen</value>
   </data>
   <data name="Alert" xml:space="preserve">
     <value>Alarm</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>Dateien</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Gesamt</value>
+  </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>Zyklus-Modus</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>Währungsänderungen in Serverleiste anzeigen</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>Angezeigte Währung</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>Letzte 24 Stunden</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>Letzte 3 Tage</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>Letzte 7 Tage</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>Vorheriger Zyklus</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Heute</value>
+  </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>Währungsübersicht innerhalb des Gil HUDs anzeigen</value>
   </data>
 </root>

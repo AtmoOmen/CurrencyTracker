@@ -22,8 +22,8 @@ public partial class LanguageManager
     public static readonly TranslationInfo[] LanguageNames =
     [
         new() { Language = "English", DisplayName = "English", Translators = ["AtmoOmen"] },
-        new() { Language = "Spanish", DisplayName = "Español", Translators = ["Risu"] },
-        new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000"] },
+        new() { Language = "Spanish", DisplayName = "Español", Translators = ["Risu", "Raleo"] },
+        new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000", "Another09"] },
         new() { Language = "French", DisplayName = "Français", Translators = ["Khyne Cael", "Lexideru"] },
         new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = ["AtmoOmen"] },
         new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] }
