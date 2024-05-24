@@ -260,7 +260,7 @@ Seuil</value>
     <value>Y</value>
   </data>
   <data name="GraphLabel" xml:space="preserve">
-    <value>Montant des Transaction :</value>
+    <value>Montant des Transactions :</value>
   </data>
   <data name="AmountGraph" xml:space="preserve">
     <value>Graphique du montant</value>
@@ -302,7 +302,7 @@ Seuil</value>
     <value>Gérer</value>
   </data>
   <data name="Transactions" xml:space="preserve">
-    <value>Transaction</value>
+    <value>Transactions</value>
   </data>
   <data name="Now" xml:space="preserve">
     <value>Maintenant</value>
@@ -380,7 +380,7 @@ Seuil</value>
     <value>Note</value>
   </data>
   <data name="ExportFileMDHeader" xml:space="preserve">
-    <value># Exportation des Transaction -</value>
+    <value># Exportation des Transactions -</value>
   </data>
   <data name="ExportFileMDHeader1" xml:space="preserve">
     <value>| Heure | Montant | Monnaie | Emplacement | Note |
@@ -715,5 +715,44 @@ Seuil</value>
   </data>
   <data name="UpdateTranslations" xml:space="preserve">
     <value>Mettre à jour les traductions</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Ajouter</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>Alerte</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>Fichiers de données</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>Mode de cycle</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>Afficher les changements de devise dans la barre du serveur</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>Devise affichée</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>Dernières 24 Heures</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>3 derniers jours</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>7 derniers jours</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>Cycle précédent</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Aujourd'hui</value>
+  </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>Afficher l'aperçu des devises dans le HUD de Gil</value>
   </data>
 </root>
