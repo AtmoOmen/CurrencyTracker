@@ -1,4 +1,5 @@
 using System.Linq;
+using CurrencyTracker.Helpers;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
@@ -32,6 +33,7 @@ public class Service
         CurrencyInfo.Uninit();
         Config.Uninit();
         TaskManager.DisposeAll();
+        LuminaCache.ClearCache();
     }
 
     private static void InitLanguage()

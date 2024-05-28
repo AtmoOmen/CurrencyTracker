@@ -123,6 +123,7 @@
     <ItemGroup>
       <PackageReference Include="DalamudPackager" Version="2.1.12" />
       <PackageReference Include="IntervalUtility" Version="1.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
       <PackageReference Include="TinyPinyin" Version="1.1.0" />
     </ItemGroup>
 

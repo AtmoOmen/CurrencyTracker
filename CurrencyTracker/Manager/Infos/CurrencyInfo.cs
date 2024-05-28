@@ -1,13 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Helpers;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Internal;
-using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.GeneratedSheets2;
 
@@ -47,10 +46,9 @@ public static class CurrencyInfo
 
     public static string GetCurrencyLocalName(uint currencyID)
     {
-        if (LuminaCache<Item>.Instance.GetRow(currencyID) is { } currencyItem)
+        if (LuminaCache.GetRow<Item>(currencyID) is { } currencyItem)
         {
-            var currencyName = currencyItem.Name.ToDalamudString().TextValue;
-
+            var currencyName = currencyItem.Name.RawString;
             return currencyName;
         }
 
@@ -160,8 +158,8 @@ public static class CurrencyInfo
 
     private static uint GetSpecialTomestoneId(int row)
     {
-        return LuminaCache<TomestonesItem>.Instance
-                                          .First(tomestone => tomestone.Tomestones.Row == row)
+        return LuminaCache.Get<TomestonesItem>()
+                                          .First(x => x.Tomestones.Row == row)
                                           .Item.Row;
     }
 
