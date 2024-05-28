@@ -15,12 +15,9 @@ namespace CurrencyTracker.Windows;
 
 public class Graph : Window, IDisposable
 {
-    private static DisplayTransactionGroup[]? changeGraphData;
-    private static DisplayTransactionGroup[]? amountGraphData;
-    private static DisplayTransactionGroup[]? locationGraphData;
-    private static DisplayTransactionGroup[]? locationAmountGraphData;
+    public Graph(Plugin plugin) : base($"Graphs##{Name}") => Flags |= ImGuiWindowFlags.NoScrollbar;
 
-    public enum GroupByInterval
+    private enum GroupByInterval
     {
         Day,
         Week,
@@ -28,13 +25,18 @@ public class Graph : Window, IDisposable
         Year
     }
 
+    private static DisplayTransactionGroup[]? changeGraphData;
+    private static DisplayTransactionGroup[]? amountGraphData;
+    private static DisplayTransactionGroup[]? locationGraphData;
+    private static DisplayTransactionGroup[]? locationAmountGraphData;
+
     public class DisplayTransactionGroup
     {
         public string XAxis { get; set; } = string.Empty;
         public float YAxis { get; set; }
     }
 
-    private static readonly Dictionary<uint, string> ViewStrings = new()
+    private static readonly Dictionary<uint, string> ViewLoc = new()
     {
         { 0, Service.Lang.GetText("AmountGraph") },
         { 1, Service.Lang.GetText("ChangeGraph") },
@@ -44,11 +46,6 @@ public class Graph : Window, IDisposable
 
     private static uint _currentPlot;
     private static GroupByInterval _groupInterval;
-
-    public Graph(Plugin plugin) : base($"Graphs##{Name}")
-    {
-        Flags |= ImGuiWindowFlags.NoScrollbar;
-    }
 
     public override void Draw()
     {
@@ -76,9 +73,9 @@ public class Graph : Window, IDisposable
         ImGui.SameLine();
         ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
         ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
-        if (ImGui.BeginCombo("###GraphsViewSelectCombo", ViewStrings[_currentPlot], ImGuiComboFlags.HeightLarge))
+        if (ImGui.BeginCombo("###GraphsViewSelectCombo", ViewLoc[_currentPlot], ImGuiComboFlags.HeightLarge))
         {
-            foreach (var view in ViewStrings)
+            foreach (var view in ViewLoc)
                 if (ImGui.Selectable(view.Value, view.Key == _currentPlot))
                     _currentPlot = view.Key;
             ImGui.EndCombo();
@@ -226,7 +223,7 @@ public class Graph : Window, IDisposable
                     break;
             }
 
-            return result.ToArray();
+            return [.. result];
         }
     }
 
@@ -327,7 +324,7 @@ public class Graph : Window, IDisposable
                     break;
             }
 
-            return result.ToArray();
+            return [.. result];
         }
     }
 
@@ -335,11 +332,10 @@ public class Graph : Window, IDisposable
     {
         if (currentTypeTransactions.Count == 0) return;
 
-        locationGraphData ??= currentTypeTransactions
+        locationGraphData ??= [.. currentTypeTransactions
                               .GroupBy(transaction => transaction.Transaction.LocationName)
                               .Select(group => new DisplayTransactionGroup { XAxis = group.Key, YAxis = group.Count() })
-                              .OrderByDescending(item => item.YAxis)
-                              .ToArray();
+                              .OrderByDescending(item => item.YAxis)];
 
         if (ImPlot.BeginPlot(Service.Lang.GetText("LocationGraph"), ImGui.GetContentRegionAvail()))
         {
@@ -361,15 +357,14 @@ public class Graph : Window, IDisposable
 
         var (dividedFactor, dividedName) =
             CalculateDividedFactor((int)currentTypeTransactions.Average(x => Math.Abs(x.Transaction.Change)));
-        locationAmountGraphData ??= currentTypeTransactions
+        locationAmountGraphData ??= [.. currentTypeTransactions
                                     .GroupBy(transaction => transaction.Transaction.LocationName)
                                     .Select(group => new DisplayTransactionGroup
                                     {
                                         XAxis = group.Key,
                                         YAxis = group.Sum(item => item.Transaction.Change / dividedFactor)
                                     })
-                                    .OrderByDescending(item => item.YAxis)
-                                    .ToArray();
+                                    .OrderByDescending(item => item.YAxis)];
 
         if (ImPlot.BeginPlot(Service.Lang.GetText("LocationAmountGraph"), ImGui.GetContentRegionAvail()))
         {

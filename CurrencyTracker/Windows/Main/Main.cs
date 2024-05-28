@@ -10,6 +10,12 @@ using ImGuiNET;
 
 namespace CurrencyTracker.Windows;
 
+public class DisplayTransaction
+{
+    public Transaction Transaction { get; set; } = null!;
+    public bool Selected { get; set; }
+}
+
 public partial class Main : Window, IDisposable
 {
     public static uint SelectedCurrencyID { get; set; } = 0;
@@ -17,12 +23,6 @@ public partial class Main : Window, IDisposable
     private static bool _showRecordOptions = true;
     private static bool _showOthers = true;
     private static bool _shouldRefreshTransactions;
-
-    public class DisplayTransaction
-    {
-        public Transaction Transaction { get; set; } = null!;
-        public bool Selected { get; set; }
-    }
 
     private static TaskManager? TaskManager;
 
@@ -35,25 +35,16 @@ public partial class Main : Window, IDisposable
 
         Tracker.CurrencyChanged += OnCurrencyChanged;
 
-        startDatePicker.DateSelected += RefreshTransactionsView;
-        endDatePicker.DateSelected += RefreshTransactionsView;
-        Service.Lang.LanguageChange += SwitchDatePickerLanguage;
-
         ReloadOrderedOptions();
     }
 
     public override void OnOpen()
     {
-        if (visibleColumns == Array.Empty<string>())
-            visibleColumns = Service.Config.ColumnsVisibility.Where(c => c.Value).Select(c => c.Key).ToArray();
-
         if (SelectedCurrencyID != 0 && _shouldRefreshTransactions)
         {
             UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
             _shouldRefreshTransactions = false;
         }
-
-        base.OnOpen();
     }
 
     public override void Draw()
@@ -91,9 +82,5 @@ public partial class Main : Window, IDisposable
         Tracker.CurrencyChanged -= OnCurrencyChanged;
 
         TaskManager?.Abort();
-
-        startDatePicker.DateSelected -= RefreshTransactionsView;
-        endDatePicker.DateSelected -= RefreshTransactionsView;
-        Service.Lang.LanguageChange -= SwitchDatePickerLanguage;
     }
 }

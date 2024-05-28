@@ -1,42 +1,44 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class NoteColumn : TableColumn
 {
-    private static bool isNoteFilterEnabled;
-    private static string? searchNoteContent = string.Empty;
-    private static string editedNoteContent = string.Empty;
+    internal static bool IsNoteFilterEnabled;
+    internal static string? SearchNoteContent = string.Empty;
+    internal static string editedNoteContent = string.Empty;
 
-    private static void NoteColumnHeaderUI()
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Note"));
         ImGui.EndDisabled();
+
         if (ImGui.BeginPopupContextItem("NoteSearch"))
         {
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-            if (ImGui.InputTextWithHint("###NoteSearch", Service.Lang.GetText("PleaseSearch"), ref searchNoteContent, 80))
+            ImGui.InputTextWithHint("###NoteSearch", Service.Lang.GetText("PleaseSearch"), ref SearchNoteContent, 128);
+            if (ImGui.IsItemDeactivatedAfterEdit())
             {
-                isNoteFilterEnabled = !string.IsNullOrEmpty(searchNoteContent);
-                RefreshTransactionsView();
+                IsNoteFilterEnabled = !string.IsNullOrEmpty(SearchNoteContent);
+                RefreshTable();
             }
             ImGui.EndPopup();
         }
     }
 
-    private static void NoteColumnCellUI(int i, DisplayTransaction transaction)
+    public override void Cell(int i, DisplayTransaction transaction)
     {
         ImGui.Selectable($"{transaction.Transaction.Note}##_{i}");
 
-        if (!string.IsNullOrEmpty(transaction.Transaction.Note)) ImGuiOm.TooltipHover(transaction.Transaction.Note);
+        if (!string.IsNullOrEmpty(transaction.Transaction.Note)) 
+            ImGuiOm.TooltipHover(transaction.Transaction.Note);
 
-        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && !transaction.Selected  && ImGui.BeginPopupContextItem($"NoteEditPopup{i}"))
+        if (!ImGui.IsKeyDown(ImGuiKey.LeftCtrl) && !transaction.Selected && ImGui.BeginPopupContextItem($"NoteEditPopup{i}"))
         {
             if (ImGui.IsWindowAppearing())
                 editedNoteContent = transaction.Transaction.Note;
@@ -46,10 +48,9 @@ public partial class Main
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
             if (ImGui.InputText($"##EditNoteContent_{i}", ref editedNoteContent, 150, ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, [transaction.Transaction], "None", editedNoteContent, currentView, currentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, [transaction.Transaction], "None", editedNoteContent, CurrentView, CurrentViewID);
 
-                if (failCount == 0) 
-                    RefreshTransactionsView();
+                if (failCount == 0) RefreshTable();
                 else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
 

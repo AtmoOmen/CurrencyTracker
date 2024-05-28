@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Windows;
 using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using ImGuiNET;

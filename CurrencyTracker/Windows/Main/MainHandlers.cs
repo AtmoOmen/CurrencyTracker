@@ -28,20 +28,21 @@ public partial class Main
     {
         var filteredTransactions = transactions;
 
-        if (isClusteredByTime && clusterHour > 0)
-            filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(clusterHour));
+        if (TimeColumn.IsClusteredByTime && TimeColumn.ClusterHour > 0)
+            filteredTransactions = ClusterTransactionsByTime(filteredTransactions, TimeSpan.FromHours(TimeColumn.ClusterHour));
 
-        if (isChangeFilterEnabled)
+        if (ChangeColumn.IsChangeFilterEnabled)
             filteredTransactions = filteredTransactions.Where(TransactionMatchesChangeFilter);
 
-        if (isTimeFilterEnabled)
-            filteredTransactions = ApplyDateTimeFilter(filteredTransactions, getTimeStampFunc, filterStartDate, filterEndDate.AddDays(1));
+        if (TimeColumn.IsTimeFilterEnabled)
+            filteredTransactions = ApplyDateTimeFilter(filteredTransactions, getTimeStampFunc, 
+                                                       TimeColumn.FilterStartDate, TimeColumn.FilterEndDate.AddDays(1));
 
-        if (isLocationFilterEnabled)
-            filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.LocationName, searchLocationName);
+        if (LocationColumn.IsLocationFilterEnabled)
+            filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.LocationName, LocationColumn.SearchLocationName);
 
-        if (isNoteFilterEnabled)
-            filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.Note, searchNoteContent);
+        if (NoteColumn.IsNoteFilterEnabled)
+            filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.Note, NoteColumn.SearchNoteContent);
 
         return Service.Config.ReverseSort ? filteredTransactions.OrderByDescending(getTimeStampFunc) : filteredTransactions;
 
@@ -49,7 +50,8 @@ public partial class Main
     }
 
     private static bool TransactionMatchesChangeFilter(Transaction transaction) =>
-        (filterMode == 0 && transaction.Change > filterValue) || (filterMode != 0 && transaction.Change < filterValue);
+        (ChangeColumn.FilterMode == 0 && transaction.Change > ChangeColumn.FilterValue) || 
+        (ChangeColumn.FilterMode != 0 && transaction.Change < ChangeColumn.FilterValue);
 
     private static IEnumerable<Transaction> ApplyDateTimeFilter(IEnumerable<Transaction> transactions, Func<Transaction, DateTime> dateTimeSelector, DateTime startDate, DateTime endDate)
     {
@@ -159,7 +161,7 @@ public partial class Main
         ImGui.CloseCurrentPopup();
     }
 
-    private static void RefreshTransactionsView()
+    public static void RefreshTransactionsView()
     {
         TaskManager.Abort();
 

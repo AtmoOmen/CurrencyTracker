@@ -5,24 +5,33 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class OrderColumn : TableColumn
 {
-    private static void OrderColumnHeaderUI()
+    public override ImGuiTableColumnFlags ColumnFlags { get; set; } = ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
+    public override float ColumnWidthOrWeight { get; set; } = columnWidth;
+
+    private static float columnWidth = 20;
+
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        columnWidth = ImGui.CalcTextSize((CurrentTransactions.Count + 1).ToString()).X + 10;
+
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
+
         var icon = Service.Config.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
         if (ImGuiOm.SelectableIconCentered("ReverseSort", icon))
         {
             Service.Config.ReverseSort = !Service.Config.ReverseSort;
             Service.Config.Save();
 
-            RefreshTransactionsView();
+            RefreshTable();
         }
+
         ImGui.EndDisabled();
     }
 
-    private static void OrderColumnCellUI(int i, DisplayTransaction transaction)
+    public override void Cell(int i, DisplayTransaction transaction)
     {
-        ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{currentTypeTransactions.Count - i}" : $"{i + 1}");
+        ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{CurrentTransactions.Count - i}" : $"{i + 1}");
     }
 }

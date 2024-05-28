@@ -9,6 +9,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
+using Dalamud.Interface.Utility.Table;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -16,29 +17,17 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private static readonly Dictionary<string, Action> ColumnHeaderActions = new()
+    private static readonly Dictionary<Type, TableColumn> TableColumns = new()
     {
-        { "Order", OrderColumnHeaderUI },
-        { "Time", TimeColumnHeaderUI },
-        { "Amount", AmountColumnHeaderUI },
-        { "Change", ChangeColumnHeaderUI },
-        { "Location", LocationColumnHeaderUI },
-        { "Note", NoteColumnHeaderUI },
-        { "Checkbox", CheckboxColumnHeaderUI }
+        { typeof(OrderColumn), new OrderColumn() },
+        { typeof(TimeColumn), new TimeColumn() },
+        { typeof(AmountColumn), new AmountColumn() },
+        { typeof(ChangeColumn), new ChangeColumn() },
+        { typeof(LocationColumn), new LocationColumn() },
+        { typeof(NoteColumn), new NoteColumn() },
+        { typeof(CheckboxColumn), new CheckboxColumn() },
     };
 
-    private static readonly Dictionary<string, Action<int, DisplayTransaction>> ColumnCellActions = new()
-    {
-        { "Order", OrderColumnCellUI },
-        { "Time", TimeColumnCellUI },
-        { "Amount", AmountColumnCellUI },
-        { "Change", ChangeColumnCellUI },
-        { "Location", LocationColumnCellUI },
-        { "Note", NoteColumnCellUI },
-        { "Checkbox", CheckboxColumnCellUI }
-    };
-
-    internal static string[] visibleColumns = [];
     internal static List<DisplayTransaction> currentTypeTransactions = [];
 
     private static int currentPage;
@@ -51,37 +40,25 @@ public partial class Main
     private static void TransactionTableUI()
     {
         if (SelectedCurrencyID == 0) return;
-
+        
         var windowWidth = ImGui.GetContentRegionAvail().X - Service.Config.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
 
         ImGui.SameLine();
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
-        if (ImGui.BeginChild("TransactionsTable", new Vector2(windowWidth, ImGui.GetContentRegionAvail().Y),
-                             false, ImGuiWindowFlags.NoScrollbar))
+        if (ImGui.BeginChild("TransactionsTable", new(windowWidth, ImGui.GetContentRegionAvail().Y), false, ImGuiWindowFlags.NoScrollbar))
         {
             TransactionTablePagingUI(windowWidth);
 
-            if (visibleColumns.Length == 0) return;
-
             ImGui.SetCursorPosX(5);
-            if (ImGui.BeginTable("Transaction", visibleColumns.Length,
-                                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg |
-                                 ImGuiTableFlags.Resizable, new Vector2(windowWidth - 10, 1)))
+            if (ImGui.BeginTable("Transaction", TableColumns.Values.Count(x => x.IsVisible),
+                                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, 
+                                 new(windowWidth - 10, 1)))
             {
-                SetupTableColumns(visibleColumns);
+                SetupTableColumns();
 
-                if (currentTypeTransactions.Count > 0)
-                {
-                    for (var i = visibleStartIndex; i < visibleEndIndex; i++)
-                    {
-                        ImGui.TableNextRow();
-                        foreach (var column in visibleColumns)
-                        {
-                            ImGui.TableNextColumn();
-                            ColumnCellActions[column].Invoke(i, currentTypeTransactions[i]);
-                        }
-                    }
-                }
+                DrawTableHeaders();
+
+                DrawTableCells();
 
                 ImGui.EndTable();
             }
@@ -93,29 +70,36 @@ public partial class Main
         ImGui.PopStyleColor();
     }
 
-    private static void SetupTableColumns(string[] columns)
+    private static void SetupTableColumns()
     {
-        var orderColumnWidth = ImGui.CalcTextSize((currentTypeTransactions.Count + 1).ToString()).X + 10;
+        foreach (var column in TableColumns.Values)
+            ImGui.TableSetupColumn(column.ToString(), column.ColumnFlags, column.ColumnWidthOrWeight);
+    }
 
-        foreach (var column in columns)
-        {
-            var flags = column is "Order" or "Checkbox"
-                            ? ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize
-                            : ImGuiTableColumnFlags.None;
-            var width = column switch
-            {
-                "Order" => orderColumnWidth,
-                "Checkbox" => checkboxColumnWidth,
-                _ => 150
-            };
-            ImGui.TableSetupColumn(column, flags, width, 0);
-        }
-
+    private static void DrawTableHeaders()
+    {
         ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
-        foreach (var column in columns)
+        foreach (var column in TableColumns.Values)
         {
             ImGui.TableNextColumn();
-            ColumnHeaderActions[column].Invoke();
+            column.Header();
+        }
+    }
+
+    private static void DrawTableCells()
+    {
+        if (currentTypeTransactions.Count <= 0) return;
+
+        for (var i = visibleStartIndex; i < visibleEndIndex; i++)
+        {
+            ImGui.TableNextRow();
+            foreach (var column in TableColumns.Values)
+            {
+                if (!column.IsVisible) continue;
+                ImGui.TableNextColumn();
+
+                column.Cell(i, currentTypeTransactions[i]);
+            }
         }
     }
 
@@ -181,42 +165,40 @@ public partial class Main
         if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars)) ImGui.OpenPopup("TableViewSwitch");
 
         using var popup = ImRaii.Popup("TableViewSwitch");
-        if (popup.Success)
+        if (!popup.Success) return;
+
+        const bool boolUI = false;
+        if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
+
+        foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
+            if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
+                                 ImGuiSelectableFlags.DontClosePopups))
+            {
+                currentTypeTransactions =
+                    ApplyFilters(TransactionsHandler.LoadAllTransactions(
+                                     SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key))
+                        .Select(transaction => new DisplayTransaction
+                    {
+                        Transaction = transaction,
+                        Selected = false
+                    }).ToList();;
+
+                currentView = TransactionFileCategory.Retainer;
+                currentViewID = retainer.Key;
+            }
+
+        if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
         {
-            const bool boolUI = false;
-            if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            {
-                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
-            }
+            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)).ToDisplayTransaction();
+            currentView = TransactionFileCategory.SaddleBag;
+            currentViewID = 0;
+        }
 
-            foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
-                if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
-                                     ImGuiSelectableFlags.DontClosePopups))
-                {
-                    currentTypeTransactions =
-                        ApplyFilters(TransactionsHandler.LoadAllTransactions(
-                                         SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key)).Select(transaction => new DisplayTransaction
-                        {
-                            Transaction = transaction,
-                            Selected = false
-                        }).ToList();;
-
-                    currentView = TransactionFileCategory.Retainer;
-                    currentViewID = retainer.Key;
-                }
-
-            if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            {
-                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)).ToDisplayTransaction();
-                currentView = TransactionFileCategory.SaddleBag;
-                currentViewID = 0;
-            }
-
-            if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            {
-                currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
-                                                           TransactionFileCategory.PremiumSaddleBag)).ToDisplayTransaction();
-            }
+        if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
+        {
+            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
+                                                       TransactionFileCategory.PremiumSaddleBag)).ToDisplayTransaction();
         }
     }
 
@@ -288,13 +270,6 @@ public partial class Main
         {
             Service.Config.ColumnsVisibility[boolName] = isShowColumn;
             Service.Config.Save();
-
-            var tempList = new List<string>();
-            foreach (var column in Service.Config.ColumnsVisibility)
-                if (column.Value)
-                    tempList.Add(column.Key);
-
-            visibleColumns = [.. tempList];
         }
     }
 

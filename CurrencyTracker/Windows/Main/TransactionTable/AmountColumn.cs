@@ -4,16 +4,16 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class AmountColumn : TableColumn
 {
-    private static void AmountColumnHeaderUI()
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
         ImGuiOm.Text(Service.Lang.GetText("Amount"));
         ImGui.EndDisabled();
     }
 
-    private static void AmountColumnCellUI(int i, DisplayTransaction transaction)
+    public override void Cell(int i, DisplayTransaction transaction)
     {
         var text = transaction.Transaction.Amount.ToString("#,##0");
         ImGui.Selectable($"{text}##{i}");

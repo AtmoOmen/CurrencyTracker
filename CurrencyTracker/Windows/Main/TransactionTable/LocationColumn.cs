@@ -6,31 +6,33 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class LocationColumn : TableColumn
 {
-    private static bool isLocationFilterEnabled;
-    private static string? searchLocationName = string.Empty;
-    private static string? editedLocationName = string.Empty;
+    internal static bool IsLocationFilterEnabled;
+    internal static string? SearchLocationName = string.Empty;
+    internal static string? editedLocationName = string.Empty;
 
-    private static void LocationColumnHeaderUI()
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell(Service.Lang.GetText("Location"));
         ImGui.EndDisabled();
 
         if (ImGui.BeginPopupContextItem("LocationSearch"))
         {
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-            if (ImGui.InputTextWithHint("###LocationSearch", Service.Lang.GetText("PleaseSearch"), ref searchLocationName, 80))
+            ImGui.InputTextWithHint("###LocationSearch", Service.Lang.GetText("PleaseSearch"), ref SearchLocationName, 128);
+            if (ImGui.IsItemDeactivatedAfterEdit())
             {
-                isLocationFilterEnabled = !string.IsNullOrEmpty(searchLocationName);
-                RefreshTransactionsView();
+                IsLocationFilterEnabled = !string.IsNullOrEmpty(SearchLocationName);
+                RefreshTable();
             }
+
             ImGui.EndPopup();
         }
     }
 
-    private static void LocationColumnCellUI(int i, DisplayTransaction transaction)
+    public override void Cell(int i, DisplayTransaction transaction)
     {
         var locationName = transaction.Transaction.LocationName;
 
@@ -42,7 +44,7 @@ public partial class Main
         {
             if (ImGui.IsWindowAppearing())
                 editedLocationName = locationName;
-            
+
             if (!string.IsNullOrEmpty(editedLocationName)) ImGui.TextWrapped(editedLocationName);
 
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
@@ -50,11 +52,9 @@ public partial class Main
                                 ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
             {
                 var failCount = TransactionsHandler.EditSpecificTransactions(
-                    SelectedCurrencyID, [transaction.Transaction], editedLocationName, "None", currentView,
-                    currentViewID);
+                    SelectedCurrencyID, [transaction.Transaction], editedLocationName, "None", CurrentView, CurrentViewID);
 
-                if (failCount == 0)
-                    RefreshTransactionsView();
+                if (failCount == 0) RefreshTable();
                 else Service.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
             ImGui.EndPopup();

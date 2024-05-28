@@ -8,15 +8,15 @@ using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class ChangeColumn : TableColumn
 {
-    private static bool isChangeFilterEnabled;
-    private static int filterMode;
-    private static int filterValue;
+    internal static bool IsChangeFilterEnabled;
+    internal static int FilterMode;
+    internal static int FilterValue;
 
-    private static void ChangeColumnHeaderUI()
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Change")}");
         if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ChangeFunctions");
         ImGui.EndDisabled();
@@ -29,26 +29,42 @@ public partial class Main
         }
     }
 
+    public override void Cell(int i, DisplayTransaction transaction)
+    {
+        var textColor = Service.Config.ChangeTextColoring
+                            ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
+                              transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :
+                              new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                            : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+
+        using (ImRaii.PushColor(ImGuiCol.Text, textColor))
+        {
+            var text = transaction.Transaction.Change.ToString("+ #,##0;- #,##0;0");
+            ImGui.Selectable($"{text}##{i}");
+            if (!transaction.Selected) ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+        }
+    }
+
     private static void FilterByChangeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeFilterEnabled")}##ChangeFilter", ref isChangeFilterEnabled))
-            RefreshTransactionsView();
+        if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeFilterEnabled")}##ChangeFilter", ref IsChangeFilterEnabled))
+            RefreshTable();
 
-        if (isChangeFilterEnabled)
+        if (IsChangeFilterEnabled)
         {
-            if (ImGui.RadioButton($"{Service.Lang.GetText("Greater")}##FilterMode", ref filterMode, 0))
-                RefreshTransactionsView();
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Greater")}##FilterMode", ref FilterMode, 0))
+                RefreshTable();
 
             ImGui.SameLine();
-            if (ImGui.RadioButton($"{Service.Lang.GetText("Less")}##FilterMode", ref filterMode, 1))
-                RefreshTransactionsView();
+            if (ImGui.RadioButton($"{Service.Lang.GetText("Less")}##FilterMode", ref FilterMode, 1))
+                RefreshTable();
 
             ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
-            if (ImGui.InputInt("##FilterValue", ref filterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
-                RefreshTransactionsView();
+            if (ImGui.InputInt("##FilterValue", ref FilterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
+                RefreshTable();
 
             ImGuiOm.HelpMarker(
-                $"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(filterMode == 0 ? "Greater" : "Less"), filterValue)}");
+                $"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(FilterMode == 0 ? "Greater" : "Less"), FilterValue)}");
         }
     }
 
@@ -68,6 +84,7 @@ public partial class Main
 
             ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor,
                                     color => Service.Config.PositiveChangeColor = color);
+
             ImGui.SameLine();
             ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor,
                                     color => Service.Config.NegativeChangeColor = color);
@@ -83,33 +100,14 @@ public partial class Main
         ImGui.Text(text);
 
         using var popup = ImRaii.Popup(popupId);
-        if (popup.Success)
+        if (!popup.Success) return;
+
+        ImGui.ColorPicker4($"###{popupId}{text}", ref color);
+        if (ImGui.IsItemDeactivatedAfterEdit())
         {
-            if (ImGui.ColorPicker4($"###{popupId}{text}", ref color))
-            {
-                Service.Config.ChangeTextColoring = true;
-                saveColorAction(color);
-                TaskManager.Abort();
-
-                TaskManager.DelayNext(250);
-                TaskManager.Enqueue(Service.Config.Save);
-            }
-        }
-    }
-
-    private static void ChangeColumnCellUI(int i, DisplayTransaction transaction)
-    {
-        var textColor = Service.Config.ChangeTextColoring
-                            ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
-                              transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :
-                              new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
-                            : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-
-        using (ImRaii.PushColor(ImGuiCol.Text, textColor))
-        {
-            var text = transaction.Transaction.Change.ToString("+ #,##0;- #,##0;0");
-            ImGui.Selectable($"{text}##{i}");
-            if (!transaction.Selected) ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+            Service.Config.ChangeTextColoring = true;
+            saveColorAction.Invoke(color);
+            Service.Config.Save();
         }
     }
 }

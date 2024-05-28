@@ -1,29 +1,30 @@
 using System;
 using CurrencyTracker.Manager;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 using OmenTools.Widgets;
 
 namespace CurrencyTracker.Windows;
 
-public partial class Main
+public class TimeColumn : TableColumn
 {
-    private static bool isClusteredByTime;
-    private static bool isTimeFilterEnabled;
+    internal static bool IsClusteredByTime;
+    internal static bool IsTimeFilterEnabled;
 
-    private static DateTime filterStartDate = DateTime.Now - TimeSpan.FromDays(1);
-    private static DateTime filterEndDate = DateTime.Now;
-    private static DatePicker startDatePicker = new(Service.Lang.GetText("WeekDays"));
-    private static DatePicker endDatePicker = new(Service.Lang.GetText("WeekDays"));
+    internal static DateTime FilterStartDate = DateTime.Now - TimeSpan.FromDays(1);
+    internal static DateTime FilterEndDate = DateTime.Now;
+    internal static readonly DatePicker StartDatePicker = new(Service.Lang.GetText("WeekDays"));
+    internal static readonly DatePicker EndDatePicker = new(Service.Lang.GetText("WeekDays"));
 
-    private static int clusterHour;
-    private static bool startDateEnable;
-    private static bool endDateEnable;
-    private static bool? timeColumnSelectMode;
+    internal static int ClusterHour;
+    internal static bool startDateEnable;
+    internal static bool endDateEnable;
+    internal static bool? timeColumnSelectMode;
 
-    private static void TimeColumnHeaderUI()
+    public override void Header()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
         ImGuiOm.SelectableFillCell($"{Service.Lang.GetText("Time")}");
         ImGui.EndDisabled();
 
@@ -35,44 +36,75 @@ public partial class Main
         }
     }
 
+    public override void Cell(int i, DisplayTransaction transaction)
+    {
+        var selected = transaction.Selected;
+        var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
+        var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
+        var flag = (selected || isLeftCtrl) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
+        var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
+
+        if (ImGuiOm.Selectable($"{timeString}##{i}", selected, flag))
+            if (flag is ImGuiSelectableFlags.SpanAllColumns) transaction.Selected ^= true;
+
+        switch (isLeftCtrl)
+        {
+            case true when isRightMouse && ImGui.IsItemHovered():
+                timeColumnSelectMode ??= !transaction.Selected;
+                transaction.Selected = (bool)timeColumnSelectMode;
+                break;
+            case false:
+                timeColumnSelectMode = null;
+                break;
+        }
+
+        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && selected && !isLeftCtrl)
+            ImGui.OpenPopup($"TableToolbarFromTimeColumn{i}");
+
+        if (ImGui.BeginPopup($"TableToolbarFromTimeColumn{i}"))
+        {
+            CheckboxColumn.CheckboxColumnToolUI();
+            ImGui.EndPopup();
+        }
+
+        if (!transaction.Selected) ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
+    }
+
     private static void ClusterByTimeUI()
     {
-        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref isClusteredByTime)) 
-            RefreshTransactionsView();
+        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref IsClusteredByTime)) 
+            RefreshTable();
 
-        if (isClusteredByTime)
+        if (IsClusteredByTime)
         {
-            ImGui.SetNextItemWidth(115f);
-            if (ImGui.InputInt(Service.Lang.GetText("Hours"), ref clusterHour, 1, 1, ImGuiInputTextFlags.EnterReturnsTrue))
+            ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
+            ImGui.InputInt(Service.Lang.GetText("Hours"), ref ClusterHour);
+            if (ImGui.IsItemDeactivatedAfterEdit())
             {
-                clusterHour = Math.Max(0, clusterHour);
-                RefreshTransactionsView();
+                ClusterHour = Math.Max(0, ClusterHour);
+                RefreshTable();
             }
 
             ImGui.SameLine();
-            ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ClusterByTimeHelp1", clusterHour)}");
+            ImGuiOm.HelpMarker($"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ClusterByTimeHelp1", ClusterHour)}");
         }
     }
 
     private static void FilterByTimeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref isTimeFilterEnabled)) 
-            RefreshTransactionsView();
+        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref IsTimeFilterEnabled)) 
+            RefreshTable();
 
-        DateInput(ref filterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
-        DateInput(ref filterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
+        DateInput(ref FilterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
+        DateInput(ref FilterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
 
         if (startDateEnable || endDateEnable) ImGui.Separator();
 
         if (startDateEnable)
-        {
-            startDatePicker.Draw(ref filterStartDate);
-        }
+            if (StartDatePicker.Draw(ref FilterStartDate)) RefreshTable();
 
         if (endDateEnable)
-        {
-            endDatePicker.Draw(ref filterEndDate);
-        }
+            if (EndDatePicker.Draw(ref FilterEndDate)) RefreshTable();
 
         return;
 
@@ -87,47 +119,5 @@ public partial class Main
             ImGui.SameLine();
             ImGui.Text(Service.Lang.GetText(label));
         }
-    }
-
-    private static void TimeColumnCellUI(int i, DisplayTransaction transaction)
-    {
-        var selected = transaction.Selected;
-        var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
-        var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
-        var flag = (selected || isLeftCtrl) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
-        var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
-
-        if (ImGuiOm.Selectable($"{timeString}##{i}", selected, flag))
-        {
-            if (flag is ImGuiSelectableFlags.SpanAllColumns) transaction.Selected ^= true;
-        }
-
-        switch (isLeftCtrl)
-        {
-            case true when isRightMouse && ImGui.IsItemHovered():
-                timeColumnSelectMode ??= !transaction.Selected;
-                transaction.Selected = (bool)timeColumnSelectMode;
-                break;
-            case false:
-                timeColumnSelectMode = null;
-                break;
-        }
-
-        if (ImGui.IsItemClicked(ImGuiMouseButton.Right) && selected && !isLeftCtrl)
-            ImGui.OpenPopup($"TableToolsTimeColumn{i}");
-
-        if (ImGui.BeginPopup($"TableToolsTimeColumn{i}"))
-        {
-            CheckboxColumnToolUI();
-            ImGui.EndPopup();
-        }
-
-        if (!transaction.Selected) ImGuiOm.ClickToCopy(timeString, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);
-    }
-
-    private static void SwitchDatePickerLanguage(string lang)
-    {
-        startDatePicker = new(Service.Lang.GetText("WeekDays"));
-        endDatePicker = new(Service.Lang.GetText("WeekDays"));
     }
 }

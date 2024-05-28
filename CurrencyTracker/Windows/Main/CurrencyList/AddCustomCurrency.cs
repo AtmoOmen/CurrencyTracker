@@ -52,11 +52,9 @@ public partial class Main
                 var endIndex = Math.Min(startIndex + 10, itemCount);
 
                 ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
-                if (ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"),
-                                            ref _searchFilterACC, 100))
-                {
+                ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref _searchFilterACC, 100);
+                if (ImGui.IsItemDeactivatedAfterEdit())
                     LoadSearchResultForACC();
-                }
 
                 ImGui.SameLine();
                 ImGui.PushID("AddCustomCurrencyPagingComponent");
@@ -121,17 +119,11 @@ public partial class Main
 
     private static void LoadSearchResultForACC()
     {
-        TaskManager.Abort();
-
-        TaskManager.DelayNext(500);
-        TaskManager.Enqueue(() =>
-        {
-            _currentPageACC = 0;
-            _currencyDicACC = string.IsNullOrWhiteSpace(_searchFilterACC) 
-                                  ? ItemHandler.ItemNames 
-                                  : ItemHandler.ItemNames
-                                               .Where(x => x.Key.Contains(_searchFilterACC))
-                                               .ToDictionary(x => x.Key, x => x.Value);
-        });
+        _currentPageACC = 0;
+        _currencyDicACC = string.IsNullOrWhiteSpace(_searchFilterACC)
+                              ? ItemHandler.ItemNames
+                              : ItemHandler.ItemNames
+                                           .Where(x => x.Key.Contains(_searchFilterACC))
+                                           .ToDictionary(x => x.Key, x => x.Value);
     }
 }

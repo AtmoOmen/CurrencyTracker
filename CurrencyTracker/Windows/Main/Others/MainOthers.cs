@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
-using Dalamud.Game.Command;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
