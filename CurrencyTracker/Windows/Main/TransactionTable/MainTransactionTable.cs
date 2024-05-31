@@ -17,12 +17,12 @@ public partial class Main
 {
     private static readonly Dictionary<Type, TableColumn?> TableColumns = new()
     {
-        { typeof(OrderColumn), null },
-        { typeof(TimeColumn), null },
-        { typeof(AmountColumn), null },
-        { typeof(ChangeColumn), null },
+        { typeof(OrderColumn),    null },
+        { typeof(TimeColumn),     null },
+        { typeof(AmountColumn),   null },
+        { typeof(ChangeColumn),   null },
         { typeof(LocationColumn), null },
-        { typeof(NoteColumn), null },
+        { typeof(NoteColumn),     null },
         { typeof(CheckboxColumn), null },
     };
 
@@ -38,12 +38,14 @@ public partial class Main
     private static void TransactionTableUI()
     {
         if (SelectedCurrencyID == 0) return;
-        
-        var windowWidth = ImGui.GetContentRegionAvail().X - Service.Config.ChildWidthOffset - (185 * ImGuiHelpers.GlobalScale);
+
+        var windowWidth = ImGui.GetContentRegionAvail().X - Service.Config.ChildWidthOffset -
+                          (185 * ImGuiHelpers.GlobalScale);
 
         ImGui.SameLine();
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
-        if (ImGui.BeginChild("TransactionsTable", new(windowWidth, ImGui.GetContentRegionAvail().Y), false, ImGuiWindowFlags.NoScrollbar))
+        if (ImGui.BeginChild("TransactionsTable", new(windowWidth, ImGui.GetContentRegionAvail().Y), false,
+                             ImGuiWindowFlags.NoScrollbar))
         {
             TransactionTablePagingUI(windowWidth);
 
@@ -51,7 +53,7 @@ public partial class Main
             ImGui.SetCursorPosX(5);
             CreateTableColumnsInstance();
             if (ImGui.BeginTable("TransactionTable", TableColumns.Values.Count(x => x.IsVisible),
-                                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, 
+                                 ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable,
                                  new(windowWidth - 10, 1)))
             {
                 SetupTableColumns();
@@ -67,24 +69,21 @@ public partial class Main
 
             ImGui.EndChild();
         }
+
         ImGui.PopStyleColor();
     }
 
     private static void CreateTableColumnsInstance()
     {
         foreach (var (type, column) in TableColumns)
-        {
             if (column == null)
                 TableColumns[type] = (TableColumn?)Activator.CreateInstance(type);
-        }
     }
 
     private static void SetupTableColumns()
     {
         foreach (var (type, column) in TableColumns)
-        {
             ImGui.TableSetupColumn(column.ToString(), column.ColumnFlags, column.ColumnWidthOrWeight);
-        }
     }
 
     private static void DrawTableHeaders()
@@ -180,7 +179,8 @@ public partial class Main
 
         const bool boolUI = false;
         if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
+            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID))
+                .ToDisplayTransaction();
 
         foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
             if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
@@ -190,10 +190,10 @@ public partial class Main
                     ApplyFilters(TransactionsHandler.LoadAllTransactions(
                                      SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key))
                         .Select(transaction => new DisplayTransaction
-                    {
-                        Transaction = transaction,
-                        Selected = false
-                    }).ToList();;
+                        {
+                            Transaction = transaction,
+                            Selected = false
+                        }).ToList();
 
                 currentView = TransactionFileCategory.Retainer;
                 currentViewID = retainer.Key;
@@ -201,7 +201,10 @@ public partial class Main
 
         if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
         {
-            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag)).ToDisplayTransaction();
+            currentTypeTransactions =
+                ApplyFilters(
+                        TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag))
+                    .ToDisplayTransaction();
             currentView = TransactionFileCategory.SaddleBag;
             currentViewID = 0;
         }
@@ -209,7 +212,8 @@ public partial class Main
         if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
         {
             currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
-                                                       TransactionFileCategory.PremiumSaddleBag)).ToDisplayTransaction();
+                                                       TransactionFileCategory.PremiumSaddleBag))
+                .ToDisplayTransaction();
         }
     }
 
