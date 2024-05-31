@@ -1,6 +1,6 @@
 using System;
 
-namespace CurrencyTracker.Manager.Infos;
+namespace CurrencyTracker.Infos;
 
 public class CharacterInfo : IEquatable<CharacterInfo>
 {

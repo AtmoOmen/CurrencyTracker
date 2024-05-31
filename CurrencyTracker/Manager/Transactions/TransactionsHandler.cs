@@ -5,7 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Infos;
 
 namespace CurrencyTracker.Manager.Transactions;
 

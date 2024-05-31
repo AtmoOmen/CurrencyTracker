@@ -32,7 +32,7 @@ public partial class Main
 
         if (!_isWindowOpenMCS) return;
 
-        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS, 
+        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS,
                         ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse))
         {
             ImGui.SetWindowFontScale(1.2f);
@@ -40,6 +40,7 @@ public partial class Main
             {
                 ImGui.SetWindowFontScale(1f);
                 ImGui.End();
+                ImGui.CloseCurrentPopup();
                 return;
             }
 
@@ -49,24 +50,19 @@ public partial class Main
 
             ImGui.BeginGroup();
             ImGui.SetNextItemWidth(240f);
-            if (ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"),
-                                        ref searchFilterMCS, 100))
+            ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100);
+            if (ImGui.IsItemDeactivatedAfterEdit())
             {
-                TaskManager.Abort();
-
-                TaskManager.DelayNext(250);
-                TaskManager.Enqueue(() =>
-                {
-                    _currentPageMCS = 0;
-                    _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
-                                                   ? CharacterCurrencyInfos
-                                                   : CharacterCurrencyInfos
-                                                     .Where(x => x.Character.Name.Contains(searchFilterMCS,
-                                                                     StringComparison.OrdinalIgnoreCase) ||
-                                                                 x.Character.Server.Contains(
-                                                                     searchFilterMCS, StringComparison.OrdinalIgnoreCase))
-                                                     .ToList();
-                });
+                _currentPageMCS = 0;
+                _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
+                                               ? CharacterCurrencyInfos
+                                               : CharacterCurrencyInfos
+                                                 .Where(x => x.Character.Name.Contains(searchFilterMCS,
+                                                                 StringComparison.OrdinalIgnoreCase) ||
+                                                             x.Character.Server.Contains(
+                                                                 searchFilterMCS,
+                                                                 StringComparison.OrdinalIgnoreCase))
+                                                 .ToList();
             }
 
             ImGui.SameLine();

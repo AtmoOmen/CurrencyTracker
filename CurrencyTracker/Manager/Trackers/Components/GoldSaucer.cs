@@ -1,4 +1,4 @@
-using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;

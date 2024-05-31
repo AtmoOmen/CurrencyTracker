@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Infos;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;

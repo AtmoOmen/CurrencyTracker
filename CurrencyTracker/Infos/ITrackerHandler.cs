@@ -1,4 +1,4 @@
-namespace CurrencyTracker.Manager.Infos;
+namespace CurrencyTracker.Infos;
 
 public interface ITrackerHandler
 {

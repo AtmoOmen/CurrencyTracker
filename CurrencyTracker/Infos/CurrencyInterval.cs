@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using CurrencyTracker.Manager;
 using IntervalUtility;
 
-namespace CurrencyTracker.Manager.Infos;
+namespace CurrencyTracker.Infos;
 
 public static class CurrencyInterval
 {
@@ -26,7 +27,7 @@ public static class CurrencyInterval
             intervalDic[viewString] = intervalList;
             Service.Config.Save();
         }
-        
+
         return intervalList;
     }
 
@@ -69,7 +70,7 @@ public static class CurrencyInterval
 
     public static Interval<int>? CreateInterval(int start, int end)
     {
-        if ((start > end && start != -1 && end != -1) || (start == end && start != -1 && end != -1) || start < -1 || end < -1) return null;
+        if (start > end && start != -1 && end != -1 || start == end && start != -1 && end != -1 || start < -1 || end < -1) return null;
 
         int? end1 = start == -1 ? null : start;
         int? end2 = end == -1 ? null : end;

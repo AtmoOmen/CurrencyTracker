@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
 using ImGuiNET;
 using OmenTools.ImGuiOm;

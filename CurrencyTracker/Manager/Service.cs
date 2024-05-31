@@ -1,6 +1,6 @@
 using System.Linq;
 using CurrencyTracker.Helpers;
-using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;

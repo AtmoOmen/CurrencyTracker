@@ -8,13 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using TinyPinyin;
+using CurrencyTracker.Infos;
 
 namespace CurrencyTracker;
 

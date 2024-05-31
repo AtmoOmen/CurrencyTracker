@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using CurrencyTracker.Manager.Infos;
+using CurrencyTracker.Infos;
 using Lumina.Excel.GeneratedSheets2;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;

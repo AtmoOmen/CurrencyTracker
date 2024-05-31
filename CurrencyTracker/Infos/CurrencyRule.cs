@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using IntervalUtility;
 
-namespace CurrencyTracker.Manager.Infos;
+namespace CurrencyTracker.Infos;
 
 public class CurrencyRule
 {

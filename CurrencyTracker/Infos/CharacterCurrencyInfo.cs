@@ -1,8 +1,9 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using CurrencyTracker.Manager;
 
-namespace CurrencyTracker.Manager.Infos;
+namespace CurrencyTracker.Infos;
 
 public class CharacterCurrencyInfo
 {

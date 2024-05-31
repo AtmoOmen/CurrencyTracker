@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tasks;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
