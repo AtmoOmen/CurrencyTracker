@@ -12,10 +12,11 @@ namespace CurrencyTracker.Windows;
 
 public class CheckboxColumn : TableColumn
 {
-    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } = 
+    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } =
         ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
+
     public override float ColumnWidthOrWeight { get; protected set; }
-    public static float CheckboxWidth { get; private set; } = 22f;
+    public static   float CheckboxWidth       { get; private set; } = 22f;
 
     private static bool isOnMergingTT;
     private static bool isOnEdit;
@@ -39,10 +40,7 @@ public class CheckboxColumn : TableColumn
     public override void Cell(int i, DisplayTransaction transaction)
     {
         var selected = transaction.Selected;
-        if (ImGui.Checkbox($"##select_{i}", ref selected))
-        {
-            transaction.Selected = selected;
-        }
+        if (ImGui.Checkbox($"##select_{i}", ref selected)) transaction.Selected = selected;
 
         ColumnWidthOrWeight = CheckboxWidth = (int)ImGui.GetItemRectSize().X;
     }
@@ -130,7 +128,8 @@ public class CheckboxColumn : TableColumn
             }
 
             var filePath = TransactionsHandler.GetTransactionFilePath(SelectedCurrencyID, CurrentView, CurrentViewID);
-            var editedTransactions = TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
+            var editedTransactions =
+                TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
             var selectedSet = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToHashSet();
             editedTransactions.RemoveAll(selectedSet.Contains);
 
@@ -152,7 +151,8 @@ public class CheckboxColumn : TableColumn
 
             var selectedTransactions = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
             var filePath = TransactionsHandler.ExportData(selectedTransactions, "",
-                                                          SelectedCurrencyID, Service.Config.ExportDataFileType, CurrentView,
+                                                          SelectedCurrencyID, Service.Config.ExportDataFileType,
+                                                          CurrentView,
                                                           CurrentViewID);
             Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }
@@ -165,7 +165,8 @@ public class CheckboxColumn : TableColumn
         {
             if (isOnMergingTT)
             {
-                var selectedTransactions = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
+                var selectedTransactions =
+                    CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
 
                 var t1 = selectedTransactions.FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
                 editedLocationContent = t1?.LocationName;
@@ -248,7 +249,7 @@ public class CheckboxColumn : TableColumn
 
         ImGui.SetNextItemWidth(210);
         if (ImGui.InputTextWithHint("##EditNoteContent", Service.Lang.GetText("PressEnterToConfirm"),
-                                    ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue)) 
+                                    ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue))
             EditNoteContent();
 
         if (!string.IsNullOrEmpty(editedNoteContent)) ImGui.TextWrapped(editedNoteContent);
@@ -262,7 +263,7 @@ public class CheckboxColumn : TableColumn
         var selectedTransactions = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
         var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID,
                                                                      selectedTransactions,
-                                                                     editedLocationContent, "None", 
+                                                                     editedLocationContent, "None",
                                                                      CurrentView, CurrentViewID);
 
         EditResultHandler(selectedTransactions, failCount, editedLocationContent);
@@ -275,15 +276,16 @@ public class CheckboxColumn : TableColumn
 
         var selectedTransactions = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
         var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID,
-                                                                     selectedTransactions, 
-                                                                     "None", editedNoteContent, 
+                                                                     selectedTransactions,
+                                                                     "None", editedNoteContent,
                                                                      CurrentView, CurrentViewID);
 
         EditResultHandler(selectedTransactions, failCount, "", editedNoteContent);
     }
 
     // 编辑结果处理 Handle Edit Result
-    private static void EditResultHandler(ICollection selectedTransactions, int failCount, string locationName = "", string noteContent = "")
+    private static void EditResultHandler(
+        ICollection selectedTransactions, int failCount, string locationName = "", string noteContent = "")
     {
         switch (failCount)
         {
@@ -314,10 +316,5 @@ public class CheckboxColumn : TableColumn
         }
 
         isOnEdit = false;
-    }
-
-    private static void CheckboxColumnCellUI(int i, DisplayTransaction transaction)
-    {
-        
     }
 }
