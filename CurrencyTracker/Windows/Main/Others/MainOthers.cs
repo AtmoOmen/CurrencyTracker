@@ -44,7 +44,7 @@ public partial class Main
     // 图表窗口 Graphs Window
     private static void GraphWindowUI()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTransactions.Count <= 1);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")))
             P.Graph.IsOpen = !P.Graph.IsOpen;
         ImGui.EndDisabled();

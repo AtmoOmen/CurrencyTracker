@@ -26,7 +26,7 @@ public partial class Main
         { typeof(CheckboxColumn), null },
     };
 
-    internal static List<DisplayTransaction> currentTypeTransactions = [];
+    internal static List<DisplayTransaction> currentTransactions = [];
 
     private static int currentPage;
     private static int visibleStartIndex;
@@ -98,7 +98,7 @@ public partial class Main
 
     private static void DrawTableCells()
     {
-        if (currentTypeTransactions.Count <= 0) return;
+        if (currentTransactions.Count <= 0) return;
 
         for (var i = visibleStartIndex; i < visibleEndIndex; i++)
         {
@@ -108,15 +108,15 @@ public partial class Main
                 if (!column.IsVisible) continue;
                 ImGui.TableNextColumn();
 
-                column.Cell(i, currentTypeTransactions[i]);
+                column.Cell(i, currentTransactions[i]);
             }
         }
     }
 
     private static void TransactionTablePagingUI(float windowWidth)
     {
-        var pageCount = currentTypeTransactions.Count != 0
-                            ? (int)Math.Ceiling((double)currentTypeTransactions.Count / Service.Config.RecordsPerPage)
+        var pageCount = currentTransactions.Count != 0
+                            ? (int)Math.Ceiling((double)currentTransactions.Count / Service.Config.RecordsPerPage)
                             : 0;
         currentPage = pageCount > 0 ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
@@ -155,7 +155,7 @@ public partial class Main
         tablePagingComponentsWidth = (int)ImGui.GetItemRectSize().X;
 
         visibleStartIndex = currentPage * Service.Config.RecordsPerPage;
-        visibleEndIndex = Math.Min(visibleStartIndex + Service.Config.RecordsPerPage, currentTypeTransactions.Count);
+        visibleEndIndex = Math.Min(visibleStartIndex + Service.Config.RecordsPerPage, currentTransactions.Count);
 
         // 鼠标滚轮控制 Logic controlling Mouse Wheel Flipping
         if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
@@ -179,14 +179,14 @@ public partial class Main
 
         const bool boolUI = false;
         if (ImGui.Selectable(Service.Lang.GetText("Inventory"), boolUI, ImGuiSelectableFlags.DontClosePopups))
-            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID))
+            currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID))
                 .ToDisplayTransaction();
 
         foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
             if (ImGui.Selectable($"{retainer.Value}##{retainer.Key}", boolUI,
                                  ImGuiSelectableFlags.DontClosePopups))
             {
-                currentTypeTransactions =
+                currentTransactions =
                     ApplyFilters(TransactionsHandler.LoadAllTransactions(
                                      SelectedCurrencyID, TransactionFileCategory.Retainer, retainer.Key))
                         .Select(transaction => new DisplayTransaction
@@ -201,7 +201,7 @@ public partial class Main
 
         if (ImGui.Selectable(Service.Lang.GetText("SaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
         {
-            currentTypeTransactions =
+            currentTransactions =
                 ApplyFilters(
                         TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, TransactionFileCategory.SaddleBag))
                     .ToDisplayTransaction();
@@ -211,7 +211,7 @@ public partial class Main
 
         if (ImGui.Selectable(Service.Lang.GetText("PSaddleBag"), boolUI, ImGuiSelectableFlags.DontClosePopups))
         {
-            currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
+            currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID,
                                                        TransactionFileCategory.PremiumSaddleBag))
                 .ToDisplayTransaction();
         }
@@ -290,7 +290,7 @@ public partial class Main
 
     private static void TransactionTableInfoBarUI()
     {
-        var selectedTransactions = currentTypeTransactions.Where(x => x.Selected).ToList();
+        var selectedTransactions = currentTransactions.Where(x => x.Selected).ToList();
 
         if (selectedTransactions.Count != 0)
         {

@@ -12,7 +12,7 @@ public abstract class TableColumn
     public virtual float ColumnWidthOrWeight { get; protected set; } = 150;
 
     protected static uint SelectedCurrencyID => Main.SelectedCurrencyID;
-    protected static List<DisplayTransaction> CurrentTransactions => Main.currentTypeTransactions;
+    protected static List<DisplayTransaction> CurrentTransactions => Main.currentTransactions;
     protected static TransactionFileCategory CurrentView => Main.currentView;
     protected static ulong CurrentViewID => Main.currentViewID;
 

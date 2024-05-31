@@ -104,7 +104,7 @@ public partial class Main
             currentView = view;
             currentViewID = viewID;
     
-            currentTypeTransactions = ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)).ToDisplayTransaction();
+            currentTransactions = ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)).ToDisplayTransaction();
         });
     }
 

@@ -106,20 +106,20 @@ public class Graph : Window, IDisposable
         ImGui.PopFont();
 
 
-        if (currentTypeTransactions.Count <= 0) return;
+        if (currentTransactions.Count <= 0) return;
         switch (_currentPlot)
         {
             case 0:
-                AmountGraph(currentTypeTransactions);
+                AmountGraph(currentTransactions);
                 break;
             case 1:
-                ChangeGraph(currentTypeTransactions);
+                ChangeGraph(currentTransactions);
                 break;
             case 2:
-                LocationGraph(currentTypeTransactions);
+                LocationGraph(currentTransactions);
                 break;
             case 3:
-                LocationAmountGraph(currentTypeTransactions);
+                LocationAmountGraph(currentTransactions);
                 break;
         }
     }

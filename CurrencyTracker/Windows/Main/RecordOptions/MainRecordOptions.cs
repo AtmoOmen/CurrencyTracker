@@ -34,7 +34,7 @@ public partial class Main
 
     private void MergeTransactionUI()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 1);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTransactions.Count <= 1);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ObjectGroup, Service.Lang.GetText("Merge"))) ImGui.OpenPopup("MergeTransactions");
         ImGui.EndDisabled();
 
@@ -76,7 +76,7 @@ public partial class Main
 
     private void ExportDataUI()
     {
-        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTypeTransactions.Count <= 0);
+        ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTransactions.Count <= 0);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.FileExport, Service.Lang.GetText("Export"))) ImGui.OpenPopup("ExportFileRename");
         ImGui.EndDisabled();
 
@@ -108,9 +108,9 @@ public partial class Main
             ImGui.SetNextItemWidth(200f);
             if (ImGui.InputText("###ExportFileNameInput", ref exportFileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
-                if (currentTypeTransactions.Count == 0) return;
+                if (currentTransactions.Count == 0) return;
 
-                var selectedTransactions = currentTypeTransactions.Select(x => x.Transaction).ToList();
+                var selectedTransactions = currentTransactions.Select(x => x.Transaction).ToList();
                 Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
             }
             ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");

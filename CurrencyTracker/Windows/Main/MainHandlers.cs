@@ -147,7 +147,7 @@ public partial class Main
             return;
         }
 
-        currentTypeTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID)).ToDisplayTransaction();
+        currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID)).ToDisplayTransaction();
         if (CharacterCurrencyInfos.Count == 0) LoadDataMCS();
         else
         {
