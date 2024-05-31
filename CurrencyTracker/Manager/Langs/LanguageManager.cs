@@ -67,8 +67,7 @@ public partial class LanguageManager
     {
         if (languageName == Language) return;
 
-        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName),
-                                   "Manager", "Langs");
+        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName), "Manager", "Langs");
 
         if (isDev)
             resourceData = LoadResourceFile(devLangPath);
@@ -82,10 +81,13 @@ public partial class LanguageManager
             resourceData = LoadResourceFile(resourcePath);
         }
 
-        var fbResourcePath = languageName == "ChineseTraditional"
-                                 ? Path.Join(LangsDirectory, "ChineseSimplified.resx")
-                                 : Path.Join(LangsDirectory, "English.resx");
-        fbResourceData = LoadResourceFile(fbResourcePath);
+        var fbPath = languageName switch
+        {
+            "ChineseTraditional" => Path.Join(LangsDirectory, "ChineseSimplified.resx"),
+            _ => Path.Join(LangsDirectory, "English.resx"),
+        };
+
+        fbResourceData = LoadResourceFile(fbPath);
 
         Language = languageName;
         LanguageChange?.Invoke(languageName);
