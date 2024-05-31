@@ -648,7 +648,7 @@
     <value>勝利</value>
   </data>
   <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
-    <value>通貨リストのコインの総数を表示する</value>
+    <value>通貨リストのコインの総数を表示</value>
   </data>
   <data name="Features" xml:space="preserve">
     <value>機能</value>
