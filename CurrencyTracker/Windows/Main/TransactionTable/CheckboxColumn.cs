@@ -12,10 +12,10 @@ namespace CurrencyTracker.Windows;
 
 public class CheckboxColumn : TableColumn
 {
-    public override ImGuiTableColumnFlags ColumnFlags { get; set; } = ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
-    public override float ColumnWidthOrWeight { get; set; } = CheckboxWidth;
-
-    internal static float CheckboxWidth = 22;
+    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } = 
+        ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
+    public override float ColumnWidthOrWeight { get; protected set; }
+    public static float CheckboxWidth { get; private set; } = 22f;
 
     private static bool isOnMergingTT;
     private static bool isOnEdit;
@@ -44,7 +44,7 @@ public class CheckboxColumn : TableColumn
             transaction.Selected = selected;
         }
 
-        CheckboxWidth = (int)ImGui.GetItemRectSize().X;
+        ColumnWidthOrWeight = CheckboxWidth = (int)ImGui.GetItemRectSize().X;
     }
 
     internal static void CheckboxColumnToolUI()

@@ -7,14 +7,14 @@ namespace CurrencyTracker.Windows;
 
 public class OrderColumn : TableColumn
 {
-    public override ImGuiTableColumnFlags ColumnFlags { get; set; } = ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
-    public override float ColumnWidthOrWeight { get; set; } = columnWidth;
+    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } = 
+        ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
 
-    private static float columnWidth = 20;
+    public override float ColumnWidthOrWeight { get; protected set; }
 
     public override void Header()
     {
-        columnWidth = ImGui.CalcTextSize((CurrentTransactions.Count + 1).ToString()).X + 10;
+        ColumnWidthOrWeight = ImGui.CalcTextSize($"{CurrentTransactions.Count}11").X;
 
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
 

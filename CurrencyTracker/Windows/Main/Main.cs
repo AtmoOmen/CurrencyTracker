@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Transactions;
@@ -9,7 +8,6 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using Dalamud.Interface.Utility.Table;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -17,15 +15,15 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    private static readonly Dictionary<Type, TableColumn> TableColumns = new()
+    private static readonly Dictionary<Type, TableColumn?> TableColumns = new()
     {
-        { typeof(OrderColumn), new OrderColumn() },
-        { typeof(TimeColumn), new TimeColumn() },
-        { typeof(AmountColumn), new AmountColumn() },
-        { typeof(ChangeColumn), new ChangeColumn() },
-        { typeof(LocationColumn), new LocationColumn() },
-        { typeof(NoteColumn), new NoteColumn() },
-        { typeof(CheckboxColumn), new CheckboxColumn() },
+        { typeof(OrderColumn), null },
+        { typeof(TimeColumn), null },
+        { typeof(AmountColumn), null },
+        { typeof(ChangeColumn), null },
+        { typeof(LocationColumn), null },
+        { typeof(NoteColumn), null },
+        { typeof(CheckboxColumn), null },
     };
 
     internal static List<DisplayTransaction> currentTypeTransactions = [];
@@ -49,8 +47,10 @@ public partial class Main
         {
             TransactionTablePagingUI(windowWidth);
 
+
             ImGui.SetCursorPosX(5);
-            if (ImGui.BeginTable("Transaction", TableColumns.Values.Count(x => x.IsVisible),
+            CreateTableColumnsInstance();
+            if (ImGui.BeginTable("TransactionTable", TableColumns.Values.Count(x => x.IsVisible),
                                  ImGuiTableFlags.Borders | ImGuiTableFlags.RowBg | ImGuiTableFlags.Resizable, 
                                  new(windowWidth - 10, 1)))
             {
@@ -70,10 +70,21 @@ public partial class Main
         ImGui.PopStyleColor();
     }
 
+    private static void CreateTableColumnsInstance()
+    {
+        foreach (var (type, column) in TableColumns)
+        {
+            if (column == null)
+                TableColumns[type] = (TableColumn?)Activator.CreateInstance(type);
+        }
+    }
+
     private static void SetupTableColumns()
     {
-        foreach (var column in TableColumns.Values)
+        foreach (var (type, column) in TableColumns)
+        {
             ImGui.TableSetupColumn(column.ToString(), column.ColumnFlags, column.ColumnWidthOrWeight);
+        }
     }
 
     private static void DrawTableHeaders()

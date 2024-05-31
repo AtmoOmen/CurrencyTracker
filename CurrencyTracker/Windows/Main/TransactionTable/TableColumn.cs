@@ -8,8 +8,8 @@ namespace CurrencyTracker.Windows;
 public abstract class TableColumn
 {
     public bool IsVisible => Service.Config.ColumnsVisibility[GetType().Name.Replace("Column", "")];
-    public virtual ImGuiTableColumnFlags ColumnFlags { get; set; } = ImGuiTableColumnFlags.None;
-    public virtual float ColumnWidthOrWeight { get; set; } = 150;
+    public virtual ImGuiTableColumnFlags ColumnFlags { get; protected set; } = ImGuiTableColumnFlags.None;
+    public virtual float ColumnWidthOrWeight { get; protected set; } = 150;
 
     protected static uint SelectedCurrencyID => Main.SelectedCurrencyID;
     protected static List<DisplayTransaction> CurrentTransactions => Main.currentTypeTransactions;
