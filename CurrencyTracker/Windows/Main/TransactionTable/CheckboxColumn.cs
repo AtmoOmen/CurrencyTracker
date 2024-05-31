@@ -67,21 +67,21 @@ public class CheckboxColumn : TableColumn
     private static void UnselectCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("Unselect")))
-            Main.currentTypeTransactions.ForEach(x => x.Selected = false);
+            Main.currentTransactions.ForEach(x => x.Selected = false);
     }
 
     // 全选 Select All
     private static void SelectAllCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("SelectAll")))
-            Main.currentTypeTransactions.ForEach(x => x.Selected = true);
+            Main.currentTransactions.ForEach(x => x.Selected = true);
     }
 
     // 反选 Inverse Select
     private static void InverseSelectCBCTUI()
     {
         if (ImGui.Selectable(Service.Lang.GetText("InverseSelect")))
-            Main.currentTypeTransactions.ForEach(x => x.Selected ^= true);
+            Main.currentTransactions.ForEach(x => x.Selected ^= true);
     }
 
     // 复制 Copy
