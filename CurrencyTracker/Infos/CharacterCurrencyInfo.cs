@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 
 namespace CurrencyTracker.Infos;
@@ -10,23 +9,20 @@ public class CharacterCurrencyInfo
     public CharacterCurrencyInfo(CharacterInfo character)
     {
         Character = character;
-        UpdateCharacterCurrencyAmount();
+        InitializeCurrencies();
     }
 
     public CharacterInfo Character { get; set; }
 
-    public ConcurrentDictionary<uint, long> CurrencyAmount { get; } = new();
+    public ConcurrentDictionary<uint, long>                                          CurrencyAmount    { get; } = new();
     public ConcurrentDictionary<uint, Dictionary<TransactionFileCategoryInfo, long>> SubCurrencyAmount { get; } = new();
 
-    private void UpdateCharacterCurrencyAmount()
+    private void InitializeCurrencies()
     {
-        Parallel.ForEach(Service.Config.AllCurrencyID, currencyKey =>
+        foreach (var currencyKey in Service.Config.AllCurrencyID)
         {
-            var amount = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
-            var subAmount = CurrencyInfo.GetCharacterCurrencyAmountDictionary(currencyKey, Character);
-
-            CurrencyAmount.AddOrUpdate(currencyKey, amount, (_, _) => amount);
-            SubCurrencyAmount.AddOrUpdate(currencyKey, subAmount, (_, _) => subAmount);
-        });
+            CurrencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
+            SubCurrencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmountDictionary(currencyKey, Character);
+        }
     }
 }

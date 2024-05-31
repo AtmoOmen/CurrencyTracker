@@ -6,6 +6,7 @@ using CurrencyTracker.Manager;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 using Task = System.Threading.Tasks.Task;
@@ -18,7 +19,6 @@ public partial class Main
     private static List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
     private static string searchFilterMCS = string.Empty;
     private static int _currentPageMCS;
-    internal static bool _isWindowOpenMCS;
 
     private static void MultiCharaStatsUI()
     {
@@ -27,116 +27,115 @@ public partial class Main
             if (CharacterCurrencyInfos.Count <= 0) LoadDataMCS();
             _characterCurrencyDicMCS ??= CharacterCurrencyInfos;
 
-            _isWindowOpenMCS ^= true;
+            ImGui.OpenPopup("Multi-Chara Stats##CurrencyTracker");
         }
 
-        if (!_isWindowOpenMCS) return;
+        using var popup = ImRaii.Popup("Multi-Chara Stats##CurrencyTracker", 
+                                       ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse);
+        if (!popup.Success) return;
 
-        if (ImGui.Begin("Multi-Chara Stats###CurrencyTracker", ref _isWindowOpenMCS,
-                        ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse))
+        ImGui.SetWindowFontScale(1.2f);
+        MCSSubWindowUI();
+        ImGui.SetWindowFontScale(1f);
+    }
+
+    private static void MCSSubWindowUI()
+    {
+        if (_characterCurrencyDicMCS == null)
         {
-            ImGui.SetWindowFontScale(1.2f);
-            if (_characterCurrencyDicMCS == null)
+            ImGui.CloseCurrentPopup();
+            return;
+        }
+
+        var itemCount = _characterCurrencyDicMCS.Count;
+        var startIndex = _currentPageMCS * 10;
+        var endIndex = Math.Min(startIndex + 10, itemCount);
+
+        ImGui.BeginGroup();
+        ImGui.SetNextItemWidth(240f);
+        ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100);
+        if (ImGui.IsItemDeactivatedAfterEdit())
+        {
+            _currentPageMCS = 0;
+            _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
+                                           ? CharacterCurrencyInfos
+                                           : CharacterCurrencyInfos
+                                             .Where(x => x.Character.Name.Contains(searchFilterMCS,
+                                                             StringComparison.OrdinalIgnoreCase) ||
+                                                         x.Character.Server.Contains(
+                                                             searchFilterMCS,
+                                                             StringComparison.OrdinalIgnoreCase))
+                                             .ToList();
+        }
+
+        ImGui.SameLine();
+        ImGui.PushID("MultiCharaStatsPagingComponent");
+        PagingComponent(
+            () => _currentPageMCS = 0,
+            () => { if (_currentPageMCS > 0) _currentPageMCS--; },
+            () => { if (_currentPageMCS < (itemCount / 10) - 1) _currentPageMCS++; },
+            () => { _currentPageMCS = (itemCount / 10) - 1; });
+        ImGui.PopID();
+
+        ImGui.SameLine();
+        if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync)) LoadDataMCS();
+        ImGui.EndGroup();
+
+        var itemWidth = (int)ImGui.GetItemRectSize().X;
+        var items = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
+        foreach (var info in items)
+        {
+            var previewValue = $"{info.Character.Name}@{info.Character.Server}";
+
+            ImGui.SetNextItemWidth(itemWidth);
+            if (ImGui.CollapsingHeader(previewValue))
             {
-                ImGui.SetWindowFontScale(1f);
-                ImGui.End();
-                ImGui.CloseCurrentPopup();
-                return;
-            }
-
-            var itemCount = _characterCurrencyDicMCS.Count;
-            var startIndex = _currentPageMCS * 10;
-            var endIndex = Math.Min(startIndex + 10, itemCount);
-
-            ImGui.BeginGroup();
-            ImGui.SetNextItemWidth(240f);
-            ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100);
-            if (ImGui.IsItemDeactivatedAfterEdit())
-            {
-                _currentPageMCS = 0;
-                _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
-                                               ? CharacterCurrencyInfos
-                                               : CharacterCurrencyInfos
-                                                 .Where(x => x.Character.Name.Contains(searchFilterMCS,
-                                                                 StringComparison.OrdinalIgnoreCase) ||
-                                                             x.Character.Server.Contains(
-                                                                 searchFilterMCS,
-                                                                 StringComparison.OrdinalIgnoreCase))
-                                                 .ToList();
-            }
-
-            ImGui.SameLine();
-            ImGui.PushID("MultiCharaStatsPagingComponent");
-            PagingComponent(
-                () => _currentPageMCS = 0,
-                () => { if (_currentPageMCS > 0) _currentPageMCS--; },
-                () => { if (_currentPageMCS < (itemCount / 10) - 1) _currentPageMCS++; },
-                () => { _currentPageMCS = (itemCount / 10) - 1; });
-            ImGui.PopID();
-
-            ImGui.SameLine();
-            if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync))
-                LoadDataMCS();
-            ImGui.EndGroup();
-            var itemWidth = (int)ImGui.GetItemRectSize().X;
-
-            var items = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
-            foreach (var info in items)
-            {
-                var previewValue = $"{info.Character.Name}@{info.Character.Server}";
-                ImGui.SetNextItemWidth(itemWidth);
-                if (ImGui.CollapsingHeader(previewValue))
+                if (ImGui.BeginTable($"###{info.Character.ContentID}", 2, ImGuiTableFlags.Borders))
                 {
-                    if (ImGui.BeginTable($"###{info.Character.ContentID}", 2, ImGuiTableFlags.Borders))
+                    foreach (var currency in Service.Config.AllCurrencies)
                     {
-                        foreach (var currency in Service.Config.AllCurrencies)
-                        {
-                            var amount = info.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
-                            if (amount == 0) continue;
+                        var amount = info.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
+                        if (amount == 0) continue;
 
-                            ImGui.TableNextRow();
-                            ImGui.TableNextColumn();
+                        ImGui.TableNextRow();
+                        ImGui.TableNextColumn();
 
-                            ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].ImGuiHandle,
-                                        ImGuiHelpers.ScaledVector2(16.0f));
+                        ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].ImGuiHandle,
+                                    ImGuiHelpers.ScaledVector2(16.0f));
 
-                            ImGui.SameLine();
-                            ImGui.Text($"{currency.Value}");
+                        ImGui.SameLine();
+                        ImGui.Text($"{currency.Value}");
 
-                            ImGui.SameLine();
-                            ImGui.Spacing();
+                        ImGui.SameLine();
+                        ImGui.Spacing();
 
-                            ImGui.TableNextColumn();
-                            ImGui.Text($"{amount:N0}");
-                        }
-
-                        ImGui.EndTable();
-                    }
-                }
-
-                if (ImGui.BeginPopupContextItem($"{info.Character.ContentID}"))
-                {
-                    if (ImGui.MenuItem(Service.Lang.GetText("Delete")))
-                    {
-                        if (Service.Config.CurrentActiveCharacter.Remove(info.Character))
-                        {
-                            Service.Config.Save();
-                            ImGui.CloseCurrentPopup();
-
-                            Task.Run(() =>
-                            {
-                                LoadDataMCS();
-                                _characterCurrencyDicMCS = CharacterCurrencyInfos;
-                            });
-                        }
+                        ImGui.TableNextColumn();
+                        ImGui.Text($"{amount:N0}");
                     }
 
-                    ImGui.EndPopup();
+                    ImGui.EndTable();
                 }
             }
 
-            ImGui.SetWindowFontScale(1f);
-            ImGui.End();
+            if (ImGui.BeginPopupContextItem($"{info.Character.ContentID}"))
+            {
+                if (ImGui.MenuItem(Service.Lang.GetText("Delete")))
+                {
+                    if (Service.Config.CurrentActiveCharacter.Remove(info.Character))
+                    {
+                        Service.Config.Save();
+                        ImGui.CloseCurrentPopup();
+
+                        Task.Run(() =>
+                        {
+                            LoadDataMCS();
+                            _characterCurrencyDicMCS = CharacterCurrencyInfos;
+                        });
+                    }
+                }
+
+                ImGui.EndPopup();
+            }
         }
     }
 
