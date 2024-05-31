@@ -82,7 +82,7 @@ public partial class Main
 
     private static void SetupTableColumns()
     {
-        foreach (var (type, column) in TableColumns)
+        foreach (var (_, column) in TableColumns)
             ImGui.TableSetupColumn(column.ToString(), column.ColumnFlags, column.ColumnWidthOrWeight);
     }
 
