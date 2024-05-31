@@ -22,6 +22,7 @@ public class Service
 
         InitLanguage();
         InitCharacter();
+        PresetFont.Init();
 
         Tracker.Init();
         CurrencyInfo.Init();
