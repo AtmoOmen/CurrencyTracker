@@ -34,9 +34,11 @@ public partial class Main
                                        ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse);
         if (!popup.Success) return;
 
+        PresetFont.Axis14.Push();
         ImGui.SetWindowFontScale(1.2f);
         MCSSubWindowUI();
         ImGui.SetWindowFontScale(1f);
+        PresetFont.Axis14.Pop();
     }
 
     private static void MCSSubWindowUI()

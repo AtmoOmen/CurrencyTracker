@@ -32,8 +32,6 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
         public override void OnOpen()
         {
             if (Main.CharacterCurrencyInfos.Count <= 0) Main.LoadDataMCS();
-
-            Main._isWindowOpenMCS = false;
         }
 
         public override void Draw()
