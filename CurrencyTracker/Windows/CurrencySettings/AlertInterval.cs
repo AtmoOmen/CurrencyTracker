@@ -1,7 +1,7 @@
 using System;
 using System.Numerics;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Infos;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;

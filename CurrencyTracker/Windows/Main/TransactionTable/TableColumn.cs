@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Infos;
 using ImGuiNET;
 
 namespace CurrencyTracker.Windows;
