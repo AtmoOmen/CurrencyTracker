@@ -10,10 +10,18 @@ namespace CurrencyTracker.Manager.Langs;
 
 public partial class LanguageManager
 {
-    public static string LangsDirectory { get; private set; } = null!;
-    public string? Language { get; private set; }
+    public class TranslationInfo
+    {
+        public string   Language    { get; set; } = null!;
+        public string   DisplayName { get; set; } = null!;
+        public string[] Translators { get; set; } = null!;
+    }
+
+    public static string  LangsDirectory { get; private set; } = null!;
+    public        string? Language       { get; private set; }
 
     public delegate void LanguageChangeDelegate(string language);
+
     public event LanguageChangeDelegate? LanguageChange;
 
     private Dictionary<string, string>? resourceData;
@@ -25,11 +33,12 @@ public partial class LanguageManager
         new() { Language = "Spanish", DisplayName = "Español", Translators = ["Risu", "Raleo"] },
         new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000", "Another09"] },
         new() { Language = "French", DisplayName = "Français", Translators = ["Khyne Cael", "Lexideru"] },
+        new() { Language = "Japanese", DisplayName = "日本語", Translators = ["stoat"] },
         new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = ["AtmoOmen"] },
-        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] }
+        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] },
     ];
 
-    public LanguageManager(string languageName, bool isDev = false, string devLangPath = "") 
+    public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")
         => SwitchLanguage(languageName, isDev, devLangPath);
 
     private static Dictionary<string, string> LoadResourceFile(string filePath)
@@ -84,7 +93,7 @@ public partial class LanguageManager
         Service.CommandManager.RemoveHandler(CommandName);
         Service.CommandManager.AddHandler(CommandName, new CommandInfo(P.OnCommand)
         {
-            HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1")
+            HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1"),
         });
 
         Service.Config.SelectedLanguage = languageName;
@@ -94,8 +103,7 @@ public partial class LanguageManager
     public string GetText(string key, params object[] args)
     {
         if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
-            format = resourceData.TryGetValue(key, out var resValue) ? resValue :
-                     fbResourceData.GetValueOrDefault(key);
+            format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key);
 
         if (string.IsNullOrEmpty(format))
         {
@@ -108,15 +116,13 @@ public partial class LanguageManager
 
     public string GetOrigText(string key)
     {
-        return resourceData.TryGetValue(key, out var resValue) ? resValue :
-               fbResourceData.GetValueOrDefault(key, key);
+        return resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key, key);
     }
 
     public SeString GetSeString(string key, params object[] args)
     {
         if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
-            format = resourceData.TryGetValue(key, out var resValue) ? resValue :
-                     fbResourceData.GetValueOrDefault(key);
+            format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key);
 
         var ssb = new SeStringBuilder();
         var regex = GetSeStringRegex();
@@ -147,11 +153,4 @@ public partial class LanguageManager
 
     [GeneratedRegex("\\{(\\d+)\\}")]
     private static partial Regex GetSeStringRegex();
-}
-
-public class TranslationInfo
-{
-    public string Language { get; set; } = null!;
-    public string DisplayName { get; set; } = null!;
-    public string[] Translators { get; set; } = null!;
 }
