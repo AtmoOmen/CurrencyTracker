@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChangeFilterEnabled" xml:space="preserve">
+    <value>収支フィルター</value>
+  </data>
+  <data name="ChangeFilterLabel" xml:space="preserve">
+    <value>取引 {0} {1} のみ収支に表示</value>
+  </data>
+  <data name="ClusterByTime" xml:space="preserve">
+    <value>時間ごとにまとめる</value>
+  </data>
+  <data name="ClusterByTimeHelp1" xml:space="preserve">
+    <value>{0} 時間ごとにまとめた取引を表示</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="Category-RecordOptions" xml:space="preserve">
+    <value>記録オプション</value>
+  </data>
+  <data name="Category-Others" xml:space="preserve">
+    <value>その他</value>
+  </data>
+  <data name="Category-Help" xml:space="preserve">
+    <value>クリックして展開/折り畳み</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>注意事項：
+1.3つのプリセット通貨は削除できません。
+2.通貨以外の項目を追跡することはお勧めしません。そのための別のプラグインがあるはずです。
+（どうしても追跡したい場合は、それでも構いません）
+3. 通貨を削除しても既存のデータファイルは削除されません。必要に応じて自分で削除してください。</value>
+  </data>
+  <data name="AddCustomCurrency" xml:space="preserve">
+    <value>カスタム通貨を追加</value>
+  </data>
+  <data name="PleaseSelect" xml:space="preserve">
+    <value>選択...</value>
+  </data>
+  <data name="PleaseSearch" xml:space="preserve">
+    <value>検索...</value>
+  </data>
+  <data name="CustomCurrencyHelp1" xml:space="preserve">
+    <value>追加に失敗: 選択した通貨は既に存在しています</value>
+  </data>
+  <data name="CustomCurrencyHelp2" xml:space="preserve">
+    <value>削除に失敗しました: 選択した通貨が存在しません</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>日</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>削除</value>
+  </data>
+  <data name="ExportFileCSVHeader" xml:space="preserve">
+    <value>日時,額,収支,場所,メモ</value>
+  </data>
+  <data name="ExportFileMessage" xml:space="preserve">
+    <value>ファイルをエクスポートしました:</value>
+  </data>
+  <data name="FileRenameHelp1" xml:space="preserve">
+    <value>空白の場合、ファイル名は次のようになります:</value>
+  </data>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>ファイル名:</value>
+  </data>
+  <data name="FilterByTime" xml:space="preserve">
+    <value>日付フィルター</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>最初</value>
+  </data>
+  <data name="Greater" xml:space="preserve">
+    <value>より大きい</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>最後</value>
+  </data>
+  <data name="Less" xml:space="preserve">
+    <value>より小さい</value>
+  </data>
+  <data name="MergeTransactionsHelp1" xml:space="preserve">
+    <value>統合された {0} 取引</value>
+  </data>
+  <data name="MergeTransactionsHelp3" xml:space="preserve">
+    <value>同じ場所での連続する取引を収支が閾値以下であればマージします。閾値が0の場合、そのようなすべての取引はマージされます。
+
+一方向マージ（One-Way Merge）：マージする際に正の収支と負の収支を別々に計算します。
+双方向マージ（Two-Way Merge）：マージする際に正の収支と負の収支を一緒に計算します。</value>
+  </data>
+  <data name="Threshold" xml:space="preserve">
+    <value>閾値</value>
+  </data>
+  <data name="TwoWayMerge" xml:space="preserve">
+    <value>双方向マージ</value>
+  </data>
+  <data name="OneWayMerge" xml:space="preserve">
+    <value>一方向マージ</value>
+  </data>
+  <data name="ManualMerge" xml:space="preserve">
+    <value>手動マージ</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>次</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>データフォルダ</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>前</value>
+  </data>
+  <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
+    <value>コンテンツ報酬を記録する</value>
+  </data>
+  <data name="TransactionsHelp" xml:space="preserve">
+    <value>一致する取引が見つかりませんでした。</value>
+  </data>
+  <data name="TransactionsHelp1" xml:space="preserve">
+    <value>現在選択されている通貨はありません。</value>
+  </data>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>不明な通貨</value>
+  </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>不明な場所</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>日時</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>額</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>収支</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>場所</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>ページの取引数</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="GraphLabel" xml:space="preserve">
+    <value>取引額</value>
+  </data>
+  <data name="AmountGraph" xml:space="preserve">
+    <value>総額グラフ </value>
+  </data>
+  <data name="AmountGraph1" xml:space="preserve">
+    <value>[時間 - 額]</value>
+  </data>
+  <data name="DividedUnitThou" xml:space="preserve">
+    <value>(単位: 千)</value>
+  </data>
+  <data name="DividedUnitMil" xml:space="preserve">
+    <value>(単位:百万)</value>
+  </data>
+  <data name="DividedUnitBil" xml:space="preserve">
+    <value>(単位:億)</value>
+  </data>
+  <data name="ChangeGraph" xml:space="preserve">
+    <value>収支グラフ</value>
+  </data>
+  <data name="ChangeGraph1" xml:space="preserve">
+    <value>[時間 - 収支]</value>
+  </data>
+  <data name="LocationGraph" xml:space="preserve">
+    <value>場所ごとのグラフ</value>
+  </data>
+  <data name="LocationGraph1" xml:space="preserve">
+    <value> [場所- 頻度]</value>
+  </data>
+  <data name="LocationAmountGraph" xml:space="preserve">
+    <value>場所ごとの収支グラフ</value>
+  </data>
+  <data name="LocationAmountGraph1" xml:space="preserve">
+    <value> [場所- 収支]</value>
+  </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>グラフ</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>管理</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>取引</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>現在</value>
+  </data>
+  <data name="Unselect" xml:space="preserve">
+    <value>選択解除</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>クリップボードにコピー</value>
+  </data>
+  <data name="NoTransactionsSelected" xml:space="preserve">
+    <value>取引が選択されていません。</value>
+  </data>
+  <data name="CopyTransactionsHelp" xml:space="preserve">
+    <value>{0} 取引をクリップボードにコピーしました。</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>編集</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>エクスポート</value>
+  </data>
+  <data name="PressEnterToConfirm" xml:space="preserve">
+    <value>Enterキーを押して確認</value>
+  </data>
+  <data name="EditHelp1" xml:space="preserve">
+    <value>{0} 取引の {1} を変更しました</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>コピー</value>
+  </data>
+  <data name="ChangeTextColoring" xml:space="preserve">
+    <value>テキストの色を変更</value>
+  </data>
+  <data name="CurrentSettings" xml:space="preserve">
+    <value>現在の設定</value>
+  </data>
+  <data name="LocationFilter" xml:space="preserve">
+    <value>場所フィルター</value>
+  </data>
+  <data name="NegativeChange" xml:space="preserve">
+    <value>マイナス</value>
+  </data>
+  <data name="PositiveChange" xml:space="preserve">
+    <value>プラス</value>
+  </data>
+  <data name="InverseSelect" xml:space="preserve">
+    <value>選択を反転</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>全て選択</value>
+  </data>
+  <data name="Merge" xml:space="preserve">
+    <value>マージ</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>終了日</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>開始日</value>
+  </data>
+  <data name="WeekDays" xml:space="preserve">
+    <value>日,月,火,水,木,金,土</value>
+  </data>
+  <data name="TeleportTo" xml:space="preserve">
+    <value>{0} へテレポート</value>
+  </data>
+  <data name="TeleportWithinArea" xml:space="preserve">
+    <value>エリア内でテレポート</value>
+  </data>
+  <data name="MergedSpecificHelp" xml:space="preserve">
+    <value>{0} 取引からマージされました。</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>メモ</value>
+  </data>
+  <data name="ExportFileMDHeader" xml:space="preserve">
+    <value># 取引のエクスポート -</value>
+  </data>
+  <data name="ExportFileMDHeader1" xml:space="preserve">
+    <value>| 日時| 額 | 収支 | 場所 |
+| --- | -- | -- | -- | -- | -- | -- | -- | |-- | |-- |</value>
+  </data>
+  <data name="ExportFileType" xml:space="preserve">
+    <value>エクスポートファイルの種類</value>
+  </data>
+  <data name="ColumnsDisplayed" xml:space="preserve">
+    <value>表示する列</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>順序</value>
+  </data>
+  <data name="TableAppearance" xml:space="preserve">
+    <value>表の見た目</value>
+  </data>
+  <data name="UnknownContent" xml:space="preserve">
+    <value>不明なコンテンツ</value>
+  </data>
+  <data name="TripleTriadWith" xml:space="preserve">
+    <value>[{0}] {1} とトリプルトライアド</value>
+  </data>
+  <data name="Combat" xml:space="preserve">
+    <value>戦闘</value>
+  </data>
+  <data name="GoldSaucer" xml:space="preserve">
+    <value>ゴールドソーサー</value>
+  </data>
+  <data name="HelpTranslate" xml:space="preserve">
+    <value>翻訳を手伝う</value>
+  </data>
+  <data name="NeedHelp" xml:space="preserve">
+    <value>助けが必要</value>
+  </data>
+  <data name="DutyRewards-RecordContentName" xml:space="preserve">
+    <value>コンテンツ名を記録</value>
+  </data>
+  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
+    <value>MGPの報酬元を記録</value>
+  </data>
+  <data name="Record" xml:space="preserve">
+    <value>記録</value>
+  </data>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>テレポ代を記録</value>
+  </data>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>トリプルトライアドの結果を記録</value>
+  </data>
+  <data name="SuggestOrReport" xml:space="preserve">
+    <value>提案または報告</value>
+  </data>
+  <data name="Exchange-RecordExchangeResult" xml:space="preserve">
+    <value>取引結果を記録</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>プラグインのメインウィンドウを開く</value>
+  </data>
+  <data name="CommandHelp1" xml:space="preserve">
+    <value>/ct &lt;currencyname&gt; → 指定した通貨を表示するメインウィンドウを開きます。</value>
+  </data>
+  <data name="EditFailed" xml:space="preserve">
+    <value>編集に失敗しました</value>
+  </data>
+  <data name="UnknownLang" xml:space="preserve">
+    <value>不明な言語</value>
+  </data>
+  <data name="CommandHelp2" xml:space="preserve">
+    <value>複数の通貨が見つかりました</value>
+  </data>
+  <data name="CommandHelp3" xml:space="preserve">
+    <value>通貨が見つかりません！</value>
+  </data>
+  <data name="ExchangeWith" xml:space="preserve">
+    <value>{0} と取引</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>全般</value>
+  </data>
+  <data name="Quest" xml:space="preserve">
+    <value>クエスト {0}</value>
+  </data>
+  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
+    <value>クエスト報酬を記録する</value>
+  </data>
+  <data name="Trade-RecordTradeTarget" xml:space="preserve">
+    <value>トレード相手を記録</value>
+  </data>
+  <data name="TradeWith" xml:space="preserve">
+    <value>{0}とトレード</value>
+  </data>
+  <data name="DoubleRightClick" xml:space="preserve">
+    <value>ダブル右クリック</value>
+  </data>
+  <data name="PageComponent" xml:space="preserve">
+    <value>{0} / {1}</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>確認</value>
+  </data>
+  <data name="CurrencyRenameHelp1" xml:space="preserve">
+    <value>同じ名前の通貨/データファイルが既に存在します。</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>名前を変更</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>リセット</value>
+  </data>
+  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
+    <value>FATE報酬を記録する</value>
+  </data>
+  <data name="IslandFarm" xml:space="preserve">
+    <value>無人島の耕作地</value>
+  </data>
+  <data name="IslandPasture" xml:space="preserve">
+    <value>無人島の放牧地</value>
+  </data>
+  <data name="IslandWorkshop" xml:space="preserve">
+    <value>無人島の開拓工房</value>
+  </data>
+  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
+    <value>無人島の結果を記録</value>
+  </data>
+  <data name="Fate" xml:space="preserve">
+    <value>FATE {0}</value>
+  </data>
+  <data name="SelectedTransactionsInfo" xml:space="preserve">
+    <value>カウント: {0} 合計: {1} 平均: {2} 最大: {3} 最小: {4} (収支)</value>
+  </data>
+  <data name="Checkbox" xml:space="preserve">
+    <value>チェックボックス</value>
+  </data>
+  <data name="ChildframeWidthOffset" xml:space="preserve">
+    <value>幅オフセット</value>
+  </data>
+  <data name="MobDrops-RecordMobDrops" xml:space="preserve">
+    <value>モブドロップを記録</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
+    <value>特別な取引結果を記録</value>
+  </data>
+  <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
+    <value>特別なテレポ代を記録</value>
+  </data>
+  <data name="MultiCharaStats" xml:space="preserve">
+    <value>マルチキャラ統計</value>
+  </data>
+  <data name="TeleportCosts-RecordAetheryteName" xml:space="preserve">
+    <value>エーテライト</value>
+  </data>
+  <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
+    <value>エリア</value>
+  </data>
+  <data name="MobDrops-MobDropsNote" xml:space="preserve">
+    <value>{0} からドロップ</value>
+  </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>所持品</value>
+  </data>
+  <data name="PSaddleBag" xml:space="preserve">
+    <value>チョコボかばん（プレミアム）</value>
+  </data>
+  <data name="SaddleBag" xml:space="preserve">
+    <value>チョコボかばん</value>
+  </data>
+  <data name="Backup" xml:space="preserve">
+    <value>バックアップ</value>
+  </data>
+  <data name="BackupAllCharacter" xml:space="preserve">
+    <value>すべてバックアップ</value>
+  </data>
+  <data name="BackupCurrentCharacter" xml:space="preserve">
+    <value>現在のキャラクターのデータをバックアップ</value>
+  </data>
+  <data name="BackupHelp1" xml:space="preserve">
+    <value>キャラクター {0} のバックアップに成功しました</value>
+  </data>
+  <data name="BackupHelp2" xml:space="preserve">
+    <value>, キャラクター{0} のバックアップに失敗しました。</value>
+  </data>
+  <data name="BackupHelp3" xml:space="preserve">
+    <value>失敗したキャラクター:</value>
+  </data>
+  <data name="BackupHelp4" xml:space="preserve">
+    <value>現在のキャラクターのデータを正常にバックアップしました: {0}</value>
+  </data>
+  <data name="ManualBackup" xml:space="preserve">
+    <value>手動バックアップ</value>
+  </data>
+  <data name="AutoBackup" xml:space="preserve">
+    <value>自動バックアップ</value>
+  </data>
+  <data name="Interval" xml:space="preserve">
+    <value>間隔</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>分</value>
+  </data>
+  <data name="BackupHelp5" xml:space="preserve">
+    <value>チャット通知</value>
+  </data>
+  <data name="Blacklist" xml:space="preserve">
+    <value>ブラックリスト</value>
+  </data>
+  <data name="Main-CS-AreaRestriction" xml:space="preserve">
+    <value>エリア制限</value>
+  </data>
+  <data name="Main-CS-RestrictedArea" xml:space="preserve">
+    <value>制限エリア</value>
+  </data>
+  <data name="Main-CS-SelectArea" xml:space="preserve">
+    <value>エリア選択</value>
+  </data>
+  <data name="Whitelist" xml:space="preserve">
+    <value>ホワイトリスト</value>
+  </data>
+  <data name="BackupHelp6" xml:space="preserve">
+    <value>0に設定すると無効になります</value>
+  </data>
+  <data name="BackupHelp7" xml:space="preserve">
+    <value>クリックして有効/無効</value>
+  </data>
+  <data name="MaxBackupFiles" xml:space="preserve">
+    <value>最大バックアップファイル数</value>
+  </data>
+  <data name="ParamEP-DestinationName" xml:space="preserve">
+    <value>宛先名</value>
+  </data>
+  <data name="ParamEP-FateName" xml:space="preserve">
+    <value>FATE名</value>
+  </data>
+  <data name="ParamEP-MobNames" xml:space="preserve">
+    <value>モブ名</value>
+  </data>
+  <data name="ParamEP-QuestName" xml:space="preserve">
+    <value>クエスト名</value>
+  </data>
+  <data name="ParamEP-TargetName" xml:space="preserve">
+    <value>トレード相手の名前</value>
+  </data>
+  <data name="ParamEP-TTOutcome" xml:space="preserve">
+    <value>勝利/引き分け/敗北</value>
+  </data>
+  <data name="ParamEP-TTRivalName" xml:space="preserve">
+    <value>対戦相手</value>
+  </data>
+  <data name="PremiumSaddleBag-RecordPremiumSaddleBag" xml:space="preserve">
+    <value>チョコボかばん（プレミアム）を記録</value>
+  </data>
+  <data name="Retainer-RecordRetainerInventory" xml:space="preserve">
+    <value>リテイナーを記録</value>
+  </data>
+  <data name="SaddleBag-RecordSaddleBag" xml:space="preserve">
+    <value>チョコボかばんを記録</value>
+  </data>
+  <data name="TripleTriad-Draw" xml:space="preserve">
+    <value>引き分け</value>
+  </data>
+  <data name="TripleTriad-Loss" xml:space="preserve">
+    <value>敗北</value>
+  </data>
+  <data name="TripleTriad-Win" xml:space="preserve">
+    <value>勝利</value>
+  </data>
+  <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
+    <value/>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>機能</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>情報</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>プラグイン</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>設定</value>
+  </data>
+  <data name="LetterAttachments-LetterFrom" xml:space="preserve">
+    <value>{0}からのモグレター</value>
+  </data>
+  <data name="LetterAttachments-RecordMailAttachments" xml:space="preserve">
+    <value>モグレターの添付アイテムを記録する</value>
+  </data>
+  <data name="ParamEP-SenderName" xml:space="preserve">
+    <value>差出人の名前</value>
+  </data>
+  <data name="Trade" xml:space="preserve">
+    <value>トレード</value>
+  </data>
+  <data name="AlertIntervalHelp" xml:space="preserve">
+    <value>すべての範囲タイプが有効になり警告しますので、自由に作成して組み合わせてください。</value>
+  </data>
+  <data name="AlertIntervalHelp1" xml:space="preserve">
+    <value>-1は無限大/無限小に相当します。</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>アラートの種類</value>
+  </data>
+  <data name="ContainerType" xml:space="preserve">
+    <value>所持している場所</value>
+  </data>
+  <data name="IntervalInput" xml:space="preserve">
+    <value>範囲を指定</value>
+  </data>
+  <data name="IntervalList" xml:space="preserve">
+    <value>範囲リスト</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>最大</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>最小</value>
+  </data>
+  <data name="AlertIntervalMessage" xml:space="preserve">
+    <value>{3} の {2} の {0} ({1}) が {4} に達しました。</value>
+  </data>
+  <data name="BackupHelp8" xml:space="preserve">
+    <value>オーバーレイ通知</value>
+  </data>
+  <data name="NotificationType" xml:space="preserve">
+    <value>通知タイプ</value>
+  </data>
+  <data name="ParamEP-CurrencyName" xml:space="preserve">
+    <value>通貨名</value>
+  </data>
+  <data name="ParamEP-Value" xml:space="preserve">
+    <value>値</value>
+  </data>
+  <data name="UpdateTranslations" xml:space="preserve">
+    <value>翻訳を更新</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>追加</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>アラート</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>データファイル</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>合計</value>
+  </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>周期モード</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>サーバー情報バーに通貨収支を表示</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>表示通貨</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>過去24時間</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>過去3日間</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>過去7日間</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>前のサイクル</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>今日</value>
+  </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>ギルHUDに通貨一覧を表示</value>
+  </data>
+</root>
