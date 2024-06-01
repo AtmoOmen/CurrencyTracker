@@ -214,15 +214,15 @@ public static class CurrencyInfo
             return true;
         }
 
-        (bool, Dictionary<string, string>) ConstructFilePaths(uint currencyID, string editedCurrencyName)
+        (bool, Dictionary<string, string>) ConstructFilePaths(uint id, string name)
         {
-            var filePaths = new Dictionary<string, string>();
+            var paths = new Dictionary<string, string>();
+
             var categories = new List<TransactionFileCategory>
             {
                 TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
                 TransactionFileCategory.PremiumSaddleBag
             };
-
             categories.AddRange(Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
                                        .Select(_ => TransactionFileCategory.Retainer));
 
@@ -230,22 +230,22 @@ public static class CurrencyInfo
                 if (category == TransactionFileCategory.Retainer)
                 {
                     foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
-                        AddFilePath(filePaths, category, retainer.Key, editedCurrencyName);
+                        AddFilePath(paths, category, retainer.Key, name);
                 }
-                else
-                    AddFilePath(filePaths, category, 0, editedCurrencyName);
+                else AddFilePath(paths, category, 0, name);
 
-            return (filePaths.Values.All(path => !File.Exists(path)), filePaths);
+            return (paths.Values.All(path => !File.Exists(path)), paths);
 
             void AddFilePath(
-                IDictionary<string, string> filePaths, TransactionFileCategory category, ulong key,
-                string editedCurrencyName)
+                IDictionary<string, string> pathsDic, TransactionFileCategory category, ulong key,
+                string nameAdd)
             {
                 var editedFilePath = Path.Join(P.PlayerDataFolder,
-                                               $"{editedCurrencyName}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt");
-                var originalFilePath = TransactionsHandler.GetTransactionFilePath(currencyID, category, key);
+                                               $"{nameAdd}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt");
+                var originalFilePath = TransactionsHandler.GetTransactionFilePath(id, category, key);
                 if (!File.Exists(originalFilePath)) return;
-                filePaths[originalFilePath] = editedFilePath;
+                editedFilePath = Transaction.SanitizeFilePath(editedFilePath);
+                pathsDic[originalFilePath] = editedFilePath;
             }
         }
     }

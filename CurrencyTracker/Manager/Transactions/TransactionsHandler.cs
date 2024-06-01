@@ -20,7 +20,7 @@ public static class TransactionsHandler
     {
         var suffix = GetTransactionFileSuffix(category, ID);
         var currencyName = CurrencyInfo.GetCurrencyName(CurrencyID);
-        var path = Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
+        var path = Transaction.SanitizeFilePath(Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt"));
         return path;
     }
 
