@@ -60,7 +60,7 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
 
-                    ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].ImGuiHandle,
+                    ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].GetWrapOrEmpty().ImGuiHandle,
                                 ImGuiHelpers.ScaledVector2(16.0f));
 
                     ImGui.SameLine();

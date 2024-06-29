@@ -76,7 +76,7 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
 
     private static void DisplayAndHideTooltip(AddonEventType type, nint addon, nint node)
     {
-        var addonId = ((AtkUnitBase*)addon)->ID;
+        var addonId = ((AtkUnitBase*)addon)->Id;
         var tooltipBuilder = new StringBuilder();
 
         if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
@@ -94,10 +94,10 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
         switch (type)
         {
             case AddonEventType.MouseOver:
-                AtkStage.GetSingleton()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltipBuilder.ToString().Trim());
+                AtkStage.Instance()->TooltipManager.ShowTooltip(addonId, (AtkResNode*)node, tooltipBuilder.ToString().Trim());
                 break;
             case AddonEventType.MouseOut:
-                AtkStage.GetSingleton()->TooltipManager.HideTooltip(addonId);
+                AtkStage.Instance()->TooltipManager.HideTooltip(addonId);
                 break;
         }
     }

@@ -56,7 +56,7 @@ public class Graph : Window, IDisposable
         }
 
         var currencyName = Service.Config.AllCurrencies[SelectedCurrencyID];
-        var currencyIcon = Service.Config.AllCurrencyIcons[SelectedCurrencyID].ImGuiHandle;
+        var currencyIcon = Service.Config.AllCurrencyIcons[SelectedCurrencyID].GetWrapOrEmpty().ImGuiHandle;
 
         ImGui.SetWindowFontScale(1.3f);
         ImGui.BeginGroup();

@@ -153,7 +153,7 @@ public static class Helpers
                 var slot = inventoryManager->GetInventorySlot(inventory, i);
                 if (slot == null) continue;
 
-                var item = slot->ItemID;
+                var item = slot->ItemId;
                 if (item == 0) continue;
 
                 long itemCount = inventoryManager->GetItemCountInContainer(item, inventory);

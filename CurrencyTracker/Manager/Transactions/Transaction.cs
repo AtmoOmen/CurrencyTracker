@@ -203,18 +203,15 @@ public class Transaction : IEquatable<Transaction>
         }
     }
 
-    public override bool Equals(object? obj)
-    {
-        return Equals(obj as Transaction);
-    }
+    public override bool Equals(object? obj) => Equals(obj as Transaction);
 
-    public bool Equals(Transaction? other)
-    {
-        return other != null && TimeStamp == other.TimeStamp && Change == other.Change && Amount == other.Amount && LocationName == other.LocationName && Note == other.Note;
-    }
+    public bool Equals(Transaction? other) =>
+        other != null &&
+        TimeStamp == other.TimeStamp &&
+        Change == other.Change &&
+        Amount == other.Amount &&
+        LocationName == other.LocationName &&
+        Note == other.Note;
 
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(TimeStamp, Amount, LocationName, Note);
-    }
+    public override int GetHashCode() => HashCode.Combine(TimeStamp, Amount, LocationName, Note);
 }

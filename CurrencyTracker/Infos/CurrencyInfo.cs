@@ -7,9 +7,9 @@ using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyTracker.Infos;
 
@@ -159,15 +159,15 @@ public static class CurrencyInfo
 
     private static uint GetSpecialTomestoneId(int row)
     {
-        return LuminaCache.Get<TomestonesItem>()
-                                          .First(x => x.Tomestones.Row == row)
-                                          .Item.Row;
+        return Service.DataManager.GetExcelSheet<TomestonesItem>()
+                                          .FirstOrDefault(x => x.Tomestones.Row == row)?
+                                          .Item.Row ?? 0;
     }
 
-    public static IDalamudTextureWrap? GetIcon(uint currencyID)
+    public static ISharedImmediateTexture? GetIcon(uint currencyID)
     {
         if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
-            return Service.TextureProvider.GetIcon(iconId);
+            return Service.TextureProvider.GetFromGameIcon(new(iconId));
 
         Service.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
         return null;

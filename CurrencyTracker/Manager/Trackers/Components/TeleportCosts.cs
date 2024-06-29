@@ -6,7 +6,7 @@ using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

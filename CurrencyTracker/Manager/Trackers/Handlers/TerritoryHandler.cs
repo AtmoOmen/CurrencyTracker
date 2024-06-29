@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 

@@ -10,7 +10,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.GeneratedSheets;
 using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -53,7 +53,7 @@ public unsafe class WarpCosts : ITrackerComponent
         {
             case AddonEvent.PostSetup:
                 var addon = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
-                var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.vfunc[2];
+                var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.VirtualTable[2].ReceiveEvent;
                 SelectYesHook ??= Service.Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
                 SelectYesHook?.Enable();
                 break;
@@ -62,8 +62,6 @@ public unsafe class WarpCosts : ITrackerComponent
                 SelectYesHook = null;
                 break;
         }
-
-        
     }
 
     private nint SelectYesDetour(AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData)

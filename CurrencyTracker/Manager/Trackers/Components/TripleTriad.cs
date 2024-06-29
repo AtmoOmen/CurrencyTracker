@@ -44,9 +44,9 @@ public class TripleTriad : ITrackerComponent
         var TTRGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriadResult");
         if (TTRGui != null)
         {
-            var draw = TTRGui->GetTextNodeById(5)->AtkResNode.IsVisible;
-            var lose = TTRGui->GetTextNodeById(4)->AtkResNode.IsVisible;
-            var win = TTRGui->GetTextNodeById(3)->AtkResNode.IsVisible;
+            var draw = TTRGui->GetTextNodeById(5)->AtkResNode.IsVisible();
+            var lose = TTRGui->GetTextNodeById(4)->AtkResNode.IsVisible();
+            var win = TTRGui->GetTextNodeById(3)->AtkResNode.IsVisible();
 
             ttResultText = draw ? Service.Lang.GetText("TripleTriad-Draw") :
                            lose ? Service.Lang.GetText("TripleTriad-Loss") :

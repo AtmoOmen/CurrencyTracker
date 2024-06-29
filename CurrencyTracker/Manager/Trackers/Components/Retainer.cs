@@ -59,8 +59,8 @@ public class Retainer : ITrackerComponent
             var retainer = retainerManager->GetRetainerBySortedIndex(i);
             if (retainer == null) break;
 
-            var retainerID = retainer->RetainerID;
-            var retainerName = MemoryHelper.ReadSeStringNullTerminated((nint)retainer->Name).FetchText();
+            var retainerID = retainer->RetainerId;
+            var retainerName = retainer->NameString;
             var retainerGil = retainer->Gil;
 
             var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
@@ -113,8 +113,7 @@ public class Retainer : ITrackerComponent
             case AddonEvent.PreFinalize:
                 TaskManager.Abort();
 
-                var retainerName =
-                    MemoryHelper.ReadStringNullTerminated((nint)retainerManager->GetActiveRetainer()->Name);
+                var retainerName = retainerManager->GetActiveRetainer()->NameString;
 
                 Tracker.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
                                                 24, TransactionFileCategory.Retainer, currentRetainerID);

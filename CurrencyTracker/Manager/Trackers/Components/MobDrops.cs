@@ -57,14 +57,14 @@ public unsafe class MobDrops : ITrackerComponent
         var currentTarget = Service.Target.Target;
         if (currentTarget == null) return;
         var targetName = currentTarget.Name.FetchText();
-        if (EnemiesList.ContainsKey(currentTarget.ObjectId) || EnemiesList.ContainsValue(targetName)) return;
+        if (EnemiesList.ContainsKey(currentTarget.GameObjectId) || EnemiesList.ContainsValue(targetName)) return;
         if (currentTarget.ObjectKind != ObjectKind.BattleNpc) return;
 
         var gameObj = (GameObject*)currentTarget.Address;
         if (gameObj == null) return;
         if (gameObj->FateId != 0) return;
         
-        EnemiesList[currentTarget.ObjectId] = targetName;
+        EnemiesList[currentTarget.GameObjectId] = targetName;
         Service.Log.Debug($"Added {targetName} to the mob list");
     }
 

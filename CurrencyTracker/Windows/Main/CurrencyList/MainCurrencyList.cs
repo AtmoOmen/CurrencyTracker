@@ -30,7 +30,7 @@ public partial class Main
             {
                 var id = Service.Config.OrderedOptions[i];
                 var currencyName = Service.Config.AllCurrencies[id];
-                var currencyIcon = Service.Config.AllCurrencyIcons[id].ImGuiHandle;
+                var currencyIcon = Service.Config.AllCurrencyIcons[id].GetWrapOrEmpty().ImGuiHandle;
 
                 ImGui.PushID(id.ToString());
                 ImGui.Indent(3f);

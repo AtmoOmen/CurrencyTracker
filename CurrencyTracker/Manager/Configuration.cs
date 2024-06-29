@@ -6,7 +6,8 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Configuration;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Plugin;
 using Newtonsoft.Json;
 
@@ -110,7 +111,7 @@ public class Configuration : IPluginConfiguration
     internal static bool IsUpdated = true;
 
     [JsonIgnore]
-    public Dictionary<uint, IDalamudTextureWrap?> AllCurrencyIcons
+    public Dictionary<uint, ISharedImmediateTexture?> AllCurrencyIcons
     {
         get
         {
@@ -151,7 +152,7 @@ public class Configuration : IPluginConfiguration
         }
     }
 
-    private Dictionary<uint, IDalamudTextureWrap?>? allCurrencyIcons = [];
+    private Dictionary<uint, ISharedImmediateTexture?>? allCurrencyIcons = [];
     private Dictionary<uint, string>? allCurrencies = [];
     private uint[]? allCurrencyID;
     internal UpdateDictionary<uint, string> presetCurrencies = [];

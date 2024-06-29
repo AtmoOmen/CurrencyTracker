@@ -3,7 +3,7 @@ using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
-using Lumina.Excel.GeneratedSheets2;
+using Lumina.Excel.GeneratedSheets;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

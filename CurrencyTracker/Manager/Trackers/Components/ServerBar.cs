@@ -26,7 +26,7 @@ public class ServerBar : ITrackerComponent
 
         TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
 
-        DtrEntry = entry;
+        DtrEntry = (DtrBarEntry)entry;
         DtrEntry.Text = "Waiting...";
         DtrEntry.Tooltip = "Waiting...";
         DtrEntry.Shown = true;

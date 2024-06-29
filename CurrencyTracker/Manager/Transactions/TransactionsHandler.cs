@@ -24,17 +24,15 @@ public static class TransactionsHandler
         return path;
     }
 
-    public static string GetTransactionFileSuffix(TransactionFileCategory category, ulong ID = 0)
-    {
-        return category switch
+    public static string GetTransactionFileSuffix(TransactionFileCategory category, ulong ID = 0) =>
+        category switch
         {
             TransactionFileCategory.Inventory => string.Empty,
             TransactionFileCategory.Retainer => $"_{ID}",
             TransactionFileCategory.SaddleBag => "_SB",
             TransactionFileCategory.PremiumSaddleBag => "_PSB",
-            _ => string.Empty
+            _ => string.Empty,
         };
-    }
 
     private static bool ValidityCheck(uint currencyID)
     {
