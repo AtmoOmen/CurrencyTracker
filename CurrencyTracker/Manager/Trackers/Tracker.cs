@@ -174,7 +174,7 @@ public class Tracker
                 isChanged = true;
 
         var enumerable = currencies as uint[] ?? currencies.ToArray();
-        if (!enumerable.Any()) return false;
+        if (enumerable.Length == 0) return false;
         foreach (var currency in enumerable)
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;

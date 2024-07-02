@@ -20,8 +20,8 @@ public static class TransactionsHandler
     {
         var suffix = GetTransactionFileSuffix(category, ID);
         var currencyName = CurrencyInfo.GetCurrencyName(CurrencyID);
-        var path = Transaction.SanitizeFilePath(Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt"));
-        return path;
+        var path = Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
+        return Transaction.SanitizeFilePath(path);
     }
 
     public static string GetTransactionFileSuffix(TransactionFileCategory category, ulong ID = 0) =>
@@ -82,6 +82,8 @@ public static class TransactionsHandler
                            ? Path.Join(playerDataFolder,
                                        $"{CurrencyInfo.GetCurrencyName(currencyID)}{GetTransactionFileSuffix(category, ID)}.txt")
                            : GetTransactionFilePath(currencyID, category, ID);
+
+        filePath = Transaction.SanitizeFilePath(filePath);
 
         if (characterInfo == null && !ValidityCheck(currencyID)) return null;
         if (!File.Exists(filePath)) return null;

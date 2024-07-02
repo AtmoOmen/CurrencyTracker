@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Security;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Transactions;
@@ -18,61 +17,41 @@ public class Transaction : IEquatable<Transaction>
 
     private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
-    private static readonly HashSet<char> IllegalChars = ['\\', '/', '*', '>', '<', '?', '|', '\"', ':'];
-
     // 清理文件名 Sanitize the file path
     public static string SanitizeFilePath(string filePath)
     {
-        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Concat(IllegalChars).Distinct();
+        var invalidChars = Path.GetInvalidPathChars();
+        var sanitizedPath = new StringBuilder(filePath.Length);
 
-        var fileName = Path.GetFileName(filePath);
-        var path = Path.GetDirectoryName(filePath);
+        foreach (var c in filePath)
+        {
+            sanitizedPath.Append(Array.IndexOf(invalidChars, c) < 0 ? c : '_');
+        }
 
-        foreach (var c in invalidChars) fileName = fileName.Replace(c, ' ');
-
-        return Path.Combine(path, fileName);
+        return sanitizedPath.ToString();
     }
 
     // 将单行交易记录解析为字符串 Parse a transaction into string
-    public string ToFileLine()
-    {
-        return $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
-    }
+    public string ToFileLine() 
+        => $"{TimeStamp.ToString("yyyy/MM/dd HH:mm:ss", InvariantCulture)};{Amount};{Change};{LocationName};{Note}";
 
     // 将单行字符串解析为交易记录 Parse string into a transaction
     public static Transaction FromFileLine(ReadOnlySpan<char> span)
     {
-        var parts = new string[5];
-        var partIndex = 0;
-        var start = 0;
-
-        for (var i = 0; i < span.Length; i++)
-            if (span[i] == ';')
-            {
-                parts[partIndex++] = span[start..i].ToString();
-                start = i + 1;
-            }
-
-        parts[partIndex] = span[start..].ToString();
-
-        if (!DateTime.TryParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", InvariantCulture, DateTimeStyles.None,
-                                    out var timeStamp))
-            Service.Log.Error("Failed when try parse transaction's DateTime");
-
-        if (!long.TryParse(parts[1], out var amount)) Service.Log.Error("Failed when try parse transaction's Amount");
-
-        if (!long.TryParse(parts[2], out var change)) Service.Log.Error("Failed when try parse transaction's Change");
-
-        var transaction = new Transaction
+        var parts = span.ToString().Split(';', 5);
+        if (parts.Length != 5)
         {
-            TimeStamp = timeStamp,
-            Amount = amount,
-            Change = change,
-            LocationName = parts[3],
-            Note = parts[4]
-        };
+            throw new FormatException("Invalid transaction format");
+        }
 
-        return transaction;
+        return new Transaction
+        {
+            TimeStamp = DateTime.ParseExact(parts[0], "yyyy/MM/dd HH:mm:ss", InvariantCulture),
+            Amount = long.Parse(parts[1]),
+            Change = long.Parse(parts[2]),
+            LocationName = parts[3],
+            Note = parts[4],
+        };
     }
 
     // 解析整个数据文件 Parse a data file
