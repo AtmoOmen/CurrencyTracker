@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
 
 namespace CurrencyTracker.Manager.Transactions;
@@ -17,14 +18,17 @@ public class Transaction : IEquatable<Transaction>
 
     private static readonly CultureInfo InvariantCulture = CultureInfo.InvariantCulture;
 
+    private static readonly HashSet<char> IllegalChars = ['\\', '/', '*', '>', '<', '?', '|', '\"', ':'];
+
     // 清理文件名 Sanitize the file path
     public static string SanitizeFilePath(string filePath)
     {
-        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Distinct();
+        var invalidChars = Path.GetInvalidFileNameChars().Concat(Path.GetInvalidPathChars()).Concat(IllegalChars).Distinct();
+
         var fileName = Path.GetFileName(filePath);
         var path = Path.GetDirectoryName(filePath);
 
-        foreach (var c in invalidChars) fileName = fileName.Replace(c.ToString(), "");
+        foreach (var c in invalidChars) fileName = fileName.Replace(c, ' ');
 
         return Path.Combine(path, fileName);
     }

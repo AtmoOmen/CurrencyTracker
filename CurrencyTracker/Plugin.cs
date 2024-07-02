@@ -26,7 +26,7 @@ public sealed class Plugin : IDalamudPlugin
     public CharacterInfo? CurrentCharacter { get; set; }
     public string PlayerDataFolder => GetCurrentCharacterDataFolder();
 
-    public DalamudPluginInterface PluginInterface { get; init; }
+    public IDalamudPluginInterface PI { get; init; }
     public Main? Main { get; private set; }
     public Graph? Graph { get; private set; }
     public Settings? Settings { get; private set; }
@@ -35,10 +35,10 @@ public sealed class Plugin : IDalamudPlugin
     public WindowSystem WindowSystem = new("CurrencyTracker");
     internal static Plugin P = null!;
 
-    public Plugin(DalamudPluginInterface pluginInterface)
+    public Plugin(IDalamudPluginInterface pluginInterface)
     {
         P = this;
-        PluginInterface = pluginInterface;
+        PI = pluginInterface;
 
         ConfigHandler(pluginInterface);
 
@@ -79,7 +79,7 @@ public sealed class Plugin : IDalamudPlugin
         if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName) || contentID == 0)
             Service.Log.Error("Fail to load current character info");
 
-        var dataFolderName = Path.Join(PluginInterface.ConfigDirectory.FullName, $"{playerName}_{serverName}");
+        var dataFolderName = Path.Join(PI.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
         if (CurrentCharacter != null && (CurrentCharacter.ContentID == contentID ||
                                          (CurrentCharacter.Name == playerName &&
@@ -124,7 +124,7 @@ public sealed class Plugin : IDalamudPlugin
 
         if (CurrentCharacter == null) return string.Empty;
 
-        var path = Path.Join(PluginInterface.ConfigDirectory.FullName,
+        var path = Path.Join(PI.ConfigDirectory.FullName,
                              $"{CurrentCharacter.Name}_{CurrentCharacter.Server}");
         if (!Directory.Exists(path))
         {
@@ -135,10 +135,10 @@ public sealed class Plugin : IDalamudPlugin
         return path;
     }
 
-    private void ConfigHandler(DalamudPluginInterface _)
+    private void ConfigHandler(IDalamudPluginInterface _)
     {
-        Service.Config = PluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Service.Config.Initialize(PluginInterface);
+        Service.Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
+        Service.Config.Initialize(PI);
     }
 
     public void OnCommand(string command, string args)
@@ -200,9 +200,9 @@ public sealed class Plugin : IDalamudPlugin
 
     private void WindowsHandler()
     {
-        PluginInterface.UiBuilder.Draw += DrawUI;
-        PluginInterface.UiBuilder.OpenConfigUi += DrawConfigUI;
-        PluginInterface.UiBuilder.OpenMainUi += DrawMainUI;
+        PI.UiBuilder.Draw += DrawUI;
+        PI.UiBuilder.OpenConfigUi += DrawConfigUI;
+        PI.UiBuilder.OpenMainUi += DrawMainUI;
 
         Main = new Main(this);
         WindowSystem.AddWindow(Main);
@@ -247,9 +247,9 @@ public sealed class Plugin : IDalamudPlugin
         Settings.Dispose();
         CurrencySettings.Dispose();
 
-        PluginInterface.UiBuilder.Draw -= DrawUI;
-        PluginInterface.UiBuilder.OpenConfigUi -= DrawConfigUI;
-        PluginInterface.UiBuilder.OpenMainUi -= DrawMainUI;
+        PI.UiBuilder.Draw -= DrawUI;
+        PI.UiBuilder.OpenConfigUi -= DrawConfigUI;
+        PI.UiBuilder.OpenMainUi -= DrawMainUI;
 
         Service.ClientState.Login -= HandleLogin;
         Service.ClientState.Logout -= HandleLogout;

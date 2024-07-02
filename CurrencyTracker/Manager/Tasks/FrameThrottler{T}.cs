@@ -5,7 +5,7 @@ namespace CurrencyTracker.Manager.Tasks;
 public class FrameThrottler<T>
 {
     private readonly Dictionary<T, long> throttlers = new();
-    private long SFrameCount => (long)P.PluginInterface.UiBuilder.FrameCount;
+    private long SFrameCount => (long)P.PI.UiBuilder.FrameCount;
 
     public IReadOnlyCollection<T> ThrottleNames => throttlers.Keys;
 

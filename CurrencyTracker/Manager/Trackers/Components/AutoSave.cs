@@ -56,7 +56,7 @@ public class AutoSave : ITrackerComponent
                     var failCharactersTasks = Service.Config.CurrentActiveCharacter.Select(async c =>
                     {
                         var result = await TransactionsHandler.BackupTransactionsAsync(
-                                         Path.Combine(P.PluginInterface.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"),
+                                         Path.Combine(P.PI.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"),
                                          Service.Config.MaxBackupFilesCount);
 
                         return string.IsNullOrEmpty(result) ? $"{c.Name}@{c.Server}" : null;

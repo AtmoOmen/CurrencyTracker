@@ -15,7 +15,7 @@ public class PresetFont
 
     public static void Init()
     {
-        FontAtlas ??= P.PluginInterface.UiBuilder.CreateFontAtlas(FontAtlasAutoRebuildMode.OnNewFrame);
+        FontAtlas ??= P.PI.UiBuilder.CreateFontAtlas(FontAtlasAutoRebuildMode.OnNewFrame);
         Axis96 ??= ConstructFontHandle(GameFontFamilyAndSize.Axis96);
         Axis12 ??= ConstructFontHandle(GameFontFamilyAndSize.Axis12);
         Axis14 ??= ConstructFontHandle(GameFontFamilyAndSize.Axis14);

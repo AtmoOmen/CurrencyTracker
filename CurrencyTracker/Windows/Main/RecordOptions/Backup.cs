@@ -51,7 +51,7 @@ public partial class Main
 
             foreach (var character in Service.Config.CurrentActiveCharacter)
             {
-                var backupPath = Path.Join(P.PluginInterface.ConfigDirectory.FullName,
+                var backupPath = Path.Join(P.PI.ConfigDirectory.FullName,
                                            $"{character.Name}_{character.Server}");
                 if (string.IsNullOrEmpty(
                         TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount)))

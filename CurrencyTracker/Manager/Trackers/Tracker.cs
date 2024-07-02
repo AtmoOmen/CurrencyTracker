@@ -102,7 +102,7 @@ public class Tracker
                                                 TransactionFileCategory category, ulong ID, uint source)
     {
         Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-        if (P.PluginInterface.IsDev) Service.Log.Debug($"Source: {source}");
+        if (P.PI.IsDev) Service.Log.Debug($"Source: {source}");
         CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID);
     }
 

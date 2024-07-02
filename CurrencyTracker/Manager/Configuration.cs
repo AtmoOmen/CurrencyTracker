@@ -159,7 +159,7 @@ public class Configuration : IPluginConfiguration
     internal UpdateDictionary<uint, string> customCurrencies = [];
 
     [NonSerialized]
-    private DalamudPluginInterface? pluginInterface;
+    private IDalamudPluginInterface? PI;
 
 
     public void GetAllCurrencyIcons()
@@ -186,9 +186,9 @@ public class Configuration : IPluginConfiguration
     }
 
 
-    public void Initialize(DalamudPluginInterface pInterface)
+    public void Initialize(IDalamudPluginInterface pInterface)
     {
-        pluginInterface = pInterface;
+        PI = pInterface;
         presetCurrencies.OnUpdate += SetUpdateFlag;
         customCurrencies.OnUpdate += SetUpdateFlag;
     }
@@ -203,6 +203,6 @@ public class Configuration : IPluginConfiguration
 
     public void Save()
     {
-        pluginInterface!.SavePluginConfig(this);
+        PI!.SavePluginConfig(this);
     }
 }

@@ -67,7 +67,7 @@ public partial class LanguageManager
     {
         if (languageName == Language) return;
 
-        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PluginInterface.AssemblyLocation.FullName), "Manager", "Langs");
+        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PI.AssemblyLocation.FullName), "Manager", "Langs");
 
         if (isDev)
             resourceData = LoadResourceFile(devLangPath);

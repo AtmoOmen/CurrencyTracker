@@ -74,7 +74,7 @@ public static class TransactionsHandler
         uint currencyID, CharacterInfo? characterInfo = null, TransactionFileCategory category = 0, ulong ID = 0)
     {
         var playerDataFolder = characterInfo != null
-                                   ? Path.Join(P.PluginInterface.ConfigDirectory.FullName,
+                                   ? Path.Join(P.PI.ConfigDirectory.FullName,
                                                $"{characterInfo.Name}_{characterInfo.Server}")
                                    : P.PlayerDataFolder;
 

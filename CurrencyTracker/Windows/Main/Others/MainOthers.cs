@@ -31,7 +31,7 @@ public partial class Main
 
         ImGui.SameLine();
         LanguageSwitchUI();
-        if (P.PluginInterface.IsDev) TestingFeaturesUI();
+        if (P.PI.IsDev) TestingFeaturesUI();
     }
 
     // 打开数据文件夹 Open Data Folder

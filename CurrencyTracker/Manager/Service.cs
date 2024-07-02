@@ -14,11 +14,12 @@ namespace CurrencyTracker.Manager;
 
 public class Service
 {
-    public static void Init(DalamudPluginInterface pluginInterface)
+    public static void Init(IDalamudPluginInterface PI)
     {
-        Config = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
-        Config.Initialize(pluginInterface);
-        pluginInterface.Create<Service>();
+        Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
+        Config.Initialize(PI);
+        PI.Create<Service>();
+        PluginInterface = PI;
 
         InitLanguage();
         InitCharacter();
@@ -74,6 +75,7 @@ public class Service
     [PluginService] public static IAddonEventManager AddonEventManager { get; private set; } = null!;
     [PluginService] public static ITextureProvider TextureProvider { get; set; } = null!;
     [PluginService] public static IDtrBar DtrBar { get; private set; } = null!;
+    public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     public static SigScanner SigScanner { get; private set; } = new();
     public static Configuration Config { get; set; } = null!;
     public static LanguageManager Lang { get; set; } = null!;
