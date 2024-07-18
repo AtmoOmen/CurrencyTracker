@@ -50,27 +50,24 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
-        ImGui.SetNextItemWidth(160f * ImGuiHelpers.GlobalScale);
+        ImGui.SetNextItemWidth(250f * ImGuiHelpers.GlobalScale);
         if (ImGui.BeginCombo("##AreaRestricted", Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
         {
             TerritoryNamesTR ??= TerritoryNames;
             rules.RestrictedAreas ??= [];
 
             ImGui.TextUnformatted("");
+
             ImGui.SameLine(8f, 0);
             ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - 8f);
-            if (ImGui.InputTextWithHint("", Service.Lang.GetText("PleaseSearch"), ref searchFilterTR, 50))
-            {
-                TaskManager.Abort();
+            ImGui.InputTextWithHint("", Service.Lang.GetText("PleaseSearch"), ref searchFilterTR, 128);
 
-                TaskManager.DelayNext(500);
-                TaskManager.Enqueue(() =>
-                {
-                    TerritoryNamesTR = string.IsNullOrEmpty(searchFilterTR) ? TerritoryNames : TerritoryNames
-                                           .Where(x => x.Value.Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase) 
-                                                       || x.Key.ToString().Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase))
-                                           .ToDictionary(x => x.Key, x => x.Value);
-                });
+            if (ImGui.IsItemDeactivatedAfterEdit())
+            {
+                TerritoryNamesTR = string.IsNullOrEmpty(searchFilterTR) ? TerritoryNames : TerritoryNames
+                                       .Where(x => x.Value.Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase)
+                                                   || x.Key.ToString().Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase))
+                                       .ToDictionary(x => x.Key, x => x.Value);
             }
 
             foreach (var area in TerritoryNamesTR)

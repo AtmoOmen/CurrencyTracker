@@ -17,11 +17,11 @@ public static class CurrencyInfo
 {
     public static readonly uint[] DefaultCustomCurrencies =
     [
-        20, 21, 22, 25, 27, 28, 29, 10307, 25199, 25200, 26807, 28063, 33913, 33914, 36656
+        20, 21, 22, 25, 27, 28, 29, 10307, 26807, 28063, 33913, 33914, 36656, 41784, 41785,
     ];
     public static readonly uint[] PresetCurrencies =
     [
-        1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3)
+        1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3),
     ];
 
     public static readonly Dictionary<ulong, Dictionary<uint, long>> CurrencyAmountCache = [];
