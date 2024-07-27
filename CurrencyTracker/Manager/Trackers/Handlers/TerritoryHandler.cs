@@ -7,31 +7,38 @@ namespace CurrencyTracker.Manager.Trackers.Handlers;
 
 public class TerritoryHandler : ITrackerHandler
 {
-    public bool Initialized { get; set; }
-    public bool isBlocked { get; set; }
-    public static string CurrentLocationName { get; set; } = string.Empty;
-    public static uint CurrentLocationID { get; set; }
-    public static string PreviousLocationName { get; set; } = string.Empty;
-    public static uint PreviousLocationID { get; set; }
+    public        bool   Initialized          { get; set; }
+    public        bool   isBlocked            { get; set; }
+    public static string CurrentLocationName  { get; private set; } = string.Empty;
+    public static uint   CurrentLocationID    { get; private set; }
+    public static string PreviousLocationName { get; private set; } = string.Empty;
+    public static uint   PreviousLocationID   { get; private set; }
 
-    internal static Dictionary<uint, string> TerritoryNames = new();
+    private static Dictionary<uint, string>? TerritoryNames;
 
     public void Init()
     {
-        TerritoryNames = Service.DataManager.GetExcelSheet<TerritoryType>()
-                                .Where(x => !string.IsNullOrEmpty(x.PlaceName?.Value?.Name?.ToString()))
-                                .ToDictionary(
-                                    x => x.RowId,
-                                    x => P.PI.Sanitizer.Sanitize(
-                                        x.PlaceName?.Value?.Name?.ToString()));
-
-        PreviousLocationID = CurrentLocationID = Service.ClientState.TerritoryType;
-        PreviousLocationName = CurrentLocationName =
-                                   TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation)
-                                       ? currentLocation
-                                       : Service.Lang.GetText("UnknownLocation");
-
+        LoadTerritoryNames();
+        InitLocation();
         Service.ClientState.TerritoryChanged += OnZoneChange;
+    }
+
+    private static void LoadTerritoryNames()
+    {
+        TerritoryNames ??= Service.DataManager.GetExcelSheet<TerritoryType>()
+                                  .Select(x => new
+                                  {
+                                      ZoneID = x.RowId,
+                                      PlaceName = x.PlaceName?.Value?.Name?.RawString ?? string.Empty,
+                                  })
+                                  .Where(x => !string.IsNullOrWhiteSpace(x.PlaceName))
+                                  .ToDictionary(x => x.ZoneID, x => x.PlaceName);
+    }
+
+    private static void InitLocation()
+    {
+        CurrentLocationID = PreviousLocationID = Service.ClientState.TerritoryType;
+        CurrentLocationName = PreviousLocationName = GetLocationName(CurrentLocationID);
     }
 
     private void OnZoneChange(ushort zone)
@@ -40,19 +47,24 @@ public class TerritoryHandler : ITrackerHandler
 
         PreviousLocationID = CurrentLocationID;
         PreviousLocationName = CurrentLocationName;
-
         CurrentLocationID = zone;
-        CurrentLocationName = TerritoryNames.TryGetValue(CurrentLocationID, out var currentLocation)
-                                  ? currentLocation
-                                  : Service.Lang.GetText("UnknownLocation");
+        CurrentLocationName = GetLocationName(CurrentLocationID);
+    }
+
+    private static string GetLocationName(uint locationId) =>
+        TerritoryNames.TryGetValue(locationId, out var name) ? name : Service.Lang.GetText("UnknownLocation");
+
+    private static void ResetLocations()
+    {
+        PreviousLocationID = CurrentLocationID = 0;
+        PreviousLocationName = CurrentLocationName = string.Empty;
     }
 
     public void Uninit()
     {
         Service.ClientState.TerritoryChanged -= OnZoneChange;
-
-        TerritoryNames.Clear();
-        PreviousLocationID = CurrentLocationID = 0;
-        PreviousLocationName = CurrentLocationName = string.Empty;
+        TerritoryNames?.Clear();
+        TerritoryNames = null;
+        ResetLocations();
     }
 }

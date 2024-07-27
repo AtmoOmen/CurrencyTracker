@@ -10,7 +10,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers;
 public class ChatHandler : ITrackerHandler
 {
     public bool Initialized { get; set; }
-    public bool isBlocked { get; set; } = false;
+    public bool isBlocked   { get; set; } = false;
 
     private static TaskManager? TaskManager;
 

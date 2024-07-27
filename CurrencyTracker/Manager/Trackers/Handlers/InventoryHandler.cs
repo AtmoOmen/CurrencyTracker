@@ -7,7 +7,7 @@ namespace CurrencyTracker.Manager.Trackers.Handlers;
 public class InventoryHandler : ITrackerHandler
 {
     public bool Initialized { get; set; }
-    public bool isBlocked { get; set; } = false;
+    public bool isBlocked   { get; set; } = false;
 
     public HashSet<uint> Items { get; set; } = [];
 
