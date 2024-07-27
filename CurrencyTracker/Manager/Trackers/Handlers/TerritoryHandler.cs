@@ -14,7 +14,7 @@ public class TerritoryHandler : ITrackerHandler
     public static string PreviousLocationName { get; private set; } = string.Empty;
     public static uint   PreviousLocationID   { get; private set; }
 
-    private static Dictionary<uint, string>? TerritoryNames;
+    public static Dictionary<uint, string>? TerritoryNames;
 
     public void Init()
     {
