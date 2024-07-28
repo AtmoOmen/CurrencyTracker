@@ -755,4 +755,10 @@ Fusión bidireccional: Calcula los cambios positivos y negativos de manera conju
   <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
     <value>Mostrar vista general de la divisa en el Gil del HUD</value>
   </data>
+  <data name="Past14Days" xml:space="preserve">
+    <value>Últimos 14 días</value>
+  </data>
+  <data name="Past30Days" xml:space="preserve">
+    <value>Últimos 30 días</value>
+  </data>
 </root>

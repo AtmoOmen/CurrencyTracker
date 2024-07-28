@@ -755,4 +755,10 @@
   <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
     <value>在所持金幣界面顯示貨幣一覽窗口</value>
   </data>
+  <data name="Past14Days" xml:space="preserve">
+    <value>過去 14 天</value>
+  </data>
+  <data name="Past30Days" xml:space="preserve">
+    <value>過去 30 天</value>
+  </data>
 </root>
