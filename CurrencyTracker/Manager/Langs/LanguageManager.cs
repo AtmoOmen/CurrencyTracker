@@ -34,6 +34,7 @@ public partial class LanguageManager
         new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000", "Another09"] },
         new() { Language = "French", DisplayName = "Français", Translators = ["Khyne Cael", "Lexideru"] },
         new() { Language = "Japanese", DisplayName = "日本語", Translators = ["stoat"] },
+        new() { Language = "Korean", DisplayName = "한국어", Translators = ["solarx2"] },
         new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = ["AtmoOmen"] },
         new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] },
     ];
@@ -116,10 +117,8 @@ public partial class LanguageManager
         return string.Format(format, args);
     }
 
-    public string GetOrigText(string key)
-    {
-        return resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key, key);
-    }
+    public string GetOrigText(string key) 
+        => resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key, key);
 
     public SeString GetSeString(string key, params object[] args)
     {

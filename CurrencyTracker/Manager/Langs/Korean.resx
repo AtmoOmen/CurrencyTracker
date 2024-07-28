@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChangeFilterEnabled" xml:space="preserve">
+    <value>필터 변경</value>
+  </data>
+  <data name="Hours" xml:space="preserve">
+    <value>시간</value>
+  </data>
+  <data name="Category-RecordOptions" xml:space="preserve">
+    <value>기록 옵션</value>
+  </data>
+  <data name="Category-Others" xml:space="preserve">
+    <value>기타</value>
+  </data>
+  <data name="Category-Help" xml:space="preserve">
+    <value>클릭하여 확장/최소화</value>
+  </data>
+  <data name="CustomCurrencyHelp" xml:space="preserve">
+    <value>안내 :
+1. 초기 설정된 3개의 화폐는 삭제하실 수 없습니다.
+2. 화폐가 아닌 아이템을 추적하는 것은 권장하지 않습니다. 다른 플러그인을 사용해주세요.
+3. 화폐를 삭제하더라도 데이터 파일은 삭제되지 않습니다. 필요하다면 직접 삭제하세요.</value>
+  </data>
+  <data name="AddCustomCurrency" xml:space="preserve">
+    <value>커스텀 화폐 추가</value>
+  </data>
+  <data name="PleaseSelect" xml:space="preserve">
+    <value>선택...</value>
+  </data>
+  <data name="PleaseSearch" xml:space="preserve">
+    <value>검색...</value>
+  </data>
+  <data name="CustomCurrencyHelp1" xml:space="preserve">
+    <value>추가 실패 : 이미 추가 된 화폐입니다.</value>
+  </data>
+  <data name="CustomCurrencyHelp2" xml:space="preserve">
+    <value>삭제 실패 : 존재하지 않는 화폐입니다.</value>
+  </data>
+  <data name="Day" xml:space="preserve">
+    <value>일</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>삭제</value>
+  </data>
+  <data name="ExportFileCSVHeader" xml:space="preserve">
+    <value>시간,수량,변화,지역,비고</value>
+  </data>
+  <data name="ExportFileMessage" xml:space="preserve">
+    <value>파일을 내보낼 경로 :</value>
+  </data>
+  <data name="FileRenameHelp1" xml:space="preserve">
+    <value>기본 파일명 :</value>
+  </data>
+  <data name="FileRenameLabel" xml:space="preserve">
+    <value>파일명:</value>
+  </data>
+  <data name="FirstPage" xml:space="preserve">
+    <value>첫번째</value>
+  </data>
+  <data name="Greater" xml:space="preserve">
+    <value>초과</value>
+  </data>
+  <data name="LastPage" xml:space="preserve">
+    <value>마지막</value>
+  </data>
+  <data name="Less" xml:space="preserve">
+    <value>이하</value>
+  </data>
+  <data name="MergeTransactionsHelp1" xml:space="preserve">
+    <value>{0}개의 거래를 병합했습니다.</value>
+  </data>
+  <data name="Threshold" xml:space="preserve">
+    <value>한계값</value>
+  </data>
+  <data name="TwoWayMerge" xml:space="preserve">
+    <value>양방향 병합</value>
+  </data>
+  <data name="OneWayMerge" xml:space="preserve">
+    <value>일방향 병합</value>
+  </data>
+  <data name="ManualMerge" xml:space="preserve">
+    <value>수동 병합</value>
+  </data>
+  <data name="NextPage" xml:space="preserve">
+    <value>다음</value>
+  </data>
+  <data name="OpenDataFolder" xml:space="preserve">
+    <value>데이터 경로</value>
+  </data>
+  <data name="PreviousPage" xml:space="preserve">
+    <value>이전</value>
+  </data>
+  <data name="DutyRewards-RecordDutyRewards" xml:space="preserve">
+    <value>임무 보상 기록</value>
+  </data>
+  <data name="TransactionsHelp" xml:space="preserve">
+    <value>일치하는 거래가 없습니다.</value>
+  </data>
+  <data name="TransactionsHelp1" xml:space="preserve">
+    <value>현재 선택된 화폐가 없습니다.</value>
+  </data>
+  <data name="UnknownCurrency" xml:space="preserve">
+    <value>알 수 없는 화폐</value>
+  </data>
+  <data name="UnknownLocation" xml:space="preserve">
+    <value>알 수 없는 지역</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>시간</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>수량</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>금액</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>지역</value>
+  </data>
+  <data name="TransactionsPerPage" xml:space="preserve">
+    <value>페이지 크기</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>년</value>
+  </data>
+  <data name="GraphLabel" xml:space="preserve">
+    <value>거래 금액 :</value>
+  </data>
+  <data name="DividedUnitThou" xml:space="preserve">
+    <value>(단위 : 천)</value>
+  </data>
+  <data name="DividedUnitMil" xml:space="preserve">
+    <value>(단위 : 백만)</value>
+  </data>
+  <data name="DividedUnitBil" xml:space="preserve">
+    <value>(단위 : 10억)</value>
+  </data>
+  <data name="ChangeGraph" xml:space="preserve">
+    <value>수입 지출 그래프</value>
+  </data>
+  <data name="LocationGraph" xml:space="preserve">
+    <value>지역 그래프</value>
+  </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>그래프</value>
+  </data>
+  <data name="Manage" xml:space="preserve">
+    <value>관리</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>건</value>
+  </data>
+  <data name="Now" xml:space="preserve">
+    <value>현재</value>
+  </data>
+  <data name="Unselect" xml:space="preserve">
+    <value>선택 취소</value>
+  </data>
+  <data name="CopiedToClipboard" xml:space="preserve">
+    <value>클립보드에 복사되었습니다</value>
+  </data>
+  <data name="NoTransactionsSelected" xml:space="preserve">
+    <value>현재 선택된 거래가 없습니다.</value>
+  </data>
+  <data name="CopyTransactionsHelp" xml:space="preserve">
+    <value>{0}개의 거래가 클립보드에 복사되었습니다.</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>수정</value>
+  </data>
+  <data name="Export" xml:space="preserve">
+    <value>내보내기</value>
+  </data>
+  <data name="PressEnterToConfirm" xml:space="preserve">
+    <value>엔터 키를 눌러 확인</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>복사</value>
+  </data>
+  <data name="ChangeTextColoring" xml:space="preserve">
+    <value>수입 지출 색 변경</value>
+  </data>
+  <data name="CurrentSettings" xml:space="preserve">
+    <value>현재 설정</value>
+  </data>
+  <data name="LocationFilter" xml:space="preserve">
+    <value>위치 필터</value>
+  </data>
+  <data name="InverseSelect" xml:space="preserve">
+    <value>선택 반전</value>
+  </data>
+  <data name="SelectAll" xml:space="preserve">
+    <value>전체 선택</value>
+  </data>
+  <data name="Merge" xml:space="preserve">
+    <value>병합</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>종료 날짜</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>시작 날짜</value>
+  </data>
+  <data name="WeekDays" xml:space="preserve">
+    <value>일, 월, 화, 수, 목, 금, 토</value>
+  </data>
+  <data name="TeleportTo" xml:space="preserve">
+    <value>{0}(으)로 텔레포</value>
+  </data>
+  <data name="TeleportWithinArea" xml:space="preserve">
+    <value>지역 내 텔레포</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>비고</value>
+  </data>
+  <data name="ExportFileMDHeader1" xml:space="preserve">
+    <value>| 시간 | 수량 | 변화 | 지역 | 비고 |</value>
+  </data>
+  <data name="ExportFileType" xml:space="preserve">
+    <value>파일 타입 지정</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>정렬</value>
+  </data>
+  <data name="TableAppearance" xml:space="preserve">
+    <value>표 모양</value>
+  </data>
+  <data name="UnknownContent" xml:space="preserve">
+    <value>알 수 없는 임무</value>
+  </data>
+  <data name="TripleTriadWith" xml:space="preserve">
+    <value>{1}과 트리플 트라이어드 {0}회</value>
+  </data>
+  <data name="Combat" xml:space="preserve">
+    <value>전투</value>
+  </data>
+  <data name="GoldSaucer" xml:space="preserve">
+    <value>골드 소서</value>
+  </data>
+  <data name="HelpTranslate" xml:space="preserve">
+    <value>번역 참여하기</value>
+  </data>
+  <data name="NeedHelp" xml:space="preserve">
+    <value>참조</value>
+  </data>
+  <data name="DutyRewards-RecordContentName" xml:space="preserve">
+    <value>임무 콘텐츠 기록</value>
+  </data>
+  <data name="GoladSaucer-RecordMGPSource" xml:space="preserve">
+    <value>MGP 보상 출처 기록</value>
+  </data>
+  <data name="Record" xml:space="preserve">
+    <value>기록</value>
+  </data>
+  <data name="TeleportCosts-RecordTPCosts" xml:space="preserve">
+    <value>텔레포 비용 기록</value>
+  </data>
+  <data name="TripleTriad-RecordTTResult" xml:space="preserve">
+    <value>트리플 트라이어드 결과 록</value>
+  </data>
+  <data name="SuggestOrReport" xml:space="preserve">
+    <value>제안 및 보고</value>
+  </data>
+  <data name="Exchange-RecordExchangeResult" xml:space="preserve">
+    <value>교환 결과 기록</value>
+  </data>
+  <data name="CommandHelp" xml:space="preserve">
+    <value>플러그인 메인 창 열기</value>
+  </data>
+  <data name="CommandHelp1" xml:space="preserve">
+    <value>명령어 '/ct &lt;화폐 이름&gt;' 을 입력하여 해당 통화 정보를 확인합니다.</value>
+  </data>
+  <data name="EditFailed" xml:space="preserve">
+    <value>수정 실패</value>
+  </data>
+  <data name="UnknownLang" xml:space="preserve">
+    <value>알 수 없는 언어</value>
+  </data>
+  <data name="CommandHelp2" xml:space="preserve">
+    <value>여러 통화가 발견되었습니다</value>
+  </data>
+  <data name="CommandHelp3" xml:space="preserve">
+    <value>화폐를 찾을 수 없습니다.</value>
+  </data>
+  <data name="Quest" xml:space="preserve">
+    <value>퀘스트 {0}</value>
+  </data>
+  <data name="QuestRewards-RecordQuestRewards" xml:space="preserve">
+    <value>퀘스트 보상 기록</value>
+  </data>
+  <data name="Trade-RecordTradeTarget" xml:space="preserve">
+    <value>거래 상대 기록</value>
+  </data>
+  <data name="DoubleRightClick" xml:space="preserve">
+    <value>오른쪽 더블클릭</value>
+  </data>
+  <data name="PageComponent" xml:space="preserve">
+    <value>{0} / {1} 페이지</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>확인</value>
+  </data>
+  <data name="CurrencyRenameHelp1" xml:space="preserve">
+    <value>동일한 이름의 통화/데이터 파일이 이미 존재합니다.</value>
+  </data>
+  <data name="Rename" xml:space="preserve">
+    <value>이름 변경</value>
+  </data>
+  <data name="Reset" xml:space="preserve">
+    <value>초기화</value>
+  </data>
+  <data name="FateRewards-RecordFateRewards" xml:space="preserve">
+    <value>돌발임무 보상 기록</value>
+  </data>
+  <data name="IslandWorkshop" xml:space="preserve">
+    <value>무인도 공방</value>
+  </data>
+  <data name="IslandSanctuary-RecordISResult" xml:space="preserve">
+    <value>무인도 화폐 기록</value>
+  </data>
+  <data name="Fate" xml:space="preserve">
+    <value>돌발임무 {0}</value>
+  </data>
+  <data name="Checkbox" xml:space="preserve">
+    <value>체크박스</value>
+  </data>
+  <data name="ChildframeWidthOffset" xml:space="preserve">
+    <value>너비 설정</value>
+  </data>
+  <data name="MobDrops-RecordMobDrops" xml:space="preserve">
+    <value>몬스터 드랍 기록</value>
+  </data>
+  <data name="SpecialExchange-RecordSpecialExchangeResult" xml:space="preserve">
+    <value>특수 교환 결과 기록</value>
+  </data>
+  <data name="WarpCosts-RecordTPCosts" xml:space="preserve">
+    <value>특수 텔레포 비용 기록</value>
+  </data>
+  <data name="MultiCharaStats" xml:space="preserve">
+    <value>여러 캐릭터 상태</value>
+  </data>
+  <data name="TeleportCosts-RecordAetheryteName" xml:space="preserve">
+    <value>에테라이트</value>
+  </data>
+  <data name="TeleportCosts-RecordAreaName" xml:space="preserve">
+    <value>지역</value>
+  </data>
+  <data name="MobDrops-MobDropsNote" xml:space="preserve">
+    <value>{0}에게서 획득</value>
+  </data>
+  <data name="Inventory" xml:space="preserve">
+    <value>인벤토리</value>
+  </data>
+  <data name="PSaddleBag" xml:space="preserve">
+    <value>유료 초코보 가방</value>
+  </data>
+  <data name="SaddleBag" xml:space="preserve">
+    <value>초코보 방</value>
+  </data>
+  <data name="Backup" xml:space="preserve">
+    <value>백업하기</value>
+  </data>
+  <data name="BackupAllCharacter" xml:space="preserve">
+    <value>모든 캐릭터 백업</value>
+  </data>
+  <data name="BackupCurrentCharacter" xml:space="preserve">
+    <value>현재 캐릭터 백업</value>
+  </data>
+  <data name="BackupHelp3" xml:space="preserve">
+    <value>실패한 캐릭터:</value>
+  </data>
+  <data name="BackupHelp4" xml:space="preserve">
+    <value>현재 캐릭터 데이터를 {0}에 성공적으로 백업했습니다</value>
+  </data>
+  <data name="ManualBackup" xml:space="preserve">
+    <value>수동 백업</value>
+  </data>
+  <data name="AutoBackup" xml:space="preserve">
+    <value>자동 백업</value>
+  </data>
+  <data name="Minutes" xml:space="preserve">
+    <value>분</value>
+  </data>
+  <data name="BackupHelp5" xml:space="preserve">
+    <value>채팅 알림</value>
+  </data>
+  <data name="Blacklist" xml:space="preserve">
+    <value>제외 목록</value>
+  </data>
+  <data name="Main-CS-AreaRestriction" xml:space="preserve">
+    <value>지역 제한</value>
+  </data>
+  <data name="Main-CS-RestrictedArea" xml:space="preserve">
+    <value>제한된 지역</value>
+  </data>
+  <data name="Main-CS-SelectArea" xml:space="preserve">
+    <value>선택된 지역</value>
+  </data>
+  <data name="Whitelist" xml:space="preserve">
+    <value>허용 목록</value>
+  </data>
+  <data name="BackupHelp6" xml:space="preserve">
+    <value>비활성화 하려면 0으로 설정하십시오.</value>
+  </data>
+  <data name="BackupHelp7" xml:space="preserve">
+    <value>눌러서 활성화 혹은 비활성화</value>
+  </data>
+  <data name="MaxBackupFiles" xml:space="preserve">
+    <value>최대 백업 파일 갯수</value>
+  </data>
+  <data name="ParamEP-FateName" xml:space="preserve">
+    <value>돌발임무 이름</value>
+  </data>
+  <data name="ParamEP-MobNames" xml:space="preserve">
+    <value>몬스터 이름</value>
+  </data>
+  <data name="ParamEP-QuestName" xml:space="preserve">
+    <value>퀘스트 이름</value>
+  </data>
+  <data name="ParamEP-TargetName" xml:space="preserve">
+    <value>타겟 이름</value>
+  </data>
+  <data name="ParamEP-TTOutcome" xml:space="preserve">
+    <value>승리/무승부/패배</value>
+  </data>
+  <data name="ParamEP-TTRivalName" xml:space="preserve">
+    <value>상대 이름</value>
+  </data>
+  <data name="PremiumSaddleBag-RecordPremiumSaddleBag" xml:space="preserve">
+    <value>유료 초코보 가방 기록</value>
+  </data>
+  <data name="Retainer-RecordRetainerInventory" xml:space="preserve">
+    <value>집사 기록</value>
+  </data>
+  <data name="SaddleBag-RecordSaddleBag" xml:space="preserve">
+    <value>초코보 가방 기록</value>
+  </data>
+  <data name="TripleTriad-Draw" xml:space="preserve">
+    <value>무승부</value>
+  </data>
+  <data name="TripleTriad-Loss" xml:space="preserve">
+    <value>패배</value>
+  </data>
+  <data name="TripleTriad-Win" xml:space="preserve">
+    <value>승리</value>
+  </data>
+  <data name="CurrencyUIEdit-ShowTotalGilAmount" xml:space="preserve">
+    <value>화폐 인터페이스에서 Gil 총량 보이기</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>기능</value>
+  </data>
+  <data name="Info" xml:space="preserve">
+    <value>소개</value>
+  </data>
+  <data name="Plugin" xml:space="preserve">
+    <value>플러그인</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>설정</value>
+  </data>
+  <data name="LetterAttachments-LetterFrom" xml:space="preserve">
+    <value>{0}에게 온 모그레터</value>
+  </data>
+  <data name="LetterAttachments-RecordMailAttachments" xml:space="preserve">
+    <value>모그레터 첨부 아이템 기록</value>
+  </data>
+  <data name="ParamEP-SenderName" xml:space="preserve">
+    <value>보낸 사람 이름</value>
+  </data>
+  <data name="Trade" xml:space="preserve">
+    <value>거래</value>
+  </data>
+  <data name="AlertType" xml:space="preserve">
+    <value>경고 유형</value>
+  </data>
+  <data name="ContainerType" xml:space="preserve">
+    <value>인벤토리 유형</value>
+  </data>
+  <data name="Maximum" xml:space="preserve">
+    <value>최대</value>
+  </data>
+  <data name="Minimum" xml:space="preserve">
+    <value>최소</value>
+  </data>
+  <data name="BackupHelp8" xml:space="preserve">
+    <value>오버레이 알림</value>
+  </data>
+  <data name="NotificationType" xml:space="preserve">
+    <value>알림 유형</value>
+  </data>
+  <data name="ParamEP-CurrencyName" xml:space="preserve">
+    <value>화폐 이름</value>
+  </data>
+  <data name="ParamEP-Value" xml:space="preserve">
+    <value>값</value>
+  </data>
+  <data name="UpdateTranslations" xml:space="preserve">
+    <value>번역 업데이트</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>추가</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>경고</value>
+  </data>
+  <data name="DataFiles" xml:space="preserve">
+    <value>데이터 파일</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>합계</value>
+  </data>
+  <data name="CycleMode" xml:space="preserve">
+    <value>주기 설정</value>
+  </data>
+  <data name="DisplayChangesInServerBar" xml:space="preserve">
+    <value>서버 바에 화폐 변화 보이기</value>
+  </data>
+  <data name="DisplayedCurrency" xml:space="preserve">
+    <value>화폐 선택</value>
+  </data>
+  <data name="Past24Hours" xml:space="preserve">
+    <value>지난 24시간</value>
+  </data>
+  <data name="Past3Days" xml:space="preserve">
+    <value>지난 3일</value>
+  </data>
+  <data name="Past7Days" xml:space="preserve">
+    <value>지난 7일</value>
+  </data>
+  <data name="PreviousCycle" xml:space="preserve">
+    <value>지난 주기</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>오늘</value>
+  </data>
+  <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
+    <value>길 HUD에서 화폐 개요 보이기</value>
+  </data>
+</root>
