@@ -79,7 +79,7 @@ public partial class CurrencySettings
         }
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt))
+        if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt, "", true))
         {
             if (selectedInterval != null)
             {
@@ -163,7 +163,7 @@ public partial class CurrencySettings
             }
 
             ImGui.SameLine();
-            if (ImGuiOm.ButtonIcon("ResetContent_AlertIntervalMessage", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+            if (ImGuiOm.ButtonIcon("ResetContent_AlertIntervalMessage", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
             {
                 Service.Config.CustomNoteContents.Remove("AlertIntervalMessage");
                 Service.Config.Save();

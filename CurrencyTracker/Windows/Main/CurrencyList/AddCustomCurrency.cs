@@ -84,7 +84,7 @@ public partial class Main
             ImGui.EndGroup();
 
             ImGui.SameLine();
-            if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus))
+            if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus, "", true))
             {
                 if (_currencyIDACC == 0)
                 {

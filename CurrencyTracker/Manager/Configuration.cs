@@ -5,6 +5,7 @@ using System.Numerics;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Configuration;
 using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
@@ -40,22 +41,22 @@ public class Configuration : IPluginConfiguration
         get => customCurrencies;
     }
 
-    public List<uint> OrderedOptions { get; set; } = new();
-    public bool ReverseSort { get; set; } = false;
-    public string SelectedLanguage { get; set; } = string.Empty;
-    public int MaxBackupFilesCount { get; set; } = 10;
-    public bool AutoSaveMessage { get; set; } = false;
-    public int AutoSaveMode { get; set; } = 0;      // 0 - Save Current ; 1 - Save All
-    public int AutoSaveInterval { get; set; } = 60; // Minutes
-    public uint ServerBarDisplayCurrency { get; set; } = 1;
-    public int ServerBarCycleMode { get; set; } = 0; // 0 - Today; 1 - Past 24 Hours; 2 - Past 3 Days; 3 - Past 7 Days;
-    public bool AlertNotificationChat { get; set; } = false;
-    public int RecordsPerPage { get; set; } = 20;
-    public bool ChangeTextColoring { get; set; } = true;
-    public Vector4 PositiveChangeColor { get; set; } = new(0.0f, 1.0f, 0.0f, 1.0f);
-    public Vector4 NegativeChangeColor { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
-    public int ChildWidthOffset { get; set; } = 0;
-    public int ExportDataFileType { get; set; } = 0;
+    public List<uint>         OrderedOptions           { get; set; } = [];
+    public bool               ReverseSort              { get; set; } = false;
+    public string             SelectedLanguage         { get; set; } = string.Empty;
+    public int                MaxBackupFilesCount      { get; set; } = 10;
+    public bool               AutoSaveMessage          { get; set; } = false;
+    public int                AutoSaveMode             { get; set; } = 0;  // 0 - Save Current ; 1 - Save All
+    public int                AutoSaveInterval         { get; set; } = 60; // Minutes
+    public uint               ServerBarDisplayCurrency { get; set; } = 1;
+    public ServerBarCycleMode ServerBarCycleMode       { get; set; } = 0;
+    public bool               AlertNotificationChat    { get; set; } = false;
+    public int                RecordsPerPage           { get; set; } = 20;
+    public bool               ChangeTextColoring       { get; set; } = true;
+    public Vector4            PositiveChangeColor      { get; set; } = new(0.0f, 1.0f, 0.0f, 1.0f);
+    public Vector4            NegativeChangeColor      { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
+    public int                ChildWidthOffset         { get; set; } = 0;
+    public int                ExportDataFileType       { get; set; } = 0;
     // Content ID - Retainer ID : Retainer Name
     public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = []; 
 

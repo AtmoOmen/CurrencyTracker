@@ -194,7 +194,7 @@ public static class Helpers
 
     public static void PagingComponent(Action firstPageAction, Action previousPageAction, Action nextPageAction, Action lastPageAction)
     {
-        if (ImGuiOm.ButtonIcon("FirstPage", FontAwesomeIcon.Backward))
+        if (ImGuiOm.ButtonIcon("FirstPage", FontAwesomeIcon.Backward, "", true))
             firstPageAction.Invoke();
 
         ImGui.SameLine();
@@ -206,7 +206,7 @@ public static class Helpers
             nextPageAction.Invoke();
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("LastPage", FontAwesomeIcon.Forward))
+        if (ImGuiOm.ButtonIcon("LastPage", FontAwesomeIcon.Forward, "", true))
             lastPageAction.Invoke();
 
         if (ImGui.IsWindowFocused(ImGuiFocusedFlags.ChildWindows) && ImGui.GetIO().MouseWheel > 0)

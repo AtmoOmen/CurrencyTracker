@@ -755,4 +755,10 @@ Two-Way Merge: Calculate positive and negative Changes together when merging.</v
   <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
     <value>Display Currency Overview in Gil HUD</value>
   </data>
+  <data name="Past14Days" xml:space="preserve">
+    <value>Past 14 Days</value>
+  </data>
+  <data name="Past30Days" xml:space="preserve">
+    <value>Past 30 Days</value>
+  </data>
 </root>

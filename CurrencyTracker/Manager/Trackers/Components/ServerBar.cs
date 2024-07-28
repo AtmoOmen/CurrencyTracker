@@ -105,12 +105,15 @@ public class ServerBar : ITrackerComponent
         var endTime = DateTime.Now;
         var startTime = Service.Config.ServerBarCycleMode switch
         {
-            0 => DateTime.Today,
-            1 => endTime.AddDays(-1),
-            2 => DateTime.Today.AddDays(-3),
-            3 => DateTime.Today.AddDays(-7),
+            ServerBarCycleMode.Today => DateTime.Today,
+            ServerBarCycleMode.Past24Hours => endTime.AddDays(-1),
+            ServerBarCycleMode.Past3Days => DateTime.Today.AddDays(-3),
+            ServerBarCycleMode.Past7Days => DateTime.Today.AddDays(-7),
+            ServerBarCycleMode.Past14Days => DateTime.Today.AddDays(-14),
+            ServerBarCycleMode.Past30Days => DateTime.Today.AddDays(-30),
             _ => DateTime.Today
         };
+
         return (startTime, endTime);
     }
 
@@ -120,12 +123,14 @@ public class ServerBar : ITrackerComponent
         return (period.startTime - duration, period.endTime - duration);
     }
 
-    internal static string GetCycleModeLoc(int mode) => mode switch
+    internal static string GetCycleModeLoc(ServerBarCycleMode mode) => mode switch
     {
-        0 => Service.Lang.GetText("Today"),
-        1 => Service.Lang.GetText("Past24Hours"),
-        2 => Service.Lang.GetText("Past3Days"),
-        3 => Service.Lang.GetText("Past7Days"),
+        ServerBarCycleMode.Today => Service.Lang.GetText("Today"),
+        ServerBarCycleMode.Past24Hours => Service.Lang.GetText("Past24Hours"),
+        ServerBarCycleMode.Past3Days => Service.Lang.GetText("Past3Days"),
+        ServerBarCycleMode.Past7Days => Service.Lang.GetText("Past7Days"),
+        ServerBarCycleMode.Past14Days => Service.Lang.GetText("Past14Days"),
+        ServerBarCycleMode.Past30Days => Service.Lang.GetText("Past30Days"),
         _ => string.Empty
     };
 
@@ -141,4 +146,14 @@ public class ServerBar : ITrackerComponent
         DtrEntry = null;
         Service.DtrBar.Remove("CurrencyTracker");
     }
+}
+
+public enum ServerBarCycleMode
+{
+    Today = 0,
+    Past24Hours = 1,
+    Past3Days = 2,
+    Past7Days = 3,
+    Past14Days = 4,
+    Past30Days = 5,
 }

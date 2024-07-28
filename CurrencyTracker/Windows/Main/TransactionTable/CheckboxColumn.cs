@@ -27,7 +27,7 @@ public class CheckboxColumn : TableColumn
     public override void Header()
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
-        if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH)) ImGui.OpenPopup("TableTools");
+        if (ImGuiOm.ButtonIcon("CheckboxTools", FontAwesomeIcon.EllipsisH, "", true)) ImGui.OpenPopup("TableTools");
         ImGui.EndDisabled();
 
         if (ImGui.BeginPopup("TableTools"))

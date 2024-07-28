@@ -77,7 +77,7 @@ public partial class Main
                         CurrencyInfo.RenameCurrency(id, textInput);
 
                     ImGui.SameLine();
-                    if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+                    if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
                         CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetCurrencyLocalName(id));
 
                     ImGui.Separator();

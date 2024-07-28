@@ -80,7 +80,7 @@ public partial class Main
         ImGui.PopID();
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync)) LoadDataMCS();
+        if (ImGuiOm.ButtonIcon("MCSRefresh", FontAwesomeIcon.Sync, "", true)) LoadDataMCS();
         ImGui.EndGroup();
 
         var itemWidth = (int)ImGui.GetItemRectSize().X;

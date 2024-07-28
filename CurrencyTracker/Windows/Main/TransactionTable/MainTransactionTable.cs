@@ -127,7 +127,7 @@ public partial class Main
 
         ImGui.SameLine();
         ImGui.BeginDisabled(pageCount <= 0);
-        if (ImGuiOm.ButtonIcon("FirstPageTransactionTable", FontAwesomeIcon.Backward)) currentPage = 0;
+        if (ImGuiOm.ButtonIcon("FirstPageTransactionTable", FontAwesomeIcon.Backward, "", true)) currentPage = 0;
         ImGui.EndDisabled();
 
         ImGui.SameLine();
@@ -145,7 +145,7 @@ public partial class Main
 
         ImGui.SameLine();
         ImGui.BeginDisabled(pageCount <= 0);
-        if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward)) currentPage = pageCount;
+        if (ImGuiOm.ButtonIcon("LastPageTransactionPage", FontAwesomeIcon.Forward, "", true)) currentPage = pageCount;
         ImGui.EndDisabled();
 
         ImGui.SameLine();
@@ -172,7 +172,7 @@ public partial class Main
 
     private static void TableViewSwitchUI()
     {
-        if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars)) ImGui.OpenPopup("TableViewSwitch");
+        if (ImGuiOm.ButtonIcon("TableViewSwitch", FontAwesomeIcon.Bars, "", true)) ImGui.OpenPopup("TableViewSwitch");
 
         using var popup = ImRaii.Popup("TableViewSwitch");
         if (!popup.Success) return;
@@ -219,7 +219,7 @@ public partial class Main
 
     private static void TableAppearanceUI(float windowWidth)
     {
-        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance")))
+        if (ImGuiOm.ButtonIcon("TableAppearance", FontAwesomeIcon.Table, Service.Lang.GetText("TableAppearance"), true))
             ImGui.OpenPopup("TableAppearance");
 
         using var popup = ImRaii.Popup("TableAppearance");

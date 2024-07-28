@@ -173,11 +173,12 @@ public class Settings : Window, IDisposable
                     ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
                     if (ImGui.BeginCombo("###ServerBarCycleMode", ServerBar.GetCycleModeLoc(Service.Config.ServerBarCycleMode)))
                     {
-                        for (var i = 0; i < 4; i++)
+                        foreach (var serverBarCycleMode in Enum.GetValues<ServerBarCycleMode>())
                         {
-                            if (ImGui.Selectable(ServerBar.GetCycleModeLoc(i), i == Service.Config.ServerBarCycleMode))
+                            if (ImGui.Selectable(ServerBar.GetCycleModeLoc(serverBarCycleMode), 
+                                                 serverBarCycleMode == Service.Config.ServerBarCycleMode))
                             {
-                                Service.Config.ServerBarCycleMode = i;
+                                Service.Config.ServerBarCycleMode = serverBarCycleMode;
                                 ServerBar.OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
 
                                 Service.Config.Save();
@@ -511,7 +512,7 @@ public class Settings : Window, IDisposable
         }
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset")))
+        if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
         {
             Service.Config.CustomNoteContents.Remove(key);
             Service.Config.Save();
