@@ -19,7 +19,7 @@ public class OrderColumn : TableColumn
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
 
         var icon = Service.Config.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
-        if (ImGuiOm.SelectableIconCentered("ReverseSort", icon))
+        if (ImGuiOm.SelectableIconCentered("ReverseSort", icon, false, ImGuiSelectableFlags.None, true))
         {
             Service.Config.ReverseSort = !Service.Config.ReverseSort;
             Service.Config.Save();
