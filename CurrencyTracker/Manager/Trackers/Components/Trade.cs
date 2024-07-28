@@ -53,7 +53,7 @@ public unsafe class Trade : ITrackerComponent
             var textNode = addon->GetTextNodeById(17);
             if (textNode == null) return false;
 
-            tradeTargetName = textNode->NodeText.FetchText();
+            tradeTargetName = textNode->NodeText.ExtractText();
             if (string.IsNullOrEmpty(tradeTargetName)) return false;
 
             inventoryHandler ??= new InventoryHandler();

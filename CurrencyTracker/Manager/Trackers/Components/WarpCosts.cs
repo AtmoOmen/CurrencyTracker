@@ -73,7 +73,7 @@ public unsafe class WarpCosts : ITrackerComponent
             var SYN = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
             if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
-            var text = SYN->PromptText->NodeText.FetchText();
+            var text = SYN->PromptText->NodeText.ExtractText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))

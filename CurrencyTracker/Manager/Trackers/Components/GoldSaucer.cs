@@ -33,7 +33,7 @@ public class GoldSaucer : ITrackerComponent
                 var textNode = GSR->GetTextNodeById(5);
                 if (textNode == null) return;
 
-                var gameName = textNode->NodeText.FetchText();
+                var gameName = textNode->NodeText.ExtractText();
                 Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:

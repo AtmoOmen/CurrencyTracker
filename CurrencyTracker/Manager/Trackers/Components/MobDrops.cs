@@ -56,7 +56,7 @@ public unsafe class MobDrops : ITrackerComponent
 
         var currentTarget = Service.Target.Target;
         if (currentTarget == null) return;
-        var targetName = currentTarget.Name.FetchText();
+        var targetName = currentTarget.Name.ExtractText();
         if (EnemiesList.ContainsKey(currentTarget.GameObjectId) || EnemiesList.ContainsValue(targetName)) return;
         if (currentTarget.ObjectKind != ObjectKind.BattleNpc) return;
 

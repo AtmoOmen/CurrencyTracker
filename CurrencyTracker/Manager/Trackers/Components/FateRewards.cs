@@ -33,7 +33,7 @@ public class FateRewards : ITrackerComponent
                 var textNode = FR->GetTextNodeById(6);
                 if (textNode == null) return;
 
-                var fateName = textNode->NodeText.FetchText();
+                var fateName = textNode->NodeText.ExtractText();
                 Tracker.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", fateName)})",
                                                    RecordChangeType.All, 23);
                 break;

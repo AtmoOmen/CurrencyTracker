@@ -72,7 +72,7 @@ public sealed class Plugin : IDalamudPlugin
         if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null ||
             !Service.ClientState.IsLoggedIn) return null;
 
-        var playerName = Service.ClientState.LocalPlayer?.Name.FetchText();
+        var playerName = Service.ClientState.LocalPlayer?.Name.ExtractText();
         var serverName = Service.ClientState.LocalPlayer?.HomeWorld.GameData?.Name?.RawString;
         var contentID = Service.ClientState.LocalContentId;
 

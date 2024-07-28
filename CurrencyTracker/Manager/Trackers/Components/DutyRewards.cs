@@ -30,7 +30,7 @@ public class DutyRewards : ITrackerComponent
     public void Init()
     {
         ContentNames ??= Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                              .Where(x => !string.IsNullOrEmpty(x.Name.FetchText()) &&
+                              .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
                                           !IgnoredContents.Contains(x.TerritoryType.Row))
                               .DistinctBy(x => x.TerritoryType.Row)
                               .ToDictionary(x => x.TerritoryType.Row, x => x.Name.ToString());
