@@ -22,6 +22,10 @@ public class ServerBar : ITrackerComponent
     {
         if (Service.DtrBar.Get("CurrencyTracker") is not { } entry) return;
 
+        CancelTokenSource?.Cancel();
+        CancelTokenSource?.Dispose();
+        CancelTokenSource = null;
+
         DtrEntry = entry;
         DtrEntry.Text = DtrEntry.Tooltip = "Waiting...";
         DtrEntry.Shown = true;
@@ -141,6 +145,7 @@ public class ServerBar : ITrackerComponent
 
         CancelTokenSource?.Cancel();
         CancelTokenSource?.Dispose();
+        CancelTokenSource = null;
 
         DtrEntry?.Remove();
         DtrEntry = null;
