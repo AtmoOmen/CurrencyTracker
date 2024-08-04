@@ -143,11 +143,10 @@ public partial class Main
 
     internal static void LoadDataMCS()
     {
-        var sortedCharacters = Service.Config.CurrentActiveCharacter
-                                      .OrderByDescending(c => c.ContentID == Service.ClientState.LocalContentId)
-                                      .ToArray();
-
         CharacterCurrencyInfos.Clear();
-        CharacterCurrencyInfos = sortedCharacters.Select(x => new CharacterCurrencyInfo(x)).ToList();
+        CharacterCurrencyInfos = Service.Config.CurrentActiveCharacter
+                                        .OrderByDescending(c => c.ContentID == Service.ClientState.LocalContentId)
+                                        .Select(x => new CharacterCurrencyInfo(x))
+                                        .ToList();
     }
 }
