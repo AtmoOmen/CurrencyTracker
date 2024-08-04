@@ -1,5 +1,4 @@
 using System;
-using System.Numerics;
 using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
@@ -70,83 +69,72 @@ public partial class CurrencySettings : Window, IDisposable
         ImGui.EndGroup();
     }
 
-    private static void DrawBackgroundImage()
-    {
-        var region = ImGui.GetContentRegionAvail();
-        var minDimension = Math.Min(region.X, region.Y);
-
-        var areaStart = ImGui.GetCursorPos();
-        ImGui.SetCursorPosX((region.X / 2.0f) - (minDimension / 2.0f));
-        ImGui.Image(Service.Config.AllCurrencyIcons[1].GetWrapOrEmpty().ImGuiHandle, new Vector2(minDimension), Vector2.Zero,
-                    Vector2.One,
-                    Vector4.One with { W = 0.10f });
-        ImGui.SetCursorPos(areaStart);
-    }
-
     private void CurrencyInfoGroupUI()
     {
-        ImGui.BeginGroup();
-        ImGui.Image(Service.Config.AllCurrencyIcons[Main.SelectedCurrencyID].GetWrapOrEmpty().ImGuiHandle,
-                    new Vector2(48 * ImGuiHelpers.GlobalScale));
-
-        ImGui.SameLine();
-        ImGui.BeginGroup();
-        ImGui.SetWindowFontScale(1.6f);
-        var currencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
-        if (!isEditingCurrencyName)
+        using (ImRaii.Group())
         {
-            ImGui.Text($"{currencyName}");
-            if (ImGui.IsItemClicked())
+            if (!Service.Config.AllCurrencyIcons.TryGetValue(Main.SelectedCurrencyID, out var imageTexture)) return;
+
+            ImGui.Image(imageTexture.GetWrapOrEmpty().ImGuiHandle, ImGuiHelpers.ScaledVector2(48f));
+
+            ImGui.SameLine();
+            using (ImRaii.Group())
             {
-                isEditingCurrencyName = true;
-                editedCurrencyName = currencyName;
+                ImGui.SetWindowFontScale(1.6f);
+                var currencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
+                if (!isEditingCurrencyName)
+                {
+                    ImGui.Text($"{currencyName}");
+                    if (ImGui.IsItemClicked())
+                    {
+                        isEditingCurrencyName = true;
+                        editedCurrencyName = currencyName;
+                    }
+                }
+                else
+                {
+                    ImGui.SetNextItemWidth(ImGui.CalcTextSize(Service.Config.AllCurrencies[Main.SelectedCurrencyID]).X +
+                                           (ImGui.GetStyle().FramePadding.X * 2));
+                    if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
+                    {
+                        if (!editedCurrencyName.IsNullOrWhitespace() &&
+                            editedCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID])
+                        {
+                            CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID, editedCurrencyName);
+                            isEditingCurrencyName = false;
+                        }
+                    }
+
+                    if (ImGui.IsItemDeactivated()) isEditingCurrencyName = false;
+
+                    if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ResetCurrencyNamePopup");
+
+                    ImGui.SetWindowFontScale(1f);
+                    using var popup = ImRaii.Popup("ResetCurrencyNamePopup");
+                    if (popup.Success)
+                    {
+                        if (ImGuiOm.Selectable(Service.Lang.GetText("Reset")))
+                        {
+                            CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID,
+                                                        CurrencyInfo.GetCurrencyLocalName(Main.SelectedCurrencyID));
+                            isEditingCurrencyName = false;
+                        }
+                    }
+                }
+
+                ImGui.SameLine();
+                ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
+
+                if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
+
+                ImGui.SetWindowFontScale(1);
+                ImGui.Text(
+                    $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(Main.SelectedCurrencyID, P.CurrentCharacter):N0}");
+
+                ImGui.SameLine();
+                ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
             }
         }
-        else
-        {
-            ImGui.SetNextItemWidth(ImGui.CalcTextSize(Service.Config.AllCurrencies[Main.SelectedCurrencyID]).X +
-                                   (ImGui.GetStyle().FramePadding.X * 2));
-            if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
-            {
-                if (!editedCurrencyName.IsNullOrWhitespace() &&
-                    editedCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID])
-                {
-                    CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID, editedCurrencyName);
-                    isEditingCurrencyName = false;
-                }
-            }
-
-            if (ImGui.IsItemDeactivated()) isEditingCurrencyName = false;
-
-            if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ResetCurrencyNamePopup");
-
-            ImGui.SetWindowFontScale(1f);
-            using var popup = ImRaii.Popup("ResetCurrencyNamePopup");
-            if (popup.Success)
-            {
-                if (ImGuiOm.Selectable(Service.Lang.GetText("Reset")))
-                {
-                    CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID,
-                                                CurrencyInfo.GetCurrencyLocalName(Main.SelectedCurrencyID));
-                    isEditingCurrencyName = false;
-                }
-            }
-        }
-
-        ImGui.SameLine();
-        ImGui.Text("");
-
-        if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
-
-        ImGui.SetWindowFontScale(1);
-        ImGui.Text(
-            $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(Main.SelectedCurrencyID, P.CurrentCharacter):N0}");
-
-        ImGui.SameLine();
-        ImGui.Text("");
-
-        ImGui.EndGroup();
-        ImGui.EndGroup();
     }
 
     public void Dispose()

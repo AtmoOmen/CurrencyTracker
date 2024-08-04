@@ -39,7 +39,7 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("AlertType")}:");
 
         ImGui.SameLine();
-        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp"));
+        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp"), 20f, FontAwesomeIcon.InfoCircle, true);
 
         if (ImGui.RadioButton(Service.Lang.GetText("Amount"), ref alertMode, 0)) selectedInterval = null;
         ImGui.SameLine();
@@ -91,7 +91,7 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalInput")}:");
 
         ImGui.SameLine();
-        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp1"));
+        ImGuiOm.HelpMarker(Service.Lang.GetText("AlertIntervalHelp1"), 20f, FontAwesomeIcon.InfoCircle, true);
 
         ImGui.BeginGroup();
         ImGui.SetNextItemWidth(radioButtonsTRWidth);
