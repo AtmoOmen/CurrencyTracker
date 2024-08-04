@@ -103,7 +103,7 @@ public partial class Main
                                              isLangDownloading
                                                  ? FontAwesomeIcon.Spinner
                                                  : FontAwesomeIcon.CloudDownloadAlt,
-                                             Service.Lang.GetText("UpdateTranslations")))
+                                             Service.Lang.GetText("UpdateTranslations"), true))
             {
                 if (!isLangDownloading)
                 {
@@ -121,7 +121,7 @@ public partial class Main
 
             ImGui.Separator();
 
-            if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language, Service.Lang.GetText("HelpTranslate")))
+            if (ImGuiOm.ButtonIconSelectable("HelpTranslate", FontAwesomeIcon.Language, Service.Lang.GetText("HelpTranslate"), true))
                 Util.OpenLink("https://crowdin.com/project/dalamud-currencytracker");
 
             ImGui.EndPopup();
