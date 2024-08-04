@@ -1,17 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 
 namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
 {
-    private Dictionary<uint, string>? TerritoryNamesTR;
     private string searchFilterTR = string.Empty;
+
+    private static Vector2 CheckboxSize = ImGuiHelpers.ScaledVector2(20f);
 
     private int radioButtonsTRWidth = 250;
 
@@ -50,35 +52,60 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
-        ImGui.SetNextItemWidth(250f * ImGuiHelpers.GlobalScale);
-        if (ImGui.BeginCombo("##AreaRestricted", Service.Lang.GetText("PleaseSelect"), ImGuiComboFlags.HeightLarge))
+        var childSize = ImGuiHelpers.ScaledVector2(280f, 250f);
+        using (ImRaii.Child("TerritoryRestrictedChildOut", childSize, true))
         {
-            TerritoryNamesTR ??= TerritoryNames;
-            rules.RestrictedAreas ??= [];
+            ImGui.SetNextItemWidth(-1f);
+            ImGui.InputTextWithHint
+                ("###ZoneSearchInput", Service.Lang.GetText("PleaseSearch"), ref searchFilterTR, 32);
 
-            ImGui.TextUnformatted("");
+            ImGui.Separator();
 
-            ImGui.SameLine(8f, 0);
-            ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X - 8f);
-            ImGui.InputTextWithHint("", Service.Lang.GetText("PleaseSearch"), ref searchFilterTR, 128);
-
-            if (ImGui.IsItemDeactivatedAfterEdit())
+            using (ImRaii.Child("TerritoryRestrictedChildInner", ImGui.GetContentRegionAvail(), false, ImGuiWindowFlags.NoScrollbar))
             {
-                TerritoryNamesTR = string.IsNullOrEmpty(searchFilterTR) ? TerritoryNames : TerritoryNames
-                                       .Where(x => x.Value.Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase)
-                                                   || x.Key.ToString().Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase))
-                                       .ToDictionary(x => x.Key, x => x.Value);
-            }
-
-            foreach (var area in TerritoryNamesTR)
-                if (ImGui.Selectable($"{area.Value} ({area.Key})", rules.RestrictedAreas.Contains(area.Key), ImGuiSelectableFlags.DontClosePopups))
+                var tableSize = new Vector2(ImGui.GetContentRegionAvail().X, 0);
+                if (ImGui.BeginTable("###ZoneSelectTable", 2, ImGuiTableFlags.Borders, tableSize))
                 {
-                    if (!rules.RestrictedAreas.Remove(area.Key))
-                        rules.RestrictedAreas.Add(area.Key);
+                    ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed, CheckboxSize.X);
+                    ImGui.TableSetupColumn("PlaceName");
 
-                    Service.Config.Save();
+                    ImGui.TableNextRow(ImGuiTableRowFlags.Headers);
+                    ImGui.TableNextColumn();
+                    ImGui.Text("");
+                    ImGui.TableNextColumn();
+                    ImGui.Text("Location");
+
+                    var selectedCopy = rules.RestrictedAreas ?? [];
+                    var data = TerritoryNames.OrderByDescending(x => selectedCopy.Contains(x.Key));
+                    foreach (var (placeID, placeName) in data)
+                    {
+                        if (!string.IsNullOrWhiteSpace(searchFilterTR) &&
+                            !placeName.Contains(searchFilterTR, StringComparison.OrdinalIgnoreCase)) continue;
+
+                        using (ImRaii.PushId($"{placeName}_{placeID}"))
+                        {
+                            ImGui.TableNextRow();
+
+                            ImGui.TableNextColumn();
+                            ImGui.BeginDisabled();
+                            var state = selectedCopy.Contains(placeID);
+                            ImGui.Checkbox("", ref state);
+                            CheckboxSize = ImGui.GetItemRectSize();
+                            ImGui.EndDisabled();
+
+                            ImGui.TableNextColumn();
+                            if (ImGui.Selectable($"{placeName} ({placeID})", state,
+                                                 ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.DontClosePopups))
+                            {
+                                if (!rules.RestrictedAreas.Remove(placeID))
+                                    rules.RestrictedAreas.Add(placeID);
+                            }
+                        }
+                    }
+
+                    ImGui.EndTable();
                 }
-            ImGui.EndCombo();
+            }
         }
     }
 }
