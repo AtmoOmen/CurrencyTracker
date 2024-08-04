@@ -92,7 +92,7 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
                 Main.LoadDataMCS();
 
             characterCurrencyInfo ??= 
-                Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.Equals(P.CurrentCharacter));
+                Main.CharacterCurrencyInfos?.FirstOrDefault(x => x.Character.Equals(P.CurrentCharacter));
         }
 
         public override void Draw()
