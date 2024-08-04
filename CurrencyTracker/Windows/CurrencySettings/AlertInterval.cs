@@ -105,7 +105,7 @@ public partial class CurrencySettings
         alertIntervalWidth = ImGui.GetItemRectSize();
 
         ImGui.SameLine();
-        if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add")))
+        if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add"), true))
         {
             var interval = CurrencyInterval.CreateInterval(intervalStart, intervalEnd);
             if (interval != null)
