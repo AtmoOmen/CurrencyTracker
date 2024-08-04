@@ -106,8 +106,9 @@ public partial class Main
             foreach (var column in TableColumns.Values)
             {
                 if (!column.IsVisible) continue;
-                ImGui.TableNextColumn();
+                if (i < 0) continue;
 
+                ImGui.TableNextColumn();
                 column.Cell(i, currentTransactions[i]);
             }
         }

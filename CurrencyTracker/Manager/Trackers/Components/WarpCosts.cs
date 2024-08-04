@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
@@ -20,7 +20,7 @@ public unsafe class WarpCosts : ITrackerComponent
     public bool Initialized { get; set; }
 
     // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
-    private static readonly HashSet<string> ValidWarpText = ["Gils", "Gil", "金币", "金幣", "ギル"];
+    private static readonly List<string> ValidWarpText = [];
     private static readonly uint[] tpCostCurrencies = [1, 7569];
 
     // 包含金币传送点的区域 Territories that Have a Gil-Cost Warp
@@ -30,11 +30,11 @@ public unsafe class WarpCosts : ITrackerComponent
         AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData);
     private Hook<AddonReceiveEventDelegate>? SelectYesHook;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskManager;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 60000, ShowDebug = false };
+        TaskManager ??= new TaskHelper { TimeLimitMS = 60000 };
 
         ValidGilWarpTerritories = Service.DataManager.GetExcelSheet<Warp>()
                                         .Where(x => Service.DataManager.GetExcelSheet<WarpCondition>()
@@ -42,6 +42,9 @@ public unsafe class WarpCosts : ITrackerComponent
                                                                      x.WarpCondition.Value.RowId == y.RowId))
                                         .Select(x => x.TerritoryType.Value.RowId)
                                         .ToHashSet();
+
+        ValidWarpText.Clear();
+        ValidWarpText.Add(Service.DataManager.GetExcelSheet<Item>().GetRow(1).Name.RawString);
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
@@ -68,10 +71,12 @@ public unsafe class WarpCosts : ITrackerComponent
     {
         if (eventType == AtkEventType.MouseClick)
         {
-            if (!ValidGilWarpTerritories.Contains(Service.ClientState.TerritoryType)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+            if (!ValidGilWarpTerritories.Contains(Service.ClientState.TerritoryType)) 
+                return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             var SYN = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
-            if (!HelpersOm.IsAddonAndNodesReady(&SYN->AtkUnitBase)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
+            if (!IsAddonAndNodesReady(&SYN->AtkUnitBase)) 
+                return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             var text = SYN->PromptText->NodeText.ExtractText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
@@ -129,8 +134,11 @@ public unsafe class WarpCosts : ITrackerComponent
     public void Uninit()
     {
         Service.AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
+
         SelectYesHook?.Dispose();
         SelectYesHook = null;
+
         TaskManager?.Abort();
+        TaskManager = null;
     }
 }

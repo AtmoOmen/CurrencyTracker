@@ -1,7 +1,6 @@
 using System.Linq;
 using System.Text;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
@@ -14,25 +13,34 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
+    private static long? CurrencyAmountCache;
     private static IAddonEventHandle? mouseoverHandle;
     private static IAddonEventHandle? mouseoutHandle;
 
+    private const string AddonName = "Currency";
+    private const int CurrencyNodeId = 12;
+    private const int GilTextNodeId = 5;
+    private const NodeFlags NodeFlagsMask = NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision;
+
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "Currency", OnCurrencyUI);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "Currency", OnCurrencyUI);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "Currency", OnCurrencyUI);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, AddonName, OnCurrencyUI);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, AddonName, OnCurrencyUI);
+        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, AddonName, OnCurrencyUI);
     }
 
     private static void OnCurrencyUI(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
-            case AddonEvent.PostSetup or AddonEvent.PreDraw:
+            case AddonEvent.PostSetup:
+            case AddonEvent.PreDraw:
+                CurrencyAmountCache ??= CurrencyInfo.GetCharacterCurrencyAmount(1, P.CurrentCharacter);
                 ProcessCurrencyNode(true);
                 break;
             case AddonEvent.PreFinalize:
                 ProcessCurrencyNode(false);
+                CurrencyAmountCache = null;
                 break;
         }
     }
@@ -47,31 +55,29 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
             mouseoutHandle = null;
         }
 
-        if (!EzThrottler.Throttle("CurrencyAddonExpand", 1000)) return;
+        if (Throttler.Throttle("CurrencyAddonExpand", 1000))
+            CurrencyAmountCache = CurrencyInfo.GetCharacterCurrencyAmount(1, P.CurrentCharacter);
 
-        if (!TryGetAddonByName<AtkUnitBase>("Currency", out var addon)) return;
+        if (!TryGetAddonByName<AtkUnitBase>(AddonName, out var addon)) return;
 
-        var componentNode = addon->GetNodeById(12)->GetAsAtkComponentNode();
+        var componentNode = addon->GetNodeById(CurrencyNodeId)->GetAsAtkComponentNode();
         if (componentNode == null) return;
-        var gilNode = componentNode->Component->GetTextNodeById(5)->GetAsAtkTextNode();
+
+        var gilNode = componentNode->Component->GetTextNodeById(GilTextNodeId)->GetAsAtkTextNode();
         if (gilNode == null) return;
 
-        const NodeFlags nodeFlagsMask = NodeFlags.EmitsEvents | NodeFlags.RespondToMouse | NodeFlags.HasCollision;
-    
         if (isAdd)
         {
-            gilNode->AtkResNode.NodeFlags |= nodeFlagsMask;
+            gilNode->AtkResNode.NodeFlags |= NodeFlagsMask;
 
             mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOver, DisplayAndHideTooltip);
             mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOut, DisplayAndHideTooltip);
 
-            var currencyAmount = CurrencyInfo.GetCharacterCurrencyAmount(1, P.CurrentCharacter);
-            gilNode->SetText(currencyAmount.ToString("#,0"));
+            if (CurrencyAmountCache != null)
+                gilNode->SetText(((long)CurrencyAmountCache).ToString("#,0"));
         }
         else
-        {
-            gilNode->AtkResNode.NodeFlags &= ~nodeFlagsMask;
-        }
+            gilNode->AtkResNode.NodeFlags &= ~NodeFlagsMask;
     }
 
     private static void DisplayAndHideTooltip(AddonEventType type, nint addon, nint node)
@@ -104,13 +110,13 @@ public unsafe class CurrencyAddonExpand : ITrackerComponent
 
     public void Uninit()
     {
-        var addon = (AtkUnitBase*)Service.GameGui.GetAddonByName("Currency");
-        if (addon != null)
+        if (TryGetAddonByName<AtkUnitBase>(AddonName, out var addon))
         {
             addon->FireCloseCallback();
             addon->Close(true);
         }
 
         Service.AddonLifecycle.UnregisterListener(OnCurrencyUI);
+        CurrencyAmountCache = null;
     }
 }

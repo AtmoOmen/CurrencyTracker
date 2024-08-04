@@ -1,5 +1,5 @@
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -13,11 +13,11 @@ public unsafe class Trade : ITrackerComponent
 
     private string tradeTargetName = string.Empty;
     private InventoryHandler? inventoryHandler;
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 30000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 30000 };
 
         Service.Condition.ConditionChange += OnConditionChanged;
     }
@@ -28,7 +28,7 @@ public unsafe class Trade : ITrackerComponent
 
         if (value)
         {
-            TaskManager.Enqueue(GetTradeTarget);
+            TaskHelper.Enqueue(GetTradeTarget);
         }
         else
         {
@@ -72,6 +72,6 @@ public unsafe class Trade : ITrackerComponent
         Service.Condition.ConditionChange -= OnConditionChanged;
         HandlerManager.Nullify(ref inventoryHandler);
         tradeTargetName = string.Empty;
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
     }
 }

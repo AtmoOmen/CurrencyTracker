@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
@@ -60,9 +59,9 @@ public partial class Main
             }
 
             Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
-                               (failCharacters.Any() ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
+                               (failCharacters.Count != 0 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
 
-            if (failCharacters.Any())
+            if (failCharacters.Count != 0)
             {
                 Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
                 foreach (var chara in failCharacters) Service.Chat.PrintError(chara);
@@ -72,7 +71,7 @@ public partial class Main
 
     private static void AutoBackupUI()
     {
-        var autoSaveEnabled = ComponentManager.Components.TryGetValue(typeof(AutoSave), out var component) && component.Initialized;
+        var autoSaveEnabled = ComponentManager.TryGet<AutoSave>(out var component) && component.Initialized;
 
         var autoBackupText = Service.Lang.GetText("AutoBackup");
         if (autoSaveEnabled)

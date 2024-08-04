@@ -3,130 +3,131 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Trackers.Components;
 
 namespace CurrencyTracker.Manager.Trackers;
 
 public class ComponentManager
 {
-    public static Dictionary<Type, ITrackerComponent> Components { get; private set; } = new();
+    private static readonly Dictionary<Type, ITrackerComponent> Components = [];
 
     public static void Init()
     {
-        if (!Components.Any())
-        {
-            var types = Assembly.GetExecutingAssembly().GetTypes()
-                                .Where(t => t.GetInterfaces().Contains(typeof(ITrackerComponent)) &&
-                                            t.GetConstructor(Type.EmptyTypes) != null);
+        if (Components.Count != 0) return;
 
-            foreach (var type in types)
-            {
-                var instance = Activator.CreateInstance(type);
-                if (instance is ITrackerComponent component) Components.TryAdd(type, component);
-            }
-        }
+        var componentTypes = Assembly.GetExecutingAssembly().GetTypes()
+                                     .Where(t => typeof(ITrackerComponent).IsAssignableFrom(t) &&
+                                                 t is { IsInterface: false, IsAbstract: false });
 
-        foreach (var component in Components)
+        foreach (var type in componentTypes)
+            if (Activator.CreateInstance(type) is ITrackerComponent component)
+                Components[type] = component;
+
+        foreach (var (type, component) in Components)
         {
-            if (Service.Config.ComponentEnabled.TryGetValue(component.Key.Name, out var enabled))
+            if (!Service.Config.ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled)
             {
-                if (!enabled) continue;
-            }
-            else
-            {
-                Service.Log.Warning($"Fail to get component {component.Key.Name} configurations, skip loading");
+                Service.Log.Warning($"Component {type.Name} is not enabled or configuration is missing. Skipping.");
                 continue;
             }
 
-            try
-            {
-                if (!component.Value.Initialized)
-                {
-                    component.Value.Init();
-                    component.Value.Initialized = true;
-                    Service.Log.Debug($"Loaded {component.Key.Name} module");
-                }
-                else
-                    Service.Log.Debug($"{component.Key.Name} has been loaded, skip.");
-            }
-            catch (Exception ex)
-            {
-                component.Value.Uninit();
-                component.Value.Initialized = false;
-                Service.Config.ComponentEnabled[component.Key.Name] = false;
-
-                Service.Log.Error($"Failed to load component {component.Key.Name} due to error: {ex.Message}");
-                Service.Log.Error(ex.StackTrace ?? "Unknown");
-            }
-        }
-    }
-
-    public static void Load(ITrackerComponent component)
-    {
-        if (Components.ContainsValue(component))
-        {
             try
             {
                 if (!component.Initialized)
                 {
                     component.Init();
                     component.Initialized = true;
-                    Service.Config.ComponentEnabled[component.GetType().Name] = true;
-
-                    Service.Log.Debug($"Loaded {component.GetType().Name} module");
+                    Service.Log.Debug($"Loaded {type.Name} module");
                 }
-                else
-                    Service.Log.Debug($"{component.GetType().Name} has been loaded, skip.");
+                else Service.Log.Debug($"{type.Name} has already been loaded. Skipping.");
             }
             catch (Exception ex)
             {
-                component.Uninit();
-                component.Initialized = false;
-                Service.Config.ComponentEnabled[component.GetType().Name] = false;
-
-                Service.Log.Error($"Failed to load component {component.GetType().Name} due to error: {ex.Message}");
-                Service.Log.Error($"{ex.StackTrace}");
+                HandleComponentError(component, ex);
             }
         }
-        else
-            Service.Log.Error($"Fail to fetch component {component}");
+    }
+
+    public static void Load(ITrackerComponent component)
+    {
+        var type = component.GetType();
+        if (!Components.ContainsKey(type))
+        {
+            Service.Log.Error($"Failed to fetch component {type.Name}");
+            return;
+        }
+
+        try
+        {
+            if (!component.Initialized)
+            {
+                component.Init();
+                component.Initialized = true;
+                Service.Config.ComponentEnabled[type.Name] = true;
+                Service.Log.Debug($"Loaded {type.Name} module");
+            }
+            else Service.Log.Debug($"{type.Name} has already been loaded. Skipping.");
+        }
+        catch (Exception ex)
+        {
+            HandleComponentError(component, ex);
+        }
     }
 
     public static void Unload(ITrackerComponent component)
     {
+        var type = component.GetType();
+        if (!Components.ContainsKey(type)) return;
+
         try
         {
-            if (Components.ContainsValue(component))
-            {
-                component.Uninit();
-                component.Initialized = false;
-                Service.Config.ComponentEnabled[component.GetType().Name] = false;
-
-                Service.Log.Debug($"Unloaded {component.GetType().Name} module");
-            }
+            component.Uninit();
+            component.Initialized = false;
+            Service.Config.ComponentEnabled[type.Name] = false;
+            Service.Log.Debug($"Unloaded {type.Name} module");
         }
         catch (Exception ex)
         {
-            Service.Config.ComponentEnabled[component.GetType().Name] = false;
-            Service.Log.Error($"Failed to unload component {component.GetType().Name} due to error: {ex.Message}");
-            Service.Log.Error($"{ex.StackTrace}");
+            HandleComponentError(component, ex);
         }
     }
 
     public static void Uninit()
     {
-        foreach (var component in Components)
+        foreach (var (type, component) in Components)
+        {
             try
             {
-                component.Value.Uninit();
-                component.Value.Initialized = false;
-                Service.Log.Debug($"Unloaded {component.Key.Name} module");
+                component.Uninit();
+                component.Initialized = false;
+                Service.Log.Debug($"Unloaded {type.Name} module");
             }
             catch (Exception ex)
             {
-                Service.Config.ComponentEnabled[component.Key.Name] = false;
-                Service.Log.Error($"Failed to unload component {component.Key.Name} due to error: {ex.Message}");
-                Service.Log.Error($"{ex.StackTrace}");
+                HandleComponentError(component, ex);
             }
+        }
+    }
+
+    public static T Get<T>() where T : ITrackerComponent 
+        => Components.TryGetValue(typeof(T), out var component) ? (T)component : default;
+
+    public static bool TryGet<T>(out T component) where T : ITrackerComponent
+    {
+        if (Components.TryGetValue(typeof(T), out var rawComponent) && rawComponent is T typedComponent)
+        {
+            component = typedComponent;
+            return true;
+        }
+        component = default;
+        return false;
+    }
+
+    private static void HandleComponentError(ITrackerComponent component, Exception ex)
+    {
+        var type = component.GetType();
+        component.Uninit();
+        component.Initialized = false;
+        Service.Config.ComponentEnabled[type.Name] = false;
+        Service.Log.Error(ex, $"Error in component {type.Name}");
     }
 }

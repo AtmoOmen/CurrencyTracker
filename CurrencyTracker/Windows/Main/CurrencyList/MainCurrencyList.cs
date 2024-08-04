@@ -128,9 +128,9 @@ public partial class Main
         (Service.Config.OrderedOptions[index2], Service.Config.OrderedOptions[index1]) =
             (Service.Config.OrderedOptions[index1], Service.Config.OrderedOptions[index2]);
 
-        TaskManager.Abort();
-        TaskManager.DelayNext(500);
-        TaskManager.Enqueue(Service.Config.Save);
+        TaskHelper.Abort();
+        TaskHelper.DelayNext(500);
+        TaskHelper.Enqueue(Service.Config.Save);
     }
 
     private static void DeleteCustomCurrencyUI(float buttonWidth)

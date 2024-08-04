@@ -11,6 +11,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
 using ImGuiNET;
@@ -41,20 +42,19 @@ public class Settings : Window, IDisposable
                     if (ImGui.BeginTabItem(Service.Lang.GetText("General")))
                     {
                         // 邮件附件 Letter Attachments
-                        ModuleCheckbox(typeof(LetterAttachments),
-                                       Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
+                        ModuleCheckbox<LetterAttachments>(Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
                         if (Service.Config.ComponentEnabled["LetterAttachments"])
                             NoteContentInputText("LetterAttachments-LetterFrom",
                                                  new[] { Service.Lang.GetText("ParamEP-SenderName") });
 
                         // 传送 Teleport
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(TeleportCosts), Service.Lang.GetText("TeleportCosts-RecordTPCosts"));
+                        ModuleCheckbox<TeleportCosts>(Service.Lang.GetText("TeleportCosts-RecordTPCosts"));
                         if (Service.Config.ComponentEnabled["TeleportCosts"])
                             SecondaryRadioButtons(boolName1: "RecordDesAetheryteName", "RecordDesAreaName",
                                                   Service.Lang.GetText("TeleportCosts-RecordAetheryteName"),
                                                   Service.Lang.GetText("TeleportCosts-RecordAreaName"));
-                        ModuleCheckbox(typeof(WarpCosts), Service.Lang.GetText("WarpCosts-RecordTPCosts"));
+                        ModuleCheckbox<WarpCosts>(Service.Lang.GetText("WarpCosts-RecordTPCosts"));
                         if (Service.Config.ComponentEnabled["TeleportCosts"] || Service.Config.ComponentEnabled["WarpCosts"])
                             NoteContentInputText("TeleportTo",
                                                  new[] { Service.Lang.GetText("ParamEP-DestinationName") });
@@ -62,13 +62,13 @@ public class Settings : Window, IDisposable
 
                         // 任务 Quest
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(QuestRewards), Service.Lang.GetText("QuestRewards-RecordQuestRewards"));
+                        ModuleCheckbox<QuestRewards>(Service.Lang.GetText("QuestRewards-RecordQuestRewards"));
                         if (Service.Config.ComponentEnabled["QuestRewards"])
                             NoteContentInputText("Quest", new[] { Service.Lang.GetText("ParamEP-QuestName") });
 
                         // 无人岛 Island Sanctuary
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(IslandSanctuary), Service.Lang.GetText("IslandSanctuary-RecordISResult"));
+                        ModuleCheckbox<IslandSanctuary>(Service.Lang.GetText("IslandSanctuary-RecordISResult"));
                         if (Service.Config.ComponentEnabled["IslandSanctuary"])
                         {
                             NoteContentInputText("IslandFarm", null);
@@ -81,18 +81,18 @@ public class Settings : Window, IDisposable
                     // 战斗 Combat
                     if (ImGui.BeginTabItem(Service.Lang.GetText("Combat")))
                     {
-                        ModuleCheckbox(typeof(DutyRewards), Service.Lang.GetText("DutyRewards-RecordDutyRewards"));
+                        ModuleCheckbox<DutyRewards>(Service.Lang.GetText("DutyRewards-RecordDutyRewards"));
                         if (Service.Config.ComponentEnabled["DutyRewards"])
                             SecondaryCheckbox("RecordContentName",
                                               Service.Lang.GetText("DutyRewards-RecordContentName"));
 
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(FateRewards), Service.Lang.GetText("FateRewards-RecordFateRewards"));
+                        ModuleCheckbox<FateRewards>(Service.Lang.GetText("FateRewards-RecordFateRewards"));
                         if (Service.Config.ComponentEnabled["FateRewards"])
                             NoteContentInputText("Fate", new[] { Service.Lang.GetText("ParamEP-FateName") });
 
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(MobDrops), Service.Lang.GetText("MobDrops-RecordMobDrops"));
+                        ModuleCheckbox<MobDrops>(Service.Lang.GetText("MobDrops-RecordMobDrops"));
                         if (Service.Config.ComponentEnabled["MobDrops"])
                             NoteContentInputText("MobDrops-MobDropsNote",
                                                  new[] { Service.Lang.GetText("ParamEP-MobNames") });
@@ -103,15 +103,14 @@ public class Settings : Window, IDisposable
                     if (ImGui.BeginTabItem(Service.Lang.GetText("Trade")))
                     {
                         // 交换 Exchange
-                        ModuleCheckbox(typeof(Exchange), Service.Lang.GetText("Exchange-RecordExchangeResult"));
-                        ModuleCheckbox(typeof(SpecialExchange),
-                                       Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
+                        ModuleCheckbox<Exchange>(Service.Lang.GetText("Exchange-RecordExchangeResult"));
+                        ModuleCheckbox<SpecialExchange>(Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
                         if (Service.Config.ComponentEnabled["Exchange"] || Service.Config.ComponentEnabled["SpecialExchange"])
                             NoteContentInputText("ExchangeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
 
                         // 交易 Trade
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(Trade), Service.Lang.GetText("Trade-RecordTradeTarget"));
+                        ModuleCheckbox<Trade>(Service.Lang.GetText("Trade-RecordTradeTarget"));
                         if (Service.Config.ComponentEnabled["Trade"])
                             NoteContentInputText("TradeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
                         ImGui.EndTabItem();
@@ -120,10 +119,10 @@ public class Settings : Window, IDisposable
                     // 金碟 Gold Saucer
                     if (ImGui.BeginTabItem(Service.Lang.GetText("GoldSaucer")))
                     {
-                        ModuleCheckbox(typeof(GoldSaucer), Service.Lang.GetText("GoladSaucer-RecordMGPSource"));
+                        ModuleCheckbox<GoldSaucer>(Service.Lang.GetText("GoladSaucer-RecordMGPSource"));
 
                         ImGui.Separator();
-                        ModuleCheckbox(typeof(TripleTriad), Service.Lang.GetText("TripleTriad-RecordTTResult"));
+                        ModuleCheckbox<TripleTriad>(Service.Lang.GetText("TripleTriad-RecordTTResult"));
                         if (Service.Config.ComponentEnabled["TripleTriad"])
                             NoteContentInputText("TripleTriadWith", new[]
                                                  {
@@ -139,8 +138,8 @@ public class Settings : Window, IDisposable
 
             if (ImGui.BeginTabItem(Service.Lang.GetText("Features")))
             {
-                ModuleCheckbox(typeof(CurrencyAddonExpand), Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
-                ModuleCheckbox(typeof(ServerBar), Service.Lang.GetText("DisplayChangesInServerBar"));
+                ModuleCheckbox<CurrencyAddonExpand>(Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
+                ModuleCheckbox<ServerBar>(Service.Lang.GetText("DisplayChangesInServerBar"));
                 if (Service.Config.ComponentEnabled["ServerBar"])
                 {
                     ImGui.Indent();
@@ -190,13 +189,12 @@ public class Settings : Window, IDisposable
                     ImGui.Unindent();
                 }
 
-                ModuleCheckbox(typeof(MoneyAddonExpand), Service.Lang.GetText("DisplayCurrencyOverviewInGilHUD"));
+                ModuleCheckbox<MoneyAddonExpand>(Service.Lang.GetText("DisplayCurrencyOverviewInGilHUD"));
                 
                 ImGui.Separator();
-                ModuleCheckbox(typeof(Retainer), Service.Lang.GetText("Retainer-RecordRetainerInventory"));
-                ModuleCheckbox(typeof(SaddleBag), Service.Lang.GetText("SaddleBag-RecordSaddleBag"));
-                ModuleCheckbox(typeof(PremiumSaddleBag),
-                               Service.Lang.GetText("PremiumSaddleBag-RecordPremiumSaddleBag"));
+                ModuleCheckbox<Retainer>(Service.Lang.GetText("Retainer-RecordRetainerInventory"));
+                ModuleCheckbox<SaddleBag>(Service.Lang.GetText("SaddleBag-RecordSaddleBag"));
+                ModuleCheckbox<PremiumSaddleBag>(Service.Lang.GetText("PremiumSaddleBag-RecordPremiumSaddleBag"));
                 ImGui.EndTabItem();
             }
 
@@ -223,7 +221,7 @@ public class Settings : Window, IDisposable
 
                 // 备份 Backup
                 ImGui.Separator();
-                ModuleCheckbox(typeof(AutoSave), Service.Lang.GetText("AutoBackup"));
+                ModuleCheckbox<AutoSave>(Service.Lang.GetText("AutoBackup"));
                 if (Service.Config.ComponentEnabled["AutoSave"])
                 {
                     SecondaryRadioButtons("AutoSaveMode", Service.Lang.GetText("BackupCurrentCharacter"),
@@ -349,40 +347,32 @@ public class Settings : Window, IDisposable
         }
     }
 
-    private static void ModuleCheckbox(Type type, string checkboxLabel, string help = "")
+    private static void ModuleCheckbox<T>(string checkboxLabel, string help = "") where T : ITrackerComponent
     {
-        var boolName = type.Name;
+        if (!ComponentManager.TryGet<T>(out var component)) return;
+
+        var boolName = component.GetType().Name;
         if (!Service.Config.ComponentEnabled.TryGetValue(boolName, out var tempBool)) return;
 
-        if (!typeof(ITrackerComponent).IsAssignableFrom(type))
+        using (ImRaii.PushId($"{boolName}_{component.ToString()}"))
         {
-            Service.Log.Error($"Fail to fetch component {type.Name}");
-            return;
-        }
-
-        ImGui.PushID($"{boolName}-{type.Name}");
-        if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref tempBool))
-        {
-            Service.Config.ComponentEnabled[boolName] ^= true;
-            if (ComponentManager.Components.TryGetValue(type, out var component))
+            if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref tempBool))
             {
+                Service.Config.ComponentEnabled[boolName] ^= true;
                 if (Service.Config.ComponentEnabled[boolName])
                     ComponentManager.Load(component);
                 else
                     ComponentManager.Unload(component);
+
+                Service.Config.Save();
             }
-            else
-                Service.Log.Error($"Fail to fetch component {type.Name}");
 
-            Service.Config.Save();
+            if (!string.IsNullOrEmpty(help))
+            {
+                ImGui.SameLine();
+                ImGuiComponents.HelpMarker(help);
+            }
         }
-
-        if (!string.IsNullOrEmpty(help))
-        {
-            ImGui.SameLine();
-            ImGuiComponents.HelpMarker(help);
-        }
-        ImGui.PopID();
     }
 
     private static void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")

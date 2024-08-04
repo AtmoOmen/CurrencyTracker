@@ -8,7 +8,6 @@ using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Configuration;
 using Dalamud.Interface.Textures;
-using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.Plugin;
 using Newtonsoft.Json;
 
@@ -19,7 +18,7 @@ public class Configuration : IPluginConfiguration
 {
     public int Version { get; set; } = 0;
     public bool FirstOpen { get; set; } = true;
-    public List<CharacterInfo> CurrentActiveCharacter { get; set; } = new();
+    public List<CharacterInfo> CurrentActiveCharacter { get; set; } = [];
 
     public UpdateDictionary<uint, string> PresetCurrencies
     {

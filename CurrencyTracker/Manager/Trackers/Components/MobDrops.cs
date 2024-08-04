@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
@@ -20,11 +20,11 @@ public unsafe class MobDrops : ITrackerComponent
     private static bool IsOnCombat;
 
     private InventoryHandler? inventoryHandler;
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { TimeLimitMS = 10000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 10000 };
 
         Service.Condition.ConditionChange += OnConditionChange;
         Service.Framework.Update += OnUpdate;
@@ -36,7 +36,7 @@ public unsafe class MobDrops : ITrackerComponent
 
         if (value)
         {
-            if (TaskManager.IsBusy || inventoryHandler != null) return;
+            if (TaskHelper.IsBusy || inventoryHandler != null) return;
 
             HandlerManager.ChatHandler.isBlocked = true;
             inventoryHandler ??= new InventoryHandler();
@@ -45,9 +45,9 @@ public unsafe class MobDrops : ITrackerComponent
             return;
         }
 
-        TaskManager.Abort();
-        TaskManager.DelayNext(5000);
-        TaskManager.Enqueue(EndMobDropsHandler);
+        TaskHelper.Abort();
+        TaskHelper.DelayNext(5000);
+        TaskHelper.Enqueue(EndMobDropsHandler);
     }
 
     private static void OnUpdate(IFramework framework)
@@ -94,6 +94,7 @@ public unsafe class MobDrops : ITrackerComponent
         IsOnCombat = false;
 
         HandlerManager.Nullify(ref inventoryHandler);
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
@@ -16,69 +15,6 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 
 public unsafe class MoneyAddonExpand : ITrackerComponent
 {
-    public class Overlay : Window
-    {
-        private CharacterCurrencyInfo? characterCurrencyInfo;
-
-        public Overlay() : base("MoneyAddonExpandOverlay###CurrencyTracker", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar)
-        {
-            RespectCloseHotkey = false;
-
-            if (P.WindowSystem.Windows.Any(x => x.WindowName == WindowName))
-                P.WindowSystem.RemoveWindow(P.WindowSystem.Windows.FirstOrDefault(x => x.WindowName == WindowName));
-            P.WindowSystem.AddWindow(this);
-        }
-
-        public override void OnOpen()
-        {
-            if (Main.CharacterCurrencyInfos.Count <= 0) Main.LoadDataMCS();
-        }
-
-        public override void Draw()
-        {
-            if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon))
-            {
-                IsOpen = false;
-                return;
-            }
-
-            var pos = new Vector2(addon->GetX(), addon->GetY() - ImGui.GetWindowSize().Y);
-            ImGui.SetWindowPos(pos);
-
-            if (EzThrottler.Throttle("MoneyAddonExpandGetMCS", 1000))
-                characterCurrencyInfo = Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.Equals(P.CurrentCharacter));
-            if (characterCurrencyInfo == null) return;
-
-            ImGui.SetWindowFontScale(1.1f);
-            if (ImGui.BeginTable($"###{characterCurrencyInfo.Character.ContentID}", 2, ImGuiTableFlags.BordersInnerH))
-            {
-                foreach (var currency in Service.Config.AllCurrencies)
-                {
-                    var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
-                    if (amount == 0) continue;
-
-                    ImGui.TableNextRow();
-                    ImGui.TableNextColumn();
-
-                    ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].GetWrapOrEmpty().ImGuiHandle,
-                                ImGuiHelpers.ScaledVector2(16.0f));
-
-                    ImGui.SameLine();
-                    ImGui.Text($"{currency.Value}  ");
-
-                    ImGui.SameLine();
-                    ImGui.Spacing();
-
-                    ImGui.TableNextColumn();
-                    ImGui.Text($"{amount:N0}  ");
-                }
-
-                ImGui.EndTable();
-            }
-            ImGui.SetWindowFontScale(1f);
-        }
-    }
-
     public bool Initialized { get; set; }
 
     private static IAddonEventHandle? mouseoverHandle;
@@ -96,16 +32,36 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
 
     private static void OnMoneyUI(AddonEvent type, AddonArgs args)
     {
-        if (!EzThrottler.Throttle("MoneyAddonExpand", 1000)) return;
+        switch (type)
+        {
+            case AddonEvent.PreDraw:
+                if (!Throttler.Throttle("MoneyAddonExpand", 1000)) return;
+                if (mouseoutHandle != null || mouseoverHandle != null) return;
+                if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon) || !IsAddonAndNodesReady(addon)) return;
 
-        if (mouseoutHandle != null || mouseoverHandle != null) return;
-        if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon)) return;
+                var counterNode = addon->GetNodeById(3);
+                if (counterNode == null) return;
 
-        var counterNode = addon->GetNodeById(3);
-        if (counterNode == null) return;
+                mouseoverHandle ??=
+                    Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
+                mouseoutHandle ??=
+                    Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
+                break;
 
-        mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
-        mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
+            case AddonEvent.PreFinalize:
+                if (mouseoverHandle != null)
+                {
+                    Service.AddonEventManager.RemoveEvent(mouseoverHandle);
+                    mouseoverHandle = null;
+                }
+
+                if (mouseoutHandle != null)
+                {
+                    Service.AddonEventManager.RemoveEvent(mouseoutHandle);
+                    mouseoutHandle = null;
+                }
+                break;
+        }
     }
 
     private static void OverlayHandler(AddonEventType type, nint addon, nint node)
@@ -122,18 +78,93 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
     public void Uninit()
     {
         Service.AddonLifecycle.UnregisterListener(OnMoneyUI);
+
         if (mouseoutHandle != null)
         {
             Service.AddonEventManager.RemoveEvent(mouseoverHandle);
             mouseoutHandle = null;
         }
+
         if (mouseoverHandle != null)
         {
             Service.AddonEventManager.RemoveEvent(mouseoutHandle);
             mouseoverHandle = null;
         }
         
-        if (overlay != null && P.WindowSystem.Windows.Contains(overlay)) P.WindowSystem.RemoveWindow(overlay);
+        if (overlay != null && P.WindowSystem.Windows.Contains(overlay)) 
+            P.WindowSystem.RemoveWindow(overlay);
         overlay = null;
+    }
+
+    public class Overlay : Window
+    {
+        private CharacterCurrencyInfo? characterCurrencyInfo;
+
+        public Overlay() : base("MoneyAddonExpandOverlay##CurrencyTracker", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar)
+        {
+            RespectCloseHotkey = false;
+
+            if (P.WindowSystem.Windows.Any(x => x.WindowName == WindowName))
+                P.WindowSystem.RemoveWindow(P.WindowSystem.Windows.FirstOrDefault(x => x.WindowName == WindowName));
+            P.WindowSystem.AddWindow(this);
+        }
+
+        public override void OnOpen()
+        {
+            Throttler.Throttle("MoneyAddonExpand_OverlayDraw", 10_000);
+
+            if (Main.CharacterCurrencyInfos.Count <= 0) Main.LoadDataMCS();
+
+            characterCurrencyInfo ??= 
+                Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.Equals(P.CurrentCharacter));
+        }
+
+        public override void Draw()
+        {
+            if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon) || !IsAddonAndNodesReady(addon))
+            {
+                IsOpen = false;
+                return;
+            }
+
+            var pos = new Vector2(addon->GetX(), addon->GetY() - ImGui.GetWindowSize().Y);
+            ImGui.SetWindowPos(pos);
+
+            if (characterCurrencyInfo == null) return;
+
+            if (Throttler.Throttle("MoneyAddonExpand_OverlayDraw", 10_000))
+                characterCurrencyInfo.UpdateAllCurrencies();
+
+            ImGui.SetWindowFontScale(1.1f);
+            if (ImGui.BeginTable($"###{characterCurrencyInfo.Character.ContentID}", 2, ImGuiTableFlags.BordersInnerH))
+            {
+                foreach (var id in Service.Config.OrderedOptions)
+                {
+                    var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(id, 0);
+                    if (amount == 0) continue;
+
+                    var currencyName = Service.Config.AllCurrencies[id];
+                    var currencyIcon = Service.Config.AllCurrencyIcons[id].GetWrapOrEmpty().ImGuiHandle;
+
+                    ImGui.TableNextRow();
+
+                    ImGui.TableNextColumn();
+                    ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(16.0f));
+
+                    ImGui.SameLine();
+                    ImGui.Text($"{currencyName}  ");
+
+                    ImGui.SameLine();
+                    ImGui.Spacing();
+
+                    ImGui.TableNextColumn();
+                    ImGui.Text($"{amount:N0}  ");
+                }
+
+                ImGui.EndTable();
+            }
+
+            ImGui.SetWindowFontScale(1f);
+        }
     }
 }

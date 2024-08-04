@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -19,11 +19,11 @@ public class PremiumSaddleBag : ITrackerComponent
     internal static Dictionary<uint, long> InventoryItemCount = [];
     private string windowTitle = string.Empty;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager() { TimeLimitMS = int.MaxValue, ShowDebug = false };
+        TaskHelper ??= new TaskHelper() { TimeLimitMS = int.MaxValue };
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
@@ -35,11 +35,11 @@ public class PremiumSaddleBag : ITrackerComponent
         {
             case AddonEvent.PostSetup:
                 windowTitle = GetWindowTitle(args.Addon, 86);
-                TaskManager.Enqueue(PSaddleBagScanner);
+                TaskHelper.Enqueue(PSaddleBagScanner);
 
                 break;
             case AddonEvent.PreFinalize:
-                TaskManager.Abort();
+                TaskHelper.Abort();
 
                 Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
@@ -65,6 +65,7 @@ public class PremiumSaddleBag : ITrackerComponent
         windowTitle = string.Empty;
         InventoryItemCount.Clear();
 
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

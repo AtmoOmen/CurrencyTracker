@@ -1,6 +1,6 @@
 using System;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
@@ -23,14 +23,13 @@ public partial class Main : Window, IDisposable
     private static bool _showOthers = true;
     private static bool _shouldRefreshTransactions;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
-
-    public Main(Plugin plugin) : base("Currency Tracker")
+    public Main(Plugin _) : base("Currency Tracker")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
 
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper() { TimeLimitMS = 5000 };
 
         Tracker.CurrencyChanged += OnCurrencyChanged;
 
@@ -80,6 +79,7 @@ public partial class Main : Window, IDisposable
     {
         Tracker.CurrencyChanged -= OnCurrencyChanged;
 
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

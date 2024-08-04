@@ -1,9 +1,8 @@
 using System;
-using System.Linq;
 using System.Numerics;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Tasks;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
@@ -18,13 +17,13 @@ public partial class CurrencySettings : Window, IDisposable
     private bool isEditingCurrencyName;
     internal string editedCurrencyName = string.Empty;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskManager;
 
-    public CurrencySettings(Plugin plugin) : base($"Currency Settings##{Name}")
+    public CurrencySettings(Plugin _) : base($"Currency Settings##{Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize;
 
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
+        TaskManager ??= new TaskHelper { TimeLimitMS = 5000 };
     }
 
     public override void Draw()
@@ -153,5 +152,6 @@ public partial class CurrencySettings : Window, IDisposable
     public void Dispose()
     {
         TaskManager?.Abort();
+        TaskManager = null;
     }
 }

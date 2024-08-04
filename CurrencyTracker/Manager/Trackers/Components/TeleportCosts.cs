@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
@@ -28,11 +28,11 @@ public class TeleportCosts : ITrackerComponent
 
     private static string tpDestination = string.Empty; // Aetheryte Name
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 60000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 60000 };
 
         Service.Hook.InitializeFromAttributes(this);
         actorControlSelfHook?.Enable();
@@ -65,7 +65,7 @@ public class TeleportCosts : ITrackerComponent
         if (eventId == 517 && a3 is 4590 or 4591 && a4 != 0)
         {
             HandlerManager.ChatHandler.isBlocked = true;
-            TaskManager.Enqueue(GetTeleportType);
+            TaskHelper.Enqueue(GetTeleportType);
         }
     }
 
@@ -74,10 +74,10 @@ public class TeleportCosts : ITrackerComponent
         switch (Service.Condition[ConditionFlag.BetweenAreas])
         {
             case true when Service.Condition[ConditionFlag.BetweenAreas51]:
-                TaskManager.Enqueue(() => GetTeleportResult(true));
+                TaskHelper.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
-                TaskManager.Enqueue(() => GetTeleportResult(false));
+                TaskHelper.Enqueue(() => GetTeleportResult(false));
                 break;
         }
 
@@ -111,8 +111,13 @@ public class TeleportCosts : ITrackerComponent
 
     public void Uninit()
     {
-        TaskManager?.Abort();
         actorControlSelfHook?.Dispose();
+        actorControlSelfHook = null;
+
         teleportActionSelfHook?.Dispose();
+        teleportActionSelfHook = null;
+
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

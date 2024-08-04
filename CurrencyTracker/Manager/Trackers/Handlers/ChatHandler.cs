@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 
@@ -12,13 +11,13 @@ public class ChatHandler : ITrackerHandler
     public bool Initialized { get; set; }
     public bool isBlocked   { get; set; } = false;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     private static readonly HashSet<ushort> ValidChatTypes = [0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006];
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { AbortOnTimeout = true, TimeLimitMS = 5000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 5000 };
 
         Service.Chat.ChatMessage += OnChatMessage;
     }
@@ -28,9 +27,9 @@ public class ChatHandler : ITrackerHandler
         if (isBlocked) return;
         if (!ValidChatTypes.Contains((ushort)type)) return;
 
-        TaskManager.Abort();
-        TaskManager.DelayNext(100);
-        TaskManager.Enqueue(UpdateAllCurrencies);
+        TaskHelper.Abort();
+        TaskHelper.DelayNext(100);
+        TaskHelper.Enqueue(UpdateAllCurrencies);
     }
 
     private static void UpdateAllCurrencies() => Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
@@ -38,6 +37,7 @@ public class ChatHandler : ITrackerHandler
     public void Uninit()
     {
         Service.Chat.ChatMessage -= OnChatMessage;
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

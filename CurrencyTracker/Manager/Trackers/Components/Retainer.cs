@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
@@ -29,11 +29,11 @@ public class Retainer : ITrackerComponent
     internal static Dictionary<ulong, Dictionary<uint, long>>
         InventoryItemCount = []; // Retainer ID - Currency ID : Amount
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { TimeLimitMS = int.MaxValue, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
 
         if (!Service.Config.CharacterRetainers.ContainsKey(P.CurrentCharacter.ContentID))
         {
@@ -107,10 +107,10 @@ public class Retainer : ITrackerComponent
         switch (type)
         {
             case AddonEvent.PostSetup:
-                TaskManager.Enqueue(RetainerInventoryScanner);
+                TaskHelper.Enqueue(RetainerInventoryScanner);
                 break;
             case AddonEvent.PreFinalize:
-                TaskManager.Abort();
+                TaskHelper.Abort();
 
                 var retainerName = retainerManager->GetActiveRetainer()->NameString;
 
@@ -163,6 +163,7 @@ public class Retainer : ITrackerComponent
 
         Service.Framework.Update -= RetainerUIWatcher;
 
-        TaskManager?.Abort();
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

@@ -1,5 +1,5 @@
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
@@ -14,11 +14,11 @@ public class QuestRewards : ITrackerComponent
     public bool Initialized { get; set; }
 
     private InventoryHandler? inventoryHandler;
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager { TimeLimitMS = int.MaxValue, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
@@ -39,7 +39,7 @@ public class QuestRewards : ITrackerComponent
                 var questName = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[1].String);
                 Service.Log.Debug($"Quest {questName} Ready to Finish!");
 
-                TaskManager.Enqueue(() => CheckQuestRewards(questName));
+                TaskHelper.Enqueue(() => CheckQuestRewards(questName));
                 break;
         }
     }
@@ -63,6 +63,8 @@ public class QuestRewards : ITrackerComponent
     {
         Service.AddonLifecycle.UnregisterListener(OnQuestRewards);
         HandlerManager.Nullify(ref inventoryHandler);
-        TaskManager?.Abort();
+
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

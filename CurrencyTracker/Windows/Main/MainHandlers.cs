@@ -163,9 +163,9 @@ public partial class Main
 
     public static void RefreshTransactionsView()
     {
-        TaskManager.Abort();
+        TaskHelper.Abort();
 
-        TaskManager.DelayNext(250);
-        TaskManager.Enqueue(() => UpdateTransactions(SelectedCurrencyID, currentView, currentViewID));
+        TaskHelper.DelayNext(250);
+        TaskHelper.Enqueue(() => UpdateTransactions(SelectedCurrencyID, currentView, currentViewID));
     }
 }

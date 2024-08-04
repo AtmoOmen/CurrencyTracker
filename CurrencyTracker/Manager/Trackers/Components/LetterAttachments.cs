@@ -1,5 +1,5 @@
+using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tasks;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
@@ -13,11 +13,11 @@ public class LetterAttachments : ITrackerComponent
     public bool Initialized { get; set; }
     private InventoryHandler? inventoryHandler;
 
-    private static TaskManager? TaskManager;
+    private static TaskHelper? TaskHelper;
 
     public void Init()
     {
-        TaskManager ??= new TaskManager() { TimeLimitMS = 15000, ShowDebug = false };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 15000 };
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
@@ -42,8 +42,8 @@ public class LetterAttachments : ITrackerComponent
             }
             case AddonEvent.PreFinalize:
                 var letterSender = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[0].String);
-                TaskManager.DelayNext(1500);
-                TaskManager.Enqueue(() => EndLetterAttachments(letterSender));
+                TaskHelper.DelayNext(1500);
+                TaskHelper.Enqueue(() => EndLetterAttachments(letterSender));
                 break;
         }
     }
@@ -67,6 +67,8 @@ public class LetterAttachments : ITrackerComponent
     {
         Service.AddonLifecycle.UnregisterListener(OnLetterViewer);
         HandlerManager.Nullify(ref inventoryHandler);
-        TaskManager?.Abort();
+
+        TaskHelper?.Abort();
+        TaskHelper = null;
     }
 }

@@ -2,18 +2,18 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Tasks;
 using ImGuiNET;
 
 namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
 {
-    private static Dictionary<TransactionFileCategoryInfo, long> currencyAmountInfoDic = [];
+    private static IReadOnlyDictionary<TransactionFileCategoryInfo, long> currencyAmountInfoDic =
+        new Dictionary<TransactionFileCategoryInfo, long>();
 
     private static void CurrencyAmountInfoUI()
     {
-        if (EzThrottler.Throttle("CurrencyAmountInfoUI", 1000))
+        if (Throttler.Throttle("CurrencyAmountInfoUI", 1000))
         {
             Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out currencyAmountInfoDic);
         }
