@@ -32,6 +32,7 @@ public class OrderColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{CurrentTransactions.Count - i}" : $"{i + 1}");
     }
 }

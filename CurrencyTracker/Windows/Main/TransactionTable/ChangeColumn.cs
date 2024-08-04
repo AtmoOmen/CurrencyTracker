@@ -31,6 +31,7 @@ public class ChangeColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         var textColor = Service.Config.ChangeTextColoring
                             ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
                               transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :

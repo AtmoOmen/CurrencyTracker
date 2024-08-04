@@ -33,6 +33,7 @@ public class NoteColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         ImGui.Selectable($"{transaction.Transaction.Note}##_{i}");
 
         if (!string.IsNullOrEmpty(transaction.Transaction.Note)) 

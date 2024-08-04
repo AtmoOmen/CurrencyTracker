@@ -38,6 +38,7 @@ public class TimeColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         var selected = transaction.Selected;
         var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);

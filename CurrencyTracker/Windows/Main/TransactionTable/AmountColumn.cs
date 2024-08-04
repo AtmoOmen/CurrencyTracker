@@ -15,6 +15,7 @@ public class AmountColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         var text = transaction.Transaction.Amount.ToString("#,##0");
         ImGui.Selectable($"{text}##{i}");
         if (!transaction.Selected) ImGuiOm.ClickToCopy(text, ImGuiMouseButton.Right, null, ImGuiKey.LeftCtrl);

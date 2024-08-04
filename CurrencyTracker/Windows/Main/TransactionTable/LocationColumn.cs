@@ -34,6 +34,7 @@ public class LocationColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         var locationName = transaction.Transaction.LocationName;
 
         ImGui.Selectable($"{locationName}##_{i}");

@@ -39,6 +39,7 @@ public class CheckboxColumn : TableColumn
 
     public override void Cell(int i, DisplayTransaction transaction)
     {
+        if (i < 0) return;
         var selected = transaction.Selected;
         if (ImGui.Checkbox($"##select_{i}", ref selected)) transaction.Selected = selected;
 
