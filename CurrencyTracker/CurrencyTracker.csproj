@@ -4,7 +4,7 @@
     <PropertyGroup>
         <Authors>AtmoOmen</Authors>
         <Company></Company>
-        <Version>1.4.3.0</Version>
+        <Version>1.4.4.0</Version>
         <Description>A plugin that tracks all your currencies.</Description>
         <Copyright></Copyright>
         <PackageProjectUrl></PackageProjectUrl>
