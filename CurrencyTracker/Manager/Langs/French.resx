@@ -755,4 +755,10 @@ Seuil</value>
   <data name="DisplayCurrencyOverviewInGilHUD" xml:space="preserve">
     <value>Afficher l'aperçu des devises dans le HUD de Gil</value>
   </data>
+  <data name="Past14Days" xml:space="preserve">
+    <value>14 derniers jours</value>
+  </data>
+  <data name="Past30Days" xml:space="preserve">
+    <value>30 derniers jours</value>
+  </data>
 </root>
