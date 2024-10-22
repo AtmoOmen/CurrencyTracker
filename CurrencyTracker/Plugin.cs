@@ -41,7 +41,8 @@ public sealed class Plugin : IDalamudPlugin
         P = this;
         PI = pluginInterface;
 
-        ConfigHandler(pluginInterface);
+        Service.Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
+        Service.Config.Initialize(PI);
 
         Service.Init(pluginInterface);
 
@@ -53,7 +54,6 @@ public sealed class Plugin : IDalamudPlugin
 
     private void HandleLogout()
     {
-        Tracker.Uninit();
         CurrencyInfo.CurrencyAmountCache.Clear();
         CurrentCharacter = null;
     }
@@ -64,8 +64,6 @@ public sealed class Plugin : IDalamudPlugin
 
         if (WindowSystem.Windows.Contains(Main) && Main.SelectedCurrencyID != 0)
             Main.currentTransactions = TransactionsHandler.LoadAllTransactions(Main.SelectedCurrencyID).ToDisplayTransaction();
-
-        Tracker.InitializeTracking();
     }
 
     public CharacterInfo? GetCurrentCharacter()
@@ -134,12 +132,6 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         return path;
-    }
-
-    private void ConfigHandler(IDalamudPluginInterface _)
-    {
-        Service.Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
-        Service.Config.Initialize(PI);
     }
 
     public void OnCommand(string command, string args)

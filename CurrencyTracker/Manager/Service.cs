@@ -23,6 +23,11 @@ public class Service
         PluginInterface = PI;
         UiBuilder = PI.UiBuilder;
 
+        InitExcludeServices();
+    }
+
+    public static void InitExcludeServices()
+    {
         InitLanguage();
         InitCharacter();
         PresetFont.Init();

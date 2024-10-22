@@ -16,8 +16,8 @@ public class Tracker
     public static event CurrencyChangedDelegate? CurrencyChanged;
 
     internal static void Init()
-    {
-        if (Service.ClientState.IsLoggedIn) InitializeTracking();
+    { 
+        InitTracking();
 
         foreach (var currency in CurrencyInfo.PresetCurrencies)
             if (!Service.Config.PresetCurrencies.ContainsKey(currency))
@@ -46,7 +46,7 @@ public class Tracker
         }
     }
 
-    internal static void InitializeTracking()
+    internal static void InitTracking()
     {
         HandlerManager.Init();
         ComponentManager.Init();

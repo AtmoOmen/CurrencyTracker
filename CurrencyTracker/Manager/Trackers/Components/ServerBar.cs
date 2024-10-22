@@ -170,7 +170,6 @@ public class ServerBar : ITrackerComponent
         Service.Lang.LanguageChange -= OnLangChanged;
 
         DisposeCancelSource();
-        DtrEntry.Remove();
     }
 }
 
