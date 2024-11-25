@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 
@@ -15,10 +15,10 @@ public class ItemHandler : ITrackerHandler
     public void Init()
     {
         ItemNames ??= Service.DataManager.GetExcelSheet<Item>()
-                           .Where(x => x.ItemSortCategory.Row != 5 && x.IsUnique == false &&
-                                       !string.IsNullOrEmpty(x.Name.RawString))
-                           .DistinctBy(x => x.Name.RawString)
-                           .ToDictionary(x => x.Name.RawString, x => x.RowId);
+                           .Where(x => x.ItemSortCategory.RowId != 5 && x.IsUnique == false &&
+                                       !string.IsNullOrEmpty(x.Name.ToString()))
+                           .DistinctBy(x => x.Name.ToString())
+                           .ToDictionary(x => x.Name.ToString(), x => x.RowId);
         ItemIDs ??= [.. ItemNames.Values];
     }
 

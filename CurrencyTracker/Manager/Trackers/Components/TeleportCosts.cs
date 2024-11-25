@@ -6,7 +6,7 @@ using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -43,7 +43,7 @@ public class TeleportCosts : ITrackerComponent
                                 {
                                     row.RowId,
                                     Name = P.PI.Sanitizer.Sanitize(
-                                        row.PlaceName.Value?.Name?.ToString())
+                                        row.PlaceName.ValueNullable?.Name.ToString())
                                 })
                                 .Where(x => !string.IsNullOrEmpty(x.Name))
                                 .ToDictionary(x => x.RowId, x => x.Name);

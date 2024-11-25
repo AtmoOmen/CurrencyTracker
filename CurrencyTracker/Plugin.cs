@@ -52,8 +52,15 @@ public sealed class Plugin : IDalamudPlugin
         WindowsHandler();
     }
 
-    private void HandleLogout()
+    private void HandleLogout(int type, int code)
     {
+        // Parameters:
+        //   type:
+        //     The type of logout.
+        //
+        //   code:
+        //     The success/failure code
+
         CurrencyInfo.CurrencyAmountCache.Clear();
         CurrentCharacter = null;
     }
@@ -72,7 +79,7 @@ public sealed class Plugin : IDalamudPlugin
             !Service.ClientState.IsLoggedIn) return null;
 
         var playerName = Service.ClientState.LocalPlayer?.Name.ExtractText();
-        var serverName = Service.ClientState.LocalPlayer?.HomeWorld.GameData?.Name?.RawString;
+        var serverName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ExtractText();
         var contentID = Service.ClientState.LocalContentId;
 
         if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName) || contentID == 0)

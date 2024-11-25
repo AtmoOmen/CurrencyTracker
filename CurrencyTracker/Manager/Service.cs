@@ -42,7 +42,7 @@ public class Service
         CurrencyInfo.Uninit();
         Config.Uninit();
         TaskHelper.DisposeAll();
-        LuminaCache.ClearCache();
+        // LuminaCache.ClearCache();
     }
 
     private static void InitLanguage()

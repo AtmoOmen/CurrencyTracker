@@ -10,7 +10,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -44,7 +44,7 @@ public unsafe class WarpCosts : ITrackerComponent
                                         .ToHashSet();
 
         ValidWarpText.Clear();
-        ValidWarpText.Add(Service.DataManager.GetExcelSheet<Item>().GetRow(1).Name.RawString);
+        ValidWarpText.Add(Service.DataManager.GetExcelSheet<Item>().GetRow(1).Name.ToString());
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);

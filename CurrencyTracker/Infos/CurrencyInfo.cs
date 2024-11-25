@@ -9,7 +9,8 @@ using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Textures;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Extensions;
 
 namespace CurrencyTracker.Infos;
 
@@ -47,9 +48,11 @@ public static class CurrencyInfo
 
     public static string GetCurrencyLocalName(uint currencyID)
     {
-        if (LuminaCache.GetRow<Item>(currencyID) is { } currencyItem)
+        //this reference can be set somewhere more permanent, but we don't need to cache it anymore because of Lumina changes
+        var ItemSheet = Service.DataManager.GetExcelSheet<Item>(); 
+        if (ItemSheet.GetRow(currencyID) is { } currencyItem)
         {
-            var currencyName = currencyItem.Name.RawString;
+            var currencyName = currencyItem.Name.ToString();
             return currencyName;
         }
 
@@ -160,8 +163,8 @@ public static class CurrencyInfo
     private static uint GetSpecialTomestoneId(int row)
     {
         return Service.DataManager.GetExcelSheet<TomestonesItem>()
-                                          .FirstOrDefault(x => x.Tomestones.Row == row)?
-                                          .Item.Row ?? 0;
+                                          .FirstOrNull(x => x.Tomestones.RowId == row)?
+                                          .Item.RowId ?? 0;
     }
 
     public static ISharedImmediateTexture? GetIcon(uint currencyID)
