@@ -1,4 +1,3 @@
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;

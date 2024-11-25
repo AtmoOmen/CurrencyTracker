@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -26,8 +26,7 @@ public class Retainer : ITrackerComponent
     private string retainerWindowName = string.Empty;
     private static readonly uint[] retainerCurrencies = [1, 21072]; // Gil and Venture
 
-    internal static Dictionary<ulong, Dictionary<uint, long>>
-        InventoryItemCount = []; // Retainer ID - Currency ID : Amount
+    internal static Dictionary<ulong, Dictionary<uint, long>> InventoryItemCount = []; // Retainer ID - Currency ID : Amount
 
     private static TaskHelper? TaskHelper;
 

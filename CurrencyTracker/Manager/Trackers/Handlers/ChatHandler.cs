@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 
@@ -32,7 +32,7 @@ public class ChatHandler : ITrackerHandler
         TaskHelper.Enqueue(UpdateAllCurrencies);
     }
 
-    private static void UpdateAllCurrencies() => Tracker.CheckAllCurrencies("", "", RecordChangeType.All, 17);
+    private static void UpdateAllCurrencies() => Tracker.CheckAllCurrencies(string.Empty, string.Empty, RecordChangeType.All, 17);
 
     public void Uninit()
     {

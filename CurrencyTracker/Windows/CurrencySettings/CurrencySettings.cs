@@ -1,5 +1,4 @@
 using System;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
@@ -15,14 +14,10 @@ public partial class CurrencySettings : Window, IDisposable
 {
     private bool isEditingCurrencyName;
     internal string editedCurrencyName = string.Empty;
-
-    private static TaskHelper? TaskManager;
-
-    public CurrencySettings(Plugin _) : base($"Currency Settings##{Name}")
+    
+    public CurrencySettings() : base($"Currency Settings##{Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize;
-
-        TaskManager ??= new TaskHelper { TimeLimitMS = 5000 };
     }
 
     public override void Draw()
@@ -33,40 +28,44 @@ public partial class CurrencySettings : Window, IDisposable
             return;
         }
 
-        ImGui.BeginGroup();
-        if (ImGui.BeginTabBar("CurrencySettingsCT"))
+        using (ImRaii.Group())
         {
-            if (ImGui.BeginTabItem(Service.Lang.GetText("Info")))
+            using (var tabBar = ImRaii.TabBar("CurrencySettingsCT"))
             {
-                CurrencyInfoGroupUI();
+                if (tabBar)
+                {
+                    using (var item = ImRaii.TabItem(Service.Lang.GetText("Info")))
+                    {
+                        if (item)
+                        {
+                            CurrencyInfoGroupUI();
 
-                ImGui.Separator();
-                CurrencyAmountInfoUI();
+                            ImGui.Separator();
+                            CurrencyAmountInfoUI();
 
-                ImGui.Separator();
-                CurrencyFilesInfoUI();
-
-                ImGui.EndTabItem();
+                            ImGui.Separator();
+                            CurrencyFilesInfoUI();
+                        }
+                    }
+                    
+                    using (var item = ImRaii.TabItem(Service.Lang.GetText("Main-CS-AreaRestriction")))
+                    {
+                        if (item)
+                        {
+                            TerritoryRestrictedUI();
+                        }
+                    }
+                    
+                    using (var item = ImRaii.TabItem(Service.Lang.GetText("Alert")))
+                    {
+                        if (item)
+                        {
+                            IntervalAlertUI();
+                        }
+                    }
+                }
             }
-
-            if (ImGui.BeginTabItem(Service.Lang.GetText("Main-CS-AreaRestriction")))
-            {
-                TerritoryRestrictedUI();
-
-                ImGui.EndTabItem();
-            }
-
-            if (ImGui.BeginTabItem(Service.Lang.GetText("Alert")))
-            {
-                IntervalAlertUI();
-
-                ImGui.EndTabItem();
-            }
-
-            ImGui.EndTabBar();
         }
-
-        ImGui.EndGroup();
     }
 
     private void CurrencyInfoGroupUI()
@@ -137,9 +136,5 @@ public partial class CurrencySettings : Window, IDisposable
         }
     }
 
-    public void Dispose()
-    {
-        TaskManager?.Abort();
-        TaskManager = null;
-    }
+    public void Dispose() { }
 }

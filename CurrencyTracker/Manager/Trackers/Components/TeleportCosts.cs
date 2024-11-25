@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tools;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using Lumina.Excel.Sheets;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -14,14 +14,14 @@ public class TeleportCosts : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private delegate void ActorControlSelfDelegate(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10);
-    [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelf))]
-    private Hook<ActorControlSelfDelegate>? actorControlSelfHook;
+    private delegate void ActorControlSelfDelegate
+        (uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10);
+    [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelfDetour))]
+    private Hook<ActorControlSelfDelegate>? ActorControlSelfHook;
 
     private delegate byte TeleportActionSelfDelegate(long p1, uint p2, byte p3);
-    [Signature("E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??",
-               DetourName = nameof(TeleportActionSelf))]
-    private Hook<TeleportActionSelfDelegate>? teleportActionSelfHook;
+    [Signature("E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??", DetourName = nameof(TeleportActionSelfDetour))]
+    private Hook<TeleportActionSelfDelegate>? TeleportActionSelfHook;
 
     private static Dictionary<uint, string> AetheryteNames = [];
     private static readonly uint[] TpCostCurrencies = [1, 7569];
@@ -35,8 +35,8 @@ public class TeleportCosts : ITrackerComponent
         TaskHelper ??= new TaskHelper { TimeLimitMS = 60000 };
 
         Service.Hook.InitializeFromAttributes(this);
-        actorControlSelfHook?.Enable();
-        teleportActionSelfHook?.Enable();
+        ActorControlSelfHook?.Enable();
+        TeleportActionSelfHook?.Enable();
 
         AetheryteNames = Service.DataManager.GetExcelSheet<Aetheryte>()
                                 .Select(row => new
@@ -49,17 +49,17 @@ public class TeleportCosts : ITrackerComponent
                                 .ToDictionary(x => x.RowId, x => x.Name);
     }
 
-    private byte TeleportActionSelf(long p1, uint p2, byte p3)
+    private byte TeleportActionSelfDetour(long p1, uint p2, byte p3)
     {
         if (!AetheryteNames.TryGetValue(p2, out tpDestination))
             Service.Log.Warning($"Unknown Aetheryte Name {p2}");
 
-        return teleportActionSelfHook.Original(p1, p2, p3);
+        return TeleportActionSelfHook.Original(p1, p2, p3);
     }
 
-    private void ActorControlSelf(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10)
+    private void ActorControlSelfDetour(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10)
     {
-        actorControlSelfHook.Original(category, eventId, a3, a4, a5, a6, a7, a8, targetId,
+        ActorControlSelfHook.Original(category, eventId, a3, a4, a5, a6, a7, a8, targetId,
                                       a10);
 
         if (eventId == 517 && a3 is 4590 or 4591 && a4 != 0)
@@ -111,11 +111,11 @@ public class TeleportCosts : ITrackerComponent
 
     public void Uninit()
     {
-        actorControlSelfHook?.Dispose();
-        actorControlSelfHook = null;
+        ActorControlSelfHook?.Dispose();
+        ActorControlSelfHook = null;
 
-        teleportActionSelfHook?.Dispose();
-        teleportActionSelfHook = null;
+        TeleportActionSelfHook?.Dispose();
+        TeleportActionSelfHook = null;
 
         TaskHelper?.Abort();
         TaskHelper = null;

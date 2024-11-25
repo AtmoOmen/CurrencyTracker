@@ -45,7 +45,7 @@ public class Settings : Window, IDisposable
                         ModuleCheckbox<LetterAttachments>(Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
                         if (Service.Config.ComponentEnabled["LetterAttachments"])
                             NoteContentInputText("LetterAttachments-LetterFrom",
-                                                 new[] { Service.Lang.GetText("ParamEP-SenderName") });
+                                                 [Service.Lang.GetText("ParamEP-SenderName")]);
 
                         // 传送 Teleport
                         ImGui.Separator();
@@ -57,14 +57,14 @@ public class Settings : Window, IDisposable
                         ModuleCheckbox<WarpCosts>(Service.Lang.GetText("WarpCosts-RecordTPCosts"));
                         if (Service.Config.ComponentEnabled["TeleportCosts"] || Service.Config.ComponentEnabled["WarpCosts"])
                             NoteContentInputText("TeleportTo",
-                                                 new[] { Service.Lang.GetText("ParamEP-DestinationName") });
+                                                 [Service.Lang.GetText("ParamEP-DestinationName")]);
                         if (Service.Config.ComponentEnabled["WarpCosts"]) NoteContentInputText("TeleportWithinArea", null);
 
                         // 任务 Quest
                         ImGui.Separator();
                         ModuleCheckbox<QuestRewards>(Service.Lang.GetText("QuestRewards-RecordQuestRewards"));
                         if (Service.Config.ComponentEnabled["QuestRewards"])
-                            NoteContentInputText("Quest", new[] { Service.Lang.GetText("ParamEP-QuestName") });
+                            NoteContentInputText("Quest", [Service.Lang.GetText("ParamEP-QuestName")]);
 
                         // 无人岛 Island Sanctuary
                         ImGui.Separator();
@@ -89,13 +89,13 @@ public class Settings : Window, IDisposable
                         ImGui.Separator();
                         ModuleCheckbox<FateRewards>(Service.Lang.GetText("FateRewards-RecordFateRewards"));
                         if (Service.Config.ComponentEnabled["FateRewards"])
-                            NoteContentInputText("Fate", new[] { Service.Lang.GetText("ParamEP-FateName") });
+                            NoteContentInputText("Fate", [Service.Lang.GetText("ParamEP-FateName")]);
 
                         ImGui.Separator();
                         ModuleCheckbox<MobDrops>(Service.Lang.GetText("MobDrops-RecordMobDrops"));
                         if (Service.Config.ComponentEnabled["MobDrops"])
                             NoteContentInputText("MobDrops-MobDropsNote",
-                                                 new[] { Service.Lang.GetText("ParamEP-MobNames") });
+                                                 [Service.Lang.GetText("ParamEP-MobNames")]);
                         ImGui.EndTabItem();
                     }
 
@@ -124,11 +124,11 @@ public class Settings : Window, IDisposable
                         ImGui.Separator();
                         ModuleCheckbox<TripleTriad>(Service.Lang.GetText("TripleTriad-RecordTTResult"));
                         if (Service.Config.ComponentEnabled["TripleTriad"])
-                            NoteContentInputText("TripleTriadWith", new[]
-                                                 {
-                                                     Service.Lang.GetText("ParamEP-TTOutcome"),
-                                                     Service.Lang.GetText("ParamEP-TTRivalName")
-                                                 });
+                            NoteContentInputText("TripleTriadWith", 
+                            [
+                                Service.Lang.GetText("ParamEP-TTOutcome"),
+                                Service.Lang.GetText("ParamEP-TTRivalName")
+                            ]);
                         ImGui.EndTabItem();
                     }
                     ImGui.EndTabBar();

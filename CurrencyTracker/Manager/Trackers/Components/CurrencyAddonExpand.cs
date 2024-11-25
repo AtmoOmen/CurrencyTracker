@@ -6,6 +6,7 @@ using Dalamud.Game.Addon.Events;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 

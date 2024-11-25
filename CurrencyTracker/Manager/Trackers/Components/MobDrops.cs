@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Plugin.Services;
+using OmenTools.Helpers;
 using GameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -15,7 +15,7 @@ public unsafe class MobDrops : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private static readonly Dictionary<ulong, string> EnemiesList = []; // Object ID - Name
+    private static readonly Dictionary<ulong, string> EnemiesList = []; // Game Object ID - Name
 
     private static bool IsOnCombat;
 
@@ -24,7 +24,7 @@ public unsafe class MobDrops : ITrackerComponent
 
     public void Init()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 10000 };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 10_000 };
 
         Service.Condition.ConditionChange += OnConditionChange;
         Service.Framework.Update += OnUpdate;

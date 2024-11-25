@@ -1,10 +1,10 @@
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -17,7 +17,7 @@ public class LetterAttachments : ITrackerComponent
 
     public void Init()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 15000 };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 15_000 };
 
         Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
         Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
@@ -42,7 +42,7 @@ public class LetterAttachments : ITrackerComponent
             }
             case AddonEvent.PreFinalize:
                 var letterSender = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[0].String);
-                TaskHelper.DelayNext(1500);
+                TaskHelper.DelayNext(1_500);
                 TaskHelper.Enqueue(() => EndLetterAttachments(letterSender));
                 break;
         }
@@ -53,7 +53,7 @@ public class LetterAttachments : ITrackerComponent
         Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
-            items, "", $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
+            items, string.Empty, $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
             24);
 
         HandlerManager.Nullify(ref inventoryHandler);

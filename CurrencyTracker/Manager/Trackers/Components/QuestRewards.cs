@@ -1,4 +1,3 @@
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Handlers;
@@ -6,6 +5,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Memory;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -50,7 +50,7 @@ public class QuestRewards : ITrackerComponent
 
         Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
-        Tracker.CheckCurrencies(items, "", $"({Service.Lang.GetText("Quest", questName)})",
+        Tracker.CheckCurrencies(items, string.Empty, $"({Service.Lang.GetText("Quest", questName)})",
                                         RecordChangeType.All, 9);
         Service.Log.Debug("Currency Change Check Completes.");
 

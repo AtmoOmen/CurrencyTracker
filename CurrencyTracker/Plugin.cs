@@ -2,14 +2,13 @@ global using static CurrencyTracker.Manager.Tools.Helpers;
 global using static CurrencyTracker.Plugin;
 global using static CurrencyTracker.Manager.Trackers.Handlers.TerritoryHandler;
 global using static OmenTools.Helpers.HelpersOm;
-global using static CurrencyTracker.Helpers.Throttler.ThrottlerHelper;
+global using static OmenTools.Helpers.ThrottlerHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Windowing;
@@ -27,11 +26,11 @@ public sealed class Plugin : IDalamudPlugin
     public CharacterInfo? CurrentCharacter { get; set; }
     public string PlayerDataFolder => GetCurrentCharacterDataFolder();
 
-    public IDalamudPluginInterface PI { get; init; }
-    public Main? Main { get; private set; }
-    public Graph? Graph { get; private set; }
-    public Settings? Settings { get; private set; }
-    public CurrencySettings? CurrencySettings { get; private set; }
+    public IDalamudPluginInterface PI               { get; init; }
+    public Main?                   Main             { get; private set; }
+    public Graph?                  Graph            { get; private set; }
+    public Settings?               Settings         { get; private set; }
+    public CurrencySettings?       CurrencySettings { get; private set; }
 
     public WindowSystem WindowSystem = new("CurrencyTracker");
     internal static Plugin P = null!;
@@ -46,7 +45,7 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.Init(pluginInterface);
 
-        Service.ClientState.Login += HandleLogin;
+        Service.ClientState.Login  += HandleLogin;
         Service.ClientState.Logout += HandleLogout;
 
         WindowsHandler();
@@ -54,13 +53,6 @@ public sealed class Plugin : IDalamudPlugin
 
     private void HandleLogout(int type, int code)
     {
-        // Parameters:
-        //   type:
-        //     The type of logout.
-        //
-        //   code:
-        //     The success/failure code
-
         CurrencyInfo.CurrencyAmountCache.Clear();
         CurrentCharacter = null;
     }
@@ -204,7 +196,7 @@ public sealed class Plugin : IDalamudPlugin
         PI.UiBuilder.OpenConfigUi += DrawConfigUI;
         PI.UiBuilder.OpenMainUi += DrawMainUI;
 
-        Main = new Main(this);
+        Main = new Main();
         WindowSystem.AddWindow(Main);
 
         Graph = new Graph(this);
@@ -213,7 +205,7 @@ public sealed class Plugin : IDalamudPlugin
         Settings = new Settings(this);
         WindowSystem.AddWindow(Settings);
 
-        CurrencySettings = new CurrencySettings(this);
+        CurrencySettings = new CurrencySettings();
         WindowSystem.AddWindow(CurrencySettings);
     }
 

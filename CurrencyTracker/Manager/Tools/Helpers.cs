@@ -108,20 +108,7 @@ public static class Helpers
         };
         return text;
     }
-
-    public static unsafe bool TryGetAddonByName<T>(string Addon, out T* AddonPtr) where T : unmanaged
-    {
-        var a = Service.GameGui.GetAddonByName(Addon, 1);
-        if (a == IntPtr.Zero)
-        {
-            AddonPtr = null;
-            return false;
-        }
-
-        AddonPtr = (T*)a;
-        return true;
-    }
-
+    
     public static string GetTransactionViewKeyString(TransactionFileCategory view, ulong ID)
     {
         return view switch
@@ -168,11 +155,8 @@ public static class Helpers
                 inventoryItemCount[kvp.Key] = 0;
     }
 
-    public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable
-    {
-        return
-            $"{(interval.Start == null ? "(-∞" : $"[{interval.Start}")},{(interval.End == null ? "+∞)" : $"{interval.End}]")}";
-    }
+    public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable 
+        => $"{(interval.Start == null ? "(-∞" : $"[{interval.Start}")},{(interval.End == null ? "+∞)" : $"{interval.End}]")}";
 
     public static List<DisplayTransaction> ToDisplayTransaction(this IEnumerable<Transaction> transactions)
     {

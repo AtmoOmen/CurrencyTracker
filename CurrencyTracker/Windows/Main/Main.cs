@@ -1,11 +1,11 @@
 using System;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
 using ImGuiNET;
+using OmenTools.Helpers;
 
 namespace CurrencyTracker.Windows;
 
@@ -25,11 +25,11 @@ public partial class Main : Window, IDisposable
 
     private static TaskHelper? TaskHelper;
 
-    public Main(Plugin _) : base("Currency Tracker")
+    public Main() : base("Currency Tracker")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
 
-        TaskHelper ??= new TaskHelper() { TimeLimitMS = 5000 };
+        TaskHelper ??= new TaskHelper { TimeLimitMS = 5_000 };
 
         Tracker.CurrencyChanged += OnCurrencyChanged;
 

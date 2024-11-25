@@ -1,6 +1,4 @@
 using System.Linq;
-using CurrencyTracker.Helpers;
-using CurrencyTracker.Helpers.TaskHelper;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
@@ -9,6 +7,7 @@ using Dalamud.Interface;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using OmenTools;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Manager;
@@ -17,6 +16,8 @@ public class Service
 {
     public static void Init(IDalamudPluginInterface PI)
     {
+        DService.Init(PI);
+        
         Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
         Config.Initialize(PI);
         PI.Create<Service>();
@@ -41,8 +42,7 @@ public class Service
         Tracker.Dispose();
         CurrencyInfo.Uninit();
         Config.Uninit();
-        TaskHelper.DisposeAll();
-        // LuminaCache.ClearCache();
+        DService.Uninit();
     }
 
     private static void InitLanguage()
