@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace CurrencyTracker.Manager.Trackers.Handlers;
 
@@ -29,7 +29,7 @@ public class TerritoryHandler : ITrackerHandler
                                   .Select(x => new
                                   {
                                       ZoneID = x.RowId,
-                                      PlaceName = x.PlaceName?.Value?.Name?.RawString ?? string.Empty,
+                                      PlaceName = x.PlaceName.ValueNullable?.Name.ToString() ?? string.Empty,
                                   })
                                   .Where(x => !string.IsNullOrWhiteSpace(x.PlaceName))
                                   .ToDictionary(x => x.ZoneID, x => x.PlaceName);
