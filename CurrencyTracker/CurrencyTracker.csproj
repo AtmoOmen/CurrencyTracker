@@ -3,11 +3,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>AtmoOmen</Authors>
-        <Company></Company>
         <Version>1.5.0.0</Version>
         <Description>A plugin that tracks all your currencies.</Description>
-        <Copyright></Copyright>
-        <PackageProjectUrl></PackageProjectUrl>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -106,7 +103,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="Manager\Langs\English.resx">
-            <Generator></Generator>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="Manager\Langs\French.resx">
