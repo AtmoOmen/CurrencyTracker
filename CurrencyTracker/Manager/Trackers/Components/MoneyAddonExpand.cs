@@ -44,7 +44,7 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
         mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
     }
 
-    private static void OverlayHandler(AddonEventType type, nint addon, nint node)
+    private static void OverlayHandler(AddonEventType type, AddonEventData data)
     {
         if (overlay == null) return;
         overlay.IsOpen = type switch

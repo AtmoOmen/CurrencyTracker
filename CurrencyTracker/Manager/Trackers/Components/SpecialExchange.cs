@@ -6,6 +6,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
@@ -41,8 +42,8 @@ public class SpecialExchange : ITrackerComponent
 
         HandlerManager.ChatHandler.isBlocked = true;
 
-        isOnExchange = true;
-        windowName = args.AddonName == "SatisfactionSupply" ? MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[7].String) : GetWindowTitle(args, UI[args.AddonName]);
+        isOnExchange     =   true;
+        windowName       =   args.AddonName == "SatisfactionSupply" ? addon->AtkValues[7].String.ExtractText() : GetWindowTitle(args, UI[args.AddonName]);
         inventoryHandler ??= new InventoryHandler();
 
         Service.Framework.Update += OnFrameworkUpdate;

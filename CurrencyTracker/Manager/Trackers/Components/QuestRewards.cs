@@ -4,6 +4,7 @@ using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Memory;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -36,7 +37,8 @@ public class QuestRewards : ITrackerComponent
                 HandlerManager.ChatHandler.isBlocked = true;
                 break;
             case AddonEvent.PreFinalize:
-                var questName = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[1].String);
+                var atkValue  = addon->AtkValues[1];
+                var questName = atkValue.Type == 0 ? string.Empty : atkValue.String.ExtractText();
                 Service.Log.Debug($"Quest {questName} Ready to Finish!");
 
                 TaskHelper.Enqueue(() => CheckQuestRewards(questName));

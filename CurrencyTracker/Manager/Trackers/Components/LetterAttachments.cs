@@ -3,6 +3,7 @@ using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Memory;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -33,7 +34,7 @@ public class LetterAttachments : ITrackerComponent
             case AddonEvent.PostSetup:
             {
                 // 获取全部按钮 The Claim Button
-                var buttonNode = addon->GetButtonNodeById(30);
+                var buttonNode = addon->GetComponentButtonById(30);
                 if (buttonNode == null || !buttonNode->IsEnabled) return;
 
                 inventoryHandler ??= new InventoryHandler();
@@ -41,7 +42,8 @@ public class LetterAttachments : ITrackerComponent
                 break;
             }
             case AddonEvent.PreFinalize:
-                var letterSender = MemoryHelper.ReadStringNullTerminated((nint)addon->AtkValues[0].String);
+                var atkValue     = addon->AtkValues[0];
+                var letterSender = atkValue.Type == 0 ? string.Empty : atkValue.String.ExtractText();
                 TaskHelper.DelayNext(1_500);
                 TaskHelper.Enqueue(() => EndLetterAttachments(letterSender));
                 break;
