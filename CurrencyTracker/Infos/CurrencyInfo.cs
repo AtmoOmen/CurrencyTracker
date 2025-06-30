@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
@@ -28,7 +29,7 @@ public static class CurrencyInfo
 
     public static void Init()
     {
-        Tracker.CurrencyChanged += OnCurrencyChanged;
+        TrackerManager.CurrencyChanged += OnCurrencyChanged;
     }
 
     private static void OnCurrencyChanged(uint currencyId, TransactionFileCategory category, ulong id)
@@ -244,6 +245,6 @@ public static class CurrencyInfo
 
     public static void Uninit()
     {
-        Tracker.CurrencyChanged -= OnCurrencyChanged;
+        TrackerManager.CurrencyChanged -= OnCurrencyChanged;
     }
 }

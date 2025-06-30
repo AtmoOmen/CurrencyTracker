@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
@@ -103,7 +104,7 @@ public partial class Main
 
                 ReloadOrderedOptions();
 
-                Tracker.CheckCurrency(_currencyIDACC, "", "", RecordChangeType.All, 1);
+                TrackerManager.CheckCurrency(_currencyIDACC, "", "", RecordChangeType.All, 1);
                 currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
 
                 _searchFilterACC = string.Empty;

@@ -1,5 +1,6 @@
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
@@ -26,13 +27,13 @@ public class Service
         InitCharacter();
         PresetFont.Init();
 
-        Tracker.Init();
+        TrackerManager.Init();
         CurrencyInfo.Init();
     }
 
     public static void Uninit()
     {
-        Tracker.Dispose();
+        TrackerManager.Dispose();
         CurrencyInfo.Uninit();
         
         Config.Uninit();

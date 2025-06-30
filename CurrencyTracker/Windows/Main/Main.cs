@@ -1,5 +1,6 @@
 using System;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
@@ -31,7 +32,7 @@ public partial class Main : Window, IDisposable
 
         TaskHelper ??= new TaskHelper { TimeLimitMS = 5_000 };
 
-        Tracker.CurrencyChanged += OnCurrencyChanged;
+        TrackerManager.CurrencyChanged += OnCurrencyChanged;
 
         ReloadOrderedOptions();
     }
@@ -77,7 +78,7 @@ public partial class Main : Window, IDisposable
 
     public void Dispose()
     {
-        Tracker.CurrencyChanged -= OnCurrencyChanged;
+        TrackerManager.CurrencyChanged -= OnCurrencyChanged;
 
         TaskHelper?.Abort();
         TaskHelper = null;

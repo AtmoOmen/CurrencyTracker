@@ -7,6 +7,7 @@ using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
+using CurrencyTracker.Trackers;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
@@ -347,7 +348,7 @@ public class Settings : Window, IDisposable
         }
     }
 
-    private static void ModuleCheckbox<T>(string checkboxLabel, string help = "") where T : ITrackerComponent
+    private static void ModuleCheckbox<T>(string checkboxLabel, string help = "") where T : TrackerComponentBase
     {
         if (!ComponentManager.TryGet<T>(out var component)) return;
 
