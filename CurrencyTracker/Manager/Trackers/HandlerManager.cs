@@ -38,18 +38,18 @@ public class HandlerManager
                 {
                     handler.Init();
                     handler.Initialized = true;
-                    Service.Log.Debug($"Loaded {handler.GetType().Name} handler");
+                    DService.Log.Debug($"Loaded {handler.GetType().Name} handler");
                 }
                 else
-                    Service.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
+                    DService.Log.Debug($"{handler.GetType().Name} has been loaded, skip.");
             }
             catch (Exception ex)
             {
                 handler.Uninit();
                 handler.Initialized = false;
 
-                Service.Log.Error($"Failed to load handler {handler.GetType().Name} due to error: {ex.Message}");
-                Service.Log.Error(ex.StackTrace ?? "Unknown");
+                DService.Log.Error($"Failed to load handler {handler.GetType().Name} due to error: {ex.Message}");
+                DService.Log.Error(ex.StackTrace ?? "Unknown");
             }
     }
 
@@ -65,8 +65,8 @@ public class HandlerManager
         }
         catch (Exception ex)
         {
-            Service.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
-            Service.Log.Error(ex.StackTrace ?? "Unknown");
+            DService.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
+            DService.Log.Error(ex.StackTrace ?? "Unknown");
         }
     }
 
@@ -77,12 +77,12 @@ public class HandlerManager
             {
                 handler.Uninit();
                 handler.Initialized = false;
-                Service.Log.Debug($"Unloaded {handler.GetType().Name} module");
+                DService.Log.Debug($"Unloaded {handler.GetType().Name} module");
             }
             catch (Exception ex)
             {
-                Service.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
-                Service.Log.Error(ex.StackTrace ?? "Unknown");
+                DService.Log.Error($"Failed to unload handler {handler.GetType().Name} due to error: {ex.Message}");
+                DService.Log.Error(ex.StackTrace ?? "Unknown");
             }
     }
 }

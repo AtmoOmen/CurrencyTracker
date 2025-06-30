@@ -34,11 +34,11 @@ public class TeleportCosts : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = 60000 };
 
-        Service.Hook.InitializeFromAttributes(this);
+        DService.Hook.InitializeFromAttributes(this);
         ActorControlSelfHook?.Enable();
         TeleportActionSelfHook?.Enable();
 
-        AetheryteNames = Service.DataManager.GetExcelSheet<Aetheryte>()
+        AetheryteNames = LuminaGetter.Get<Aetheryte>()
                                 .Select(row => new
                                 {
                                     row.RowId,
@@ -52,7 +52,7 @@ public class TeleportCosts : ITrackerComponent
     private byte TeleportActionSelfDetour(long p1, uint p2, byte p3)
     {
         if (!AetheryteNames.TryGetValue(p2, out tpDestination))
-            Service.Log.Warning($"Unknown Aetheryte Name {p2}");
+            DService.Log.Warning($"Unknown Aetheryte Name {p2}");
 
         return TeleportActionSelfHook.Original(p1, p2, p3);
     }
@@ -71,9 +71,9 @@ public class TeleportCosts : ITrackerComponent
 
     private static bool? GetTeleportType()
     {
-        switch (Service.Condition[ConditionFlag.BetweenAreas])
+        switch (DService.Condition[ConditionFlag.BetweenAreas])
         {
-            case true when Service.Condition[ConditionFlag.BetweenAreas51]:
+            case true when DService.Condition[ConditionFlag.BetweenAreas51]:
                 TaskHelper.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
@@ -107,7 +107,7 @@ public class TeleportCosts : ITrackerComponent
         return true;
     }
 
-    private static bool IsStillOnTeleport() => Flags.BetweenAreas() || Flags.OccupiedInEvent();
+    private static bool IsStillOnTeleport() => BetweenAreas || OccupiedInEvent;
 
     public void Uninit()
     {

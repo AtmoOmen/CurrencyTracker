@@ -26,7 +26,7 @@ public class ComponentManager
         {
             if (!Service.Config.ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled)
             {
-                Service.Log.Warning($"Component {type.Name} is not enabled or configuration is missing. Skipping.");
+                DService.Log.Warning($"Component {type.Name} is not enabled or configuration is missing. Skipping.");
                 continue;
             }
 
@@ -36,9 +36,9 @@ public class ComponentManager
                 {
                     component.Init();
                     component.Initialized = true;
-                    Service.Log.Debug($"Loaded {type.Name} module");
+                    DService.Log.Debug($"Loaded {type.Name} module");
                 }
-                else Service.Log.Debug($"{type.Name} has already been loaded. Skipping.");
+                else DService.Log.Debug($"{type.Name} has already been loaded. Skipping.");
             }
             catch (Exception ex)
             {
@@ -52,7 +52,7 @@ public class ComponentManager
         var type = component.GetType();
         if (!Components.ContainsKey(type))
         {
-            Service.Log.Error($"Failed to fetch component {type.Name}");
+            DService.Log.Error($"Failed to fetch component {type.Name}");
             return;
         }
 
@@ -63,9 +63,9 @@ public class ComponentManager
                 component.Init();
                 component.Initialized = true;
                 Service.Config.ComponentEnabled[type.Name] = true;
-                Service.Log.Debug($"Loaded {type.Name} module");
+                DService.Log.Debug($"Loaded {type.Name} module");
             }
-            else Service.Log.Debug($"{type.Name} has already been loaded. Skipping.");
+            else DService.Log.Debug($"{type.Name} has already been loaded. Skipping.");
         }
         catch (Exception ex)
         {
@@ -83,7 +83,7 @@ public class ComponentManager
             component.Uninit();
             component.Initialized = false;
             Service.Config.ComponentEnabled[type.Name] = false;
-            Service.Log.Debug($"Unloaded {type.Name} module");
+            DService.Log.Debug($"Unloaded {type.Name} module");
         }
         catch (Exception ex)
         {
@@ -99,7 +99,7 @@ public class ComponentManager
             {
                 component.Uninit();
                 component.Initialized = false;
-                Service.Log.Debug($"Unloaded {type.Name} module");
+                DService.Log.Debug($"Unloaded {type.Name} module");
             }
             catch (Exception ex)
             {
@@ -128,6 +128,6 @@ public class ComponentManager
         component.Uninit();
         component.Initialized = false;
         Service.Config.ComponentEnabled[type.Name] = false;
-        Service.Log.Error(ex, $"Error in component {type.Name}");
+        DService.Log.Error(ex, $"Error in component {type.Name}");
     }
 }

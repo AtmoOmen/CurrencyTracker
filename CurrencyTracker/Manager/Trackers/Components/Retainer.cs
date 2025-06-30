@@ -40,9 +40,9 @@ public class Retainer : ITrackerComponent
             Service.Config.Save();
         }
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
     }
 
     private unsafe void OnRetainerList(AddonEvent type, AddonArgs args)
@@ -87,7 +87,7 @@ public class Retainer : ITrackerComponent
         {
             isOnRetainer = true;
             HandlerManager.ChatHandler.isBlocked = true;
-            Service.Framework.Update += RetainerUIWatcher;
+            DService.Framework.Update += RetainerUIWatcher;
         }
     }
 
@@ -135,14 +135,14 @@ public class Retainer : ITrackerComponent
     {
         if (!isOnRetainer)
         {
-            Service.Framework.Update -= RetainerUIWatcher;
+            DService.Framework.Update -= RetainerUIWatcher;
             HandlerManager.ChatHandler.isBlocked = false;
             return;
         }
 
-        if (!Service.Condition[ConditionFlag.OccupiedSummoningBell])
+        if (!DService.Condition[ConditionFlag.OccupiedSummoningBell])
         {
-            Service.Framework.Update -= RetainerUIWatcher;
+            DService.Framework.Update -= RetainerUIWatcher;
             isOnRetainer = false;
             currentRetainerID = 0;
             InventoryItemCount.Clear();
@@ -152,15 +152,15 @@ public class Retainer : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(OnRetainerList);
-        Service.AddonLifecycle.UnregisterListener(OnRetainerInventory);
+        DService.AddonLifecycle.UnregisterListener(OnRetainerList);
+        DService.AddonLifecycle.UnregisterListener(OnRetainerInventory);
 
         isOnRetainer = false;
         retainerWindowName = string.Empty;
         currentRetainerID = 0;
         InventoryItemCount.Clear();
 
-        Service.Framework.Update -= RetainerUIWatcher;
+        DService.Framework.Update -= RetainerUIWatcher;
 
         TaskHelper?.Abort();
         TaskHelper = null;

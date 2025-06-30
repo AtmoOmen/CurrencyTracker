@@ -26,13 +26,13 @@ public unsafe class MobDrops : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = 10_000 };
 
-        Service.Condition.ConditionChange += OnConditionChange;
-        Service.Framework.Update += OnUpdate;
+        DService.Condition.ConditionChange += OnConditionChange;
+        DService.Framework.Update += OnUpdate;
     }
 
     private void OnConditionChange(ConditionFlag flag, bool value)
     {
-        if (flag != ConditionFlag.InCombat || Flags.IsBoundByDuty()) return;
+        if (flag != ConditionFlag.InCombat || BoundByDuty) return;
 
         if (value)
         {
@@ -54,7 +54,7 @@ public unsafe class MobDrops : ITrackerComponent
     {
         if (!IsOnCombat) return;
 
-        var currentTarget = Service.Target.Target;
+        var currentTarget = DService.Targets.Target;
         if (currentTarget == null) return;
         var targetName = currentTarget.Name.ExtractText();
         if (EnemiesList.ContainsKey(currentTarget.GameObjectId) || EnemiesList.ContainsValue(targetName)) return;
@@ -65,14 +65,14 @@ public unsafe class MobDrops : ITrackerComponent
         if (gameObj->FateId != 0) return;
         
         EnemiesList[currentTarget.GameObjectId] = targetName;
-        Service.Log.Debug($"Added {targetName} to the mob list");
+        DService.Log.Debug($"Added {targetName} to the mob list");
     }
 
     private bool? EndMobDropsHandler()
     {
-        if (Service.Condition[ConditionFlag.InCombat] || EnemiesList.Count <= 0) return true;
+        if (DService.Condition[ConditionFlag.InCombat] || EnemiesList.Count <= 0) return true;
 
-        Service.Log.Debug("Combat Ends, Currency Change Check Starts.");
+        DService.Log.Debug("Combat Ends, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", EnemiesList.Values.TakeLast(3)))})",
@@ -82,15 +82,15 @@ public unsafe class MobDrops : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
         IsOnCombat = false;
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
 
         return true;
     }
 
     public void Uninit()
     {
-        Service.Condition.ConditionChange -= OnConditionChange;
-        Service.Framework.Update -= OnUpdate;
+        DService.Condition.ConditionChange -= OnConditionChange;
+        DService.Framework.Update -= OnUpdate;
         IsOnCombat = false;
 
         HandlerManager.Nullify(ref inventoryHandler);

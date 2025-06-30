@@ -26,8 +26,8 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
     {
         overlay ??= new();
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
     }
 
     private static void OnMoneyUI(AddonEvent type, AddonArgs args)
@@ -40,8 +40,8 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
         var counterNode = addon->GetNodeById(3);
         if (counterNode == null) return;
 
-        mouseoverHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
-        mouseoutHandle ??= Service.AddonEventManager.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
+        mouseoverHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
+        mouseoutHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
     }
 
     private static void OverlayHandler(AddonEventType type, AddonEventData data)
@@ -57,15 +57,15 @@ public unsafe class MoneyAddonExpand : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(OnMoneyUI);
+        DService.AddonLifecycle.UnregisterListener(OnMoneyUI);
         if (mouseoutHandle != null)
         {
-            Service.AddonEventManager.RemoveEvent(mouseoverHandle);
+            DService.AddonEvent.RemoveEvent(mouseoverHandle);
             mouseoutHandle = null;
         }
         if (mouseoverHandle != null)
         {
-            Service.AddonEventManager.RemoveEvent(mouseoutHandle);
+            DService.AddonEvent.RemoveEvent(mouseoutHandle);
             mouseoverHandle = null;
         }
 

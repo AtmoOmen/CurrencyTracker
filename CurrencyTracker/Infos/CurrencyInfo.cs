@@ -21,7 +21,7 @@ public static class CurrencyInfo
     ];
     public static readonly uint[] PresetCurrencies =
     [
-        1, GetSpecialTomestoneId(2), GetSpecialTomestoneId(3),
+        1, GetSpecialTomestoneID(2), GetSpecialTomestoneID(3),
     ];
 
     public static readonly Dictionary<ulong, Dictionary<uint, long>> CurrencyAmountCache = [];
@@ -45,18 +45,8 @@ public static class CurrencyInfo
                    : GetCurrencyLocalName(currencyID);
     }
 
-    public static string GetCurrencyLocalName(uint currencyID)
-    {
-        //this reference can be set somewhere more permanent, but we don't need to cache it anymore because of Lumina changes
-        var ItemSheet = Service.DataManager.GetExcelSheet<Item>(); 
-        if (ItemSheet.GetRow(currencyID) is { } currencyItem)
-        {
-            var currencyName = currencyItem.Name.ToString();
-            return currencyName;
-        }
-
-        return "Unknown";
-    }
+    public static string GetCurrencyLocalName(uint currencyID) =>
+        LuminaWrapper.GetItemName(currencyID);
 
     public static unsafe long GetCurrencyAmount(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -159,20 +149,20 @@ public static class CurrencyInfo
         return latestTransaction?.Amount;
     }
 
-    private static uint GetSpecialTomestoneId(int row)
-    {
-        return Service.DataManager.GetExcelSheet<TomestonesItem>()
-                                          .FirstOrNull(x => x.Tomestones.RowId == row)?
-                                          .Item.RowId ?? 0;
-    }
+    private static uint GetSpecialTomestoneID(int row) =>
+        LuminaGetter.Get<TomestonesItem>()
+                    .FirstOrNull(x => x.Tomestones.RowId == row)?
+                    .Item.RowId ?? 0;
 
     public static ISharedImmediateTexture? GetIcon(uint currencyID)
     {
-        if (Service.DataManager.GetExcelSheet<Item>()!.GetRow(currencyID) is { Icon: var iconId })
-            return Service.TextureProvider.GetFromGameIcon(new(iconId));
+        if (!LuminaGetter.TryGetRow(currencyID, out Item item))
+        {
+            DService.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
+            return null;
+        }
 
-        Service.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
-        return null;
+        return DService.Texture.GetFromGameIcon(new(item.Icon));
     }
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
@@ -181,7 +171,7 @@ public static class CurrencyInfo
 
         if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
         {
-            Service.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+            DService.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
 
@@ -189,7 +179,7 @@ public static class CurrencyInfo
         {
             foreach (var (sourcePath, targetPath) in filePaths)
             {
-                Service.Log.Debug($"Moving file from {sourcePath} to {targetPath}");
+                DService.Log.Debug($"Moving file from {sourcePath} to {targetPath}");
                 File.Move(sourcePath, targetPath);
             }
 

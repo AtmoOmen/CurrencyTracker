@@ -51,11 +51,11 @@ public static class Helpers
                 });
             }
             else
-                Service.Log.Error("Unsupported OS");
+                DService.Log.Error("Unsupported OS");
         }
         catch (Exception ex)
         {
-            Service.Log.Error($"Error :{ex.Message}");
+            DService.Log.Error($"Error :{ex.Message}");
         }
     }
 
@@ -68,11 +68,11 @@ public static class Helpers
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 Process.Start("open", $"-R \"{filePath}\"");
             else
-                Service.Log.Error("Unsupported OS");
+                DService.Log.Error("Unsupported OS");
         }
         catch (Exception ex)
         {
-            Service.Log.Error($"Error :{ex.Message}");
+            DService.Log.Error($"Error :{ex.Message}");
         }
     }
 

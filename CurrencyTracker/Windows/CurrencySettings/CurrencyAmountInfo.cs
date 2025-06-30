@@ -15,7 +15,7 @@ public partial class CurrencySettings
     {
         if (Throttler.Throttle("CurrencyAmountInfoUI", 1000))
         {
-            Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == Service.ClientState.LocalContentId).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out currencyAmountInfoDic);
+            Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == LocalPlayerState.ContentID).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out currencyAmountInfoDic);
         }
 
         if (currencyAmountInfoDic.Count != 0)

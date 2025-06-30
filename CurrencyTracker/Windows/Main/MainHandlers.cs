@@ -151,7 +151,7 @@ public partial class Main
         if (CharacterCurrencyInfos.Count == 0) LoadDataMCS();
         else
         {
-            if (CharacterCurrencyInfos.All(x => x.Character.ContentID != Service.ClientState.LocalContentId))
+            if (CharacterCurrencyInfos.All(x => x.Character.ContentID != LocalPlayerState.ContentID))
             {
                 var info = new CharacterCurrencyInfo(P.CurrentCharacter);
                 CharacterCurrencyInfos.Add(info);

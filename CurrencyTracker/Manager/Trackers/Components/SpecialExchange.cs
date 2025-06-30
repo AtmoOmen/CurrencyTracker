@@ -30,7 +30,7 @@ public class SpecialExchange : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
     }
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
@@ -46,16 +46,16 @@ public class SpecialExchange : ITrackerComponent
         windowName       =   args.AddonName == "SatisfactionSupply" ? addon->AtkValues[7].String.ExtractText() : GetWindowTitle(args, UI[args.AddonName]);
         inventoryHandler ??= new InventoryHandler();
 
-        Service.Framework.Update += OnFrameworkUpdate;
+        DService.Framework.Update += OnFrameworkUpdate;
     }
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (Flags.OccupiedInEvent()) return;
+        if (OccupiedInEvent) return;
 
         if (!isOnExchange && !Exchange.isOnExchange)
         {
-            Service.Framework.Update -= OnFrameworkUpdate;
+            DService.Framework.Update -= OnFrameworkUpdate;
             return;
         }
 
@@ -65,9 +65,9 @@ public class SpecialExchange : ITrackerComponent
     private void EndExchangeHandler()
     {
         if (Exchange.isOnExchange) return;
-        Service.Framework.Update -= OnFrameworkUpdate;
+        DService.Framework.Update -= OnFrameworkUpdate;
 
-        Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
+        DService.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
         isOnExchange = false;
 
@@ -78,13 +78,13 @@ public class SpecialExchange : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
     }
 
     public void Uninit()
     {
-        Service.Framework.Update -= OnFrameworkUpdate;
-        Service.AddonLifecycle.UnregisterListener(BeginExchange);
+        DService.Framework.Update -= OnFrameworkUpdate;
+        DService.AddonLifecycle.UnregisterListener(BeginExchange);
         HandlerManager.Nullify(ref inventoryHandler);
 
         isOnExchange = false;

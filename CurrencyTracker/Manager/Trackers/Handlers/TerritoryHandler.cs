@@ -20,12 +20,12 @@ public class TerritoryHandler : ITrackerHandler
     {
         LoadTerritoryNames();
         InitLocation();
-        Service.ClientState.TerritoryChanged += OnZoneChange;
+        DService.ClientState.TerritoryChanged += OnZoneChange;
     }
 
     private static void LoadTerritoryNames()
     {
-        TerritoryNames ??= Service.DataManager.GetExcelSheet<TerritoryType>()
+        TerritoryNames ??= LuminaGetter.Get<TerritoryType>()
                                   .Select(x => new
                                   {
                                       ZoneID = x.RowId,
@@ -37,7 +37,7 @@ public class TerritoryHandler : ITrackerHandler
 
     private static void InitLocation()
     {
-        CurrentLocationID = PreviousLocationID = Service.ClientState.TerritoryType;
+        CurrentLocationID = PreviousLocationID = DService.ClientState.TerritoryType;
         CurrentLocationName = PreviousLocationName = GetLocationName(CurrentLocationID);
     }
 
@@ -62,7 +62,7 @@ public class TerritoryHandler : ITrackerHandler
 
     public void Uninit()
     {
-        Service.ClientState.TerritoryChanged -= OnZoneChange;
+        DService.ClientState.TerritoryChanged -= OnZoneChange;
         TerritoryNames?.Clear();
         TerritoryNames = null;
         ResetLocations();

@@ -39,7 +39,7 @@ public partial class Main
         {
             var filePath =
                 TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+            DService.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
         }
 
         ImGui.SameLine();
@@ -58,13 +58,13 @@ public partial class Main
                 else successCount++;
             }
 
-            Service.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
+            DService.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
                                (failCharacters.Count != 0 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
 
             if (failCharacters.Count != 0)
             {
-                Service.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
-                foreach (var chara in failCharacters) Service.Chat.PrintError(chara);
+                DService.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                foreach (var chara in failCharacters) DService.Chat.PrintError(chara);
             }
         }
     }

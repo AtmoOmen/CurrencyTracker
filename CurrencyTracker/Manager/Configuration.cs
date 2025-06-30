@@ -170,12 +170,12 @@ public class Configuration : IPluginConfiguration
 
         IsUpdated = false;
 
-        Service.Log.Debug("Successfully reacquire all currency icons");
+        DService.Log.Debug("Successfully reacquire all currency icons");
     }
 
     private Dictionary<uint, string> GetAllCurrencies()
     {
-        Service.Log.Debug("Successfully reacquire all currencies");
+        DService.Log.Debug("Successfully reacquire all currencies");
         IsUpdated = false;
 
         PresetCurrencies.Keys.ToList().ForEach(k => CustomCurrencies.Remove(k));

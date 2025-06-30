@@ -1,8 +1,3 @@
-global using static CurrencyTracker.Manager.Tools.Helpers;
-global using static CurrencyTracker.Plugin;
-global using static CurrencyTracker.Manager.Trackers.Handlers.TerritoryHandler;
-global using static OmenTools.Helpers.HelpersOm;
-global using static OmenTools.Helpers.ThrottlerHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -45,8 +40,8 @@ public sealed class Plugin : IDalamudPlugin
 
         Service.Init(pluginInterface);
 
-        Service.ClientState.Login  += HandleLogin;
-        Service.ClientState.Logout += HandleLogout;
+        DService.ClientState.Login  += HandleLogin;
+        DService.ClientState.Logout += HandleLogout;
 
         WindowsHandler();
     }
@@ -67,15 +62,15 @@ public sealed class Plugin : IDalamudPlugin
 
     public CharacterInfo? GetCurrentCharacter()
     {
-        if (Service.ClientState.LocalContentId == 0 || Service.ClientState.LocalPlayer == null ||
-            !Service.ClientState.IsLoggedIn) return null;
+        if (LocalPlayerState.ContentID == 0 || DService.ObjectTable.LocalPlayer == null ||
+            !DService.ClientState.IsLoggedIn) return null;
 
-        var playerName = Service.ClientState.LocalPlayer?.Name.ExtractText();
-        var serverName = Service.ClientState.LocalPlayer?.HomeWorld.Value.Name.ExtractText();
-        var contentID = Service.ClientState.LocalContentId;
+        var playerName = DService.ObjectTable.LocalPlayer?.Name.ExtractText();
+        var serverName = DService.ObjectTable.LocalPlayer?.HomeWorld.Value.Name.ExtractText();
+        var contentID = LocalPlayerState.ContentID;
 
         if (string.IsNullOrEmpty(playerName) || string.IsNullOrEmpty(serverName) || contentID == 0)
-            Service.Log.Error("Fail to load current character info");
+            DService.Log.Error("Fail to load current character info");
 
         var dataFolderName = Path.Join(PI.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
@@ -92,7 +87,7 @@ public sealed class Plugin : IDalamudPlugin
             existingCharacter.Name = playerName;
             existingCharacter.ContentID = contentID;
             CurrentCharacter = existingCharacter;
-            Service.Log.Debug("Successfully load current character info.");
+            DService.Log.Debug("Successfully load current character info.");
         }
         else
         {
@@ -108,7 +103,7 @@ public sealed class Plugin : IDalamudPlugin
         if (!Directory.Exists(dataFolderName))
         {
             Directory.CreateDirectory(dataFolderName);
-            Service.Log.Debug("Successfully create character info directory.");
+            DService.Log.Debug("Successfully create character info directory.");
         }
 
         Service.Config.Save();
@@ -127,7 +122,7 @@ public sealed class Plugin : IDalamudPlugin
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
-            Service.Log.Debug("Successfully create character info directory.");
+            DService.Log.Debug("Successfully create character info directory.");
         }
 
         return path;
@@ -147,7 +142,7 @@ public sealed class Plugin : IDalamudPlugin
         switch (matchCount)
         {
             case 0:
-                Service.Chat.PrintError(Service.Lang.GetText("CommandHelp3"));
+                DService.Chat.PrintError(Service.Lang.GetText("CommandHelp3"));
                 break;
             case 1:
                 var currencyName = matchingCurrencies[0];
@@ -165,8 +160,8 @@ public sealed class Plugin : IDalamudPlugin
 
                 break;
             default:
-                Service.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
-                foreach (var currency in matchingCurrencies) Service.Chat.PrintError(currency);
+                DService.Chat.PrintError($"{Service.Lang.GetText("CommandHelp2")}:");
+                foreach (var currency in matchingCurrencies) DService.Chat.PrintError(currency);
                 break;
         }
 
@@ -243,10 +238,10 @@ public sealed class Plugin : IDalamudPlugin
         PI.UiBuilder.OpenConfigUi -= DrawConfigUI;
         PI.UiBuilder.OpenMainUi -= DrawMainUI;
 
-        Service.ClientState.Login -= HandleLogin;
-        Service.ClientState.Logout -= HandleLogout;
+        DService.ClientState.Login -= HandleLogin;
+        DService.ClientState.Logout -= HandleLogout;
 
-        Service.CommandManager.RemoveHandler(CommandName);
+        DService.Command.RemoveHandler(CommandName);
 
         Service.Uninit();
     }

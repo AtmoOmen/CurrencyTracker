@@ -20,8 +20,8 @@ public class LetterAttachments : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = 15_000 };
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
     }
 
     private unsafe void OnLetterViewer(AddonEvent type, AddonArgs args)
@@ -52,7 +52,7 @@ public class LetterAttachments : ITrackerComponent
 
     private bool? EndLetterAttachments(string letterSender)
     {
-        Service.Log.Debug("Letter Closed, Currency Change Check Starts.");
+        DService.Log.Debug("Letter Closed, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
             items, string.Empty, $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
@@ -60,14 +60,14 @@ public class LetterAttachments : ITrackerComponent
 
         HandlerManager.Nullify(ref inventoryHandler);
         HandlerManager.ChatHandler.isBlocked = false;
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
 
         return true;
     }
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(OnLetterViewer);
+        DService.AddonLifecycle.UnregisterListener(OnLetterViewer);
         HandlerManager.Nullify(ref inventoryHandler);
 
         TaskHelper?.Abort();

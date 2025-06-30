@@ -19,7 +19,7 @@ public class ChatHandler : ITrackerHandler
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = 5000 };
 
-        Service.Chat.ChatMessage += OnChatMessage;
+        DService.Chat.ChatMessage += OnChatMessage;
     }
 
     private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -36,7 +36,7 @@ public class ChatHandler : ITrackerHandler
 
     public void Uninit()
     {
-        Service.Chat.ChatMessage -= OnChatMessage;
+        DService.Chat.ChatMessage -= OnChatMessage;
         TaskHelper?.Abort();
         TaskHelper = null;
     }

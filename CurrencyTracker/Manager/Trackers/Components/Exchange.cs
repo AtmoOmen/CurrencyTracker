@@ -36,8 +36,8 @@ public class Exchange : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
     }
 
     private void BeginExchange(AddonEvent type, AddonArgs? args)
@@ -47,7 +47,7 @@ public class Exchange : ITrackerComponent
         if (args != null && WindowUI.TryGetValue(args.AddonName, out var windowNode))
             windowName = GetWindowTitle(args, windowNode, args.AddonName == "PvpReward" ? [4, 5] : null);
         else
-            currentTargetName = Service.Target.Target?.Name.TextValue ?? string.Empty;
+            currentTargetName = DService.Targets.Target?.Name.TextValue ?? string.Empty;
 
         isOnExchange = true;
         inventoryHandler ??= new InventoryHandler();
@@ -58,7 +58,7 @@ public class Exchange : ITrackerComponent
     {
         if (SpecialExchange.isOnExchange) return;
 
-        Service.Log.Debug("Exchange Completes, Currency Change Check Starts.");
+        DService.Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
@@ -70,13 +70,13 @@ public class Exchange : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = isOnExchange = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
     }
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(BeginExchange);
-        Service.AddonLifecycle.UnregisterListener(EndExchange);
+        DService.AddonLifecycle.UnregisterListener(BeginExchange);
+        DService.AddonLifecycle.UnregisterListener(EndExchange);
         HandlerManager.Nullify(ref inventoryHandler);
     }
 }

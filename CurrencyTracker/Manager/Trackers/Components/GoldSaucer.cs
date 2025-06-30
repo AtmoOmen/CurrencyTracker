@@ -14,9 +14,9 @@ public class GoldSaucer : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "GoldSaucerReward", GoldSaucerHandler);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "GoldSaucerReward", GoldSaucerHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "GoldSaucerReward", GoldSaucerHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "GoldSaucerReward", GoldSaucerHandler);
     }
 
     private static unsafe void GoldSaucerHandler(AddonEvent type, AddonArgs args)
@@ -37,13 +37,11 @@ public class GoldSaucer : ITrackerComponent
                 Tracker.CheckCurrency(29, "", $"({gameName})", RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:
-                if (!Flags.OccupiedInEvent()) HandlerManager.ChatHandler.isBlocked = false;
+                if (!OccupiedInEvent) HandlerManager.ChatHandler.isBlocked = false;
                 break;
         }
     }
 
-    public void Uninit()
-    {
-        Service.AddonLifecycle.UnregisterListener(GoldSaucerHandler);
-    }
+    public void Uninit() => 
+        DService.AddonLifecycle.UnregisterListener(GoldSaucerHandler);
 }

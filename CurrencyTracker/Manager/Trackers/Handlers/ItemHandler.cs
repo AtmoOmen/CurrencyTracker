@@ -14,7 +14,7 @@ public class ItemHandler : ITrackerHandler
 
     public void Init()
     {
-        ItemNames ??= Service.DataManager.GetExcelSheet<Item>()
+        ItemNames ??= LuminaGetter.Get<Item>()
                            .Where(x => x.ItemSortCategory.RowId != 5 && x.IsUnique == false &&
                                        !string.IsNullOrEmpty(x.Name.ToString()))
                            .DistinctBy(x => x.Name.ToString())

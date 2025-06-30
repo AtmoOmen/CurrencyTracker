@@ -14,7 +14,7 @@ public class ServerBar : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    internal static IDtrBarEntry             DtrEntry { get; } = Service.DtrBar.Get("CurrencyTracker");
+    internal static IDtrBarEntry             DtrEntry { get; } = DService.DtrBar.Get("CurrencyTracker");
     internal static long                     LastPeriodChanges;
     private static  CancellationTokenSource? _cancelTokenSource;
 
@@ -52,7 +52,7 @@ public class ServerBar : ITrackerComponent
         DisposeCancelSource();
         _cancelTokenSource = new CancellationTokenSource();
 
-        Service.Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, _cancelTokenSource.Token);
+        DService.Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, _cancelTokenSource.Token);
     }
 
     private static void UpdateDtrEntry()
@@ -88,7 +88,7 @@ public class ServerBar : ITrackerComponent
         var periodChanges = categories.Sum(cate =>
                                                CalculateChangesForCategory(cate, applyDateTimeFilter));
 
-        if (Service.Config.CharacterRetainers.TryGetValue(Service.ClientState.LocalContentId, out var retainers))
+        if (Service.Config.CharacterRetainers.TryGetValue(LocalPlayerState.ContentID, out var retainers))
             periodChanges += retainers.Sum(r => CalculateChangesForRetainer(r.Key, applyDateTimeFilter));
 
         return periodChanges;

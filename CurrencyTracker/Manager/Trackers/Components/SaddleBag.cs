@@ -21,8 +21,8 @@ public class SaddleBag : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
     }
 
     private void OnSaddleBag(AddonEvent type, AddonArgs args)
@@ -32,14 +32,14 @@ public class SaddleBag : ITrackerComponent
             case AddonEvent.PostSetup:
             {
                 windowTitle = GetWindowTitle(args.Addon, 86);
-                Service.Framework.Update += SaddleBagScanner;
+                DService.Framework.Update += SaddleBagScanner;
 
                 break;
             }
             case AddonEvent.PreFinalize:
             {
-                Service.Framework.Update -= SaddleBagScanner;
-                Service.Framework.Update -= SaddleBagScanner;
+                DService.Framework.Update -= SaddleBagScanner;
+                DService.Framework.Update -= SaddleBagScanner;
 
                     Tracker.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
@@ -59,8 +59,8 @@ public class SaddleBag : ITrackerComponent
 
     public void Uninit()
     {
-        Service.Framework.Update -= SaddleBagScanner;
-        Service.AddonLifecycle.UnregisterListener(OnSaddleBag);
+        DService.Framework.Update -= SaddleBagScanner;
+        DService.AddonLifecycle.UnregisterListener(OnSaddleBag);
 
         windowTitle = string.Empty;
         InventoryItemCount.Clear();

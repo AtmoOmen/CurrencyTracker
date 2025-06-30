@@ -35,18 +35,17 @@ public unsafe class WarpCosts : ITrackerComponent
     {
         TaskManager ??= new TaskHelper { TimeLimitMS = 60000 };
 
-        ValidGilWarpTerritories = Service.DataManager.GetExcelSheet<Warp>()
-                                        .Where(x => Service.DataManager.GetExcelSheet<WarpCondition>()
-                                                           .Any(y => y.Gil != 0 &&
-                                                                     x.WarpCondition.Value.RowId == y.RowId))
+        ValidGilWarpTerritories = LuminaGetter.Get<Warp>()
+                                        .Where(x => LuminaGetter.Get<WarpCondition>()
+                                                                .Any(y => y.Gil != 0 && x.WarpCondition.Value.RowId == y.RowId))
                                         .Select(x => x.TerritoryType.Value.RowId)
                                         .ToHashSet();
 
         ValidWarpText.Clear();
-        ValidWarpText.Add(Service.DataManager.GetExcelSheet<Item>().GetRow(1).Name.ToString());
+        ValidWarpText.Add(LuminaWrapper.GetItemName(1));
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", WarpConfirmationCheck);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "SelectYesno", WarpConfirmationCheck);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
     }
 
     private void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
@@ -54,9 +53,9 @@ public unsafe class WarpCosts : ITrackerComponent
         switch (type)
         {
             case AddonEvent.PostSetup:
-                var addon = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
+                var addon = (AddonSelectYesno*)SelectYesno;
                 var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.VirtualTable[2].ReceiveEvent;
-                SelectYesHook ??= Service.Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
+                SelectYesHook ??= DService.Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
                 SelectYesHook?.Enable();
                 break;
             case AddonEvent.PreFinalize:
@@ -70,14 +69,11 @@ public unsafe class WarpCosts : ITrackerComponent
     {
         if (eventType == AtkEventType.MouseClick)
         {
-            if (!ValidGilWarpTerritories.Contains(Service.ClientState.TerritoryType)) 
+            if (!ValidGilWarpTerritories.Contains(GameState.TerritoryType) || !IsAddonAndNodesReady(SelectYesno)) 
                 return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
-            var SYN = (AddonSelectYesno*)Service.GameGui.GetAddonByName("SelectYesno");
-            if (!IsAddonAndNodesReady(&SYN->AtkUnitBase)) 
-                return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
-
-            var text = SYN->PromptText->NodeText.ExtractText();
+            var addon = (AddonSelectYesno*)SelectYesno;
+            var text = addon->PromptText->NodeText.ExtractText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
@@ -92,9 +88,9 @@ public unsafe class WarpCosts : ITrackerComponent
 
     private static bool? GetTeleportType()
     {
-        switch (Service.Condition[ConditionFlag.BetweenAreas])
+        switch (DService.Condition[ConditionFlag.BetweenAreas])
         {
-            case true when Service.Condition[ConditionFlag.BetweenAreas51]:
+            case true when DService.Condition[ConditionFlag.BetweenAreas51]:
                 TaskManager.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
@@ -128,11 +124,12 @@ public unsafe class WarpCosts : ITrackerComponent
         return true;
     }
 
-    private static bool IsStillOnTeleport() => Flags.BetweenAreas() || Flags.OccupiedInEvent();
+    private static bool IsStillOnTeleport() => 
+        BetweenAreas || OccupiedInEvent;
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
+        DService.AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
 
         SelectYesHook?.Dispose();
         SelectYesHook = null;

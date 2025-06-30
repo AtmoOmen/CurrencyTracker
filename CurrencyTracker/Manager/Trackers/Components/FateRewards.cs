@@ -14,9 +14,9 @@ public class FateRewards : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
     }
 
     private static unsafe void FateHandler(AddonEvent type, AddonArgs args)
@@ -38,13 +38,14 @@ public class FateRewards : ITrackerComponent
                                                    RecordChangeType.All, 23);
                 break;
             case AddonEvent.PreFinalize:
-                if (!Flags.OccupiedInEvent()) HandlerManager.ChatHandler.isBlocked = false;
+                if (!OccupiedInEvent) 
+                    HandlerManager.ChatHandler.isBlocked = false;
                 break;
         }
     }
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(FateHandler);
+        DService.AddonLifecycle.UnregisterListener(FateHandler);
     }
 }

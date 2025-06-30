@@ -52,7 +52,7 @@ public class Tracker
         ComponentManager.Init();
 
         CheckAllCurrencies();
-        Service.Log.Debug("Currency Tracker Activated");
+        DService.Log.Debug("Currency Tracker Activated");
     }
 
     internal static bool CheckCurrency(
@@ -101,8 +101,8 @@ public class Tracker
     private static void PostCurrencyChangeCheck(string currencyName, uint currencyID, long currencyAmount, long currencyChange,
                                                 TransactionFileCategory category, ulong ID, uint source)
     {
-        Service.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-        if (P.PI.IsDev) Service.Log.Debug($"Source: {source}");
+        DService.Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
+        if (P.PI.IsDev) DService.Log.Debug($"Source: {source}");
         CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID);
     }
 
@@ -158,7 +158,7 @@ public class Tracker
                                                            SeString.CreateItemLink(id, false),
                                                            GetSelectedViewName(category, ID),
                                                            interval.ToIntervalString());
-                    Service.Chat.PrintError(message);
+                    DService.Chat.PrintError(message);
                 }
         }
     }
@@ -203,7 +203,7 @@ public class Tracker
         HandlerManager.Uninit();
         ComponentManager.Uninit();
 
-        Service.Log.Debug("Currency Tracker Deactivated");
+        DService.Log.Debug("Currency Tracker Deactivated");
     }
 
     internal static void Dispose() => Uninit();

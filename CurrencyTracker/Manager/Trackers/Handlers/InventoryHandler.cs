@@ -18,7 +18,7 @@ public class InventoryHandler : ITrackerHandler
 
     public void Init()
     {
-        Service.GameInventory.InventoryChangedRaw += OnInventoryChangedRaw;
+        DService.Inventory.InventoryChangedRaw += OnInventoryChangedRaw;
         Initialized = true;
     }
 
@@ -27,13 +27,13 @@ public class InventoryHandler : ITrackerHandler
         foreach (var eventArgs in events)
         {
             Items.Add(eventArgs.Item.ItemId);
-            if (P.PI.IsDev) Service.Log.Debug(eventArgs.ToString());
+            if (P.PI.IsDev) DService.Log.Debug(eventArgs.ToString());
         }
     }
 
     public void Uninit()
     {
-        Service.GameInventory.InventoryChangedRaw -= OnInventoryChangedRaw;
+        DService.Inventory.InventoryChangedRaw -= OnInventoryChangedRaw;
 
         Items.Clear();
     }

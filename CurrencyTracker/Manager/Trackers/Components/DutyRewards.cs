@@ -11,7 +11,13 @@ public class DutyRewards : ITrackerComponent
 {
     public bool Initialized { get; set; }
 
-    private static Dictionary<uint, string>? ContentNames; // Territory ID - ContentName
+    // Territory ID - ContentName
+    private static readonly Dictionary<uint, string>? ContentNames =
+        LuminaGetter.Get<ContentFinderCondition>()
+                    .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
+                                !IgnoredContents.Contains(x.TerritoryType.Value.RowId))
+                    .DistinctBy(x => x.TerritoryType.Value.RowId)
+                    .ToDictionary(x => x.TerritoryType.Value.RowId, x => x.Name.ToString());
 
     private static readonly HashSet<uint> IgnoredContents =
     [
@@ -29,15 +35,10 @@ public class DutyRewards : ITrackerComponent
 
     public void Init()
     {
-        ContentNames ??= Service.DataManager.GetExcelSheet<ContentFinderCondition>()
-                              .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
-                                          !IgnoredContents.Contains(x.TerritoryType.Value.RowId))
-                              .DistinctBy(x => x.TerritoryType.Value.RowId)
-                              .ToDictionary(x => x.TerritoryType.Value.RowId, x => x.Name.ToString());
+        if (BoundByDuty) 
+            CheckDutyStart();
 
-        if (Flags.IsBoundByDuty()) CheckDutyStart();
-
-        Service.ClientState.TerritoryChanged += OnZoneChange;
+        DService.ClientState.TerritoryChanged += OnZoneChange;
     }
 
     private void CheckDutyStart()
@@ -51,13 +52,13 @@ public class DutyRewards : ITrackerComponent
             HandlerManager.ChatHandler.isBlocked = true;
             inventoryHandler ??= new InventoryHandler();
 
-            Service.Log.Debug($"Duty {dutyName} Starts");
+            DService.Log.Debug($"Duty {dutyName} Starts");
         }
     }
 
     private void OnZoneChange(ushort obj)
     {
-        if (Flags.IsBoundByDuty())
+        if (BoundByDuty)
             CheckDutyStart();
         else if (isDutyStarted)
             CheckDutyEnd();
@@ -67,7 +68,7 @@ public class DutyRewards : ITrackerComponent
     {
         if (!isDutyStarted) return;
 
-        Service.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
+        DService.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, PreviousLocationName,
@@ -80,12 +81,12 @@ public class DutyRewards : ITrackerComponent
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
     }
 
     public void Uninit()
     {
-        Service.ClientState.TerritoryChanged -= OnZoneChange;
+        DService.ClientState.TerritoryChanged -= OnZoneChange;
         HandlerManager.Nullify(ref inventoryHandler);
 
         isDutyStarted = false;

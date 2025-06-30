@@ -74,7 +74,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Error parsing entire data file: {ex.Message}");
+            DService.Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
         return transactions;
@@ -99,7 +99,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Error parsing entire data file: {ex.Message}");
+            DService.Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
         return transactions;
@@ -122,7 +122,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
+            DService.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
@@ -145,7 +145,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
+            DService.Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
 
@@ -163,7 +163,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
+            DService.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
 
@@ -182,7 +182,7 @@ public class Transaction : IEquatable<Transaction>
         catch (IOException ex)
         {
             await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-            Service.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
+            DService.Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
 

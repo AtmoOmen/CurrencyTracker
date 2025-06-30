@@ -67,9 +67,9 @@ public partial class Main
         var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(SelectedCurrencyID, threshold, oneWay);
 
         if (mergeCount > 0)
-            Service.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
+            DService.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
         else
-            Service.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
+            DService.Chat.PrintError(Service.Lang.GetText("TransactionsHelp"));
 
         UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
     }
@@ -111,7 +111,7 @@ public partial class Main
                 if (currentTransactions.Count == 0) return;
 
                 var selectedTransactions = currentTransactions.Select(x => x.Transaction).ToList();
-                Service.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
+                DService.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
             }
             ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
 

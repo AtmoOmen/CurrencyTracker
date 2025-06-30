@@ -25,8 +25,8 @@ public class PremiumSaddleBag : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
     }
 
     private void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
@@ -59,7 +59,7 @@ public class PremiumSaddleBag : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
+        DService.AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
 
         windowTitle = string.Empty;
         InventoryItemCount.Clear();

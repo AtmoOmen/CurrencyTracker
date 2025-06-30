@@ -47,7 +47,7 @@ public partial class Main : Window, IDisposable
 
     public override void Draw()
     {
-        if (!Service.ClientState.IsLoggedIn) return;
+        if (!DService.ClientState.IsLoggedIn) return;
 
         DrawCategory(ref _showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
         if (!_showRecordOptions && !_showOthers) ImGui.SameLine();

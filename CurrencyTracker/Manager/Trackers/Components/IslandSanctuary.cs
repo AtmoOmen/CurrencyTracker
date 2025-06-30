@@ -35,26 +35,26 @@ public class IslandSanctuary : ITrackerComponent
         if (CurrentLocationID == 1055)
             OnZoneChanged(1055);
 
-        Service.ClientState.TerritoryChanged += OnZoneChanged;
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
+        DService.ClientState.TerritoryChanged += OnZoneChanged;
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
     }
 
     private void OnZoneChanged(ushort zone)
     {
         if (zone == 1055)
-            Service.Framework.Update += OnUpdate;
+            DService.Framework.Update += OnUpdate;
         else
-            Service.Framework.Update -= OnUpdate;
+            DService.Framework.Update -= OnUpdate;
     }
 
     private void OnUpdate(IFramework framework)
     {
         if (!Throttler.Throttle("IslandSanctuary-CheckWorkshop")) return;
-        var currentTarget = Service.Target.Target;
-        var prevTarget = Service.Target.PreviousTarget;
+        var currentTarget = DService.Targets.Target;
+        var prevTarget = DService.Targets.PreviousTarget;
 
         if (currentTarget?.DataId == 1043078)
         {
@@ -89,7 +89,7 @@ public class IslandSanctuary : ITrackerComponent
 
     private void EndMJI(AddonEvent type, AddonArgs args)
     {
-        if (Flags.OccupiedInEvent()) return;
+        if (OccupiedInEvent) return;
 
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
@@ -107,7 +107,7 @@ public class IslandSanctuary : ITrackerComponent
 
     private void EndMJIWindow(AddonEvent type, AddonArgs args)
     {
-        if (Flags.OccupiedInEvent()) return;
+        if (OccupiedInEvent) return;
 
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);
@@ -118,13 +118,13 @@ public class IslandSanctuary : ITrackerComponent
 
     public void Uninit()
     {
-        Service.Framework.Update -= OnUpdate;
-        Service.ClientState.TerritoryChanged -= OnZoneChanged;
+        DService.Framework.Update -= OnUpdate;
+        DService.ClientState.TerritoryChanged -= OnZoneChanged;
 
-        Service.AddonLifecycle.UnregisterListener(BeginMJIWindow);
-        Service.AddonLifecycle.UnregisterListener(EndMJIWindow);
-        Service.AddonLifecycle.UnregisterListener(BeginMJI);
-        Service.AddonLifecycle.UnregisterListener(EndMJI);
+        DService.AddonLifecycle.UnregisterListener(BeginMJIWindow);
+        DService.AddonLifecycle.UnregisterListener(EndMJIWindow);
+        DService.AddonLifecycle.UnregisterListener(BeginMJI);
+        DService.AddonLifecycle.UnregisterListener(EndMJI);
 
         HandlerManager.Nullify(ref inventoryHandler);
 

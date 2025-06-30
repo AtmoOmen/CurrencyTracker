@@ -18,8 +18,8 @@ public class TripleTriad : ITrackerComponent
 
     public void Init()
     {
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
     }
 
     private unsafe void StartTripleTriad(AddonEvent type, AddonArgs args)
@@ -27,12 +27,13 @@ public class TripleTriad : ITrackerComponent
         isTTOn = true;
         HandlerManager.ChatHandler.isBlocked = true;
 
-        var TTGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriad");
-        if (TTGui != null) ttRivalName = TTGui->GetTextNodeById(187)->NodeText.ExtractText();
+        var addon = InfosOm.TripleTriad;
+        if (addon != null) 
+            ttRivalName = addon->GetTextNodeById(187)->NodeText.ExtractText();
 
         inventoryHandler ??= new InventoryHandler();
 
-        Service.Log.Debug("Triple Triad Starts");
+        DService.Log.Debug("Triple Triad Starts");
     }
 
     private unsafe void EndTripleTriad(AddonEvent type, AddonArgs args)
@@ -41,19 +42,19 @@ public class TripleTriad : ITrackerComponent
 
         isTTOn = false;
 
-        var TTRGui = (AtkUnitBase*)Service.GameGui.GetAddonByName("TripleTriadResult");
-        if (TTRGui != null)
+        var addon = TripleTriadResult;
+        if (addon != null)
         {
-            var draw = TTRGui->GetTextNodeById(5)->AtkResNode.IsVisible();
-            var lose = TTRGui->GetTextNodeById(4)->AtkResNode.IsVisible();
-            var win = TTRGui->GetTextNodeById(3)->AtkResNode.IsVisible();
+            var draw = addon->GetTextNodeById(5)->AtkResNode.IsVisible();
+            var lose = addon->GetTextNodeById(4)->AtkResNode.IsVisible();
+            var win  = addon->GetTextNodeById(3)->AtkResNode.IsVisible();
 
             ttResultText = draw ? Service.Lang.GetText("TripleTriad-Draw") :
                            lose ? Service.Lang.GetText("TripleTriad-Loss") :
-                           win ? Service.Lang.GetText("TripleTriad-Win") : "";
+                           win ? Service.Lang.GetText("TripleTriad-Win") : string.Empty;
         }
 
-        Service.Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
+        DService.Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(
@@ -63,13 +64,13 @@ public class TripleTriad : ITrackerComponent
         ttRivalName = ttResultText = string.Empty;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
     }
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(StartTripleTriad);
-        Service.AddonLifecycle.UnregisterListener(EndTripleTriad);
+        DService.AddonLifecycle.UnregisterListener(StartTripleTriad);
+        DService.AddonLifecycle.UnregisterListener(EndTripleTriad);
         HandlerManager.Nullify(ref inventoryHandler);
 
         isTTOn = false;

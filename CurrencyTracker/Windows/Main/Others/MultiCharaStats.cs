@@ -145,7 +145,7 @@ public partial class Main
     {
         CharacterCurrencyInfos.Clear();
         CharacterCurrencyInfos = Service.Config.CurrentActiveCharacter
-                                        .OrderByDescending(c => c.ContentID == Service.ClientState.LocalContentId)
+                                        .OrderByDescending(c => c.ContentID == LocalPlayerState.ContentID)
                                         .Select(x => new CharacterCurrencyInfo(x))
                                         .ToList();
     }

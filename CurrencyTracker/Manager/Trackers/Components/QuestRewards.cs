@@ -21,8 +21,8 @@ public class QuestRewards : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
 
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
-        Service.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
     }
 
     private unsafe void OnQuestRewards(AddonEvent type, AddonArgs? args)
@@ -39,7 +39,7 @@ public class QuestRewards : ITrackerComponent
             case AddonEvent.PreFinalize:
                 var atkValue  = addon->AtkValues[1];
                 var questName = atkValue.Type == 0 ? string.Empty : atkValue.String.ExtractText();
-                Service.Log.Debug($"Quest {questName} Ready to Finish!");
+                DService.Log.Debug($"Quest {questName} Ready to Finish!");
 
                 TaskHelper.Enqueue(() => CheckQuestRewards(questName));
                 break;
@@ -48,13 +48,13 @@ public class QuestRewards : ITrackerComponent
 
     private bool? CheckQuestRewards(string questName)
     {
-        if (Flags.OccupiedInEvent() || Flags.BetweenAreas()) return false;
+        if (OccupiedInEvent || BetweenAreas) return false;
 
-        Service.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
+        DService.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         Tracker.CheckCurrencies(items, string.Empty, $"({Service.Lang.GetText("Quest", questName)})",
                                         RecordChangeType.All, 9);
-        Service.Log.Debug("Currency Change Check Completes.");
+        DService.Log.Debug("Currency Change Check Completes.");
 
         HandlerManager.ChatHandler.isBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
@@ -63,7 +63,7 @@ public class QuestRewards : ITrackerComponent
 
     public void Uninit()
     {
-        Service.AddonLifecycle.UnregisterListener(OnQuestRewards);
+        DService.AddonLifecycle.UnregisterListener(OnQuestRewards);
         HandlerManager.Nullify(ref inventoryHandler);
 
         TaskHelper?.Abort();

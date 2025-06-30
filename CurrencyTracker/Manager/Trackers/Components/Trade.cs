@@ -18,7 +18,7 @@ public unsafe class Trade : ITrackerComponent
     {
         TaskHelper ??= new TaskHelper { TimeLimitMS = 30000 };
 
-        Service.Condition.ConditionChange += OnConditionChanged;
+        DService.Condition.ConditionChange += OnConditionChanged;
     }
 
     private void OnConditionChanged(ConditionFlag flag, bool value)
@@ -31,7 +31,7 @@ public unsafe class Trade : ITrackerComponent
         }
         else
         {
-            Service.Log.Debug("Trade Ends, Currency Change Check Starts.");
+            DService.Log.Debug("Trade Ends, Currency Change Check Starts.");
 
             var items = inventoryHandler?.Items ?? [];
 
@@ -41,7 +41,7 @@ public unsafe class Trade : ITrackerComponent
             HandlerManager.ChatHandler.isBlocked = false;
             HandlerManager.Nullify(ref inventoryHandler);
 
-            Service.Log.Debug("Currency Change Check Completes.");
+            DService.Log.Debug("Currency Change Check Completes.");
         }
     }
 
@@ -58,7 +58,7 @@ public unsafe class Trade : ITrackerComponent
             inventoryHandler ??= new InventoryHandler();
             HandlerManager.ChatHandler.isBlocked = true;
 
-            Service.Log.Debug($"Trade Starts with {tradeTargetName}");
+            DService.Log.Debug($"Trade Starts with {tradeTargetName}");
 
             return true;
         }
@@ -68,7 +68,7 @@ public unsafe class Trade : ITrackerComponent
 
     public void Uninit()
     {
-        Service.Condition.ConditionChange -= OnConditionChanged;
+        DService.Condition.ConditionChange -= OnConditionChanged;
         HandlerManager.Nullify(ref inventoryHandler);
         tradeTargetName = string.Empty;
         TaskHelper?.Abort();
