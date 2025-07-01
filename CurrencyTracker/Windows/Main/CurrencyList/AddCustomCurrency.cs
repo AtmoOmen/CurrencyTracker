@@ -7,6 +7,7 @@ using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
@@ -59,7 +60,7 @@ public partial class Main
 
                 ImGui.SameLine();
                 ImGui.PushID("AddCustomCurrencyPagingComponent");
-                PagingComponent(
+                UIHelper.PagingComponent(
                     () => _currentPageACC = 0, 
                     () => { if (_currentPageACC > 0) _currentPageACC--; }, 
                     () => { if (_currentPageACC < (itemCount / 10) - 1) _currentPageACC++; }, 

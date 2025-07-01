@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
+using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
@@ -15,8 +16,10 @@ namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
-    internal static List<CharacterCurrencyInfo> CharacterCurrencyInfos = [];
-    private static List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
+    internal static List<CharacterCurrencyInfo>  CharacterCurrencyInfos = [];
+    private static  List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
+    
+    
     private static string searchFilterMCS = string.Empty;
     private static int _currentPageMCS;
 
@@ -32,13 +35,9 @@ public partial class Main
 
         using var popup = ImRaii.Popup("Multi-Chara Stats##CurrencyTracker", 
                                        ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse);
-        if (!popup.Success) return;
-
-        PresetFont.Axis14.Push();
-        ImGui.SetWindowFontScale(1.2f);
+        if (!popup) return;
+        
         MCSSubWindowUI();
-        ImGui.SetWindowFontScale(1f);
-        PresetFont.Axis14.Pop();
     }
 
     private static void MCSSubWindowUI()
@@ -72,7 +71,7 @@ public partial class Main
 
         ImGui.SameLine();
         ImGui.PushID("MultiCharaStatsPagingComponent");
-        PagingComponent(
+        UIHelper.PagingComponent(
             () => _currentPageMCS = 0,
             () => { if (_currentPageMCS > 0) _currentPageMCS--; },
             () => { if (_currentPageMCS < (itemCount / 10) - 1) _currentPageMCS++; },

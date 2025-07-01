@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Utilities;
 using Dalamud.Game.Text.SeStringHandling;
 using IntervalUtility;
 
@@ -21,11 +21,14 @@ public class TrackerManager
         InitTracking();
 
         foreach (var currency in CurrencyInfo.PresetCurrencies)
+        {
             if (!Service.Config.PresetCurrencies.ContainsKey(currency))
             {
                 var currencyName = CurrencyInfo.GetCurrencyLocalName(currency);
-                if (!string.IsNullOrEmpty(currencyName)) Service.Config.PresetCurrencies.Add(currency, currencyName);
+                if (!string.IsNullOrEmpty(currencyName)) 
+                    Service.Config.PresetCurrencies.Add(currency, currencyName);
             }
+        }
 
         Service.Config.PresetCurrencies = Service.Config.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
                               .ToUpdateDictionary(kv => kv.Key, kv => kv.Value);
@@ -114,19 +117,11 @@ public class TrackerManager
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
 
-        if (rule.RestrictedAreas == null) return true;
-
         // 地点限制 Location Restrictions
-        if (!rule.RegionRulesMode) // 黑名单 Blacklist
-        {
-            if (rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-        }
-        else // 白名单 Whitelist
-        {
-            if (!rule.RestrictedAreas.Contains(CurrentLocationID)) return false;
-        }
-
-        return true;
+        if (rule.RestrictedAreas is not { Count: > 0 } areas) return true;
+        
+        return (!rule.RegionRulesMode && !areas.Contains(CurrentLocationID)) ||
+               (rule.RegionRulesMode && areas.Contains(CurrentLocationID));
     }
 
     internal static bool CheckRuleAmountCap(
@@ -135,8 +130,8 @@ public class TrackerManager
         if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
 
-        if (rule.AlertedAmountIntervals == null) return true;
-        if (rule.AlertedChangeIntervals == null) return true;
+        if (rule.AlertedAmountIntervals is not { Count: > 0 } || rule.AlertedChangeIntervals is not { Count: > 0 }) 
+            return true;
 
         var util = new IntervalUtil();
 
@@ -157,7 +152,7 @@ public class TrackerManager
                 {
                     var message = Service.Lang.GetSeString("AlertIntervalMessage", Service.Lang.GetText(type), value.ToString("N0"),
                                                            SeString.CreateItemLink(id, false),
-                                                           GetSelectedViewName(category, ID),
+                                                           category.GetSelectedViewName(ID),
                                                            interval.ToIntervalString());
                     DService.Chat.PrintError(message);
                 }

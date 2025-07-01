@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
+using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Trackers;
+using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
@@ -332,7 +334,8 @@ public class Settings : Window, IDisposable
 
             if (ImGui.BeginTabItem("Dev"))
             {
-                if (ImGui.Button("Open Local Language Files Directory")) OpenDirectory(LanguageManager.LangsDirectory);
+                if (ImGui.Button("Open Local Language Files Directory")) 
+                    FileHelper.OpenDirectory(LanguageManager.LangsDirectory);
 
                 ImGui.InputTextWithHint("##LoadDevLangFile", "Dev Lang File Path (.resx)", ref devLangFilePath, 1000);
 

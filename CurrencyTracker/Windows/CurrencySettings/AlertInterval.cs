@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Tools;
+using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility.Raii;
@@ -50,7 +50,7 @@ public partial class CurrencySettings
     {
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ContainerType")}:");
         ImGui.SetNextItemWidth(alertIntervalWidth.X + 56);
-        using var combo = ImRaii.Combo("##IntervalAlertViewSelect", GetSelectedViewName(viewIA, idIA));
+        using var combo = ImRaii.Combo("##IntervalAlertViewSelect", viewIA.GetSelectedViewName(idIA));
         if (combo)
         {
             DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
@@ -173,7 +173,7 @@ public partial class CurrencySettings
 
     private void DrawViewSelectableIA(TransactionFileCategory category, ulong ID)
     {
-        var text = GetSelectedViewName(category, ID);
+        var text   = category.GetSelectedViewName(ID);
         var boolUI = category == viewIA && ID == idIA;
         if (ImGui.Selectable($"{text}##{category}_{ID}", boolUI))
         {

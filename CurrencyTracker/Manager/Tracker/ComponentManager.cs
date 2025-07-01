@@ -1,50 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using CurrencyTracker.Infos;
 using CurrencyTracker.Trackers;
 
-namespace CurrencyTracker.Manager.Trackers;
+namespace CurrencyTracker.Manager.Tracker;
 
 public class ComponentManager
 {
     private static readonly Dictionary<Type, TrackerComponentBase> Components = [];
 
-    public static void Init()
+    static ComponentManager()
     {
-        if (Components.Count != 0) return;
-
         var componentTypes = Assembly.GetExecutingAssembly().GetTypes()
                                      .Where(t => typeof(TrackerComponentBase).IsAssignableFrom(t) &&
                                                  t is { IsInterface: false, IsAbstract: false });
 
         foreach (var type in componentTypes)
-            if (Activator.CreateInstance(type) is TrackerComponentBase component)
-                Components[type] = component;
-
+        {
+            if (Activator.CreateInstance(type) is not TrackerComponentBase component) continue;
+            Components[type] = component;
+        }
+    }
+    
+    public static void Init()
+    {
         foreach (var (type, component) in Components)
         {
-            if (!Service.Config.ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled)
-            {
-                DService.Log.Warning($"Component {type.Name} is not enabled or configuration is missing. Skipping.");
-                continue;
-            }
-
-            try
-            {
-                if (!component.Initialized)
-                {
-                    component.Init();
-                    component.Initialized = true;
-                    DService.Log.Debug($"Loaded {type.Name} module");
-                }
-                else DService.Log.Debug($"{type.Name} has already been loaded. Skipping.");
-            }
-            catch (Exception ex)
-            {
-                HandleComponentError(component, ex);
-            }
+            if (!Service.Config.ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled) continue;
+            component.Init();
         }
     }
 
@@ -57,21 +42,8 @@ public class ComponentManager
             return;
         }
 
-        try
-        {
-            if (!component.Initialized)
-            {
-                component.Init();
-                component.Initialized = true;
-                Service.Config.ComponentEnabled[type.Name] = true;
-                DService.Log.Debug($"Loaded {type.Name} module");
-            }
-            else DService.Log.Debug($"{type.Name} has already been loaded. Skipping.");
-        }
-        catch (Exception ex)
-        {
-            HandleComponentError(component, ex);
-        }
+        component.Init();
+        Service.Config.ComponentEnabled[type.Name] = true;
     }
 
     public static void Unload(TrackerComponentBase component)
@@ -79,40 +51,20 @@ public class ComponentManager
         var type = component.GetType();
         if (!Components.ContainsKey(type)) return;
 
-        try
-        {
-            component.Uninit();
-            component.Initialized = false;
-            Service.Config.ComponentEnabled[type.Name] = false;
-            DService.Log.Debug($"Unloaded {type.Name} module");
-        }
-        catch (Exception ex)
-        {
-            HandleComponentError(component, ex);
-        }
+        component.Uninit();
+        Service.Config.ComponentEnabled[type.Name] = false;
     }
 
     public static void Uninit()
     {
         foreach (var (type, component) in Components)
-        {
-            try
-            {
-                component.Uninit();
-                component.Initialized = false;
-                DService.Log.Debug($"Unloaded {type.Name} module");
-            }
-            catch (Exception ex)
-            {
-                HandleComponentError(component, ex);
-            }
-        }
+            component.Uninit();
     }
 
-    public static T Get<T>() where T : TrackerComponentBase 
+    public static T? Get<T>() where T : TrackerComponentBase 
         => Components.TryGetValue(typeof(T), out var component) ? (T)component : null;
 
-    public static bool TryGet<T>(out T component) where T : TrackerComponentBase
+    public static bool TryGet<T>([NotNullWhen(true)] out T? component) where T : TrackerComponentBase
     {
         if (Components.TryGetValue(typeof(T), out var rawComponent) && rawComponent is T typedComponent)
         {
@@ -120,16 +72,7 @@ public class ComponentManager
             return true;
         }
         
-        component = default;
+        component = null;
         return false;
-    }
-
-    private static void HandleComponentError(TrackerComponentBase component, Exception ex)
-    {
-        var type = component.GetType();
-        component.Uninit();
-        component.Initialized = false;
-        Service.Config.ComponentEnabled[type.Name] = false;
-        DService.Log.Error(ex, $"Error in component {type.Name}");
     }
 }

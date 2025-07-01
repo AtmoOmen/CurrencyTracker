@@ -26,7 +26,7 @@ public partial class CurrencySettings
                 foreach (var source in currencyAmountInfoDic)
                 {
                     if (source.Value == 0) continue;
-                    ImGui.Text(GetSelectedViewName(source.Key.Category, source.Key.ID));
+                    ImGui.Text(source.Key.Category.GetSelectedViewName(source.Key.ID));
                 }
 
                 ImGui.EndGroup();

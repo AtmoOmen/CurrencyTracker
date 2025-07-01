@@ -3,6 +3,7 @@ using System.IO;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Utilities;
 using ImGuiNET;
 using OmenTools.ImGuiOm;
 
@@ -17,7 +18,8 @@ public partial class CurrencySettings
             var filesInfo = GetCurrencyFilesInfoCFI();
             foreach (var file in filesInfo)
             {
-                if (ImGui.Selectable($"{file.Key}")) OpenAndSelectFile(file.Value);
+                if (ImGui.Selectable($"{file.Key}")) 
+                    FileHelper.OpenAndSelectFile(file.Value);
 
                 ImGuiOm.TooltipHover(Path.GetFileName(file.Value));
             }
@@ -30,9 +32,7 @@ public partial class CurrencySettings
         var retainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
 
         foreach (var retainer in retainers.Keys)
-        {
             AddFilePath(TransactionFileCategory.Retainer, retainer);
-        }
 
         AddFilePath(TransactionFileCategory.Inventory, 0);
         AddFilePath(TransactionFileCategory.SaddleBag, 0);
@@ -42,7 +42,7 @@ public partial class CurrencySettings
 
         void AddFilePath(TransactionFileCategory category, ulong key)
         {
-            var name = GetSelectedViewName(category, key);
+            var name     = category.GetSelectedViewName(key);
             var filePath = TransactionsHandler.GetTransactionFilePath(Main.SelectedCurrencyID, category, key);
 
             if (!File.Exists(filePath)) return;

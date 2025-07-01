@@ -75,7 +75,7 @@ public partial class CurrencySettings
                     ImGui.TableNextColumn();
                     ImGui.Text("Location");
 
-                    var selectedCopy = rules.RestrictedAreas ?? [];
+                    var selectedCopy = rules.RestrictedAreas;
                     var data = TerritoryNames.OrderByDescending(x => selectedCopy.Contains(x.Key));
                     foreach (var (placeID, placeName) in data)
                     {

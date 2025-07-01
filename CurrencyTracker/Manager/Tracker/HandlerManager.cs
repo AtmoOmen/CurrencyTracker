@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Trackers;
 
-namespace CurrencyTracker.Manager.Trackers;
+namespace CurrencyTracker.Manager.Tracker;
 
 public class HandlerManager
 {
@@ -16,33 +15,32 @@ public class HandlerManager
 
     private static readonly HashSet<string> BlacklistHandlerNames = ["InventoryHandler"];
 
+    static HandlerManager()
+    {
+        var types = Assembly.GetExecutingAssembly().GetTypes()
+                            .Where(t => typeof(TrackerHandlerBase).IsAssignableFrom(t) &&
+                                        t is { IsInterface: false, IsAbstract: false } &&
+                                        t.GetConstructor(Type.EmptyTypes) != null);
+
+        foreach (var type in types)
+        {
+            if (BlacklistHandlerNames.Contains(type.Name)) continue;
+
+            var instance = Activator.CreateInstance(type);
+            if (instance is not TrackerHandlerBase handler) continue;
+                
+            Handlers.Add(handler);
+        }
+
+        ChatHandler = Handlers.Where(x => x.GetType() == typeof(ChatHandler))
+                              .OfType<ChatHandler>()
+                              .FirstOrDefault();
+    }
+    
     public static void Init()
     {
-        if (Handlers.Count == 0)
-        {
-            var types = Assembly.GetExecutingAssembly().GetTypes()
-                                .Where(t => typeof(TrackerHandlerBase).IsAssignableFrom(t) &&
-                                            t is { IsInterface: false, IsAbstract: false } &&
-                                            t.GetConstructor(Type.EmptyTypes) != null);
-
-            foreach (var type in types)
-            {
-                if (type.Name.Contains("InventoryHandler")) continue;
-
-                var instance = Activator.CreateInstance(type);
-                if (instance is not TrackerHandlerBase handler) continue;
-                
-                Handlers.Add(handler);
-            }
-
-            ChatHandler = Handlers.OfType<ChatHandler>().FirstOrDefault();
-        }
-
         foreach (var handler in Handlers)
-        {
-            if (handler.Initialized) continue;
             handler.Init();
-        }
     }
 
     public static void Nullify<T>(ref T? handler) where T : TrackerHandlerBase?

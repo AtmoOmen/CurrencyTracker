@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
+using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
@@ -38,7 +39,7 @@ public partial class Main
     private static void OpenDataFolderUI()
     {
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Folder, Service.Lang.GetText("OpenDataFolder")))
-            OpenDirectory(P.PlayerDataFolder);
+            FileHelper.OpenDirectory(P.PlayerDataFolder);
     }
 
     // 图表窗口 Graphs Window

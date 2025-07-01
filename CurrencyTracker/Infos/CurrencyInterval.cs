@@ -20,7 +20,7 @@ public static class CurrencyInterval
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
 
-        var viewString = GetTransactionViewKeyString(categoryInfo.Category, categoryInfo.ID);
+        var viewString = categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID);
         if (!intervalDic.TryGetValue(viewString, out var intervalList))
         {
             intervalList = [];
@@ -40,7 +40,7 @@ public static class CurrencyInterval
         var intervalDic = alertMode == 0
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
-        var intervalList = intervalDic[GetTransactionViewKeyString(categoryInfo.Category, categoryInfo.ID)];
+        var intervalList = intervalDic[categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID)];
         if (!intervalList.Contains(interval))
         {
             intervalList.Add(interval);
@@ -61,8 +61,8 @@ public static class CurrencyInterval
         var intervalDic = alertMode == 0
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
-        var intervalList = intervalDic[GetTransactionViewKeyString(categoryInfo.Category, categoryInfo.ID)];
-        var state = intervalList.Remove(interval);
+        var intervalList = intervalDic[categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID)];
+        var state        = intervalList.Remove(interval);
         Service.Config.Save();
 
         return state;
@@ -70,7 +70,11 @@ public static class CurrencyInterval
 
     public static Interval<int>? CreateInterval(int start, int end)
     {
-        if (start > end && start != -1 && end != -1 || start == end && start != -1 && end != -1 || start < -1 || end < -1) return null;
+        if ((start > end  && start != -1 && end != -1) ||
+            (start == end && start != -1 && end != -1) ||
+            start < -1                                 ||
+            end   < -1)
+            return null;
 
         int? end1 = start == -1 ? null : start;
         int? end2 = end == -1 ? null : end;

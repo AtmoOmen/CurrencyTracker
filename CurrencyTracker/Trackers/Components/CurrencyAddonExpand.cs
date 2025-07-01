@@ -94,7 +94,7 @@ public unsafe class CurrencyAddonExpand : TrackerComponentBase
         foreach (var source in infoDic)
         {
             if (source.Value == 0) continue;
-            tooltipBuilder.Append($"{GetSelectedViewName(source.Key.Category, source.Key.ID)}: {source.Value:N0}");
+            tooltipBuilder.Append($"{source.Key.Category.GetSelectedViewName(source.Key.ID)}: {source.Value:N0}");
             tooltipBuilder.AppendLine();
         }
 

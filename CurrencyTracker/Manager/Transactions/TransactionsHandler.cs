@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Utilities;
 
 namespace CurrencyTracker.Manager.Transactions;
 
@@ -336,7 +337,7 @@ public static class TransactionsHandler
 
             while (backupFiles.Count >= maxBackupFilesCount)
             {
-                if (!IsFileLocked(new FileInfo(backupFiles[0]))) File.Delete(backupFiles[0]);
+                if (!FileHelper.IsFileLocked(new FileInfo(backupFiles[0]))) File.Delete(backupFiles[0]);
                 backupFiles.RemoveAt(0);
             }
         }
@@ -376,7 +377,8 @@ public static class TransactionsHandler
             while (backupFiles.Count >= maxBackupFilesCount)
             {
                 var fileInfo = new FileInfo(backupFiles[0]);
-                if (!IsFileLocked(fileInfo)) File.Delete(backupFiles[0]);
+                if (!FileHelper.IsFileLocked(fileInfo)) 
+                    File.Delete(backupFiles[0]);
                 backupFiles.RemoveAt(0);
             }
         }

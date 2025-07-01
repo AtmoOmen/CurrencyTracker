@@ -4,7 +4,7 @@ namespace CurrencyTracker.Trackers;
 
 public abstract class TrackerComponentBase
 {
-    public bool Initialized { get; set; }
+    public bool Initialized { get; private set; }
 
     public virtual void Init()
     {

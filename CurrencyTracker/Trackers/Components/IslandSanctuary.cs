@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Trackers;

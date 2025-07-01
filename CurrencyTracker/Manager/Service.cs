@@ -23,9 +23,10 @@ public class Service
         Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
         Config.Initialize(PI);
 
+        FontManager.Init();
+        
         InitLanguage();
         InitCharacter();
-        PresetFont.Init();
 
         TrackerManager.Init();
         CurrencyInfo.Init();
@@ -37,6 +38,8 @@ public class Service
         CurrencyInfo.Uninit();
         
         Config.Uninit();
+        
+        FontManager.Uninit();
         
         DService.Uninit();
     }

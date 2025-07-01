@@ -10,6 +10,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using TinyPinyin;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Utilities;
 
 namespace CurrencyTracker;
 
@@ -206,6 +207,8 @@ public sealed class Plugin : IDalamudPlugin
 
     private void DrawUI()
     {
+        using var font = FontManager.UIFont.Push();
+        
         WindowSystem.Draw();
     }
 

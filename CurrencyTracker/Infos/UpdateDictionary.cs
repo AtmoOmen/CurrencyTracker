@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CurrencyTracker.Manager.Tools;
+namespace CurrencyTracker.Infos;
 
 public class UpdateDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TKey : notnull
 {

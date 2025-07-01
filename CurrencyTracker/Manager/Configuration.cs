@@ -4,7 +4,6 @@ using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Tools;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Configuration;
 using Dalamud.Interface.Textures;
