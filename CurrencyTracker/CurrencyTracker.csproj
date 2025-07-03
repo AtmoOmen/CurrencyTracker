@@ -3,8 +3,8 @@
 <Project Sdk="Dalamud.CN.NET.Sdk/12.0.2">
     <PropertyGroup>
         <Authors>AtmoOmen</Authors>
-        <Version>1.6.1.0</Version>
-        <Description>A plugin that tracks all your currencies.</Description>
+        <Version>1.6.2.0</Version>
+        <Description>A plugin that tracks all your currencies</Description>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -19,10 +19,6 @@
         <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))'">
-        <DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
