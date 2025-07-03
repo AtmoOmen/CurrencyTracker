@@ -1,76 +1,81 @@
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.ClientState.Conditions;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools.Helpers;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public unsafe class Trade : TrackerComponentBase
 {
-    private string tradeTargetName = string.Empty;
-    private InventoryHandler? inventoryHandler;
+    private static InventoryHandler? InventoryHandler;
     private static TaskHelper? TaskHelper;
+    
+    private static string TradeTargetName = string.Empty;
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 30000 };
+        TaskHelper ??= new() { TimeLimitMS = 15_000 };
 
         DService.Condition.ConditionChange += OnConditionChanged;
+        if (DService.Condition[ConditionFlag.TradeOpen])
+            OnConditionChanged(ConditionFlag.TradeOpen, true);
     }
 
-    private void OnConditionChanged(ConditionFlag flag, bool value)
+    private static void OnConditionChanged(ConditionFlag flag, bool value)
     {
         if (flag != ConditionFlag.TradeOpen) return;
 
         if (value)
         {
-            TaskHelper.Enqueue(GetTradeTarget);
+            TaskHelper.Enqueue(() => GetTradeTarget());
+            TaskHelper.Enqueue(() => DService.Log.Debug($"Trade starts with {TradeTargetName}"));
         }
         else
         {
-            DService.Log.Debug("Trade Ends, Currency Change Check Starts.");
+            if (string.IsNullOrWhiteSpace(TradeTargetName)) return;
+            
+            DService.Log.Debug($"Trade with {TradeTargetName} completed. Starts to check currency changes.");
 
-            var items = inventoryHandler?.Items ?? [];
+            var items = InventoryHandler?.Items ?? [];
 
-            TrackerManager.CheckCurrencies(items, "", $"({Service.Lang.GetText("TradeWith", tradeTargetName)})",
-                                            RecordChangeType.All, 13);
-            tradeTargetName = string.Empty;
+            TrackerManager.CheckCurrencies(items, string.Empty, $"({Service.Lang.GetText("TradeWith", TradeTargetName)})", RecordChangeType.All, 13);
+            
             HandlerManager.ChatHandler.IsBlocked = false;
-            HandlerManager.Nullify(ref inventoryHandler);
+            HandlerManager.Nullify(ref InventoryHandler);
+            
+            TradeTargetName = string.Empty;
 
-            DService.Log.Debug("Currency Change Check Completes.");
+            DService.Log.Debug("Currency changes check completes.");
         }
     }
 
-    private bool? GetTradeTarget()
+    private static bool GetTradeTarget()
     {
-        if (TryGetAddonByName<AtkUnitBase>("Trade", out var addon) && IsAddonAndNodesReady(addon))
-        {
-            var textNode = addon->GetTextNodeById(17);
-            if (textNode == null) return false;
+        if (!IsAddonAndNodesReady(InfosOm.Trade)) return false;
+        
+        var textNode = InfosOm.Trade->GetTextNodeById(17);
+        if (textNode == null) return false;
 
-            tradeTargetName = textNode->NodeText.ExtractText();
-            if (string.IsNullOrEmpty(tradeTargetName)) return false;
+        TradeTargetName = textNode->NodeText.ExtractText();
+        if (string.IsNullOrEmpty(TradeTargetName)) return false;
 
-            inventoryHandler ??= new InventoryHandler();
-            HandlerManager.ChatHandler.IsBlocked = true;
+        HandlerManager.ChatHandler.IsBlocked = true;
+        InventoryHandler ??= new InventoryHandler();
+        
+        return true;
 
-            DService.Log.Debug($"Trade Starts with {tradeTargetName}");
-
-            return true;
-        }
-
-        return false;
     }
 
     protected override void OnUninit()
     {
         DService.Condition.ConditionChange -= OnConditionChanged;
-        HandlerManager.Nullify(ref inventoryHandler);
-        tradeTargetName = string.Empty;
+        
+        HandlerManager.Nullify(ref InventoryHandler);
+        
         TaskHelper?.Abort();
+        TaskHelper = null;
+        
+        TradeTargetName = string.Empty;
     }
 }
