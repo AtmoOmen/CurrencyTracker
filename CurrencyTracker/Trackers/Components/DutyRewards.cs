@@ -1,94 +1,70 @@
 using System.Collections.Generic;
-using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
-using Lumina.Excel.Sheets;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class DutyRewards : TrackerComponentBase
 {
-    // Territory ID - ContentName
-    private static readonly Dictionary<uint, string> ContentNames =
-        LuminaGetter.Get<ContentFinderCondition>()
-                    .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
-                                !IgnoredContents.Contains(x.TerritoryType.Value.RowId))
-                    .DistinctBy(x => x.TerritoryType.Value.RowId)
-                    .ToDictionary(x => x.TerritoryType.Value.RowId, x => x.Name.ExtractText());
+    private static readonly HashSet<uint> ContentUseToIgnore = [41, 48, 60, 61];
 
-    private static readonly HashSet<uint> IgnoredContents =
-    [
-        579, 940, 941,
-        // Eureka
-        732, 763, 795, 827,
-        // Bozja
-        920, 975
-    ];
+    private InventoryHandler? InventoryHandler;
 
-    private bool isDutyStarted;
-    private string contentName = string.Empty;
-
-    private InventoryHandler? inventoryHandler;
+    private static bool   IsDutyStarted;
+    private static string DutyName = string.Empty;
 
     protected override void OnInit()
     {
-        if (BoundByDuty) 
-            CheckDutyStart();
-
         DService.ClientState.TerritoryChanged += OnZoneChange;
+        OnZoneChange(0);
     }
 
-    private void CheckDutyStart()
+    private void OnZoneChange(ushort zone)
     {
-        if (isDutyStarted) return;
-
-        if (ContentNames.TryGetValue(CurrentLocationID, out var dutyName))
+        if (IsDutyStarted)
         {
-            isDutyStarted = true;
-            contentName = dutyName;
-            HandlerManager.ChatHandler.IsBlocked = true;
-            inventoryHandler ??= new InventoryHandler();
+            if (GameState.ContentFinderCondition > 0 && !ContentUseToIgnore.Contains(GameState.TerritoryIntendedUse))
+                return;
 
-            DService.Log.Debug($"Duty {dutyName} Starts");
+            DService.Log.Debug($"Duty {DutyName} completed. Starts to check currency changes.");
+
+            var items = InventoryHandler?.Items ?? [];
+            TrackerManager.CheckCurrencies(items, PreviousLocationName,
+                                           Service.Config.ComponentProp["RecordContentName"]
+                                               ? $"({DutyName})"
+                                               : string.Empty, RecordChangeType.All, 2);
+
+            IsDutyStarted = false;
+            DutyName      = string.Empty;
+        
+            HandlerManager.ChatHandler.IsBlocked = false;
+            HandlerManager.Nullify(ref InventoryHandler);
+
+            DService.Log.Debug("Currency changes check completes.");
+            return;
         }
-    }
 
-    private void OnZoneChange(ushort obj)
-    {
-        if (BoundByDuty)
-            CheckDutyStart();
-        else if (isDutyStarted)
-            CheckDutyEnd();
-    }
+        if (GameState.ContentFinderCondition == 0 || ContentUseToIgnore.Contains(GameState.TerritoryIntendedUse))
+            return;
 
-    private void CheckDutyEnd()
-    {
-        if (!isDutyStarted) return;
-
-        DService.Log.Debug($"Duty {contentName} Ends, Currency Change Check Starts.");
-
-        var items = inventoryHandler?.Items ?? [];
-        TrackerManager.CheckCurrencies(items, PreviousLocationName,
-                                        Service.Config.ComponentProp["RecordContentName"]
-                                            ? $"({contentName})"
-                                            : "", RecordChangeType.All, 2);
-
-        isDutyStarted = false;
-        contentName = string.Empty;
-        HandlerManager.ChatHandler.IsBlocked = false;
-        HandlerManager.Nullify(ref inventoryHandler);
-
-        DService.Log.Debug("Currency Change Check Completes.");
+        IsDutyStarted = true;
+        DutyName      = GameState.ContentFinderConditionData.Name.ExtractText();
+        
+        HandlerManager.ChatHandler.IsBlocked = true;
+        InventoryHandler ??= new InventoryHandler();
+        
+        DService.Log.Debug($"Duty {DutyName} starts, recording all inventory changes.");
     }
 
     protected override void OnUninit()
     {
         DService.ClientState.TerritoryChanged -= OnZoneChange;
-        HandlerManager.Nullify(ref inventoryHandler);
+        
+        HandlerManager.Nullify(ref InventoryHandler);
 
-        isDutyStarted = false;
-        contentName = string.Empty;
+        IsDutyStarted = false;
+        DutyName      = string.Empty;
     }
 }

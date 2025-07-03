@@ -9,6 +9,7 @@ using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Components;
 using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
