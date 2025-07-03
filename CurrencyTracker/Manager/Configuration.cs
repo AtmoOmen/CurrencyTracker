@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Trackers.Components;
 using Dalamud.Configuration;
-using Dalamud.Interface.Textures;
 using Dalamud.Plugin;
 using Newtonsoft.Json;
 
@@ -15,8 +13,8 @@ namespace CurrencyTracker;
 [Serializable]
 public class Configuration : IPluginConfiguration
 {
-    public int Version { get; set; } = 0;
-    public bool FirstOpen { get; set; } = true;
+    public int                 Version                { get; set; } = 0;
+    public bool                FirstOpen              { get; set; } = true;
     public List<CharacterInfo> CurrentActiveCharacter { get; set; } = [];
 
     public UpdateDictionary<uint, string> PresetCurrencies
@@ -24,7 +22,7 @@ public class Configuration : IPluginConfiguration
         set
         {
             presetCurrencies = value;
-            IsUpdated = true;
+            IsUpdated        = true;
         }
         get => presetCurrencies;
     }
@@ -34,7 +32,7 @@ public class Configuration : IPluginConfiguration
         set
         {
             customCurrencies = value;
-            IsUpdated = true;
+            IsUpdated        = true;
         }
         get => customCurrencies;
     }
@@ -54,9 +52,11 @@ public class Configuration : IPluginConfiguration
     public Vector4            PositiveChangeColor      { get; set; } = new(0.0f, 1.0f, 0.0f, 1.0f);
     public Vector4            NegativeChangeColor      { get; set; } = new(1.0f, 0.0f, 0.0f, 1.0f);
     public int                ChildWidthOffset         { get; set; } = 0;
-    public int                ExportDataFileType       { get; set; } = 0;
+
+    public int ExportDataFileType { get; set; } = 0;
+
     // Content ID - Retainer ID : Retainer Name
-    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = []; 
+    public Dictionary<ulong, Dictionary<ulong, string>> CharacterRetainers { get; set; } = [];
 
     public Dictionary<string, bool> ColumnsVisibility { get; set; } = new()
     {
@@ -102,22 +102,12 @@ public class Configuration : IPluginConfiguration
         { "RecordDesAreaName", true }
     };
 
-    public Dictionary<string, string> CustomNoteContents { get; set; } = [];
-    public Dictionary<uint, CurrencyRule> CurrencyRules { get; set; } = [];
+    public Dictionary<string, string>     CustomNoteContents { get; set; } = [];
+    public Dictionary<uint, CurrencyRule> CurrencyRules      { get; set; } = [];
 
 
     [JsonIgnore]
     internal static bool IsUpdated = true;
-
-    [JsonIgnore]
-    public Dictionary<uint, ISharedImmediateTexture?> AllCurrencyIcons
-    {
-        get
-        {
-            if (allCurrencyIcons == null || IsUpdated) GetAllCurrencyIcons();
-            return allCurrencyIcons;
-        }
-    }
 
     [JsonIgnore]
     public Dictionary<uint, string> AllCurrencies
@@ -127,7 +117,6 @@ public class Configuration : IPluginConfiguration
             if (allCurrencies == null || IsUpdated)
             {
                 allCurrencies = GetAllCurrencies();
-                GetAllCurrencyIcons();
                 allCurrencyID = [.. allCurrencies.Keys];
             }
 
@@ -143,7 +132,6 @@ public class Configuration : IPluginConfiguration
             if (allCurrencies == null || allCurrencyID == null || IsUpdated)
             {
                 allCurrencies = GetAllCurrencies();
-                GetAllCurrencyIcons();
                 allCurrencyID = [.. allCurrencies.Keys];
             }
 
@@ -151,26 +139,13 @@ public class Configuration : IPluginConfiguration
         }
     }
 
-    private Dictionary<uint, ISharedImmediateTexture?>? allCurrencyIcons = [];
-    private Dictionary<uint, string>? allCurrencies = [];
-    private uint[]? allCurrencyID;
+    private  Dictionary<uint, string>?      allCurrencies = [];
+    private  uint[]?                        allCurrencyID;
     internal UpdateDictionary<uint, string> presetCurrencies = [];
     internal UpdateDictionary<uint, string> customCurrencies = [];
 
     [NonSerialized]
     private IDalamudPluginInterface? PI;
-
-
-    public void GetAllCurrencyIcons()
-    {
-        allCurrencyIcons.Clear();
-
-        foreach (var currency in allCurrencies) allCurrencyIcons.Add(currency.Key, CurrencyInfo.GetIcon(currency.Key));
-
-        IsUpdated = false;
-
-        DService.Log.Debug("Successfully reacquire all currency icons");
-    }
 
     private Dictionary<uint, string> GetAllCurrencies()
     {
@@ -187,7 +162,7 @@ public class Configuration : IPluginConfiguration
 
     public void Initialize(IDalamudPluginInterface pInterface)
     {
-        PI = pInterface;
+        PI                        =  pInterface;
         presetCurrencies.OnUpdate += SetUpdateFlag;
         customCurrencies.OnUpdate += SetUpdateFlag;
     }
@@ -200,8 +175,5 @@ public class Configuration : IPluginConfiguration
 
     private static void SetUpdateFlag() => IsUpdated = true;
 
-    public void Save()
-    {
-        PI!.SavePluginConfig(this);
-    }
+    public void Save() => PI!.SavePluginConfig(this);
 }

@@ -24,7 +24,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public IDalamudPluginInterface PI               { get; init; }
     public Main?                   Main             { get; private set; }
-    public Graph?                  Graph            { get; private set; }
+    public GraphWindow?            Graph            { get; private set; }
     public Settings?               Settings         { get; private set; }
     public CurrencySettings?       CurrencySettings { get; private set; }
 
@@ -195,7 +195,7 @@ public sealed class Plugin : IDalamudPlugin
         Main = new Main();
         WindowSystem.AddWindow(Main);
 
-        Graph = new Graph(this);
+        Graph = new GraphWindow();
         WindowSystem.AddWindow(Graph);
 
         Settings = new Settings(this);

@@ -70,7 +70,7 @@ public class ServerBar : TrackerComponentBase
     {
         return new SeStringBuilder()
                .AddText(
-                   $"$ {CurrencyInfo.GetCurrencyName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}")
+                   $"$ {CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}")
                .Build();
     }
 

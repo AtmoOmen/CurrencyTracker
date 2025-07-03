@@ -120,13 +120,14 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
                     var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(currency, 0);
                     if (amount == 0) continue;
 
-                    if (!Service.Config.AllCurrencyIcons.TryGetValue(currency, out var texture)) continue;
                     if (!Service.Config.AllCurrencies.TryGetValue(currency, out var name)) continue;
+
+                    var texture = CurrencyInfo.GetIcon(currency);
 
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
 
-                    ImGui.Image(texture.GetWrapOrEmpty().ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                    ImGui.Image(texture.ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
 
                     ImGui.SameLine();
                     ImGui.Text($"{name}  ");

@@ -24,7 +24,7 @@ public class TrackerManager
         {
             if (!Service.Config.PresetCurrencies.ContainsKey(currency))
             {
-                var currencyName = CurrencyInfo.GetCurrencyLocalName(currency);
+                var currencyName = CurrencyInfo.GetLocalName(currency);
                 if (!string.IsNullOrEmpty(currencyName)) 
                     Service.Config.PresetCurrencies.Add(currency, currencyName);
             }
@@ -38,7 +38,7 @@ public class TrackerManager
         {
             foreach (var currencyID in CurrencyInfo.DefaultCustomCurrencies)
             {
-                var currencyName = CurrencyInfo.GetCurrencyLocalName(currencyID);
+                var currencyName = CurrencyInfo.GetLocalName(currencyID);
 
                 if (string.IsNullOrEmpty(currencyName)) continue;
 
@@ -92,7 +92,7 @@ public class TrackerManager
                                                    noteContent, category, ID);
             }
 
-            var currencyName = CurrencyInfo.GetCurrencyName(currencyID);
+            var currencyName = CurrencyInfo.GetName(currencyID);
             CurrencyChanged?.Invoke(currencyID, category, ID);
 
             PostCurrencyChangeCheck(currencyName, currencyID, currencyAmount, currencyChange, category, ID, source);

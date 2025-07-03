@@ -8,6 +8,7 @@ using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.Sheets;
 using Lumina.Extensions;
@@ -39,14 +40,14 @@ public static class CurrencyInfo
         CurrencyAmountCache[P.CurrentCharacter.ContentID][currencyId] = GetCharacterCurrencyAmount(currencyId, P.CurrentCharacter, true);
     }
 
-    public static string GetCurrencyName(uint currencyID)
+    public static string GetName(uint currencyID)
     {
         return Service.Config.AllCurrencies.TryGetValue(currencyID, out var currencyName)
                    ? currencyName
-                   : GetCurrencyLocalName(currencyID);
+                   : GetLocalName(currencyID);
     }
 
-    public static string GetCurrencyLocalName(uint currencyID) =>
+    public static string GetLocalName(uint currencyID) =>
         LuminaWrapper.GetItemName(currencyID);
 
     public static unsafe long GetCurrencyAmount(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
@@ -140,8 +141,7 @@ public static class CurrencyInfo
             dictionary[key] = currencyAmount ?? 0;
         }
     }
-
-
+    
     public static long? GetCurrencyAmountFromFile(
         uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
     {
@@ -155,16 +155,8 @@ public static class CurrencyInfo
                     .FirstOrNull(x => x.Tomestones.RowId == row)?
                     .Item.RowId ?? 0;
 
-    public static ISharedImmediateTexture? GetIcon(uint currencyID)
-    {
-        if (!LuminaGetter.TryGetRow(currencyID, out Item item))
-        {
-            DService.Log.Warning($"Failed to get {currencyID} {GetCurrencyLocalName(currencyID)} icon");
-            return null;
-        }
-
-        return DService.Texture.GetFromGameIcon(new(item.Icon));
-    }
+    public static IDalamudTextureWrap GetIcon(uint currencyID) => 
+        DService.Texture.GetFromGameIcon(new(LuminaGetter.GetRow<Item>(currencyID).GetValueOrDefault().Icon)).GetWrapOrEmpty();
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
     {

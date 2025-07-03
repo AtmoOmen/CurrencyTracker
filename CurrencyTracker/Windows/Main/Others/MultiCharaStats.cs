@@ -101,8 +101,7 @@ public partial class Main
                         ImGui.TableNextRow();
                         ImGui.TableNextColumn();
 
-                        ImGui.Image(Service.Config.AllCurrencyIcons[currency.Key].GetWrapOrEmpty().ImGuiHandle,
-                                    ImGuiHelpers.ScaledVector2(16.0f));
+                        ImGui.Image(CurrencyInfo.GetIcon(currency.Key).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
 
                         ImGui.SameLine();
                         ImGui.Text($"{currency.Value}");

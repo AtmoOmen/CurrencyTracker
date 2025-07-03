@@ -70,69 +70,67 @@ public partial class CurrencySettings : Window, IDisposable
 
     private void CurrencyInfoGroupUI()
     {
+        using var group = ImRaii.Group();
+
+        var imageTexture = CurrencyInfo.GetIcon(Main.SelectedCurrencyID);
+        ImGui.Image(imageTexture.ImGuiHandle, ImGuiHelpers.ScaledVector2(48f));
+
+        ImGui.SameLine();
         using (ImRaii.Group())
         {
-            if (!Service.Config.AllCurrencyIcons.TryGetValue(Main.SelectedCurrencyID, out var imageTexture)) return;
+            ImGui.SetWindowFontScale(1.6f);
+            var currencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
+            if (!isEditingCurrencyName)
+            {
+                ImGui.Text($"{currencyName}");
+                if (ImGui.IsItemClicked())
+                {
+                    isEditingCurrencyName = true;
+                    editedCurrencyName    = currencyName;
+                }
+            }
+            else
+            {
+                ImGui.SetNextItemWidth(ImGui.CalcTextSize(Service.Config.AllCurrencies[Main.SelectedCurrencyID]).X +
+                                       (ImGui.GetStyle().FramePadding.X * 2));
+                if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
+                {
+                    if (!editedCurrencyName.IsNullOrWhitespace() &&
+                        editedCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID])
+                    {
+                        CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID, editedCurrencyName);
+                        isEditingCurrencyName = false;
+                    }
+                }
 
-            ImGui.Image(imageTexture.GetWrapOrEmpty().ImGuiHandle, ImGuiHelpers.ScaledVector2(48f));
+                if (ImGui.IsItemDeactivated()) isEditingCurrencyName = false;
+
+                if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ResetCurrencyNamePopup");
+
+                ImGui.SetWindowFontScale(1f);
+                using var popup = ImRaii.Popup("ResetCurrencyNamePopup");
+                if (popup.Success)
+                {
+                    if (ImGuiOm.Selectable(Service.Lang.GetText("Reset")))
+                    {
+                        CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID,
+                                                    CurrencyInfo.GetLocalName(Main.SelectedCurrencyID));
+                        isEditingCurrencyName = false;
+                    }
+                }
+            }
 
             ImGui.SameLine();
-            using (ImRaii.Group())
-            {
-                ImGui.SetWindowFontScale(1.6f);
-                var currencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
-                if (!isEditingCurrencyName)
-                {
-                    ImGui.Text($"{currencyName}");
-                    if (ImGui.IsItemClicked())
-                    {
-                        isEditingCurrencyName = true;
-                        editedCurrencyName = currencyName;
-                    }
-                }
-                else
-                {
-                    ImGui.SetNextItemWidth(ImGui.CalcTextSize(Service.Config.AllCurrencies[Main.SelectedCurrencyID]).X +
-                                           (ImGui.GetStyle().FramePadding.X * 2));
-                    if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
-                    {
-                        if (!editedCurrencyName.IsNullOrWhitespace() &&
-                            editedCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID])
-                        {
-                            CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID, editedCurrencyName);
-                            isEditingCurrencyName = false;
-                        }
-                    }
+            ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
 
-                    if (ImGui.IsItemDeactivated()) isEditingCurrencyName = false;
+            if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
 
-                    if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) ImGui.OpenPopup("ResetCurrencyNamePopup");
+            ImGui.SetWindowFontScale(1);
+            ImGui.Text(
+                $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(Main.SelectedCurrencyID, P.CurrentCharacter):N0}");
 
-                    ImGui.SetWindowFontScale(1f);
-                    using var popup = ImRaii.Popup("ResetCurrencyNamePopup");
-                    if (popup.Success)
-                    {
-                        if (ImGuiOm.Selectable(Service.Lang.GetText("Reset")))
-                        {
-                            CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID,
-                                                        CurrencyInfo.GetCurrencyLocalName(Main.SelectedCurrencyID));
-                            isEditingCurrencyName = false;
-                        }
-                    }
-                }
-
-                ImGui.SameLine();
-                ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
-
-                if (Main.CharacterCurrencyInfos.Count == 0) Main.LoadDataMCS();
-
-                ImGui.SetWindowFontScale(1);
-                ImGui.Text(
-                    $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(Main.SelectedCurrencyID, P.CurrentCharacter):N0}");
-
-                ImGui.SameLine();
-                ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
-            }
+            ImGui.SameLine();
+            ImGuiHelpers.ScaledDummy(8f * ImGuiHelpers.GlobalScale, 1f);
         }
     }
 

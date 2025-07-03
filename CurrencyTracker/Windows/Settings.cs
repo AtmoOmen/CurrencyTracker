@@ -152,7 +152,7 @@ public class Settings : Window, IDisposable
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
-                    if (ImGui.BeginCombo("###ServerBarDisplayCurrency", CurrencyInfo.GetCurrencyName(Service.Config.ServerBarDisplayCurrency), ImGuiComboFlags.HeightLarge))
+                    if (ImGui.BeginCombo("###ServerBarDisplayCurrency", CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency), ImGuiComboFlags.HeightLarge))
                     {
                         foreach (var currency in Service.Config.AllCurrencies)
                         {

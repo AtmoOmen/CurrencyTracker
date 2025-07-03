@@ -10,14 +10,13 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class DutyRewards : TrackerComponentBase
 {
-
     // Territory ID - ContentName
-    private static readonly Dictionary<uint, string>? ContentNames =
+    private static readonly Dictionary<uint, string> ContentNames =
         LuminaGetter.Get<ContentFinderCondition>()
                     .Where(x => !string.IsNullOrEmpty(x.Name.ExtractText()) &&
                                 !IgnoredContents.Contains(x.TerritoryType.Value.RowId))
                     .DistinctBy(x => x.TerritoryType.Value.RowId)
-                    .ToDictionary(x => x.TerritoryType.Value.RowId, x => x.Name.ToString());
+                    .ToDictionary(x => x.TerritoryType.Value.RowId, x => x.Name.ExtractText());
 
     private static readonly HashSet<uint> IgnoredContents =
     [

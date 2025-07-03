@@ -31,7 +31,7 @@ public partial class Main
             {
                 var id = Service.Config.OrderedOptions[i];
                 var currencyName = Service.Config.AllCurrencies[id];
-                var currencyIcon = Service.Config.AllCurrencyIcons[id].GetWrapOrEmpty().ImGuiHandle;
+                var currencyIcon = CurrencyInfo.GetIcon(id).ImGuiHandle;
 
                 ImGui.PushID(id.ToString());
                 ImGui.Indent(3f);
@@ -79,7 +79,7 @@ public partial class Main
 
                     ImGui.SameLine();
                     if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
-                        CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetCurrencyLocalName(id));
+                        CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetLocalName(id));
 
                     ImGui.Separator();
                     ImGui.Text(
@@ -144,7 +144,7 @@ public partial class Main
 
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
-            var localName = CurrencyInfo.GetCurrencyLocalName(SelectedCurrencyID);
+            var localName = CurrencyInfo.GetLocalName(SelectedCurrencyID);
             if (Service.Config.CustomCurrencies[SelectedCurrencyID] != localName)
                 CurrencyInfo.RenameCurrency(SelectedCurrencyID, localName);
 

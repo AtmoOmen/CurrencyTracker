@@ -45,7 +45,7 @@ public partial class Main
             ImGui.SetNextItemWidth(210f);
             ImGui.SameLine();
             if (ImGui.BeginCombo("###AddCustomCurrency",
-                                 _currencyIDACC != 0 ? CurrencyInfo.GetCurrencyLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
+                                 _currencyIDACC != 0 ? CurrencyInfo.GetLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
                                  ImGuiComboFlags.HeightLarge))
             {
                 var itemCount = _currencyDicACC.Count;
@@ -100,7 +100,7 @@ public partial class Main
                     return;
                 }
 
-                Service.Config.CustomCurrencies.Add(_currencyIDACC, CurrencyInfo.GetCurrencyLocalName(_currencyIDACC));
+                Service.Config.CustomCurrencies.Add(_currencyIDACC, CurrencyInfo.GetLocalName(_currencyIDACC));
                 Service.Config.Save();
 
                 ReloadOrderedOptions();

@@ -20,7 +20,7 @@ public static class TransactionsHandler
     public static string GetTransactionFilePath(uint CurrencyID, TransactionFileCategory category, ulong ID = 0)
     {
         var suffix = GetTransactionFileSuffix(category, ID);
-        var currencyName = CurrencyInfo.GetCurrencyName(CurrencyID);
+        var currencyName = CurrencyInfo.GetName(CurrencyID);
         var path = Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
         return Transaction.SanitizeFilePath(path);
     }
@@ -81,7 +81,7 @@ public static class TransactionsHandler
 
         var filePath = characterInfo != null
                            ? Path.Join(playerDataFolder,
-                                       $"{CurrencyInfo.GetCurrencyName(currencyID)}{GetTransactionFileSuffix(category, ID)}.txt")
+                                       $"{CurrencyInfo.GetName(currencyID)}{GetTransactionFileSuffix(category, ID)}.txt")
                            : GetTransactionFilePath(currencyID, category, ID);
 
         filePath = Transaction.SanitizeFilePath(filePath);
