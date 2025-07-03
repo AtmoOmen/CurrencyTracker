@@ -21,7 +21,7 @@ public class CheckboxColumn : TableColumn
     private static bool isOnMergingTT;
     private static bool isOnEdit;
 
-    private static string editedNoteContent = string.Empty;
+    private static string editedNoteContent     = string.Empty;
     private static string editedLocationContent = string.Empty;
 
     public override void Header()
@@ -170,10 +170,10 @@ public class CheckboxColumn : TableColumn
                     CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
 
                 var t1 = selectedTransactions.FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
-                editedLocationContent = t1?.LocationName;
+                editedLocationContent = t1?.LocationName ?? string.Empty;
 
                 var t2 = selectedTransactions.FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
-                editedNoteContent = t2?.Note;
+                editedNoteContent = t2?.Note ?? string.Empty;
 
                 if (isOnEdit) isOnEdit = false;
             }
@@ -219,10 +219,10 @@ public class CheckboxColumn : TableColumn
                 if (isOnEdit)
                 {
                     var t1 = selectedTransactions.FirstOrDefault(t => !string.IsNullOrEmpty(t.LocationName));
-                    editedLocationContent = t1?.LocationName;
+                    editedLocationContent = t1?.LocationName ?? string.Empty;
 
                     var t2 = selectedTransactions.FirstOrDefault(t => !string.IsNullOrEmpty(t.Note));
-                    editedNoteContent = t2?.Note;
+                    editedNoteContent = t2?.Note ?? string.Empty;
 
                     if (isOnMergingTT) isOnMergingTT = !isOnMergingTT;
                 }
@@ -253,7 +253,8 @@ public class CheckboxColumn : TableColumn
                                     ref editedNoteContent, 80, ImGuiInputTextFlags.EnterReturnsTrue))
             EditNoteContent();
 
-        if (!string.IsNullOrEmpty(editedNoteContent)) ImGui.TextWrapped(editedNoteContent);
+        if (!string.IsNullOrEmpty(editedNoteContent)) 
+            ImGui.TextWrapped(editedNoteContent);
     }
 
     // 编辑地名 Edit Location Name
