@@ -6,7 +6,7 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using TinyPinyin;
 
 namespace CurrencyTracker.Windows;

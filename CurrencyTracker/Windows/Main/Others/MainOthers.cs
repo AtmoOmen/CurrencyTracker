@@ -6,7 +6,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 

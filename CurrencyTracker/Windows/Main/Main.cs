@@ -5,7 +5,7 @@ using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.Helpers;
 
 namespace CurrencyTracker.Windows;

@@ -10,7 +10,7 @@ using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ImGuiNET;
+using Dalamud.Game.Addon.Events.EventDataTypes;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
@@ -41,7 +41,7 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
         if (counterNode == null) return;
 
         mouseoverHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
-        mouseoutHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut, OverlayHandler);
+        mouseoutHandle  ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut,  OverlayHandler);
     }
 
     private static void OverlayHandler(AddonEventType type, AddonEventData data)
@@ -127,7 +127,7 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
                     ImGui.TableNextRow();
                     ImGui.TableNextColumn();
 
-                    ImGui.Image(texture.ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                    ImGui.Image(texture.Handle, ImGuiHelpers.ScaledVector2(16));
 
                     ImGui.SameLine();
                     ImGui.Text($"{name}  ");

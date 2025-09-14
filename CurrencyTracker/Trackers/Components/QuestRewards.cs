@@ -27,7 +27,7 @@ public class QuestRewards : TrackerComponentBase
 
     private unsafe void OnQuestRewards(AddonEvent type, AddonArgs? args)
     {
-        var addon = (AtkUnitBase*)args.Addon;
+        var addon = (AtkUnitBase*)args.Addon.Address;
         if (addon == null) return;
 
         switch (type)

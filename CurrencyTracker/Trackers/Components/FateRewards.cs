@@ -27,7 +27,7 @@ public class FateRewards : TrackerComponentBase
                 HandlerManager.ChatHandler.IsBlocked = true;
                 break;
             case AddonEvent.PostSetup:
-                var FR = (AtkUnitBase*)args.Addon;
+                var FR = (AtkUnitBase*)args.Addon.Address;
                 if (!IsAddonAndNodesReady(FR)) return;
 
                 var textNode = FR->GetTextNodeById(6);

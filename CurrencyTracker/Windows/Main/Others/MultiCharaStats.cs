@@ -8,7 +8,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 using Task = System.Threading.Tasks.Task;
 
@@ -101,7 +101,7 @@ public partial class Main
                         ImGui.TableNextRow();
                         ImGui.TableNextColumn();
 
-                        ImGui.Image(CurrencyInfo.GetIcon(currency.Key).ImGuiHandle, ImGuiHelpers.ScaledVector2(16.0f));
+                        ImGui.Image(CurrencyInfo.GetIcon(currency.Key).Handle, ImGuiHelpers.ScaledVector2(16.0f));
 
                         ImGui.SameLine();
                         ImGui.Text($"{currency.Value}");

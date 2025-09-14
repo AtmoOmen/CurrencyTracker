@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace CurrencyTracker.Windows;
 

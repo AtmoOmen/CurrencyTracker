@@ -4,7 +4,7 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;

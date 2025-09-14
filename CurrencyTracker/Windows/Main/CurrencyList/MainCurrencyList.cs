@@ -7,7 +7,7 @@ using CurrencyTracker.Utilities;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
@@ -31,19 +31,18 @@ public partial class Main
             {
                 var id = Service.Config.OrderedOptions[i];
                 var currencyName = Service.Config.AllCurrencies[id];
-                var currencyIcon = CurrencyInfo.GetIcon(id).ImGuiHandle;
+                var currencyIcon = CurrencyInfo.GetIcon(id).Handle;
 
                 ImGui.PushID(id.ToString());
                 ImGui.Indent(3f);
-                if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName,
-                                                    id == SelectedCurrencyID))
+                if (ImGuiOm.SelectableImageWithText(currencyIcon, ImGuiHelpers.ScaledVector2(20f), currencyName, id == SelectedCurrencyID))
                     LoadCurrencyTransactions(id);
 
                 ImGui.Unindent(3f);
 
                 if (ImGui.BeginDragDropSource())
                 {
-                    if (ImGui.SetDragDropPayload("CurrencyListReorder", nint.Zero, 0)) _dragDropIndex = i;
+                    if (ImGui.SetDragDropPayload("CurrencyListReorder", [], 0)) _dragDropIndex = i;
 
                     ImGui.TextColored(ImGuiColors.DalamudYellow, currencyName);
 
@@ -54,7 +53,7 @@ public partial class Main
                 {
                     unsafe
                     {
-                        if (_dragDropIndex >= 0 || ImGui.AcceptDragDropPayload("CurrencyListReorder").NativePtr != null)
+                        if (_dragDropIndex >= 0 || ImGui.AcceptDragDropPayload("CurrencyListReorder").Handle != null)
                         {
                             SwapOptions(_dragDropIndex, i);
                             _dragDropIndex = -1;
@@ -64,7 +63,7 @@ public partial class Main
                     ImGui.EndDragDropTarget();
                 }
 
-                if (ImGui.BeginPopupContextItem())
+                if (ImGui.BeginPopupContextItem("CurrencyListContextMenu"))
                 {
                     ImGui.SetCursorPosY(5f);
                     ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(24f));

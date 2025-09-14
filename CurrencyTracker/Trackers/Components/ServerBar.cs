@@ -32,7 +32,7 @@ public class ServerBar : TrackerComponentBase
         OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
     }
 
-    private static void ToggleMainWindow()
+    private static void ToggleMainWindow(DtrInteractionEvent data)
     {
         P.Main.IsOpen ^= true;
 

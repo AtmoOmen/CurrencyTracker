@@ -26,7 +26,7 @@ public class GoldSaucer : TrackerComponentBase
                 HandlerManager.ChatHandler.IsBlocked = true;
                 break;
             case AddonEvent.PostSetup:
-                var GSR = (AtkUnitBase*)args.Addon;
+                var GSR = (AtkUnitBase*)args.Addon.Address;
                 if (!IsAddonAndNodesReady(GSR)) return;
 
                 var textNode = GSR->GetTextNodeById(5);

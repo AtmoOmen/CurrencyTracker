@@ -43,7 +43,7 @@ public class GraphWindow : Window, IDisposable
         }
 
         var currencyName = CurrencyInfo.GetLocalName(SelectedCurrencyID);
-        var currencyIcon = CurrencyInfo.GetIcon(SelectedCurrencyID).ImGuiHandle;
+        var currencyIcon = CurrencyInfo.GetIcon(SelectedCurrencyID).Handle;
 
         ImGui.SetWindowFontScale(1.3f);
         var currentCursorPos = ImGui.GetCursorPos();

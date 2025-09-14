@@ -6,7 +6,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
@@ -48,7 +48,8 @@ public partial class Main
 
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(150f);
-                if (ImGui.InputInt("##MergeThreshold", ref mergeThreshold, 100, 100, ImGuiInputTextFlags.EnterReturnsTrue)) mergeThreshold = Math.Max(0, mergeThreshold);
+                if (ImGui.InputInt("##MergeThreshold", ref mergeThreshold, 100, 100, flags: ImGuiInputTextFlags.EnterReturnsTrue))
+                    mergeThreshold = Math.Max(0, mergeThreshold);
 
                 ImGui.SameLine();
                 ImGuiOm.HelpMarker($"{Service.Lang.GetText("MergeTransactionsHelp3")}");

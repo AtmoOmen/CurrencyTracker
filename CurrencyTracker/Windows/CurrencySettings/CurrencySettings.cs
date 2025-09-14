@@ -5,7 +5,7 @@ using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
@@ -73,7 +73,7 @@ public partial class CurrencySettings : Window, IDisposable
         using var group = ImRaii.Group();
 
         var imageTexture = CurrencyInfo.GetIcon(Main.SelectedCurrencyID);
-        ImGui.Image(imageTexture.ImGuiHandle, ImGuiHelpers.ScaledVector2(48f));
+        ImGui.Image(imageTexture.Handle, ImGuiHelpers.ScaledVector2(48f));
 
         ImGui.SameLine();
         using (ImRaii.Group())

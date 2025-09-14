@@ -28,16 +28,14 @@ public class SpecialExchange : TrackerComponentBase
 
     private InventoryHandler? inventoryHandler;
 
-    protected override void OnInit()
-    {
+    protected override void OnInit() => 
         DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
-    }
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
     {
         if (isOnExchange || Exchange.isOnExchange) return;
 
-        var addon = (AtkUnitBase*)args.Addon;
+        var addon = (AtkUnitBase*)args.Addon.Address;
         if (addon == null) return;
 
         HandlerManager.ChatHandler.IsBlocked = true;

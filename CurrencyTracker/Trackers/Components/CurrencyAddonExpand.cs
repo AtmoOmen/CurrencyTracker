@@ -4,6 +4,7 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Trackers;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
+using Dalamud.Game.Addon.Events.EventDataTypes;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Component.GUI;

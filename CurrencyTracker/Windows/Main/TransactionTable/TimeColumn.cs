@@ -1,7 +1,7 @@
 using System;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 using OmenTools.Widgets;
 

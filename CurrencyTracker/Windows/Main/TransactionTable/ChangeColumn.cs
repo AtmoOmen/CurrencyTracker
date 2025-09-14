@@ -3,7 +3,7 @@ using System.Numerics;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
@@ -61,7 +61,7 @@ public class ChangeColumn : TableColumn
                 RefreshTable();
 
             ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
-            if (ImGui.InputInt("##FilterValue", ref FilterValue, 100, 100000, ImGuiInputTextFlags.EnterReturnsTrue))
+            if (ImGui.InputInt("##FilterValue", ref FilterValue, 100, 100000, flags: ImGuiInputTextFlags.EnterReturnsTrue))
                 RefreshTable();
 
             ImGuiOm.HelpMarker(
