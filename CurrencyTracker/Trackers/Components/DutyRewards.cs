@@ -3,12 +3,19 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers.Handlers;
+using FFXIVClientStructs.FFXIV.Client.Enums;
 
 namespace CurrencyTracker.Trackers.Components;
 
 public class DutyRewards : TrackerComponentBase
 {
-    private static readonly HashSet<uint> ContentUseToIgnore = [41, 48, 60, 61];
+    private static readonly HashSet<TerritoryIntendedUse> ContentUseToIgnore =
+    [
+        TerritoryIntendedUse.Eureka,
+        TerritoryIntendedUse.Bozja,
+        TerritoryIntendedUse.CosmicExploration,
+        TerritoryIntendedUse.OccultCrescent
+    ];
 
     private InventoryHandler? InventoryHandler;
 

@@ -56,7 +56,7 @@ public class IslandSanctuary : TrackerComponentBase
         var currentTarget = DService.Targets.Target;
         var prevTarget = DService.Targets.PreviousTarget;
 
-        if (currentTarget?.DataId == 1043078)
+        if (currentTarget?.DataID == 1043078)
         {
             if (!isOnWorkshop)
             {
@@ -65,9 +65,9 @@ public class IslandSanctuary : TrackerComponentBase
                 HandlerManager.ChatHandler.IsBlocked = true;
             }
         }
-        else if (prevTarget?.DataId == 1043078 && isOnWorkshop)
+        else if (prevTarget?.DataID == 1043078 && isOnWorkshop)
         {
-            if (currentTarget?.DataId != prevTarget.DataId)
+            if (currentTarget?.DataID != prevTarget.DataID)
             {
                 isOnWorkshop = false;
 

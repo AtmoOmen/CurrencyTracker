@@ -13,8 +13,19 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class TeleportCosts : TrackerComponentBase
 {
-    private delegate void ActorControlSelfDelegate
-        (uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10);
+    private delegate void ActorControlSelfDelegate(
+        uint  category,
+        uint  eventId,
+        uint  param1,
+        uint  param2,
+        uint  param3,
+        uint  param4,
+        uint  param5,
+        uint  param6,
+        uint  param7,
+        uint  param8,
+        ulong targetId,
+        byte  param9);
     [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelfDetour))]
     private Hook<ActorControlSelfDelegate>? ActorControlSelfHook;
 
@@ -56,12 +67,23 @@ public class TeleportCosts : TrackerComponentBase
         return TeleportActionSelfHook.Original(p1, p2, p3);
     }
 
-    private void ActorControlSelfDetour(uint category, uint eventId, uint a3, uint a4, uint a5, uint a6, uint a7, uint a8, ulong targetId, byte a10)
+    private void ActorControlSelfDetour(
+        uint  category,
+        uint  eventId,
+        uint  param1,
+        uint  param2,
+        uint  param3,
+        uint  param4,
+        uint  param5,
+        uint  param6,
+        uint  param7,
+        uint  param8,
+        ulong targetId,
+        byte  param9)
     {
-        ActorControlSelfHook.Original(category, eventId, a3, a4, a5, a6, a7, a8, targetId,
-                                      a10);
+        ActorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, param7, param8, targetId, param9);
 
-        if (eventId == 517 && a3 is 4590 or 4591 && a4 != 0)
+        if (eventId == 517 && param1 is 4590 or 4591 && param2 != 0)
         {
             HandlerManager.ChatHandler.IsBlocked = true;
             TaskHelper.Enqueue(GetTeleportType);
