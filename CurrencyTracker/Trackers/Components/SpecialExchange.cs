@@ -33,7 +33,7 @@ public class SpecialExchange : TrackerComponentBase
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
     {
-        if (isOnExchange || Exchange.isOnExchange) return;
+        if (isOnExchange || Exchange.IsOnExchange) return;
 
         var addon = (AtkUnitBase*)args.Addon.Address;
         if (addon == null) return;
@@ -51,7 +51,7 @@ public class SpecialExchange : TrackerComponentBase
     {
         if (OccupiedInEvent) return;
 
-        if (!isOnExchange && !Exchange.isOnExchange)
+        if (!isOnExchange && !Exchange.IsOnExchange)
         {
             DService.Framework.Update -= OnFrameworkUpdate;
             return;
@@ -62,7 +62,7 @@ public class SpecialExchange : TrackerComponentBase
 
     private void EndExchangeHandler()
     {
-        if (Exchange.isOnExchange) return;
+        if (Exchange.IsOnExchange) return;
         DService.Framework.Update -= OnFrameworkUpdate;
 
         DService.Log.Debug("Exchange Completes, Currency Change Check Starts.");

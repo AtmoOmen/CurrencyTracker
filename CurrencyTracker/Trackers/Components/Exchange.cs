@@ -12,45 +12,58 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 public class Exchange : TrackerComponentBase
 {
 
-    private static readonly string[] UI =
+    private static readonly string[] NormalAddons =
     [
-        "InclusionShop", "CollectablesShop", "FreeCompanyExchange", "FreeCompanyCreditShop", "ShopExchangeCurrency",
-        "Shop", "ItemSearch", "ShopExchangeItem", "SkyIslandExchange", "TripleTriadCoinExchange", "FreeCompanyChest",
-        "MJIDisposeShop", "GrandCompanyExchange", "ReconstructionBuyback", "ShopExchangeCoin"
+        "InclusionShop", 
+        "CollectablesShop",
+        "FreeCompanyExchange",
+        "FreeCompanyCreditShop", 
+        "ShopExchangeCurrency",
+        "Shop", 
+        "ItemSearch", 
+        "ShopExchangeItem",
+        "SkyIslandExchange", 
+        "TripleTriadCoinExchange",
+        "FreeCompanyChest",
+        "MJIDisposeShop", 
+        "GrandCompanyExchange", 
+        "ReconstructionBuyback", 
+        "ShopExchangeCoin"
     ];
 
-    private static readonly Dictionary<string, uint> WindowUI = new() // Addon Name - Window Node ID
-    {
-        { "Repair", 38 },
-        { "PvpReward", 125 },
-        { "Materialize", 16 },
-        { "ColorantEquipment", 13 },
-        { "MiragePrism", 28 },
-        { "HWDSupply", 67 }
-    };
+    private static readonly HashSet<string> WindowAddons =
+    [
+        "Repair",
+        "PvpReward",
+        "Materialize",
+        "ColorantEquipment",
+        "MiragePrism",
+        "HWDSupply"
+    ];
 
     private string currentTargetName = string.Empty;
-    internal static bool isOnExchange;
+    internal static bool IsOnExchange;
     private string windowName = string.Empty;
 
     private InventoryHandler? inventoryHandler;
 
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Concat(WindowUI.Keys), BeginExchange);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, UI.Concat(WindowUI.Keys), EndExchange);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   NormalAddons.Concat(WindowAddons), BeginExchange);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, NormalAddons.Concat(WindowAddons), EndExchange);
     }
 
-    private void BeginExchange(AddonEvent type, AddonArgs? args)
+    private unsafe void BeginExchange(AddonEvent type, AddonArgs? args)
     {
-        if (isOnExchange || SpecialExchange.isOnExchange) return;
+        if (IsOnExchange || SpecialExchange.isOnExchange) return;
 
-        if (args != null && WindowUI.TryGetValue(args.AddonName, out var windowNode))
-            windowName = GetWindowTitle(args, windowNode, args.AddonName == "PvpReward" ? [4, 5] : null);
+        var addon = args.Addon.ToAtkUnitBase();
+        if (args != null && addon != null && WindowAddons.TryGetValue(args.AddonName, out _))
+            windowName = GetWindowTitle(args, addon->WindowNode->NodeId, args.AddonName == "PvpReward" ? [4, 5] : null);
         else
             currentTargetName = DService.Targets.Target?.Name.TextValue ?? string.Empty;
 
-        isOnExchange = true;
+        IsOnExchange = true;
         inventoryHandler ??= new InventoryHandler();
         HandlerManager.ChatHandler.IsBlocked = true;
     }
@@ -63,12 +76,14 @@ public class Exchange : TrackerComponentBase
 
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(
-            items, "",
-            $"({(WindowUI.ContainsKey(args.AddonName) ? windowName : Service.Lang.GetText("ExchangeWith", currentTargetName))})",
-            RecordChangeType.All, 3);
+            items, 
+            string.Empty,
+            $"({(WindowAddons.Contains(args.AddonName) ? windowName : Service.Lang.GetText("ExchangeWith", currentTargetName))})",
+            RecordChangeType.All,
+            3);
 
         windowName = currentTargetName = string.Empty;
-        HandlerManager.ChatHandler.IsBlocked = isOnExchange = false;
+        HandlerManager.ChatHandler.IsBlocked = IsOnExchange = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
         DService.Log.Debug("Currency Change Check Completes.");
