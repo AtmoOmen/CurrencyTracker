@@ -12,15 +12,15 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 public class IslandSanctuary : TrackerComponentBase
 {
 
-    private readonly Dictionary<string, string> MJIModules = new()
+    private static readonly Dictionary<string, string> MJIModules = new()
     {
         { "MJIFarmManagement", Service.Lang.GetText("IslandFarm") },
         { "MJIAnimalManagement", Service.Lang.GetText("IslandPasture") }
     };
 
-    private readonly Dictionary<string, uint> MJIWindowModules = new()
+    private static readonly Dictionary<string, uint> MJIWindowModules = new()
     {
-        { "MJIGatheringHouse", 73 },
+        { "MJIGatheringHouse", 75 },
         { "MJIRecipeNoteBook", 37 },
         { "MJIBuilding", 25 }
     };
@@ -36,10 +36,11 @@ public class IslandSanctuary : TrackerComponentBase
             OnZoneChanged(1055);
 
         DService.ClientState.TerritoryChanged += OnZoneChanged;
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIWindowModules.Keys, BeginMJIWindow);
+        
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIWindowModules.Keys, BeginMJIWindow);
         DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, MJIModules.Keys, BeginMJI);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys, EndMJI);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIModules.Keys,       BeginMJI);
+        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys,       EndMJI);
     }
 
     private void OnZoneChanged(ushort zone)
@@ -121,10 +122,7 @@ public class IslandSanctuary : TrackerComponentBase
         DService.Framework.Update -= OnUpdate;
         DService.ClientState.TerritoryChanged -= OnZoneChanged;
 
-        DService.AddonLifecycle.UnregisterListener(BeginMJIWindow);
-        DService.AddonLifecycle.UnregisterListener(EndMJIWindow);
-        DService.AddonLifecycle.UnregisterListener(BeginMJI);
-        DService.AddonLifecycle.UnregisterListener(EndMJI);
+        DService.AddonLifecycle.UnregisterListener(BeginMJIWindow, EndMJIWindow, EndMJI);
 
         HandlerManager.Nullify(ref inventoryHandler);
 
