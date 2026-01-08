@@ -93,8 +93,8 @@ public partial class LanguageManager
         Language = languageName;
         LanguageChange?.Invoke(languageName);
 
-        DService.Command.RemoveHandler(CommandName);
-        DService.Command.AddHandler(CommandName, new CommandInfo(P.OnCommand)
+        DService.Instance().Command.RemoveHandler(CommandName);
+        DService.Instance().Command.AddHandler(CommandName, new CommandInfo(P.OnCommand)
         {
             HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1"),
         });
@@ -110,7 +110,7 @@ public partial class LanguageManager
 
         if (string.IsNullOrEmpty(format))
         {
-            DService.Log.Error($"Localization String {key} Not Found in Current Language!");
+            DService.Instance().Log.Error($"Localization String {key} Not Found in Current Language!");
             return key;
         }
 

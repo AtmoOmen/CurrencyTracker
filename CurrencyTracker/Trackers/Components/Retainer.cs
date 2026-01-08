@@ -33,7 +33,7 @@ public class Retainer : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
+        TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
         if (P.CurrentCharacter is { ContentID: var contentID } && !Service.Config.CharacterRetainers.ContainsKey(contentID))
         {
@@ -41,9 +41,9 @@ public class Retainer : TrackerComponentBase
             Service.Config.Save();
         }
 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
     }
 
     private unsafe void OnRetainerList(AddonEvent type, AddonArgs args)
@@ -74,7 +74,7 @@ public class Retainer : TrackerComponentBase
 
             itemCount[1] = retainerGil;
 
-            retainerWindowName = GetWindowTitle(args.Addon, 28);
+            retainerWindowName = args.Addon.ToStruct()->GetWindowTitle();
             TrackerManager.CheckCurrencies(retainerCurrencies, CurrentLocationName, "", RecordChangeType.All, 22,
                                             TransactionFileCategory.Retainer, retainerID);
             TrackerManager.CheckCurrencies(retainerCurrencies, CurrentLocationName,
@@ -88,7 +88,7 @@ public class Retainer : TrackerComponentBase
         {
             isOnRetainer = true;
             HandlerManager.ChatHandler.IsBlocked = true;
-            DService.Framework.Update += RetainerUIWatcher;
+            DService.Instance().Framework.Update += RetainerUIWatcher;
         }
     }
 
@@ -136,14 +136,14 @@ public class Retainer : TrackerComponentBase
     {
         if (!isOnRetainer)
         {
-            DService.Framework.Update -= RetainerUIWatcher;
+            DService.Instance().Framework.Update -= RetainerUIWatcher;
             HandlerManager.ChatHandler.IsBlocked = false;
             return;
         }
 
-        if (!DService.Condition[ConditionFlag.OccupiedSummoningBell])
+        if (!DService.Instance().Condition[ConditionFlag.OccupiedSummoningBell])
         {
-            DService.Framework.Update -= RetainerUIWatcher;
+            DService.Instance().Framework.Update -= RetainerUIWatcher;
             isOnRetainer = false;
             currentRetainerID = 0;
             InventoryItemCount.Clear();
@@ -153,15 +153,15 @@ public class Retainer : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(OnRetainerList);
-        DService.AddonLifecycle.UnregisterListener(OnRetainerInventory);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnRetainerList);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnRetainerInventory);
 
         isOnRetainer = false;
         retainerWindowName = string.Empty;
         currentRetainerID = 0;
         InventoryItemCount.Clear();
 
-        DService.Framework.Update -= RetainerUIWatcher;
+        DService.Instance().Framework.Update -= RetainerUIWatcher;
 
         TaskHelper?.Abort();
         TaskHelper = null;

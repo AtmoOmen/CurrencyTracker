@@ -38,7 +38,7 @@ public class ComponentManager
         var type = component.GetType();
         if (!Components.ContainsKey(type))
         {
-            DService.Log.Error($"Failed to fetch component {type.Name}");
+            DService.Instance().Log.Error($"Failed to fetch component {type.Name}");
             return;
         }
 

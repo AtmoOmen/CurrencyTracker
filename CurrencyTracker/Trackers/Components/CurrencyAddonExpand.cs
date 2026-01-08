@@ -26,9 +26,9 @@ public unsafe class CurrencyAddonExpand : TrackerComponentBase
 
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, AddonName, OnCurrencyUI);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, AddonName, OnCurrencyUI);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, AddonName, OnCurrencyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, AddonName, OnCurrencyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreDraw, AddonName, OnCurrencyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, AddonName, OnCurrencyUI);
     }
 
     private static void OnCurrencyUI(AddonEvent type, AddonArgs args)
@@ -51,9 +51,9 @@ public unsafe class CurrencyAddonExpand : TrackerComponentBase
     {
         if (!isAdd && mouseoverHandle != null && mouseoutHandle != null)
         {
-            DService.AddonEvent.RemoveEvent(mouseoverHandle);
+            DService.Instance().AddonEvent.RemoveEvent(mouseoverHandle);
             mouseoverHandle = null;
-            DService.AddonEvent.RemoveEvent(mouseoutHandle);
+            DService.Instance().AddonEvent.RemoveEvent(mouseoutHandle);
             mouseoutHandle = null;
         }
 
@@ -72,8 +72,8 @@ public unsafe class CurrencyAddonExpand : TrackerComponentBase
         {
             gilNode->AtkResNode.NodeFlags |= NodeFlagsMask;
 
-            mouseoverHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOver, DisplayAndHideTooltip);
-            mouseoutHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOut, DisplayAndHideTooltip);
+            mouseoverHandle ??= DService.Instance().AddonEvent.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOver, DisplayAndHideTooltip);
+            mouseoutHandle ??= DService.Instance().AddonEvent.AddEvent((nint)addon, (nint)gilNode, AddonEventType.MouseOut, DisplayAndHideTooltip);
 
             if (CurrencyAmountCache != null)
                 gilNode->SetText(((long)CurrencyAmountCache).ToString("#,0"));
@@ -118,7 +118,7 @@ public unsafe class CurrencyAddonExpand : TrackerComponentBase
             addon->Close(true);
         }
 
-        DService.AddonLifecycle.UnregisterListener(OnCurrencyUI);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnCurrencyUI);
         CurrencyAmountCache = null;
     }
 }

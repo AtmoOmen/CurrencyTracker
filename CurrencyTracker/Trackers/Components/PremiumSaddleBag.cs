@@ -24,18 +24,18 @@ public class PremiumSaddleBag : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
+        TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
     }
 
-    private void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
+    private unsafe void OnPremiumSaddleBag(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
             case AddonEvent.PostSetup:
-                windowTitle = GetWindowTitle(args.Addon, 86);
+                windowTitle = args.Addon.ToStruct()->GetWindowTitle();
                 TaskHelper.Enqueue(PSaddleBagScanner);
 
                 break;
@@ -60,7 +60,7 @@ public class PremiumSaddleBag : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnPremiumSaddleBag);
 
         windowTitle = string.Empty;
         InventoryItemCount.Clear();

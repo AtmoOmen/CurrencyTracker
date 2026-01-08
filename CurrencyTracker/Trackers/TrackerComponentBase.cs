@@ -15,7 +15,7 @@ public abstract class TrackerComponentBase
             OnInit();
             Initialized = true;
             
-            DService.Log.Debug($"Loaded component {GetType().Name}");
+            DService.Instance().Log.Debug($"Loaded component {GetType().Name}");
         }
         catch (Exception ex)
         {
@@ -30,7 +30,7 @@ public abstract class TrackerComponentBase
             OnUninit();
             Initialized = false;
             
-            DService.Log.Debug($"Unloaded component {GetType().Name}");
+            DService.Instance().Log.Debug($"Unloaded component {GetType().Name}");
         }
         catch (Exception ex)
         {
@@ -55,6 +55,6 @@ public abstract class TrackerComponentBase
         
         Initialized = false;
         
-        DService.Log.Error(ex, $"Failed to load component {GetType().Name}: {ex.Message}");
+        DService.Instance().Log.Error(ex, $"Failed to load component {GetType().Name}: {ex.Message}");
     }
 } 

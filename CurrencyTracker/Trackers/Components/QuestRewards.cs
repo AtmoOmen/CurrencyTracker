@@ -19,10 +19,10 @@ public class QuestRewards : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = int.MaxValue };
+        TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
     }
 
     private unsafe void OnQuestRewards(AddonEvent type, AddonArgs? args)
@@ -39,7 +39,7 @@ public class QuestRewards : TrackerComponentBase
             case AddonEvent.PreFinalize:
                 var atkValue  = addon->AtkValues[1];
                 var questName = atkValue.Type == 0 ? string.Empty : atkValue.String.ExtractText();
-                DService.Log.Debug($"Quest {questName} Ready to Finish!");
+                DService.Instance().Log.Debug($"Quest {questName} Ready to Finish!");
 
                 TaskHelper.Enqueue(() => CheckQuestRewards(questName));
                 break;
@@ -50,11 +50,11 @@ public class QuestRewards : TrackerComponentBase
     {
         if (OccupiedInEvent || BetweenAreas) return false;
 
-        DService.Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
+        DService.Instance().Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(items, string.Empty, $"({Service.Lang.GetText("Quest", questName)})",
                                         RecordChangeType.All, 9);
-        DService.Log.Debug("Currency Change Check Completes.");
+        DService.Instance().Log.Debug("Currency Change Check Completes.");
 
         HandlerManager.ChatHandler.IsBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
@@ -63,7 +63,7 @@ public class QuestRewards : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(OnQuestRewards);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnQuestRewards);
         HandlerManager.Nullify(ref inventoryHandler);
 
         TaskHelper?.Abort();

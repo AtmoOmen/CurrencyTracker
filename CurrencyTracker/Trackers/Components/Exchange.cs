@@ -11,23 +11,22 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class Exchange : TrackerComponentBase
 {
-
     private static readonly string[] NormalAddons =
     [
-        "InclusionShop", 
+        "InclusionShop",
         "CollectablesShop",
         "FreeCompanyExchange",
-        "FreeCompanyCreditShop", 
+        "FreeCompanyCreditShop",
         "ShopExchangeCurrency",
-        "Shop", 
-        "ItemSearch", 
+        "Shop",
+        "ItemSearch",
         "ShopExchangeItem",
-        "SkyIslandExchange", 
+        "SkyIslandExchange",
         "TripleTriadCoinExchange",
         "FreeCompanyChest",
-        "MJIDisposeShop", 
-        "GrandCompanyExchange", 
-        "ReconstructionBuyback", 
+        "MJIDisposeShop",
+        "GrandCompanyExchange",
+        "ReconstructionBuyback",
         "ShopExchangeCoin"
     ];
 
@@ -41,58 +40,60 @@ public class Exchange : TrackerComponentBase
         "HWDSupply"
     ];
 
-    private string currentTargetName = string.Empty;
-    internal static bool IsOnExchange;
-    private string windowName = string.Empty;
+    private         string currentTargetName = string.Empty;
+    internal static bool   IsOnExchange;
+    private         string windowName = string.Empty;
 
     private InventoryHandler? inventoryHandler;
 
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   NormalAddons.Concat(WindowAddons), BeginExchange);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, NormalAddons.Concat(WindowAddons), EndExchange);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   NormalAddons.Concat(WindowAddons), BeginExchange);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, NormalAddons.Concat(WindowAddons), EndExchange);
     }
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs? args)
     {
         if (IsOnExchange || SpecialExchange.isOnExchange) return;
 
-        var addon = args.Addon.ToAtkUnitBase();
+        var addon = args.Addon.ToStruct();
         if (args != null && addon != null && WindowAddons.TryGetValue(args.AddonName, out _))
-            windowName = GetWindowTitle(args, addon->WindowNode->NodeId, args.AddonName == "PvpReward" ? [4, 5] : null);
+            windowName = addon->GetWindowTitle(nodeIDs: args.AddonName == "PvpReward" ? (4, 5) : null);
         else
-            currentTargetName = DService.Targets.Target?.Name.TextValue ?? string.Empty;
+            currentTargetName = TargetManager.Target?.Name.TextValue ?? string.Empty;
 
-        IsOnExchange = true;
-        inventoryHandler ??= new InventoryHandler();
-        HandlerManager.ChatHandler.IsBlocked = true;
+        IsOnExchange                         =   true;
+        inventoryHandler                     ??= new InventoryHandler();
+        HandlerManager.ChatHandler.IsBlocked =   true;
     }
 
     private void EndExchange(AddonEvent type, AddonArgs args)
     {
         if (SpecialExchange.isOnExchange) return;
 
-        DService.Log.Debug("Exchange Completes, Currency Change Check Starts.");
+        DService.Instance().Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? [];
-        TrackerManager.CheckCurrencies(
-            items, 
+        TrackerManager.CheckCurrencies
+        (
+            items,
             string.Empty,
             $"({(WindowAddons.Contains(args.AddonName) ? windowName : Service.Lang.GetText("ExchangeWith", currentTargetName))})",
             RecordChangeType.All,
-            3);
+            3
+        );
 
-        windowName = currentTargetName = string.Empty;
-        HandlerManager.ChatHandler.IsBlocked = IsOnExchange = false;
+        windowName                           = currentTargetName = string.Empty;
+        HandlerManager.ChatHandler.IsBlocked = IsOnExchange      = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        DService.Log.Debug("Currency Change Check Completes.");
+        DService.Instance().Log.Debug("Currency Change Check Completes.");
     }
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(BeginExchange);
-        DService.AddonLifecycle.UnregisterListener(EndExchange);
+        DService.Instance().AddonLifecycle.UnregisterListener(BeginExchange);
+        DService.Instance().AddonLifecycle.UnregisterListener(EndExchange);
         HandlerManager.Nullify(ref inventoryHandler);
     }
 }

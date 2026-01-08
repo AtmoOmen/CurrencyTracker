@@ -156,7 +156,7 @@ public static class CurrencyInfo
                     .Item.RowId ?? 0;
 
     public static IDalamudTextureWrap GetIcon(uint currencyID) => 
-        DService.Texture.GetFromGameIcon(new(LuminaGetter.GetRow<Item>(currencyID).GetValueOrDefault().Icon)).GetWrapOrEmpty();
+        DService.Instance().Texture.GetFromGameIcon(new(LuminaGetter.GetRow<Item>(currencyID).GetValueOrDefault().Icon)).GetWrapOrEmpty();
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
     {
@@ -164,7 +164,7 @@ public static class CurrencyInfo
 
         if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
         {
-            DService.Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
+            DService.Instance().Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
 
@@ -172,7 +172,7 @@ public static class CurrencyInfo
         {
             foreach (var (sourcePath, targetPath) in filePaths)
             {
-                DService.Log.Debug($"Moving file from {sourcePath} to {targetPath}");
+                DService.Instance().Log.Debug($"Moving file from {sourcePath} to {targetPath}");
                 File.Move(sourcePath, targetPath);
             }
 

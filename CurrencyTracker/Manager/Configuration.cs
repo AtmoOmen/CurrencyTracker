@@ -149,7 +149,7 @@ public class Configuration : IPluginConfiguration
 
     private Dictionary<uint, string> GetAllCurrencies()
     {
-        DService.Log.Debug("Successfully reacquire all currencies");
+        DService.Instance().Log.Debug("Successfully reacquire all currencies");
         IsUpdated = false;
 
         PresetCurrencies.Keys.ToList().ForEach(k => CustomCurrencies.Remove(k));

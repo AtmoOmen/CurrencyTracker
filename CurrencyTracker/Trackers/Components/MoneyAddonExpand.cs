@@ -26,8 +26,8 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
     {
         overlay ??= new();
 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
     }
 
     private static void OnMoneyUI(AddonEvent type, AddonArgs args)
@@ -40,8 +40,8 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
         var counterNode = addon->GetNodeById(3);
         if (counterNode == null) return;
 
-        mouseoverHandle ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
-        mouseoutHandle  ??= DService.AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut,  OverlayHandler);
+        mouseoverHandle ??= DService.Instance().AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOver, OverlayHandler);
+        mouseoutHandle  ??= DService.Instance().AddonEvent.AddEvent((nint)addon, (nint)counterNode, AddonEventType.MouseOut,  OverlayHandler);
     }
 
     private static void OverlayHandler(AddonEventType type, AddonEventData data)
@@ -57,15 +57,15 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(OnMoneyUI);
+        DService.Instance().AddonLifecycle.UnregisterListener(OnMoneyUI);
         if (mouseoutHandle != null)
         {
-            DService.AddonEvent.RemoveEvent(mouseoverHandle);
+            DService.Instance().AddonEvent.RemoveEvent(mouseoverHandle);
             mouseoutHandle = null;
         }
         if (mouseoverHandle != null)
         {
-            DService.AddonEvent.RemoveEvent(mouseoutHandle);
+            DService.Instance().AddonEvent.RemoveEvent(mouseoutHandle);
             mouseoverHandle = null;
         }
 

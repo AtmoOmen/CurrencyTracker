@@ -19,7 +19,7 @@ public class TerritoryHandler : TrackerHandlerBase
     {
         LoadTerritoryNames();
         InitLocation();
-        DService.ClientState.TerritoryChanged += OnZoneChange;
+        DService.Instance().ClientState.TerritoryChanged += OnZoneChange;
     }
 
     private static void LoadTerritoryNames()
@@ -36,7 +36,7 @@ public class TerritoryHandler : TrackerHandlerBase
 
     private static void InitLocation()
     {
-        CurrentLocationID = PreviousLocationID = DService.ClientState.TerritoryType;
+        CurrentLocationID = PreviousLocationID = DService.Instance().ClientState.TerritoryType;
         CurrentLocationName = PreviousLocationName = GetLocationName(CurrentLocationID);
     }
 
@@ -61,7 +61,7 @@ public class TerritoryHandler : TrackerHandlerBase
 
     protected override void OnUninit()
     {
-        DService.ClientState.TerritoryChanged -= OnZoneChange;
+        DService.Instance().ClientState.TerritoryChanged -= OnZoneChange;
         TerritoryNames?.Clear();
         TerritoryNames = null;
         ResetLocations();

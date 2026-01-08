@@ -17,7 +17,7 @@ public class InventoryHandler : TrackerHandlerBase
 
     protected override void OnInit()
     {
-        DService.Inventory.InventoryChangedRaw += OnInventoryChangedRaw;
+        DService.Instance().Inventory.InventoryChangedRaw += OnInventoryChangedRaw;
     }
 
     private void OnInventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events)
@@ -25,13 +25,13 @@ public class InventoryHandler : TrackerHandlerBase
         foreach (var eventArgs in events)
         {
             Items.Add(eventArgs.Item.ItemId);
-            if (P.PI.IsDev) DService.Log.Debug(eventArgs.ToString());
+            if (P.PI.IsDev) DService.Instance().Log.Debug(eventArgs.ToString());
         }
     }
 
     protected override void OnUninit()
     {
-        DService.Inventory.InventoryChangedRaw -= OnInventoryChangedRaw;
+        DService.Instance().Inventory.InventoryChangedRaw -= OnInventoryChangedRaw;
 
         Items.Clear();
     }

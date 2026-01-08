@@ -24,10 +24,10 @@ public unsafe class MobDrops : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 10_000 };
+        TaskHelper ??= new TaskHelper { TimeoutMS = 10_000 };
 
-        DService.Condition.ConditionChange += OnConditionChange;
-        DService.Framework.Update += OnUpdate;
+        DService.Instance().Condition.ConditionChange += OnConditionChange;
+        DService.Instance().Framework.Update += OnUpdate;
     }
 
     private void OnConditionChange(ConditionFlag flag, bool value)
@@ -54,9 +54,9 @@ public unsafe class MobDrops : TrackerComponentBase
     {
         if (!IsOnCombat) return;
 
-        var currentTarget = DService.Targets.Target;
+        var currentTarget = TargetManager.Target;
         if (currentTarget == null) return;
-        var targetName = currentTarget.Name.ExtractText();
+        var targetName = currentTarget.Name.ToString();
         if (EnemiesList.ContainsKey(currentTarget.GameObjectID) || EnemiesList.ContainsValue(targetName)) return;
         if (currentTarget.ObjectKind != ObjectKind.BattleNpc) return;
 
@@ -65,14 +65,14 @@ public unsafe class MobDrops : TrackerComponentBase
         if (gameObj->FateId != 0) return;
         
         EnemiesList[currentTarget.GameObjectID] = targetName;
-        DService.Log.Debug($"Added {targetName} to the mob list");
+        DService.Instance().Log.Debug($"Added {targetName} to the mob list");
     }
 
     private bool? EndMobDropsHandler()
     {
-        if (DService.Condition[ConditionFlag.InCombat] || EnemiesList.Count <= 0) return true;
+        if (DService.Instance().Condition[ConditionFlag.InCombat] || EnemiesList.Count <= 0) return true;
 
-        DService.Log.Debug("Combat Ends, Currency Change Check Starts.");
+        DService.Instance().Log.Debug("Combat Ends, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(
             items, "", $"({Service.Lang.GetText("MobDrops-MobDropsNote", string.Join(", ", EnemiesList.Values.TakeLast(3)))})",
@@ -82,15 +82,15 @@ public unsafe class MobDrops : TrackerComponentBase
         HandlerManager.ChatHandler.IsBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
         IsOnCombat = false;
-        DService.Log.Debug("Currency Change Check Completes.");
+        DService.Instance().Log.Debug("Currency Change Check Completes.");
 
         return true;
     }
 
     protected override void OnUninit()
     {
-        DService.Condition.ConditionChange -= OnConditionChange;
-        DService.Framework.Update -= OnUpdate;
+        DService.Instance().Condition.ConditionChange -= OnConditionChange;
+        DService.Instance().Framework.Update -= OnUpdate;
         IsOnCombat = false;
 
         HandlerManager.Nullify(ref inventoryHandler);

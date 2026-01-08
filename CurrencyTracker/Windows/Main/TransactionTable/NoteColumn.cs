@@ -52,7 +52,7 @@ public class NoteColumn : TableColumn
                 var failCount = TransactionsHandler.EditSpecificTransactions(SelectedCurrencyID, [transaction.Transaction], "None", editedNoteContent, CurrentView, CurrentViewID);
 
                 if (failCount == 0) RefreshTable();
-                else DService.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                else DService.Instance().Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
 
             ImGui.EndPopup();

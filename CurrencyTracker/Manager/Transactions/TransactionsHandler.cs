@@ -39,7 +39,7 @@ public static class TransactionsHandler
     {
         if (string.IsNullOrEmpty(P.PlayerDataFolder))
         {
-            DService.Log.Warning("Player data folder Missed.");
+            DService.Instance().Log.Warning("Player data folder Missed.");
             return false;
         }
 

@@ -47,7 +47,7 @@ public class AutoSave : TrackerComponentBase
                     var filePath = await 
                         TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
                     if (Service.Config.AutoSaveMessage)
-                        DService.Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                        DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
                 });
                 break;
             case 1:
@@ -68,14 +68,14 @@ public class AutoSave : TrackerComponentBase
                     var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
                     if (Service.Config.AutoSaveMessage)
                     {
-                        DService.Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
+                        DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
                                            (failCharacters.Count != 0
                                                 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
                                                 : ""));
                         if (failCharacters.Count != 0)
                         {
-                            DService.Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
-                            failCharacters.ForEach(x => DService.Chat.PrintError(x));
+                            DService.Instance().Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                            failCharacters.ForEach(x => DService.Instance().Chat.PrintError(x));
                         }
                     }
                 });

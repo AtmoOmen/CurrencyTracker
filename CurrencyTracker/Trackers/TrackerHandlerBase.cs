@@ -17,7 +17,7 @@ public abstract class TrackerHandlerBase
             OnInit();
             Initialized = true;
             
-            DService.Log.Debug($"Loaded handler {GetType().Name}");
+            DService.Instance().Log.Debug($"Loaded handler {GetType().Name}");
         }
         catch (Exception ex)
         {
@@ -34,7 +34,7 @@ public abstract class TrackerHandlerBase
             Initialized = false;
             IsBlocked   = false;
             
-            DService.Log.Debug($"Unloaded handler {GetType().Name}");
+            DService.Instance().Log.Debug($"Unloaded handler {GetType().Name}");
         }
         catch (Exception ex)
         {
@@ -60,6 +60,6 @@ public abstract class TrackerHandlerBase
         Initialized = false;
         IsBlocked = false;
         
-        DService.Log.Error(ex, $"Failed to load handler {GetType().Name}: {ex.Message}");
+        DService.Instance().Log.Error(ex, $"Failed to load handler {GetType().Name}: {ex.Message}");
     }
 } 

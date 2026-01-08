@@ -17,9 +17,9 @@ public class ChatHandler : TrackerHandlerBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 5000 };
+        TaskHelper ??= new TaskHelper { TimeoutMS = 5000 };
 
-        DService.Chat.ChatMessage += OnChatMessage;
+        DService.Instance().Chat.ChatMessage += OnChatMessage;
     }
 
     private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
@@ -36,7 +36,7 @@ public class ChatHandler : TrackerHandlerBase
 
     protected override void OnUninit()
     {
-        DService.Chat.ChatMessage -= OnChatMessage;
+        DService.Instance().Chat.ChatMessage -= OnChatMessage;
         TaskHelper?.Abort();
         TaskHelper = null;
     }

@@ -3,20 +3,18 @@ using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools.Helpers;
+using Dalamud.Utility;
 
 namespace CurrencyTracker.Manager.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
 public class FateRewards : TrackerComponentBase
 {
-
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreSetup, "FateReward", FateHandler);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "FateReward", FateHandler);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreSetup,    "FateReward", FateHandler);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "FateReward", FateHandler);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "FateReward", FateHandler);
     }
 
     private static unsafe void FateHandler(AddonEvent type, AddonArgs args)
@@ -27,25 +25,28 @@ public class FateRewards : TrackerComponentBase
                 HandlerManager.ChatHandler.IsBlocked = true;
                 break;
             case AddonEvent.PostSetup:
-                var FR = (AtkUnitBase*)args.Addon.Address;
-                if (!IsAddonAndNodesReady(FR)) return;
+                var addon = args.Addon.ToStruct();
+                if (!addon->IsAddonAndNodesReady()) return;
 
-                var textNode = FR->GetTextNodeById(6);
+                var textNode = addon->GetTextNodeById(6);
                 if (textNode == null) return;
 
-                var fateName = textNode->NodeText.ExtractText();
-                TrackerManager.CheckAllCurrencies("", $"({Service.Lang.GetText("Fate", fateName)})",
-                                                   RecordChangeType.All, 23);
+                var fateName = textNode->NodeText.StringPtr.ExtractText();
+                TrackerManager.CheckAllCurrencies
+                (
+                    "",
+                    $"({Service.Lang.GetText("Fate", fateName)})",
+                    RecordChangeType.All,
+                    23
+                );
                 break;
             case AddonEvent.PreFinalize:
-                if (!OccupiedInEvent) 
+                if (!OccupiedInEvent)
                     HandlerManager.ChatHandler.IsBlocked = false;
                 break;
         }
     }
 
-    protected override void OnUninit()
-    {
-        DService.AddonLifecycle.UnregisterListener(FateHandler);
-    }
+    protected override void OnUninit() =>
+        DService.Instance().AddonLifecycle.UnregisterListener(FateHandler);
 }

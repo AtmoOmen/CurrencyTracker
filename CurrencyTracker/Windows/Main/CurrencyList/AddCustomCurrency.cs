@@ -90,13 +90,13 @@ public partial class Main
             {
                 if (_currencyIDACC == 0)
                 {
-                    DService.Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
+                    DService.Instance().Chat.PrintError(Service.Lang.GetText("TransactionsHelp1"));
                     return;
                 }
 
                 if (Service.Config.AllCurrencyID.Contains(_currencyIDACC))
                 {
-                    DService.Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
+                    DService.Instance().Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 

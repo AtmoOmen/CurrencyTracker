@@ -4,6 +4,7 @@ using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OmenTools.Helpers;
 
@@ -19,8 +20,8 @@ public class TripleTriad : TrackerComponentBase
 
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriad", StartTripleTriad);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "TripleTriadResult", EndTripleTriad);
     }
 
     private unsafe void StartTripleTriad(AddonEvent type, AddonArgs args)
@@ -30,11 +31,11 @@ public class TripleTriad : TrackerComponentBase
 
         var addon = InfosOm.TripleTriad;
         if (addon != null) 
-            ttRivalName = addon->GetTextNodeById(187)->NodeText.ExtractText();
+            ttRivalName = addon->GetTextNodeById(187)->NodeText.StringPtr.ExtractText();
 
         inventoryHandler ??= new InventoryHandler();
 
-        DService.Log.Debug("Triple Triad Starts");
+        DService.Instance().Log.Debug("Triple Triad Starts");
     }
 
     private unsafe void EndTripleTriad(AddonEvent type, AddonArgs args)
@@ -55,7 +56,7 @@ public class TripleTriad : TrackerComponentBase
                            win ? Service.Lang.GetText("TripleTriad-Win") : string.Empty;
         }
 
-        DService.Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
+        DService.Instance().Log.Debug("Triple Triad Match Ends, Currency Change Check Starts.");
 
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(
@@ -65,13 +66,13 @@ public class TripleTriad : TrackerComponentBase
         ttRivalName = ttResultText = string.Empty;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        DService.Log.Debug("Currency Change Check Completes.");
+        DService.Instance().Log.Debug("Currency Change Check Completes.");
     }
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(StartTripleTriad);
-        DService.AddonLifecycle.UnregisterListener(EndTripleTriad);
+        DService.Instance().AddonLifecycle.UnregisterListener(StartTripleTriad);
+        DService.Instance().AddonLifecycle.UnregisterListener(EndTripleTriad);
         HandlerManager.Nullify(ref inventoryHandler);
 
         isTTOn = false;

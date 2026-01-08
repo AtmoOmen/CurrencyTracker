@@ -29,7 +29,7 @@ public class SpecialExchange : TrackerComponentBase
     private InventoryHandler? inventoryHandler;
 
     protected override void OnInit() => 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
     {
@@ -41,10 +41,10 @@ public class SpecialExchange : TrackerComponentBase
         HandlerManager.ChatHandler.IsBlocked = true;
 
         isOnExchange     =   true;
-        windowName       =   args.AddonName == "SatisfactionSupply" ? addon->AtkValues[7].String.ExtractText() : GetWindowTitle(args, UI[args.AddonName]);
+        windowName       =   args.AddonName == "SatisfactionSupply" ? addon->AtkValues[7].String.ExtractText() : args.Addon.ToStruct()->GetWindowTitle();
         inventoryHandler ??= new InventoryHandler();
 
-        DService.Framework.Update += OnFrameworkUpdate;
+        DService.Instance().Framework.Update += OnFrameworkUpdate;
     }
 
     private void OnFrameworkUpdate(IFramework framework)
@@ -53,7 +53,7 @@ public class SpecialExchange : TrackerComponentBase
 
         if (!isOnExchange && !Exchange.IsOnExchange)
         {
-            DService.Framework.Update -= OnFrameworkUpdate;
+            DService.Instance().Framework.Update -= OnFrameworkUpdate;
             return;
         }
 
@@ -63,9 +63,9 @@ public class SpecialExchange : TrackerComponentBase
     private void EndExchangeHandler()
     {
         if (Exchange.IsOnExchange) return;
-        DService.Framework.Update -= OnFrameworkUpdate;
+        DService.Instance().Framework.Update -= OnFrameworkUpdate;
 
-        DService.Log.Debug("Exchange Completes, Currency Change Check Starts.");
+        DService.Instance().Log.Debug("Exchange Completes, Currency Change Check Starts.");
 
         isOnExchange = false;
 
@@ -76,13 +76,13 @@ public class SpecialExchange : TrackerComponentBase
         HandlerManager.ChatHandler.IsBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
-        DService.Log.Debug("Currency Change Check Completes.");
+        DService.Instance().Log.Debug("Currency Change Check Completes.");
     }
 
     protected override void OnUninit()
     {
-        DService.Framework.Update -= OnFrameworkUpdate;
-        DService.AddonLifecycle.UnregisterListener(BeginExchange);
+        DService.Instance().Framework.Update -= OnFrameworkUpdate;
+        DService.Instance().AddonLifecycle.UnregisterListener(BeginExchange);
         HandlerManager.Nullify(ref inventoryHandler);
 
         isOnExchange = false;

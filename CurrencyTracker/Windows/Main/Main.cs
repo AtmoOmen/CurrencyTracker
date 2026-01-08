@@ -30,7 +30,7 @@ public partial class Main : Window, IDisposable
     {
         Flags |= ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoScrollWithMouse;
 
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 5_000 };
+        TaskHelper ??= new TaskHelper { TimeoutMS = 5_000 };
 
         TrackerManager.CurrencyChanged += OnCurrencyChanged;
 
@@ -48,7 +48,7 @@ public partial class Main : Window, IDisposable
 
     public override void Draw()
     {
-        if (!DService.ClientState.IsLoggedIn) return;
+        if (!DService.Instance().ClientState.IsLoggedIn) return;
 
         DrawCategory(ref _showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
         if (!_showRecordOptions && !_showOthers) ImGui.SameLine();

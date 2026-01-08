@@ -15,7 +15,7 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 public class ServerBar : TrackerComponentBase
 {
 
-    internal static IDtrBarEntry             DtrEntry { get; } = DService.DtrBar.Get("CurrencyTracker");
+    internal static IDtrBarEntry             DtrEntry { get; } = DService.Instance().DtrBar.Get("CurrencyTracker");
     internal static long                     LastPeriodChanges;
     private static  CancellationTokenSource? _cancelTokenSource;
 
@@ -53,7 +53,7 @@ public class ServerBar : TrackerComponentBase
         DisposeCancelSource();
         _cancelTokenSource = new CancellationTokenSource();
 
-        DService.Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, _cancelTokenSource.Token);
+        DService.Instance().Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, _cancelTokenSource.Token);
     }
 
     private static void UpdateDtrEntry()

@@ -11,7 +11,6 @@ namespace CurrencyTracker.Manager.Trackers.Components;
 
 public class IslandSanctuary : TrackerComponentBase
 {
-
     private static readonly Dictionary<string, string> MJIModules = new()
     {
         { "MJIFarmManagement", Service.Lang.GetText("IslandFarm") },
@@ -25,7 +24,7 @@ public class IslandSanctuary : TrackerComponentBase
         { "MJIBuilding", 25 }
     };
 
-    private bool isOnWorkshop;
+    private bool   isOnWorkshop;
     private string windowTitle = string.Empty;
 
     private InventoryHandler? inventoryHandler;
@@ -35,35 +34,35 @@ public class IslandSanctuary : TrackerComponentBase
         if (CurrentLocationID == 1055)
             OnZoneChanged(1055);
 
-        DService.ClientState.TerritoryChanged += OnZoneChanged;
-        
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIWindowModules.Keys, BeginMJIWindow);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIModules.Keys,       BeginMJI);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys,       EndMJI);
+        DService.Instance().ClientState.TerritoryChanged += OnZoneChanged;
+
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIWindowModules.Keys, BeginMJIWindow);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIWindowModules.Keys, EndMJIWindow);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   MJIModules.Keys,       BeginMJI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys,       EndMJI);
     }
 
     private void OnZoneChanged(ushort zone)
     {
         if (zone == 1055)
-            DService.Framework.Update += OnUpdate;
+            DService.Instance().Framework.Update += OnUpdate;
         else
-            DService.Framework.Update -= OnUpdate;
+            DService.Instance().Framework.Update -= OnUpdate;
     }
 
     private void OnUpdate(IFramework framework)
     {
         if (!Throttler.Throttle("IslandSanctuary-CheckWorkshop")) return;
-        var currentTarget = DService.Targets.Target;
-        var prevTarget = DService.Targets.PreviousTarget;
+        var currentTarget = TargetManager.Target;
+        var prevTarget    = TargetManager.PreviousTarget;
 
         if (currentTarget?.DataID == 1043078)
         {
             if (!isOnWorkshop)
             {
-                isOnWorkshop = true;
-                inventoryHandler ??= new InventoryHandler();
-                HandlerManager.ChatHandler.IsBlocked = true;
+                isOnWorkshop                         =   true;
+                inventoryHandler                     ??= new InventoryHandler();
+                HandlerManager.ChatHandler.IsBlocked =   true;
             }
         }
         else if (prevTarget?.DataID == 1043078 && isOnWorkshop)
@@ -73,8 +72,14 @@ public class IslandSanctuary : TrackerComponentBase
                 isOnWorkshop = false;
 
                 var items = inventoryHandler?.Items ?? [];
-                TrackerManager.CheckCurrencies(items, "", $"({Service.Lang.GetText("IslandWorkshop")})",
-                                        RecordChangeType.All, 7);
+                TrackerManager.CheckCurrencies
+                (
+                    items,
+                    string.Empty,
+                    $"({Service.Lang.GetText("IslandWorkshop")})",
+                    RecordChangeType.All,
+                    7
+                );
 
                 HandlerManager.Nullify(ref inventoryHandler);
                 HandlerManager.ChatHandler.IsBlocked = false;
@@ -84,8 +89,8 @@ public class IslandSanctuary : TrackerComponentBase
 
     private void BeginMJI(AddonEvent type, AddonArgs args)
     {
-        inventoryHandler ??= new InventoryHandler();
-        HandlerManager.ChatHandler.IsBlocked = true;
+        inventoryHandler                     ??= new InventoryHandler();
+        HandlerManager.ChatHandler.IsBlocked =   true;
     }
 
     private void EndMJI(AddonEvent type, AddonArgs args)
@@ -99,11 +104,11 @@ public class IslandSanctuary : TrackerComponentBase
         HandlerManager.Nullify(ref inventoryHandler);
     }
 
-    private void BeginMJIWindow(AddonEvent type, AddonArgs args)
+    private unsafe void BeginMJIWindow(AddonEvent type, AddonArgs args)
     {
-        windowTitle = GetWindowTitle(args, MJIWindowModules[args.AddonName]);
-        inventoryHandler ??= new InventoryHandler();
-        HandlerManager.ChatHandler.IsBlocked = true;
+        windowTitle                          =   args.Addon.ToStruct()->GetWindowTitle();
+        inventoryHandler                     ??= new InventoryHandler();
+        HandlerManager.ChatHandler.IsBlocked =   true;
     }
 
     private void EndMJIWindow(AddonEvent type, AddonArgs args)
@@ -119,14 +124,14 @@ public class IslandSanctuary : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.Framework.Update -= OnUpdate;
-        DService.ClientState.TerritoryChanged -= OnZoneChanged;
+        DService.Instance().Framework.Update             -= OnUpdate;
+        DService.Instance().ClientState.TerritoryChanged -= OnZoneChanged;
 
-        DService.AddonLifecycle.UnregisterListener(BeginMJIWindow, EndMJIWindow, EndMJI);
+        DService.Instance().AddonLifecycle.UnregisterListener(BeginMJIWindow, EndMJIWindow, EndMJI);
 
         HandlerManager.Nullify(ref inventoryHandler);
 
         isOnWorkshop = false;
-        windowTitle = string.Empty;
+        windowTitle  = string.Empty;
     }
 }

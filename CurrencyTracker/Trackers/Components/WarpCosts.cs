@@ -8,6 +8,7 @@ using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
@@ -33,7 +34,7 @@ public unsafe class WarpCosts : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskManager ??= new TaskHelper { TimeLimitMS = 60000 };
+        TaskManager ??= new TaskHelper { TimeoutMS = 60000 };
 
         ValidGilWarpTerritories = LuminaGetter.Get<Warp>()
                                         .Where(x => LuminaGetter.Get<WarpCondition>()
@@ -44,8 +45,8 @@ public unsafe class WarpCosts : TrackerComponentBase
         ValidWarpText.Clear();
         ValidWarpText.Add(LuminaWrapper.GetItemName(1));
 
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "SelectYesno", WarpConfirmationCheck);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "SelectYesno", WarpConfirmationCheck);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "SelectYesno", WarpConfirmationCheck);
     }
 
     private void WarpConfirmationCheck(AddonEvent type, AddonArgs args)
@@ -55,7 +56,7 @@ public unsafe class WarpCosts : TrackerComponentBase
             case AddonEvent.PostSetup:
                 var addon = (AddonSelectYesno*)SelectYesno;
                 var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.VirtualTable[2].ReceiveEvent;
-                SelectYesHook ??= DService.Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
+                SelectYesHook ??= DService.Instance().Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
                 SelectYesHook?.Enable();
                 break;
             case AddonEvent.PreFinalize:
@@ -69,11 +70,11 @@ public unsafe class WarpCosts : TrackerComponentBase
     {
         if (eventType == AtkEventType.MouseClick)
         {
-            if (!ValidGilWarpTerritories.Contains(GameState.TerritoryType) || !IsAddonAndNodesReady(SelectYesno)) 
+            if (!ValidGilWarpTerritories.Contains(GameState.TerritoryType) || !SelectYesno->IsAddonAndNodesReady()) 
                 return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             var addon = (AddonSelectYesno*)SelectYesno;
-            var text = addon->PromptText->NodeText.ExtractText();
+            var text = addon->PromptText->NodeText.StringPtr.ExtractText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
@@ -88,9 +89,9 @@ public unsafe class WarpCosts : TrackerComponentBase
 
     private static bool? GetTeleportType()
     {
-        switch (DService.Condition[ConditionFlag.BetweenAreas])
+        switch (DService.Instance().Condition[ConditionFlag.BetweenAreas])
         {
-            case true when DService.Condition[ConditionFlag.BetweenAreas51]:
+            case true when DService.Instance().Condition[ConditionFlag.BetweenAreas51]:
                 TaskManager.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:
@@ -129,7 +130,7 @@ public unsafe class WarpCosts : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
+        DService.Instance().AddonLifecycle.UnregisterListener(WarpConfirmationCheck);
 
         SelectYesHook?.Dispose();
         SelectYesHook = null;

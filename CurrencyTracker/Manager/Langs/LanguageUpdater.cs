@@ -36,16 +36,16 @@ public class LanguageUpdater
             {
                 var content = await response.Content.ReadAsByteArrayAsync();
                 await File.WriteAllBytesAsync(localFilePath, content);
-                DService.Log.Debug($"Successfully downloaded {language} language file.");
+                DService.Instance().Log.Debug($"Successfully downloaded {language} language file.");
                 return true;
             }
 
-            DService.Log.Error($"Failed to download {language} language file. Status: {response.StatusCode}");
+            DService.Instance().Log.Error($"Failed to download {language} language file. Status: {response.StatusCode}");
             return false;
         }
         catch (Exception ex)
         {
-            DService.Log.Error($"Error downloading {language} language file. Error: {ex.Message}");
+            DService.Instance().Log.Error($"Error downloading {language} language file. Error: {ex.Message}");
             return false;
         }
     }

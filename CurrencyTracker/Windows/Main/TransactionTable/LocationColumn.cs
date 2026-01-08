@@ -56,7 +56,7 @@ public class LocationColumn : TableColumn
                     SelectedCurrencyID, [transaction.Transaction], editedLocationName, "None", CurrentView, CurrentViewID);
 
                 if (failCount == 0) RefreshTable();
-                else DService.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                else DService.Instance().Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
             ImGui.EndPopup();
         }

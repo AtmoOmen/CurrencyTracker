@@ -3,6 +3,7 @@ using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Trackers.Handlers;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Utility;
 
 namespace CurrencyTracker.Trackers.Components;
 
@@ -15,10 +16,10 @@ public unsafe class Trade : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new() { TimeLimitMS = 15_000 };
+        TaskHelper ??= new() { TimeoutMS = 15_000 };
 
-        DService.Condition.ConditionChange += OnConditionChanged;
-        if (DService.Condition[ConditionFlag.TradeOpen])
+        DService.Instance().Condition.ConditionChange += OnConditionChanged;
+        if (DService.Instance().Condition[ConditionFlag.TradeOpen])
             OnConditionChanged(ConditionFlag.TradeOpen, true);
     }
 
@@ -29,13 +30,13 @@ public unsafe class Trade : TrackerComponentBase
         if (value)
         {
             TaskHelper.Enqueue(() => GetTradeTarget());
-            TaskHelper.Enqueue(() => DService.Log.Debug($"Trade starts with {TradeTargetName}"));
+            TaskHelper.Enqueue(() => DService.Instance().Log.Debug($"Trade starts with {TradeTargetName}"));
         }
         else
         {
             if (string.IsNullOrWhiteSpace(TradeTargetName)) return;
             
-            DService.Log.Debug($"Trade with {TradeTargetName} completed. Starts to check currency changes.");
+            DService.Instance().Log.Debug($"Trade with {TradeTargetName} completed. Starts to check currency changes.");
 
             var items = InventoryHandler?.Items ?? [];
 
@@ -46,18 +47,18 @@ public unsafe class Trade : TrackerComponentBase
             
             TradeTargetName = string.Empty;
 
-            DService.Log.Debug("Currency changes check completes.");
+            DService.Instance().Log.Debug("Currency changes check completes.");
         }
     }
 
     private static bool GetTradeTarget()
     {
-        if (!IsAddonAndNodesReady(InfosOm.Trade)) return false;
+        if (!InfosOm.Trade->IsAddonAndNodesReady()) return false;
         
         var textNode = InfosOm.Trade->GetTextNodeById(17);
         if (textNode == null) return false;
 
-        TradeTargetName = textNode->NodeText.ExtractText();
+        TradeTargetName = textNode->NodeText.StringPtr.ExtractText();
         if (string.IsNullOrEmpty(TradeTargetName)) return false;
 
         HandlerManager.ChatHandler.IsBlocked = true;
@@ -69,7 +70,7 @@ public unsafe class Trade : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.Condition.ConditionChange -= OnConditionChanged;
+        DService.Instance().Condition.ConditionChange -= OnConditionChanged;
         
         HandlerManager.Nullify(ref InventoryHandler);
         

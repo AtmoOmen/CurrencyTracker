@@ -42,9 +42,9 @@ public class TeleportCosts : TrackerComponentBase
 
     protected override void OnInit()
     {
-        TaskHelper ??= new TaskHelper { TimeLimitMS = 60000 };
+        TaskHelper ??= new TaskHelper { TimeoutMS = 60000 };
 
-        DService.Hook.InitializeFromAttributes(this);
+        DService.Instance().Hook.InitializeFromAttributes(this);
         ActorControlSelfHook?.Enable();
         TeleportActionSelfHook?.Enable();
 
@@ -62,7 +62,7 @@ public class TeleportCosts : TrackerComponentBase
     private byte TeleportActionSelfDetour(long p1, uint p2, byte p3)
     {
         if (!AetheryteNames.TryGetValue(p2, out tpDestination))
-            DService.Log.Warning($"Unknown Aetheryte Name {p2}");
+            DService.Instance().Log.Warning($"Unknown Aetheryte Name {p2}");
 
         return TeleportActionSelfHook.Original(p1, p2, p3);
     }
@@ -92,9 +92,9 @@ public class TeleportCosts : TrackerComponentBase
 
     private static bool? GetTeleportType()
     {
-        switch (DService.Condition[ConditionFlag.BetweenAreas])
+        switch (DService.Instance().Condition[ConditionFlag.BetweenAreas])
         {
-            case true when DService.Condition[ConditionFlag.BetweenAreas51]:
+            case true when DService.Instance().Condition[ConditionFlag.BetweenAreas51]:
                 TaskHelper.Enqueue(() => GetTeleportResult(true));
                 break;
             case true:

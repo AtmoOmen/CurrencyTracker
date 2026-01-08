@@ -90,7 +90,7 @@ public class CheckboxColumn : TableColumn
         {
             if (count <= 0)
             {
-                DService.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
+                DService.Instance().Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
                 return;
             }
 
@@ -113,7 +113,7 @@ public class CheckboxColumn : TableColumn
             }
 
             ImGui.SetClipboardText(stringBuilder.ToString());
-            DService.Chat.Print($"{Service.Lang.GetText("CopyTransactionsHelp", count)}");
+            DService.Instance().Chat.Print($"{Service.Lang.GetText("CopyTransactionsHelp", count)}");
         }
     }
 
@@ -124,7 +124,7 @@ public class CheckboxColumn : TableColumn
         {
             if (count <= 0)
             {
-                DService.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
+                DService.Instance().Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
                 return;
             }
 
@@ -146,7 +146,7 @@ public class CheckboxColumn : TableColumn
         {
             if (count <= 0)
             {
-                DService.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
+                DService.Instance().Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
                 return;
             }
 
@@ -155,7 +155,7 @@ public class CheckboxColumn : TableColumn
                                                           SelectedCurrencyID, Service.Config.ExportDataFileType,
                                                           CurrentView,
                                                           CurrentViewID);
-            DService.Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
+            DService.Instance().Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {filePath}");
         }
     }
 
@@ -201,7 +201,7 @@ public class CheckboxColumn : TableColumn
             var mergeCount = TransactionsHandler.MergeSpecificTransactions(
                 SelectedCurrencyID, editedLocationContent, selectedTransactions,
                 string.IsNullOrEmpty(editedNoteContent) ? "-1" : editedNoteContent, CurrentView, CurrentViewID);
-            DService.Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
+            DService.Instance().Chat.Print($"{Service.Lang.GetText("MergeTransactionsHelp1", mergeCount)}");
 
             Main.UpdateTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
             isOnMergingTT = false;
@@ -230,7 +230,7 @@ public class CheckboxColumn : TableColumn
             else
             {
                 isOnEdit = false;
-                DService.Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
+                DService.Instance().Chat.PrintError(Service.Lang.GetText("NoTransactionsSelected"));
                 return;
             }
         }
@@ -292,7 +292,7 @@ public class CheckboxColumn : TableColumn
         switch (failCount)
         {
             case 0:
-                DService.Chat.Print(
+                DService.Instance().Chat.Print(
                     Service.Lang.GetText("EditHelp1", selectedTransactions.Count,
                                          string.IsNullOrEmpty(locationName)
                                              ? Service.Lang.GetText("Note")
@@ -302,18 +302,18 @@ public class CheckboxColumn : TableColumn
                 Main.UpdateTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
                 break;
             case > 0 when failCount < selectedTransactions.Count:
-                DService.Chat.Print(
+                DService.Instance().Chat.Print(
                     Service.Lang.GetText("EditHelp1", selectedTransactions.Count - failCount,
                                          string.IsNullOrEmpty(locationName)
                                              ? Service.Lang.GetText("Note")
                                              : Service.Lang.GetText("Location")) + " " +
                     (string.IsNullOrEmpty(locationName) ? noteContent : locationName));
-                DService.Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCount})");
+                DService.Instance().Chat.PrintError($"({Service.Lang.GetText("EditFailed")}: {failCount})");
 
                 Main.UpdateTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
                 break;
             default:
-                DService.Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
+                DService.Instance().Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
                 break;
         }
 

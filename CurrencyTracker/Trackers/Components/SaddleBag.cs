@@ -18,29 +18,29 @@ public class SaddleBag : TrackerComponentBase
     ];
 
     internal static Dictionary<uint, long> InventoryItemCount = [];
-    private string windowTitle = string.Empty;
+    private static string windowTitle = string.Empty;
 
     protected override void OnInit()
     {
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
-        DService.AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnSaddleBag);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnSaddleBag);
     }
 
-    private void OnSaddleBag(AddonEvent type, AddonArgs args)
+    private static unsafe void OnSaddleBag(AddonEvent type, AddonArgs args)
     {
         switch (type)
         {
             case AddonEvent.PostSetup:
             {
-                windowTitle = GetWindowTitle(args.Addon, 86);
-                DService.Framework.Update += SaddleBagScanner;
+                windowTitle                          =  args.Addon.ToStruct()->GetWindowTitle();
+                DService.Instance().Framework.Update += SaddleBagScanner;
 
                 break;
             }
             case AddonEvent.PreFinalize:
             {
-                DService.Framework.Update -= SaddleBagScanner;
-                DService.Framework.Update -= SaddleBagScanner;
+                DService.Instance().Framework.Update -= SaddleBagScanner;
+                DService.Instance().Framework.Update -= SaddleBagScanner;
 
                     TrackerManager.CheckCurrencies(InventoryItemCount.Keys, "", "", 0, 21,
                                                 TransactionFileCategory.SaddleBag);
@@ -60,8 +60,8 @@ public class SaddleBag : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        DService.Framework.Update -= SaddleBagScanner;
-        DService.AddonLifecycle.UnregisterListener(OnSaddleBag);
+        DService.Instance().Framework.Update -= SaddleBagScanner;
+        DService.Instance().AddonLifecycle.UnregisterListener(OnSaddleBag);
 
         windowTitle = string.Empty;
         InventoryItemCount.Clear();

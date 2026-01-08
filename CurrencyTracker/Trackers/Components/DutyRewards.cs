@@ -24,7 +24,7 @@ public class DutyRewards : TrackerComponentBase
 
     protected override void OnInit()
     {
-        DService.ClientState.TerritoryChanged += OnZoneChange;
+        DService.Instance().ClientState.TerritoryChanged += OnZoneChange;
         OnZoneChange(0);
     }
 
@@ -35,7 +35,7 @@ public class DutyRewards : TrackerComponentBase
             if (GameState.ContentFinderCondition > 0 && !ContentUseToIgnore.Contains(GameState.TerritoryIntendedUse))
                 return;
 
-            DService.Log.Debug($"Duty {DutyName} completed. Starts to check currency changes.");
+            DService.Instance().Log.Debug($"Duty {DutyName} completed. Starts to check currency changes.");
 
             var items = InventoryHandler?.Items ?? [];
             TrackerManager.CheckCurrencies(items, PreviousLocationName,
@@ -49,7 +49,7 @@ public class DutyRewards : TrackerComponentBase
             HandlerManager.ChatHandler.IsBlocked = false;
             HandlerManager.Nullify(ref InventoryHandler);
 
-            DService.Log.Debug("Currency changes check completes.");
+            DService.Instance().Log.Debug("Currency changes check completes.");
             return;
         }
 
@@ -62,12 +62,12 @@ public class DutyRewards : TrackerComponentBase
         HandlerManager.ChatHandler.IsBlocked = true;
         InventoryHandler ??= new InventoryHandler();
         
-        DService.Log.Debug($"Duty {DutyName} starts, recording all inventory changes.");
+        DService.Instance().Log.Debug($"Duty {DutyName} starts, recording all inventory changes.");
     }
 
     protected override void OnUninit()
     {
-        DService.ClientState.TerritoryChanged -= OnZoneChange;
+        DService.Instance().ClientState.TerritoryChanged -= OnZoneChange;
         
         HandlerManager.Nullify(ref InventoryHandler);
 

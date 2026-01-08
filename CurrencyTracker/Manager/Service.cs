@@ -1,29 +1,19 @@
 using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers;
-using Dalamud.Game;
-using Dalamud.Game.ClientState.Objects;
-using Dalamud.Interface;
-using Dalamud.IoC;
 using Dalamud.Plugin;
-using Dalamud.Plugin.Services;
-using OmenTools;
-using OmenTools.Infos;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Manager;
 
 public class Service
 {
-    public static void Init(IDalamudPluginInterface PI)
+    public static void Init(IDalamudPluginInterface pi)
     {
-        DService.Init(PI);
-        
-        Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
-        Config.Initialize(PI);
+        DService.Init(pi);
 
-        FontManager.Init();
+        Config = pi.GetPluginConfig() as Configuration ?? new Configuration();
+        Config.Initialize(pi);
         
         InitLanguage();
         InitCharacter();
@@ -36,10 +26,8 @@ public class Service
     {
         TrackerManager.Dispose();
         CurrencyInfo.Uninit();
-        
+
         Config.Uninit();
-        
-        FontManager.Uninit();
         
         DService.Uninit();
     }
@@ -47,9 +35,10 @@ public class Service
     private static void InitLanguage()
     {
         var playerLang = Config.SelectedLanguage;
+
         if (string.IsNullOrEmpty(playerLang))
         {
-            playerLang = DService.ClientState.ClientLanguage.ToString();
+            playerLang = DService.Instance().ClientState.ClientLanguage.ToString();
             if (LanguageManager.LanguageNames.All(x => x.Language != playerLang))
                 playerLang = "English";
 
@@ -57,15 +46,17 @@ public class Service
             Config.Save();
         }
 
-        Lang = new LanguageManager(playerLang);
+        Lang = new(playerLang);
     }
 
     private static void InitCharacter()
     {
-        if (DService.ObjectTable.LocalPlayer != null && LocalPlayerState.ContentID != 0)
-            P.CurrentCharacter = P.GetCurrentCharacter();
+        if (LocalPlayerState.ContentID == 0)
+            return;
+        
+        P.CurrentCharacter = P.GetCurrentCharacter();
     }
-    
-    public static                 Configuration           Config            { get; set; }         = null!;
-    public static                 LanguageManager         Lang              { get; set; }         = null!;
+
+    public static Configuration   Config { get; set; } = null!;
+    public static LanguageManager Lang   { get; set; } = null!;
 }
