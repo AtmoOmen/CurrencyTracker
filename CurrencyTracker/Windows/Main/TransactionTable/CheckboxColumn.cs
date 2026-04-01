@@ -125,13 +125,8 @@ public class CheckboxColumn : TableColumn
                 return;
             }
 
-            var filePath = TransactionsHandler.GetTransactionFilePath(SelectedCurrencyID, CurrentView, CurrentViewID);
-            var editedTransactions =
-                TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
-            var selectedSet = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToHashSet();
-            editedTransactions.RemoveAll(selectedSet.Contains);
-
-            Transaction.WriteTransactionsToFile(filePath, editedTransactions);
+            var selectedTransactions = CurrentTransactions.Where(x => x.Selected).Select(x => x.Transaction).ToList();
+            TransactionsHandler.DeleteSpecificTransactions(SelectedCurrencyID, selectedTransactions, CurrentView, CurrentViewID);
             Main.UpdateTransactions(SelectedCurrencyID, CurrentView, CurrentViewID);
         }
     }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
@@ -176,9 +175,7 @@ public static class CurrencyInfo
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
     {
-        var (isFilesExisted, filePaths) = ConstructFilePaths(currencyID, editedCurrencyName);
-
-        if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName) || !isFilesExisted)
+        if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName))
         {
             DService.Instance().Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
@@ -186,12 +183,6 @@ public static class CurrencyInfo
 
         if (UpdateCurrencyName(currencyID, editedCurrencyName))
         {
-            foreach (var (sourcePath, targetPath) in filePaths)
-            {
-                DService.Instance().Log.Debug($"Moving file from {sourcePath} to {targetPath}");
-                File.Move(sourcePath, targetPath);
-            }
-
             Main.UpdateTransactions(currencyID, Main.currentView, Main.currentViewID);
             Main.ReloadOrderedOptions();
 
@@ -213,53 +204,6 @@ public static class CurrencyInfo
             Service.Config.Save();
 
             return true;
-        }
-
-        (bool, Dictionary<string, string>) ConstructFilePaths(uint id, string name)
-        {
-            var paths = new Dictionary<string, string>();
-
-            var categories = new List<TransactionFileCategory>
-            {
-                TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
-                TransactionFileCategory.PremiumSaddleBag
-            };
-            categories.AddRange
-            (
-                Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
-                       .Select(_ => TransactionFileCategory.Retainer)
-            );
-
-            foreach (var category in categories)
-            {
-                if (category == TransactionFileCategory.Retainer)
-                {
-                    foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
-                        AddFilePath(paths, category, retainer.Key, name);
-                }
-                else AddFilePath(paths, category, 0, name);
-            }
-
-            return (paths.Values.All(path => !File.Exists(path)), paths);
-
-            void AddFilePath
-            (
-                IDictionary<string, string> pathsDic,
-                TransactionFileCategory     category,
-                ulong                       key,
-                string                      nameAdd
-            )
-            {
-                var editedFilePath = Path.Join
-                (
-                    P.PlayerDataFolder,
-                    $"{nameAdd}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt"
-                );
-                var originalFilePath = TransactionsHandler.GetTransactionFilePath(id, category, key);
-                if (!File.Exists(originalFilePath)) return;
-                editedFilePath             = Transaction.SanitizeFilePath(editedFilePath);
-                pathsDic[originalFilePath] = editedFilePath;
-            }
         }
     }
 

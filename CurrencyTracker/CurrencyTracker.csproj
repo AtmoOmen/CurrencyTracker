@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <PackageReference Include="IntervalUtility" Version="1.0.0"/>
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0"/>
         <PackageReference Include="TinyPinyin" Version="1.1.0"/>
 
         <ProjectReference Include="..\OmenTools\OmenTools.csproj"/>

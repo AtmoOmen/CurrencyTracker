@@ -27,29 +27,13 @@ public partial class CurrencySettings
 
     public static Dictionary<string, string> GetCurrencyFilesInfoCFI()
     {
-        var filePaths = new Dictionary<string, string>();
-        var retainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
+        var databasePath = TransactionsHandler.GetDatabasePath();
+        if (!File.Exists(databasePath))
+            return [];
 
-        foreach (var retainer in retainers.Keys)
-            AddFilePath(TransactionFileCategory.Retainer, retainer);
-
-        AddFilePath(TransactionFileCategory.Inventory,        0);
-        AddFilePath(TransactionFileCategory.SaddleBag,        0);
-        AddFilePath(TransactionFileCategory.PremiumSaddleBag, 0);
-
-        return filePaths;
-
-        void AddFilePath(TransactionFileCategory category, ulong key)
+        return new Dictionary<string, string>
         {
-            var name     = category.GetSelectedViewName(key);
-            var filePath = TransactionsHandler.GetTransactionFilePath(Main.SelectedCurrencyID, category, key);
-
-            if (!File.Exists(filePath)) return;
-
-            lock (filePaths)
-            {
-                filePaths[name] = filePath;
-            }
-        }
+            ["SQLite 数据库"] = databasePath
+        };
     }
 }

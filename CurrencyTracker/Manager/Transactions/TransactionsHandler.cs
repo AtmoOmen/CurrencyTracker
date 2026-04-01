@@ -12,16 +12,23 @@ namespace CurrencyTracker.Manager.Transactions;
 
 public static class TransactionsHandler
 {
-    // Transaction Type Suffix:
-    // Inventory - {CurrencyName}.txt
-    // Retainer - {CurrencyName}_{RetainerID}.txt
-    // Saddle Bag - {CurrencyName}_SB.txt
-    // Premium Saddle Bag - {CurrencyName}_PSB.txt
-    public static string GetTransactionFilePath(uint CurrencyID, TransactionFileCategory category, ulong ID = 0)
+    public static string GetDatabasePath(string? dataFolder = null) =>
+        TransactionStore.GetDatabasePath(dataFolder ?? P.PlayerDataFolder);
+
+    public static string GetTransactionFilePath(uint currencyID, TransactionFileCategory category, ulong ID = 0) =>
+        GetDatabasePath();
+
+    internal static string GetLegacyTransactionFilePath
+    (
+        string                  dataFolder,
+        uint                    currencyID,
+        TransactionFileCategory category,
+        ulong                   ID = 0
+    )
     {
         var suffix       = GetTransactionFileSuffix(category, ID);
-        var currencyName = CurrencyInfo.GetName(CurrencyID);
-        var path         = Path.Join(P.PlayerDataFolder, $"{currencyName}{suffix}.txt");
+        var currencyName = CurrencyInfo.GetName(currencyID);
+        var path         = Path.Join(dataFolder, $"{currencyName}{suffix}.txt");
         return Transaction.SanitizeFilePath(path);
     }
 
@@ -35,18 +42,14 @@ public static class TransactionsHandler
             _                                        => string.Empty
         };
 
-    private static bool ValidityCheck(uint currencyID)
+    public static void EnsureCharacterDataReady(CharacterInfo? characterInfo = null)
     {
-        if (string.IsNullOrEmpty(P.PlayerDataFolder))
-        {
-            DService.Instance().Log.Warning("Player data folder Missed.");
-            return false;
-        }
+        if (!TryGetContext(characterInfo, out var dataFolder, out var characterContentId))
+            return;
 
-        return true;
+        TransactionStore.EnsureDatabaseReady(dataFolder, characterContentId);
     }
 
-    // 加载全部记录 Load All Transaction
     public static List<Transaction> LoadAllTransactions
     (
         uint                    currencyID,
@@ -54,28 +57,19 @@ public static class TransactionsHandler
         ulong                   ID       = 0
     )
     {
-        var filePath = GetTransactionFilePath(currencyID, category, ID);
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return [];
 
-        return ValidityCheck(currencyID) && File.Exists(filePath)
-                   ? Transaction.FromFile(filePath)
-                   : [];
+        return TransactionStore.LoadTransactions(dataFolder, characterContentId, currencyID, category, ID);
     }
 
-    public static async Task<List<Transaction>> LoadAllTransactionsAsync
+    public static Task<List<Transaction>> LoadAllTransactionsAsync
     (
         uint                    currencyID,
         TransactionFileCategory category = 0,
         ulong                   ID       = 0
-    )
-    {
-        var filePath = GetTransactionFilePath(currencyID, category, ID);
+    ) => Task.FromResult(LoadAllTransactions(currencyID, category, ID));
 
-        if (ValidityCheck(currencyID) && File.Exists(filePath)) return await Transaction.FromFileAsync(filePath);
-
-        return [];
-    }
-
-    // 加载最新一条记录 Load Latest Transaction
     public static Transaction? LoadLatestSingleTransaction
     (
         uint                    currencyID,
@@ -84,33 +78,12 @@ public static class TransactionsHandler
         ulong                   ID            = 0
     )
     {
-        var playerDataFolder = characterInfo != null
-                                   ? Path.Join
-                                   (
-                                       P.PI.ConfigDirectory.FullName,
-                                       $"{characterInfo.Name}_{characterInfo.Server}"
-                                   )
-                                   : P.PlayerDataFolder;
+        if (!TryGetContext(characterInfo, out var dataFolder, out var characterContentId))
+            return null;
 
-        var filePath = characterInfo != null
-                           ? Path.Join
-                           (
-                               playerDataFolder,
-                               $"{CurrencyInfo.GetName(currencyID)}{GetTransactionFileSuffix(category, ID)}.txt"
-                           )
-                           : GetTransactionFilePath(currencyID, category, ID);
-
-        filePath = Transaction.SanitizeFilePath(filePath);
-
-        if (characterInfo == null && !ValidityCheck(currencyID)) return null;
-        if (!File.Exists(filePath)) return null;
-
-        var lastLine = File.ReadLines(filePath).Reverse().FirstOrDefault();
-
-        return lastLine == null ? new() : Transaction.FromFileLine(lastLine.AsSpan());
+        return TransactionStore.LoadLatestTransaction(dataFolder, characterContentId, currencyID, category, ID);
     }
 
-    // 编辑指定记录 Edit Specific Transaction
     public static int EditSpecificTransactions
     (
         uint                    currencyID,
@@ -121,10 +94,13 @@ public static class TransactionsHandler
         ulong                   ID           = 0
     )
     {
-        if (selectedTransactions.Count == 0) return 0;
+        if (selectedTransactions.Count == 0)
+            return 0;
 
-        var editedTransactions = LoadAllTransactions(currencyID, category, ID);
-        var filePath           = GetTransactionFilePath(currencyID, category, ID);
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return selectedTransactions.Count;
+
+        var editedTransactions = TransactionStore.LoadTransactions(dataFolder, characterContentId, currencyID, category, ID);
         var failCount          = 0;
         var isLocationEdited   = locationName != "None";
         var isNoteEdited       = noteContent  != "None";
@@ -143,12 +119,33 @@ public static class TransactionsHandler
             if (isNoteEdited) editedTransactions[index].Note             = noteContent;
         }
 
-        Transaction.WriteTransactionsToFile(filePath, editedTransactions);
+        TransactionStore.ReplaceTransactions(dataFolder, characterContentId, currencyID, category, ID, editedTransactions);
 
         return failCount;
     }
 
-    // 在数据末尾追加最新一条记录 Append One Transaction
+    public static int DeleteSpecificTransactions
+    (
+        uint                    currencyID,
+        List<Transaction>       selectedTransactions,
+        TransactionFileCategory category = 0,
+        ulong                   ID       = 0
+    )
+    {
+        if (selectedTransactions.Count == 0)
+            return 0;
+
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return selectedTransactions.Count;
+
+        var editedTransactions = TransactionStore.LoadTransactions(dataFolder, characterContentId, currencyID, category, ID);
+        var failCount          = RemoveMatchingTransactions(editedTransactions, selectedTransactions);
+
+        TransactionStore.ReplaceTransactions(dataFolder, characterContentId, currencyID, category, ID, editedTransactions);
+
+        return failCount;
+    }
+
     public static void AppendTransaction
     (
         uint                    currencyID,
@@ -161,27 +158,27 @@ public static class TransactionsHandler
         ulong                   ID       = 0
     )
     {
-        if (!ValidityCheck(currencyID)) return;
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return;
 
-        var filePath = GetTransactionFilePath(currencyID, category, ID);
-
-        Transaction.AppendTransactionToFile
+        TransactionStore.InsertTransaction
         (
-            filePath,
-            [
-                new()
-                {
-                    TimeStamp    = TimeStamp,
-                    Amount       = Amount,
-                    Change       = Change,
-                    LocationName = LocationName,
-                    Note         = Note
-                }
-            ]
+            dataFolder,
+            characterContentId,
+            currencyID,
+            category,
+            ID,
+            new()
+            {
+                TimeStamp    = TimeStamp,
+                Amount       = Amount,
+                Change       = Change,
+                LocationName = LocationName,
+                Note         = Note
+            }
         );
     }
 
-    // 新建一条数据记录 Create a New Transaction File with a transaction
     public static void AddTransaction
     (
         uint                    currencyID,
@@ -192,41 +189,10 @@ public static class TransactionsHandler
         string                  note,
         TransactionFileCategory category = 0,
         ulong                   ID       = 0
-    )
-    {
-        if (!ValidityCheck(currencyID)) return;
+    ) => AppendTransaction(currencyID, timeStamp, amount, change, locationName, note, category, ID);
 
-        var filePath = GetTransactionFilePath(currencyID, category, ID);
+    public static void ReorderTransactions(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0) { }
 
-        Transaction.WriteTransactionsToFile
-        (
-            filePath,
-            [
-                new()
-                {
-                    TimeStamp    = timeStamp,
-                    Amount       = amount,
-                    Change       = change,
-                    LocationName = locationName,
-                    Note         = note
-                }
-            ]
-        );
-    }
-
-    // 根据时间重新排序文件内记录 Sort Transaction in File by Time
-    public static void ReorderTransactions(uint currencyID, TransactionFileCategory category = 0, ulong ID = 0)
-    {
-        if (!ValidityCheck(currencyID)) return;
-
-        Transaction.WriteTransactionsToFile
-        (
-            GetTransactionFilePath(currencyID, category, ID),
-            [.. LoadAllTransactions(currencyID, category, ID).OrderBy(x => x.TimeStamp)]
-        );
-    }
-
-    // 按照临界值合并记录 Merge Transaction By Threshold
     public static int MergeTransactionsByLocationAndThreshold
     (
         uint                    currencyID,
@@ -236,10 +202,12 @@ public static class TransactionsHandler
         ulong                   ID       = 0
     )
     {
-        if (!ValidityCheck(currencyID)) return 0;
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return 0;
 
-        var allTransactions = LoadAllTransactions(currencyID, category, ID);
-        if (allTransactions.Count <= 1) return 0;
+        var allTransactions = TransactionStore.LoadTransactions(dataFolder, characterContentId, currencyID, category, ID);
+        if (allTransactions.Count <= 1)
+            return 0;
 
         var mergedTransactions = new List<Transaction>();
         var mergedCount        = 0;
@@ -282,17 +250,11 @@ public static class TransactionsHandler
             mergedTransactions.Add(currentTransaction);
         }
 
-        Transaction.WriteTransactionsToFile
-        (
-            GetTransactionFilePath(currencyID, category, ID),
-            mergedTransactions
-        );
-        ReorderTransactions(currencyID, category, ID);
+        TransactionStore.ReplaceTransactions(dataFolder, characterContentId, currencyID, category, ID, mergedTransactions);
 
         return mergedCount;
     }
 
-    // 合并特定的记录 Merge Specific Transaction
     public static int MergeSpecificTransactions
     (
         uint                    currencyID,
@@ -303,21 +265,25 @@ public static class TransactionsHandler
         ulong                   ID          = 0
     )
     {
-        if (!ValidityCheck(currencyID) || selectedTransactions.Count <= 1) return 0;
+        if (selectedTransactions.Count <= 1)
+            return 0;
 
-        var allTransactions = LoadAllTransactions(currencyID, category, ID);
-        var filePath        = GetTransactionFilePath(currencyID, category, ID);
+        if (!TryGetContext(null, out var dataFolder, out var characterContentId))
+            return 0;
 
-        var  latestTime    = DateTime.MinValue;
+        var allTransactions = TransactionStore.LoadTransactions(dataFolder, characterContentId, currencyID, category, ID);
+
+        var latestTime    = DateTime.MinValue;
         long overallChange = 0;
         long finalAmount   = 0;
         var  mergedCount   = 0;
 
         foreach (var transaction in selectedTransactions)
         {
-            var foundTransaction = allTransactions.FirstOrDefault(t => t.Equals(transaction));
+            var foundIndex = allTransactions.FindIndex(t => t.Equals(transaction));
+            if (foundIndex == -1) continue;
 
-            if (foundTransaction == null) continue;
+            var foundTransaction = allTransactions[foundIndex];
 
             if (latestTime < foundTransaction.TimeStamp)
             {
@@ -326,7 +292,7 @@ public static class TransactionsHandler
             }
 
             overallChange += foundTransaction.Change;
-            allTransactions.Remove(foundTransaction);
+            allTransactions.RemoveAt(foundIndex);
             mergedCount++;
         }
 
@@ -340,13 +306,13 @@ public static class TransactionsHandler
         };
 
         allTransactions.Add(finalTransaction);
-        Transaction.WriteTransactionsToFile(filePath, allTransactions);
-        ReorderTransactions(currencyID, category, ID);
+        allTransactions = [.. allTransactions.OrderBy(x => x.TimeStamp)];
+
+        TransactionStore.ReplaceTransactions(dataFolder, characterContentId, currencyID, category, ID, allTransactions);
 
         return mergedCount;
     }
 
-    // 导出数据 Export Transaction Data
     public static string ExportData
     (
         List<Transaction>       data,
@@ -357,7 +323,8 @@ public static class TransactionsHandler
         ulong                   ID       = 0
     )
     {
-        if (!ValidityCheck(currencyID)) return "Fail";
+        if (!TryGetContext(null, out var dataFolder, out _))
+            return "Fail";
 
         var currencyName  = Service.Config.AllCurrencies[currencyID];
         var fileExtension = exportType == 0 ? "csv" : "md";
@@ -366,16 +333,17 @@ public static class TransactionsHandler
                           : $"{Service.Lang.GetText("ExportFileMDHeader")} {currencyName}\n\n{Service.Lang.GetText("ExportFileMDHeader1")}";
         var lineTemplate = exportType == 0 ? "{0},{1},{2},{3},{4}" : "| {0} | {1} | {2} | {3} | {4} |";
 
-        if (exportType != 0 && exportType != 1) return "Fail";
+        if (exportType != 0 && exportType != 1)
+            return "Fail";
 
-        var playerDataFolder = Path.Combine(P.PlayerDataFolder, "Exported");
-        Directory.CreateDirectory(playerDataFolder);
+        var exportFolder = Path.Combine(dataFolder, "Exported");
+        Directory.CreateDirectory(exportFolder);
 
         var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
         var finalFileName = string.IsNullOrWhiteSpace(fileName)
                                 ? $"{currencyName}_{nowTime}.{fileExtension}"
                                 : $"{fileName}_{currencyName}_{nowTime}.{fileExtension}";
-        var filePath = Path.Combine(playerDataFolder, finalFileName);
+        var filePath = Path.Combine(exportFolder, finalFileName);
 
         using var writer = new StreamWriter(filePath, false, Encoding.UTF8);
         writer.WriteLine(headers);
@@ -397,10 +365,10 @@ public static class TransactionsHandler
         return filePath;
     }
 
-    // 备份数据 Backup transactions
     public static string BackupTransactions(string dataFolder, int maxBackupFilesCount)
     {
-        if (string.IsNullOrEmpty(dataFolder)) return "Fail";
+        if (string.IsNullOrEmpty(dataFolder))
+            return "Fail";
 
         var backupFolder = Path.Combine(dataFolder, "Backups");
         Directory.CreateDirectory(backupFolder);
@@ -441,7 +409,8 @@ public static class TransactionsHandler
 
     public static async Task<string> BackupTransactionsAsync(string dataFolder, int maxBackupFilesCount)
     {
-        if (string.IsNullOrEmpty(dataFolder)) return "Fail";
+        if (string.IsNullOrEmpty(dataFolder))
+            return "Fail";
 
         var backupFolder = Path.Combine(dataFolder, "Backups");
         Directory.CreateDirectory(backupFolder);
@@ -485,5 +454,53 @@ public static class TransactionsHandler
         }
 
         return zipFilePath;
+    }
+
+    private static int RemoveMatchingTransactions(List<Transaction> allTransactions, IEnumerable<Transaction> selectedTransactions)
+    {
+        var failCount = 0;
+
+        foreach (var transaction in selectedTransactions)
+        {
+            var foundIndex = allTransactions.FindIndex(t => t.Equals(transaction));
+            if (foundIndex == -1)
+            {
+                failCount++;
+                continue;
+            }
+
+            allTransactions.RemoveAt(foundIndex);
+        }
+
+        return failCount;
+    }
+
+    private static bool TryGetContext(CharacterInfo? characterInfo, out string dataFolder, out ulong characterContentId)
+    {
+        dataFolder         = string.Empty;
+        characterContentId = 0;
+
+        if (characterInfo != null)
+        {
+            if (string.IsNullOrWhiteSpace(characterInfo.Name) ||
+                string.IsNullOrWhiteSpace(characterInfo.Server) ||
+                characterInfo.ContentID == 0)
+                return false;
+
+            dataFolder = Path.Join(P.PI.ConfigDirectory.FullName, $"{characterInfo.Name}_{characterInfo.Server}");
+            Directory.CreateDirectory(dataFolder);
+            characterContentId = characterInfo.ContentID;
+            return true;
+        }
+
+        if (string.IsNullOrWhiteSpace(P.PlayerDataFolder) || P.CurrentCharacter == null)
+        {
+            DService.Instance().Log.Warning("当前角色数据目录不可用。");
+            return false;
+        }
+
+        dataFolder         = P.PlayerDataFolder;
+        characterContentId = P.CurrentCharacter.ContentID;
+        return true;
     }
 }

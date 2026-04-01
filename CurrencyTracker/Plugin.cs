@@ -83,7 +83,11 @@ public sealed class Plugin : IDalamudPlugin
         if (CurrentCharacter != null &&
             (CurrentCharacter.ContentID == contentID ||
              CurrentCharacter.Name   == playerName &&
-             CurrentCharacter.Server == serverName)) return CurrentCharacter;
+             CurrentCharacter.Server == serverName))
+        {
+            TransactionsHandler.EnsureCharacterDataReady(CurrentCharacter);
+            return CurrentCharacter;
+        }
 
         var existingCharacter =
             Service.Config.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == contentID || x.Name == playerName && x.Server == serverName);
@@ -114,6 +118,7 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         Service.Config.Save();
+        TransactionsHandler.EnsureCharacterDataReady(CurrentCharacter);
 
         return CurrentCharacter;
     }
