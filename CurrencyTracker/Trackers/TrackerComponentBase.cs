@@ -14,7 +14,7 @@ public abstract class TrackerComponentBase
         {
             OnInit();
             Initialized = true;
-            
+
             DService.Instance().Log.Debug($"Loaded component {GetType().Name}");
         }
         catch (Exception ex)
@@ -29,7 +29,7 @@ public abstract class TrackerComponentBase
         {
             OnUninit();
             Initialized = false;
-            
+
             DService.Instance().Log.Debug($"Unloaded component {GetType().Name}");
         }
         catch (Exception ex)
@@ -52,9 +52,9 @@ public abstract class TrackerComponentBase
         {
             // ignored
         }
-        
+
         Initialized = false;
-        
+
         DService.Instance().Log.Error(ex, $"Failed to load component {GetType().Name}: {ex.Message}");
     }
-} 
+}

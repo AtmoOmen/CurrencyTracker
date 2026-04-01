@@ -1,9 +1,7 @@
 using System;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
-using OmenTools.Widgets;
+using OmenTools.ImGuiOm.Widgets;
 
 namespace CurrencyTracker.Windows;
 
@@ -12,15 +10,15 @@ public class TimeColumn : TableColumn
     internal static bool IsClusteredByTime;
     internal static bool IsTimeFilterEnabled;
 
-    internal static DateTime FilterStartDate = DateTime.Now - TimeSpan.FromDays(1);
-    internal static DateTime FilterEndDate = DateTime.Now;
-    internal static readonly DatePicker StartDatePicker = new(Service.Lang.GetText("WeekDays"));
-    internal static readonly DatePicker EndDatePicker = new(Service.Lang.GetText("WeekDays"));
+    internal static          DateTime   FilterStartDate = DateTime.Now - TimeSpan.FromDays(1);
+    internal static          DateTime   FilterEndDate   = DateTime.Now;
+    internal static readonly DatePicker StartDatePicker = new();
+    internal static readonly DatePicker EndDatePicker   = new();
 
-    internal static int ClusterHour;
-    internal static bool startDateEnable;
-    internal static bool endDateEnable;
-    internal static bool? timeColumnSelectMode;
+    internal static int   ClusterHour;
+    internal static bool  StartDateEnable;
+    internal static bool  EndDateEnable;
+    internal static bool? TimeColumnSelectMode;
 
     public override void Header()
     {
@@ -39,23 +37,24 @@ public class TimeColumn : TableColumn
     public override void Cell(int i, DisplayTransaction transaction)
     {
         if (i < 0) return;
-        var selected = transaction.Selected;
-        var isLeftCtrl = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
+        var selected     = transaction.Selected;
+        var isLeftCtrl   = ImGui.IsKeyDown(ImGuiKey.LeftCtrl);
         var isRightMouse = ImGui.IsMouseDown(ImGuiMouseButton.Right);
-        var flag = (selected || isLeftCtrl) ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
-        var timeString = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
+        var flag         = selected || isLeftCtrl ? ImGuiSelectableFlags.SpanAllColumns : ImGuiSelectableFlags.None;
+        var timeString   = transaction.Transaction.TimeStamp.ToString("yyyy/MM/dd HH:mm:ss");
 
         if (ImGuiOm.Selectable($"{timeString}##{i}", selected, flag))
-            if (flag is ImGuiSelectableFlags.SpanAllColumns) transaction.Selected ^= true;
+            if (flag is ImGuiSelectableFlags.SpanAllColumns)
+                transaction.Selected ^= true;
 
         switch (isLeftCtrl)
         {
             case true when isRightMouse && ImGui.IsItemHovered():
-                timeColumnSelectMode ??= !transaction.Selected;
-                transaction.Selected = (bool)timeColumnSelectMode;
+                TimeColumnSelectMode ??= !transaction.Selected;
+                transaction.Selected =   (bool)TimeColumnSelectMode;
                 break;
             case false:
-                timeColumnSelectMode = null;
+                TimeColumnSelectMode = null;
                 break;
         }
 
@@ -73,13 +72,14 @@ public class TimeColumn : TableColumn
 
     private static void ClusterByTimeUI()
     {
-        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref IsClusteredByTime)) 
+        if (ImGui.Checkbox(Service.Lang.GetText("ClusterByTime"), ref IsClusteredByTime))
             RefreshTable();
 
         if (IsClusteredByTime)
         {
             ImGui.SetNextItemWidth(100f * ImGuiHelpers.GlobalScale);
             ImGui.InputInt(Service.Lang.GetText("Hours"), ref ClusterHour);
+
             if (ImGui.IsItemDeactivatedAfterEdit())
             {
                 ClusterHour = Math.Max(0, ClusterHour);
@@ -93,19 +93,21 @@ public class TimeColumn : TableColumn
 
     private static void FilterByTimeUI()
     {
-        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref IsTimeFilterEnabled)) 
+        if (ImGui.Checkbox($"{Service.Lang.GetText("FilterByTime")}##TimeFilter", ref IsTimeFilterEnabled))
             RefreshTable();
 
-        DateInput(ref FilterStartDate, "StartDate", ref startDateEnable, ref endDateEnable);
-        DateInput(ref FilterEndDate, "EndDate", ref endDateEnable, ref startDateEnable);
+        DateInput(ref FilterStartDate, "StartDate", ref StartDateEnable, ref EndDateEnable);
+        DateInput(ref FilterEndDate,   "EndDate",   ref EndDateEnable,   ref StartDateEnable);
 
-        if (startDateEnable || endDateEnable) ImGui.Separator();
+        if (StartDateEnable || EndDateEnable) ImGui.Separator();
 
-        if (startDateEnable)
-            if (StartDatePicker.Draw(ref FilterStartDate)) RefreshTable();
+        if (StartDateEnable)
+            if (StartDatePicker.Draw("Start", ref FilterStartDate))
+                RefreshTable();
 
-        if (endDateEnable)
-            if (EndDatePicker.Draw(ref FilterEndDate)) RefreshTable();
+        if (EndDateEnable)
+            if (EndDatePicker.Draw("End", ref FilterEndDate))
+                RefreshTable();
 
         return;
 

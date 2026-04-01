@@ -3,24 +3,20 @@ using System.Numerics;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Utilities;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
 using IntervalUtility;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
 {
-    private int alertMode; // 0 - Amount; 1 - Change;
-    private int intervalStart;
-    private int intervalEnd = 1;
-    private Interval<int>? selectedInterval;
+    private int                     alertMode; // 0 - Amount; 1 - Change;
+    private int                     intervalStart;
+    private int                     intervalEnd = 1;
+    private Interval<int>?          selectedInterval;
     private TransactionFileCategory viewIA = TransactionFileCategory.Inventory;
-    private ulong idIA;
-    private Vector2 alertIntervalWidth = new(200, 100);
+    private ulong                   idIA;
+    private Vector2                 alertIntervalWidth = new(200, 100);
 
     private void IntervalAlertUI()
     {
@@ -51,12 +47,13 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ContainerType")}:");
         ImGui.SetNextItemWidth(alertIntervalWidth.X + 56);
         using var combo = ImRaii.Combo("##IntervalAlertViewSelect", viewIA.GetSelectedViewName(idIA));
+
         if (combo)
         {
             DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
             foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
                 DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
-            DrawViewSelectableIA(TransactionFileCategory.SaddleBag, 0);
+            DrawViewSelectableIA(TransactionFileCategory.SaddleBag,        0);
             DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
         }
     }
@@ -68,17 +65,25 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("IntervalList")}:");
 
         ImGui.SetNextItemWidth(alertIntervalWidth.X - CheckboxColumn.CheckboxWidth + 48);
-        if (ImGui.BeginCombo("##IntervalSelectCombo",
-                             selectedInterval != null ? selectedInterval.ToIntervalString() :
-                             intervals.Count != 0 ? Service.Lang.GetText("PleaseSelect") : ""))
+
+        if (ImGui.BeginCombo
+            (
+                "##IntervalSelectCombo",
+                selectedInterval != null ? selectedInterval.ToIntervalString() :
+                intervals.Count  != 0    ? Service.Lang.GetText("PleaseSelect") : ""
+            ))
         {
             foreach (var interval in intervals)
+            {
                 if (ImGui.Selectable(interval.ToIntervalString(), selectedInterval == interval))
                     selectedInterval = new Interval<int>(interval.Start, interval.End);
+            }
+
             ImGui.EndCombo();
         }
 
         ImGui.SameLine();
+
         if (ImGuiOm.ButtonIcon("DeleteInterval", FontAwesomeIcon.TrashAlt, "", true))
         {
             if (selectedInterval != null)
@@ -105,13 +110,11 @@ public partial class CurrencySettings
         alertIntervalWidth = ImGui.GetItemRectSize();
 
         ImGui.SameLine();
+
         if (ImGuiOm.ButtonIconWithTextVertical(FontAwesomeIcon.Plus, Service.Lang.GetText("Add"), true))
         {
             var interval = CurrencyInterval.CreateInterval(intervalStart, intervalEnd);
-            if (interval != null)
-            {
-                CurrencyInterval.AddInterval(Main.SelectedCurrencyID, alertMode, new TransactionFileCategoryInfo(viewIA, idIA), interval);
-            }
+            if (interval != null) CurrencyInterval.AddInterval(Main.SelectedCurrencyID, alertMode, new TransactionFileCategoryInfo(viewIA, idIA), interval);
         }
     }
 
@@ -122,8 +125,12 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("NotificationType")}:");
 
         var isAlertInChat = Service.Config.AlertNotificationChat;
-        if (ImGui.Checkbox(
-                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}", ref isAlertInChat))
+
+        if (ImGui.Checkbox
+            (
+                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}",
+                ref isAlertInChat
+            ))
         {
             Service.Config.AlertNotificationChat = isAlertInChat;
             Service.Config.Save();
@@ -143,6 +150,7 @@ public partial class CurrencySettings
 
             ImGui.SameLine();
             ImGui.SetNextItemWidth(alertIntervalWidth.X - CheckboxColumn.CheckboxWidth + 8);
+
             if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
                 Service.Config.CustomNoteContents["AlertIntervalMessage"] = textToShow;
@@ -152,6 +160,7 @@ public partial class CurrencySettings
             if (ImGui.IsItemHovered())
             {
                 ImGui.BeginTooltip();
+
                 if (!string.IsNullOrEmpty(textToShow))
                 {
                     ImGui.Text(textToShow);
@@ -163,6 +172,7 @@ public partial class CurrencySettings
             }
 
             ImGui.SameLine();
+
             if (ImGuiOm.ButtonIcon("ResetContent_AlertIntervalMessage", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
             {
                 Service.Config.CustomNoteContents.Remove("AlertIntervalMessage");
@@ -175,11 +185,12 @@ public partial class CurrencySettings
     {
         var text   = category.GetSelectedViewName(ID);
         var boolUI = category == viewIA && ID == idIA;
+
         if (ImGui.Selectable($"{text}##{category}_{ID}", boolUI))
         {
             selectedInterval = null;
-            viewIA = category;
-            idIA = ID;
+            viewIA           = category;
+            idIA             = ID;
         }
     }
 }

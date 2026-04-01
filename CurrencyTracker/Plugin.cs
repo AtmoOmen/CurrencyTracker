@@ -3,24 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Utilities;
 using CurrencyTracker.Windows;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
+using OmenTools.OmenService;
 using TinyPinyin;
-using CurrencyTracker.Infos;
-using CurrencyTracker.Utilities;
 
 namespace CurrencyTracker;
 
 public sealed class Plugin : IDalamudPlugin
 {
     public static string Name => "Currency Tracker";
-    public const string CommandName = "/ct";
+    public const  string CommandName = "/ct";
 
     public CharacterInfo? CurrentCharacter { get; set; }
-    public string PlayerDataFolder => GetCurrentCharacterDataFolder();
+    public string         PlayerDataFolder => GetCurrentCharacterDataFolder();
 
     public IDalamudPluginInterface PI               { get; init; }
     public Main?                   Main             { get; private set; }
@@ -28,12 +29,12 @@ public sealed class Plugin : IDalamudPlugin
     public Settings?               Settings         { get; private set; }
     public CurrencySettings?       CurrencySettings { get; private set; }
 
-    public WindowSystem WindowSystem = new("CurrencyTracker");
-    internal static Plugin P = null!;
+    public          WindowSystem WindowSystem = new("CurrencyTracker");
+    internal static Plugin       P            = null!;
 
     public Plugin(IDalamudPluginInterface pluginInterface)
     {
-        P = this;
+        P  = this;
         PI = pluginInterface;
 
         Service.Config = PI.GetPluginConfig() as Configuration ?? new Configuration();
@@ -63,7 +64,7 @@ public sealed class Plugin : IDalamudPlugin
 
     public CharacterInfo? GetCurrentCharacter()
     {
-        if (LocalPlayerState.ContentID == 0 || 
+        if (LocalPlayerState.ContentID == 0 ||
             !DService.Instance().ClientState.IsLoggedIn)
             return null;
 
@@ -79,27 +80,28 @@ public sealed class Plugin : IDalamudPlugin
 
         var dataFolderName = Path.Join(PI.ConfigDirectory.FullName, $"{playerName}_{serverName}");
 
-        if (CurrentCharacter != null && (CurrentCharacter.ContentID == contentID ||
-                                         (CurrentCharacter.Name == playerName &&
-                                          CurrentCharacter.Server == serverName))) return CurrentCharacter;
+        if (CurrentCharacter != null &&
+            (CurrentCharacter.ContentID == contentID ||
+             CurrentCharacter.Name   == playerName &&
+             CurrentCharacter.Server == serverName)) return CurrentCharacter;
 
         var existingCharacter =
-            Service.Config.CurrentActiveCharacter.FirstOrDefault(
-                x => x.ContentID == contentID || (x.Name == playerName && x.Server == serverName));
+            Service.Config.CurrentActiveCharacter.FirstOrDefault(x => x.ContentID == contentID || x.Name == playerName && x.Server == serverName);
+
         if (existingCharacter != null)
         {
-            existingCharacter.Server = serverName;
-            existingCharacter.Name = playerName;
+            existingCharacter.Server    = serverName;
+            existingCharacter.Name      = playerName;
             existingCharacter.ContentID = contentID;
-            CurrentCharacter = existingCharacter;
+            CurrentCharacter            = existingCharacter;
             DService.Instance().Log.Debug("Successfully load current character info.");
         }
         else
         {
             CurrentCharacter = new CharacterInfo
             {
-                Name = playerName,
-                Server = serverName,
+                Name      = playerName,
+                Server    = serverName,
                 ContentID = contentID
             };
             Service.Config.CurrentActiveCharacter.Add(CurrentCharacter);
@@ -122,8 +124,12 @@ public sealed class Plugin : IDalamudPlugin
 
         if (CurrentCharacter == null) return string.Empty;
 
-        var path = Path.Join(PI.ConfigDirectory.FullName,
-                             $"{CurrentCharacter.Name}_{CurrentCharacter.Server}");
+        var path = Path.Join
+        (
+            PI.ConfigDirectory.FullName,
+            $"{CurrentCharacter.Name}_{CurrentCharacter.Server}"
+        );
+
         if (!Directory.Exists(path))
         {
             Directory.CreateDirectory(path);
@@ -142,7 +148,7 @@ public sealed class Plugin : IDalamudPlugin
         }
 
         var matchingCurrencies = FindMatchingCurrencies(Service.Config.AllCurrencies.Values.ToList(), args);
-        var matchCount = matchingCurrencies.Count;
+        var matchCount         = matchingCurrencies.Count;
 
         switch (matchCount)
         {
@@ -152,12 +158,12 @@ public sealed class Plugin : IDalamudPlugin
             case 1:
                 var currencyName = matchingCurrencies[0];
                 var currencyPair = Service.Config.AllCurrencies.FirstOrDefault(x => x.Value == currencyName);
-                var currencyID = currencyPair.Key;
+                var currencyID   = currencyPair.Key;
 
                 if (!Main.IsOpen || currencyID != Main.SelectedCurrencyID)
                 {
-                    Main.IsOpen = true;
-                    Main.SelectedCurrencyID = currencyID;
+                    Main.IsOpen              = true;
+                    Main.SelectedCurrencyID  = currencyID;
                     Main.currentTransactions = Main.ApplyFilters(TransactionsHandler.LoadAllTransactions(currencyID)).ToDisplayTransaction();
                 }
                 else
@@ -184,17 +190,19 @@ public sealed class Plugin : IDalamudPlugin
                    .Where(currency => IsMatch(currency.Normalize(NormalizationForm.FormKC)))
                    .ToList();
 
-            bool IsMatch(string normalizedCurrency) => 
-                normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) ||
-                (isCS && PinyinHelper.GetPinyin(normalizedCurrency, "").Contains(partialName, StringComparison.OrdinalIgnoreCase));
+            bool IsMatch(string normalizedCurrency)
+            {
+                return normalizedCurrency.Contains(partialName, StringComparison.OrdinalIgnoreCase) ||
+                       isCS && PinyinHelper.GetPinyin(normalizedCurrency, "").Contains(partialName, StringComparison.OrdinalIgnoreCase);
+            }
         }
     }
 
     private void WindowsHandler()
     {
-        PI.UiBuilder.Draw += DrawUI;
+        PI.UiBuilder.Draw         += DrawUI;
         PI.UiBuilder.OpenConfigUi += DrawConfigUI;
-        PI.UiBuilder.OpenMainUi += DrawMainUI;
+        PI.UiBuilder.OpenMainUi   += DrawMainUI;
 
         Main = new Main();
         WindowSystem.AddWindow(Main);
@@ -212,7 +220,7 @@ public sealed class Plugin : IDalamudPlugin
     private void DrawUI()
     {
         using var font = FontManager.Instance().UIFont.Push();
-        
+
         WindowSystem.Draw();
     }
 
@@ -241,11 +249,11 @@ public sealed class Plugin : IDalamudPlugin
         Settings.Dispose();
         CurrencySettings.Dispose();
 
-        PI.UiBuilder.Draw -= DrawUI;
+        PI.UiBuilder.Draw         -= DrawUI;
         PI.UiBuilder.OpenConfigUi -= DrawConfigUI;
-        PI.UiBuilder.OpenMainUi -= DrawMainUI;
+        PI.UiBuilder.OpenMainUi   -= DrawMainUI;
 
-        DService.Instance().ClientState.Login -= HandleLogin;
+        DService.Instance().ClientState.Login  -= HandleLogin;
         DService.Instance().ClientState.Logout -= HandleLogout;
 
         DService.Instance().Command.RemoveHandler(CommandName);

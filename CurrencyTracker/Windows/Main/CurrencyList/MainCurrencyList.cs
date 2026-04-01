@@ -4,11 +4,8 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
@@ -18,9 +15,13 @@ public partial class Main
 
     private static void CurrencyListboxUI()
     {
-        var childScale = new Vector2((180 * ImGuiHelpers.GlobalScale) + Service.Config.ChildWidthOffset,
-                                     ImGui.GetContentRegionAvail().Y);
+        var childScale = new Vector2
+        (
+            180 * ImGuiHelpers.GlobalScale + Service.Config.ChildWidthOffset,
+            ImGui.GetContentRegionAvail().Y
+        );
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
+
         if (ImGui.BeginChild("CurrencyList", childScale, false, ImGuiWindowFlags.NoScrollbar))
         {
             CurrencyListboxToolUI();
@@ -29,7 +30,7 @@ public partial class Main
 
             for (var i = 0; i < Service.Config.OrderedOptions.Count; i++)
             {
-                var id = Service.Config.OrderedOptions[i];
+                var id           = Service.Config.OrderedOptions[i];
                 var currencyName = Service.Config.AllCurrencies[id];
                 var currencyIcon = CurrencyInfo.GetIcon(id).Handle;
 
@@ -42,7 +43,7 @@ public partial class Main
 
                 if (ImGui.BeginDragDropSource())
                 {
-                    if (ImGui.SetDragDropPayload("CurrencyListReorder", [], 0)) _dragDropIndex = i;
+                    if (ImGui.SetDragDropPayload("CurrencyListReorder", [])) _dragDropIndex = i;
 
                     ImGui.TextColored(ImGuiColors.DalamudYellow, currencyName);
 
@@ -69,7 +70,7 @@ public partial class Main
                     ImGui.Image(currencyIcon, ImGuiHelpers.ScaledVector2(24f));
 
                     var inputBoxLength = ImGui.CalcTextSize(currencyName).X + ImGui.GetStyle().FramePadding.X * 4;
-                    var textInput = currencyName;
+                    var textInput      = currencyName;
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(inputBoxLength);
@@ -81,8 +82,10 @@ public partial class Main
                         CurrencyInfo.RenameCurrency(id, CurrencyInfo.GetLocalName(id));
 
                     ImGui.Separator();
-                    ImGui.Text(
-                        $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(id, P.CurrentCharacter):N0}");
+                    ImGui.Text
+                    (
+                        $"{Service.Lang.GetText("Total")}: {CurrencyInfo.GetCharacterCurrencyAmount(id, P.CurrentCharacter):N0}"
+                    );
 
                     ImGui.EndPopup();
                 }
@@ -98,14 +101,16 @@ public partial class Main
 
     public static void LoadCurrencyTransactions(uint ID, TransactionFileCategory view = TransactionFileCategory.Inventory, ulong viewID = 0)
     {
-        Task.Run(async () =>
-        {
-            SelectedCurrencyID = ID;
-            currentView = view;
-            currentViewID = viewID;
-    
-            currentTransactions = ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)).ToDisplayTransaction();
-        });
+        Task.Run
+        (async () =>
+            {
+                SelectedCurrencyID = ID;
+                currentView        = view;
+                currentViewID      = viewID;
+
+                currentTransactions = ApplyFilters(await TransactionsHandler.LoadAllTransactionsAsync(SelectedCurrencyID)).ToDisplayTransaction();
+            }
+        );
     }
 
     private static void CurrencyListboxToolUI()
@@ -122,7 +127,9 @@ public partial class Main
 
     private static void SwapOptions(int index1, int index2)
     {
-        if (index1 < 0 || index1 >= Service.Config.OrderedOptions.Count || index2 < 0 ||
+        if (index1 < 0                                    ||
+            index1 >= Service.Config.OrderedOptions.Count ||
+            index2 < 0                                    ||
             index2 >= Service.Config.OrderedOptions.Count) return;
 
         (Service.Config.OrderedOptions[index2], Service.Config.OrderedOptions[index1]) =
@@ -135,11 +142,18 @@ public partial class Main
 
     private static void DeleteCustomCurrencyUI(float buttonWidth)
     {
-        ImGui.BeginDisabled(
-            SelectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(SelectedCurrencyID));
+        ImGui.BeginDisabled
+        (
+            SelectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(SelectedCurrencyID)
+        );
 
-        ButtonIconSelectable("DeleteCurrency", buttonWidth, FontAwesomeIcon.Trash,
-                             $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})");
+        ButtonIconSelectable
+        (
+            "DeleteCurrency",
+            buttonWidth,
+            FontAwesomeIcon.Trash,
+            $"{Service.Lang.GetText("Delete")} ({Service.Lang.GetText("DoubleRightClick")})"
+        );
 
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
@@ -169,13 +183,16 @@ public partial class Main
     {
         ImGui.PushID(id);
 
-        var style = ImGui.GetStyle();
+        var style   = ImGui.GetStyle();
         var padding = style.FramePadding.X;
 
         ImGui.PushStyleColor(ImGuiCol.Button, 0);
         ImGui.PushFont(UiBuilder.IconFont);
-        var result = ImGui.Button($"{icon.ToIconString()}##{icon.ToIconString()}-{id}",
-                                  new Vector2(buttonWidth, ImGui.CalcTextSize(icon.ToIconString()).Y + (2 * padding)));
+        var result = ImGui.Button
+        (
+            $"{icon.ToIconString()}##{icon.ToIconString()}-{id}",
+            new Vector2(buttonWidth, ImGui.CalcTextSize(icon.ToIconString()).Y + 2 * padding)
+        );
         ImGui.PopFont();
         ImGui.PopStyleColor();
 

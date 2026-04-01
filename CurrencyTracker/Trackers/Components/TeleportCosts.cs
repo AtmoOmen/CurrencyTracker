@@ -1,19 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
-using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using Lumina.Excel.Sheets;
-using OmenTools.Helpers;
+using OmenTools.Interop.Game.Lumina;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class TeleportCosts : TrackerComponentBase
 {
-    private delegate void ActorControlSelfDelegate(
+    private delegate void ActorControlSelfDelegate
+    (
         uint  category,
         uint  eventId,
         uint  param1,
@@ -25,16 +26,19 @@ public class TeleportCosts : TrackerComponentBase
         uint  param7,
         uint  param8,
         ulong targetId,
-        byte  param9);
+        byte  param9
+    );
+
     [Signature("E8 ?? ?? ?? ?? 0F B7 0B 83 E9 64", DetourName = nameof(ActorControlSelfDetour))]
     private Hook<ActorControlSelfDelegate>? ActorControlSelfHook;
 
     private delegate byte TeleportActionSelfDelegate(long p1, uint p2, byte p3);
+
     [Signature("E8 ?? ?? ?? ?? 48 8B 4B 10 84 C0 48 8B 01 74 2C ?? ?? ?? ?? ?? ?? ?? ??", DetourName = nameof(TeleportActionSelfDetour))]
     private Hook<TeleportActionSelfDelegate>? TeleportActionSelfHook;
 
-    private static Dictionary<uint, string> AetheryteNames = [];
-    private static readonly uint[] TpCostCurrencies = [1, 7569];
+    private static          Dictionary<uint, string> AetheryteNames   = [];
+    private static readonly uint[]                   TpCostCurrencies = [1, 7569];
 
     private static string tpDestination = string.Empty; // Aetheryte Name
 
@@ -49,14 +53,18 @@ public class TeleportCosts : TrackerComponentBase
         TeleportActionSelfHook?.Enable();
 
         AetheryteNames = LuminaGetter.Get<Aetheryte>()
-                                .Select(row => new
-                                {
-                                    row.RowId,
-                                    Name = P.PI.Sanitizer.Sanitize(
-                                        row.PlaceName.ValueNullable?.Name.ToString())
-                                })
-                                .Where(x => !string.IsNullOrEmpty(x.Name))
-                                .ToDictionary(x => x.RowId, x => x.Name);
+                                     .Select
+                                     (row => new
+                                         {
+                                             row.RowId,
+                                             Name = P.PI.Sanitizer.Sanitize
+                                             (
+                                                 row.PlaceName.ValueNullable?.Name.ToString()
+                                             )
+                                         }
+                                     )
+                                     .Where(x => !string.IsNullOrEmpty(x.Name))
+                                     .ToDictionary(x => x.RowId, x => x.Name);
     }
 
     private byte TeleportActionSelfDetour(long p1, uint p2, byte p3)
@@ -67,7 +75,8 @@ public class TeleportCosts : TrackerComponentBase
         return TeleportActionSelfHook.Original(p1, p2, p3);
     }
 
-    private void ActorControlSelfDetour(
+    private void ActorControlSelfDetour
+    (
         uint  category,
         uint  eventId,
         uint  param1,
@@ -79,7 +88,8 @@ public class TeleportCosts : TrackerComponentBase
         uint  param7,
         uint  param8,
         ulong targetId,
-        byte  param9)
+        byte  param9
+    )
     {
         ActorControlSelfHook.Original(category, eventId, param1, param2, param3, param4, param5, param6, param7, param8, targetId, param9);
 
@@ -111,24 +121,33 @@ public class TeleportCosts : TrackerComponentBase
 
         if (isBetweenArea)
         {
-            TrackerManager.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
-                                            $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})");
+            TrackerManager.CheckCurrencies
+            (
+                TpCostCurrencies,
+                PreviousLocationName,
+                $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})"
+            );
 
         }
         else
         {
-            TrackerManager.CheckCurrencies(TpCostCurrencies, PreviousLocationName,
-                                            Service.Config.ComponentProp["RecordDesAetheryteName"]
-                                                ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
-                                                : $"{Service.Lang.GetText("TeleportWithinArea")}");
+            TrackerManager.CheckCurrencies
+            (
+                TpCostCurrencies,
+                PreviousLocationName,
+                Service.Config.ComponentProp["RecordDesAetheryteName"]
+                    ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
+                    : $"{Service.Lang.GetText("TeleportWithinArea")}"
+            );
         }
 
-        tpDestination = string.Empty;
+        tpDestination                        = string.Empty;
         HandlerManager.ChatHandler.IsBlocked = false;
         return true;
     }
 
-    private static bool IsStillOnTeleport() => BetweenAreas || OccupiedInEvent;
+    private static bool IsStillOnTeleport() =>
+        DService.Instance().Condition.IsBetweenAreas || DService.Instance().Condition.IsOccupiedInEvent;
 
     protected override void OnUninit()
     {

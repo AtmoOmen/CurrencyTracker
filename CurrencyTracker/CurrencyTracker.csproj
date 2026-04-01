@@ -23,22 +23,22 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="bin\**" />
-        <EmbeddedResource Remove="bin\**" />
-        <None Remove="bin\**" />
+        <Compile Remove="bin\**"/>
+        <EmbeddedResource Remove="bin\**"/>
+        <None Remove="bin\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="Manager\Langs\ChineseSimplified.resx" />
-        <EmbeddedResource Remove="Manager\Langs\ChineseTraditional.resx" />
-        <EmbeddedResource Remove="Manager\Langs\English.resx" />
-        <EmbeddedResource Remove="Manager\Langs\French.resx" />
-        <EmbeddedResource Remove="Manager\Langs\German.resx" />
-        <EmbeddedResource Remove="Manager\Langs\Spanish.resx" />
+        <EmbeddedResource Remove="Manager\Langs\ChineseSimplified.resx"/>
+        <EmbeddedResource Remove="Manager\Langs\ChineseTraditional.resx"/>
+        <EmbeddedResource Remove="Manager\Langs\English.resx"/>
+        <EmbeddedResource Remove="Manager\Langs\French.resx"/>
+        <EmbeddedResource Remove="Manager\Langs\German.resx"/>
+        <EmbeddedResource Remove="Manager\Langs\Spanish.resx"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="CurrencyTracker.csproj.DotSettings" />
+        <None Remove="CurrencyTracker.csproj.DotSettings"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -69,14 +69,14 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="IntervalUtility" Version="1.0.0" />
-      <PackageReference Include="TinyPinyin" Version="1.1.0" />
+        <PackageReference Include="IntervalUtility" Version="1.0.0"/>
+        <PackageReference Include="TinyPinyin" Version="1.1.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OmenTools\OmenTools.csproj" />
+        <ProjectReference Include="..\OmenTools\OmenTools.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <None Update="CurrencyTracker.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

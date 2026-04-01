@@ -29,14 +29,14 @@ public partial class LanguageManager
 
     public static readonly TranslationInfo[] LanguageNames =
     [
-        new() { Language = "English", DisplayName = "English", Translators = ["AtmoOmen"] },
-        new() { Language = "Spanish", DisplayName = "Español", Translators = ["Risu", "Raleo"] },
-        new() { Language = "German", DisplayName = "Deutsch", Translators = ["vyrnius", "alex97000", "Another09"] },
-        new() { Language = "French", DisplayName = "Français", Translators = ["Khyne Cael", "Lexideru"] },
-        new() { Language = "Japanese", DisplayName = "日本語", Translators = ["stoat"] },
-        new() { Language = "Korean", DisplayName = "한국어", Translators = ["solarx2"] },
-        new() { Language = "ChineseSimplified", DisplayName = "简体中文", Translators = ["AtmoOmen"] },
-        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators = ["Fluxus", "AtmoOmen"] },
+        new() { Language = "English", DisplayName            = "English", Translators  = ["AtmoOmen"] },
+        new() { Language = "Spanish", DisplayName            = "Español", Translators  = ["Risu", "Raleo"] },
+        new() { Language = "German", DisplayName             = "Deutsch", Translators  = ["vyrnius", "alex97000", "Another09"] },
+        new() { Language = "French", DisplayName             = "Français", Translators = ["Khyne Cael", "Lexideru"] },
+        new() { Language = "Japanese", DisplayName           = "日本語", Translators      = ["stoat"] },
+        new() { Language = "Korean", DisplayName             = "한국어", Translators      = ["solarx2"] },
+        new() { Language = "ChineseSimplified", DisplayName  = "简体中文", Translators     = ["AtmoOmen"] },
+        new() { Language = "ChineseTraditional", DisplayName = "繁體中文", Translators     = ["Fluxus", "AtmoOmen"] }
     ];
 
     public LanguageManager(string languageName, bool isDev = false, string devLangPath = "")
@@ -52,12 +52,13 @@ public partial class LanguageManager
             if (!File.Exists(filePath)) return data;
         }
 
-        var doc = XDocument.Load(filePath);
+        var doc          = XDocument.Load(filePath);
         var dataElements = doc.Root.Elements("data");
+
         foreach (var element in dataElements)
         {
-            var name = element.Attribute("name")?.Value;
-            var value = element.Element("value")?.Value;
+            var name                                                     = element.Attribute("name")?.Value;
+            var value                                                    = element.Element("value")?.Value;
             if (!string.IsNullOrEmpty(name) && value != null) data[name] = value;
         }
 
@@ -85,7 +86,7 @@ public partial class LanguageManager
         var fbPath = languageName switch
         {
             "ChineseTraditional" => Path.Join(LangsDirectory, "ChineseSimplified.resx"),
-            _ => Path.Join(LangsDirectory, "English.resx"),
+            _                    => Path.Join(LangsDirectory, "English.resx")
         };
 
         fbResourceData = LoadResourceFile(fbPath);
@@ -94,10 +95,14 @@ public partial class LanguageManager
         LanguageChange?.Invoke(languageName);
 
         DService.Instance().Command.RemoveHandler(CommandName);
-        DService.Instance().Command.AddHandler(CommandName, new CommandInfo(P.OnCommand)
-        {
-            HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1"),
-        });
+        DService.Instance().Command.AddHandler
+        (
+            CommandName,
+            new CommandInfo(P.OnCommand)
+            {
+                HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1")
+            }
+        );
 
         Service.Config.SelectedLanguage = languageName;
         Service.Config.Save();
@@ -117,7 +122,7 @@ public partial class LanguageManager
         return string.Format(format, args);
     }
 
-    public string GetOrigText(string key) 
+    public string GetOrigText(string key)
         => resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key, key);
 
     public SeString GetSeString(string key, params object[] args)
@@ -125,10 +130,11 @@ public partial class LanguageManager
         if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
             format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key);
 
-        var ssb = new SeStringBuilder();
+        var ssb   = new SeStringBuilder();
         var regex = GetSeStringRegex();
 
         var lastIndex = 0;
+
         foreach (var match in regex.Matches(format).Cast<Match>())
         {
             ssb.AddText(format[lastIndex..match.Index]);

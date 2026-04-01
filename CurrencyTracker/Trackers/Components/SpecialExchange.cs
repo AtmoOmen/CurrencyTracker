@@ -1,20 +1,17 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class SpecialExchange : TrackerComponentBase
 {
-
     private static readonly Dictionary<string, uint> UI = new() // Addon Name - Window Node ID
     {
         { "GrandCompanySupplyList", 27 },
@@ -23,12 +20,12 @@ public class SpecialExchange : TrackerComponentBase
         { "SatisfactionSupply", 1 }
     };
 
-    internal static bool isOnExchange;
-    private static string windowName = string.Empty;
+    internal static bool   isOnExchange;
+    private static  string windowName = string.Empty;
 
     private InventoryHandler? inventoryHandler;
 
-    protected override void OnInit() => 
+    protected override void OnInit() =>
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, UI.Keys, BeginExchange);
 
     private unsafe void BeginExchange(AddonEvent type, AddonArgs args)
@@ -49,7 +46,7 @@ public class SpecialExchange : TrackerComponentBase
 
     private void OnFrameworkUpdate(IFramework framework)
     {
-        if (OccupiedInEvent) return;
+        if (DService.Instance().Condition.IsOccupiedInEvent) return;
 
         if (!isOnExchange && !Exchange.IsOnExchange)
         {
@@ -72,7 +69,7 @@ public class SpecialExchange : TrackerComponentBase
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(items, "", $"({windowName})", RecordChangeType.All, 10);
 
-        windowName = string.Empty;
+        windowName                           = string.Empty;
         HandlerManager.ChatHandler.IsBlocked = false;
         HandlerManager.Nullify(ref inventoryHandler);
 
@@ -86,6 +83,6 @@ public class SpecialExchange : TrackerComponentBase
         HandlerManager.Nullify(ref inventoryHandler);
 
         isOnExchange = false;
-        windowName = string.Empty;
+        windowName   = string.Empty;
     }
 }

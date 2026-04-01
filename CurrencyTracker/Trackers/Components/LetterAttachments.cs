@@ -1,15 +1,14 @@
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class LetterAttachments : TrackerComponentBase
 {
@@ -21,7 +20,7 @@ public class LetterAttachments : TrackerComponentBase
     {
         TaskHelper ??= new TaskHelper { TimeoutMS = 15_000 };
 
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "LetterViewer", OnLetterViewer);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "LetterViewer", OnLetterViewer);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "LetterViewer", OnLetterViewer);
     }
 
@@ -38,8 +37,8 @@ public class LetterAttachments : TrackerComponentBase
                 var buttonNode = addon->GetComponentButtonById(30);
                 if (buttonNode == null || !buttonNode->IsEnabled) return;
 
-                inventoryHandler ??= new InventoryHandler();
-                HandlerManager.ChatHandler.IsBlocked = true;
+                inventoryHandler                     ??= new InventoryHandler();
+                HandlerManager.ChatHandler.IsBlocked =   true;
                 break;
             }
             case AddonEvent.PreFinalize:
@@ -55,9 +54,14 @@ public class LetterAttachments : TrackerComponentBase
     {
         DService.Instance().Log.Debug("Letter Closed, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
-        TrackerManager.CheckCurrencies(
-            items, string.Empty, $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})", RecordChangeType.All,
-            24);
+        TrackerManager.CheckCurrencies
+        (
+            items,
+            string.Empty,
+            $"({Service.Lang.GetText("LetterAttachments-LetterFrom", letterSender)})",
+            RecordChangeType.All,
+            24
+        );
 
         HandlerManager.Nullify(ref inventoryHandler);
         HandlerManager.ChatHandler.IsBlocked = false;

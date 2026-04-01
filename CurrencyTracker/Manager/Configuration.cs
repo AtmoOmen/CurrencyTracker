@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Manager.Trackers.Components;
+using CurrencyTracker.Trackers.Components;
 using Dalamud.Configuration;
 using Dalamud.Plugin;
 using Newtonsoft.Json;
 
-namespace CurrencyTracker;
+namespace CurrencyTracker.Manager;
 
 [Serializable]
 public class Configuration : IPluginConfiguration

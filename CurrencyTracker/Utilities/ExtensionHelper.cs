@@ -12,17 +12,21 @@ public static class ExtensionHelper
 {
     public static List<DisplayTransaction> ToDisplayTransaction(this IEnumerable<Transaction> transactions)
     {
-        return transactions.Select(transaction => new DisplayTransaction
-        {
-            Transaction = transaction,
-            Selected    = false
-        }).ToList();
+        return transactions.Select
+        (transaction => new DisplayTransaction
+            {
+                Transaction = transaction,
+                Selected    = false
+            }
+        ).ToList();
     }
 
-    public static UpdateDictionary<TKey, TValue> ToUpdateDictionary<TKey, TValue>(
+    public static UpdateDictionary<TKey, TValue> ToUpdateDictionary<TKey, TValue>
+    (
         this IEnumerable<KeyValuePair<TKey, TValue>> pairs,
         Func<KeyValuePair<TKey, TValue>, TKey>       keySelector,
-        Func<KeyValuePair<TKey, TValue>, TValue>     valueSelector)
+        Func<KeyValuePair<TKey, TValue>, TValue>     valueSelector
+    )
         where TKey : notnull
     {
         var updateDictionary = new UpdateDictionary<TKey, TValue>();
@@ -30,6 +34,6 @@ public static class ExtensionHelper
         return updateDictionary;
     }
 
-    public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable => 
+    public static string ToIntervalString<T>(this Interval<T> interval) where T : struct, IComparable =>
         $"{(interval.Start == null ? "(-∞" : $"[{interval.Start}")},{(interval.End == null ? "+∞)" : $"{interval.End}]")}";
 }

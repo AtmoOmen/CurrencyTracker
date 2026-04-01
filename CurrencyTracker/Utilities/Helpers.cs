@@ -1,16 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using CurrencyTracker.Manager.Transactions;
-using CurrencyTracker.Windows;
-using Dalamud.Interface;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using IntervalUtility;
 
 namespace CurrencyTracker.Utilities;
 
@@ -34,8 +25,11 @@ public static class Helpers
         _                                        => string.Empty
     };
 
-    public static unsafe void InventoryScanner(
-        IEnumerable<InventoryType> inventories, ref Dictionary<uint, long> inventoryItemCount)
+    public static unsafe void InventoryScanner
+    (
+        IEnumerable<InventoryType> inventories,
+        ref Dictionary<uint, long> inventoryItemCount
+    )
     {
         var inventoryManager = InventoryManager.Instance();
 
@@ -64,7 +58,9 @@ public static class Helpers
         foreach (var kvp in itemCountDict) inventoryItemCount[kvp.Key] = kvp.Value;
 
         foreach (var kvp in inventoryItemCount)
+        {
             if (!itemCountDict.ContainsKey(kvp.Key) && kvp.Key != 1)
                 inventoryItemCount[kvp.Key] = 0;
+        }
     }
 }

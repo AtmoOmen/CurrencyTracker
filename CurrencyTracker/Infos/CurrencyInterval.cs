@@ -21,9 +21,10 @@ public static class CurrencyInterval
                               : rules.AlertedChangeIntervals;
 
         var viewString = categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID);
+
         if (!intervalDic.TryGetValue(viewString, out var intervalList))
         {
-            intervalList = [];
+            intervalList            = [];
             intervalDic[viewString] = intervalList;
             Service.Config.Save();
         }
@@ -41,6 +42,7 @@ public static class CurrencyInterval
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
         var intervalList = intervalDic[categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID)];
+
         if (!intervalList.Contains(interval))
         {
             intervalList.Add(interval);
@@ -70,14 +72,14 @@ public static class CurrencyInterval
 
     public static Interval<int>? CreateInterval(int start, int end)
     {
-        if ((start > end  && start != -1 && end != -1) ||
-            (start == end && start != -1 && end != -1) ||
-            start < -1                                 ||
+        if (start > end  && start != -1 && end != -1 ||
+            start == end && start != -1 && end != -1 ||
+            start < -1                               ||
             end   < -1)
             return null;
 
         int? end1 = start == -1 ? null : start;
-        int? end2 = end == -1 ? null : end;
+        int? end2 = end   == -1 ? null : end;
         return new Interval<int>(end1, end2);
     }
 }

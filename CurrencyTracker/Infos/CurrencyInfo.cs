@@ -3,15 +3,14 @@ using System.IO;
 using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Trackers.Components;
 using CurrencyTracker.Windows;
-using Dalamud.Interface.Textures;
 using Dalamud.Interface.Textures.TextureWraps;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using Lumina.Excel.Sheets;
 using Lumina.Extensions;
+using OmenTools.Interop.Game.Lumina;
 
 namespace CurrencyTracker.Infos;
 
@@ -19,19 +18,18 @@ public static class CurrencyInfo
 {
     public static readonly uint[] DefaultCustomCurrencies =
     [
-        20, 21, 22, 25, 27, 28, 29, 10307, 26807, 28063, 33913, 33914, 36656, 41784, 41785,
+        20, 21, 22, 25, 27, 28, 29, 10307, 26807, 28063, 33913, 33914, 36656, 41784, 41785
     ];
+
     public static readonly uint[] PresetCurrencies =
     [
-        1, GetSpecialTomestoneID(2), GetSpecialTomestoneID(3),
+        1, GetSpecialTomestoneID(2), GetSpecialTomestoneID(3)
     ];
 
     public static readonly Dictionary<ulong, Dictionary<uint, long>> CurrencyAmountCache = [];
 
-    public static void Init()
-    {
+    public static void Init() =>
         TrackerManager.CurrencyChanged += OnCurrencyChanged;
-    }
 
     private static void OnCurrencyChanged(uint currencyId, TransactionFileCategory category, ulong id)
     {
@@ -73,17 +71,13 @@ public static class CurrencyInfo
     {
         if (!CurrencyAmountCache.TryGetValue(character.ContentID, out var characterCache))
         {
-            characterCache = [];
+            characterCache                           = [];
             CurrencyAmountCache[character.ContentID] = characterCache;
         }
 
         if (!isOverride)
-        {
             if (characterCache.TryGetValue(currencyID, out var characterCurrencyAmount))
-            {
                 return characterCurrencyAmount;
-            }
-        }
 
         var amount = 0L;
         var categories = new[]
@@ -112,8 +106,11 @@ public static class CurrencyInfo
         return amount;
     }
 
-    public static Dictionary<TransactionFileCategoryInfo, long> GetCharacterCurrencyAmountDictionary(
-        uint currencyID, CharacterInfo character)
+    public static Dictionary<TransactionFileCategoryInfo, long> GetCharacterCurrencyAmountDictionary
+    (
+        uint          currencyID,
+        CharacterInfo character
+    )
     {
         var amountDic = new Dictionary<TransactionFileCategoryInfo, long>();
 
@@ -126,24 +123,42 @@ public static class CurrencyInfo
         if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
         {
             foreach (var retainer in retainers)
-                AddCurrencyAmountToDictionary(currencyID, character, TransactionFileCategory.Retainer, retainer.Key,
-                                              amountDic);
+            {
+                AddCurrencyAmountToDictionary
+                (
+                    currencyID,
+                    character,
+                    TransactionFileCategory.Retainer,
+                    retainer.Key,
+                    amountDic
+                );
+            }
         }
 
         return amountDic;
 
-        void AddCurrencyAmountToDictionary(
-            uint currencyID, CharacterInfo character, TransactionFileCategory category, ulong ID,
-            IDictionary<TransactionFileCategoryInfo, long> dictionary)
+        void AddCurrencyAmountToDictionary
+        (
+            uint                                           currencyID,
+            CharacterInfo                                  character,
+            TransactionFileCategory                        category,
+            ulong                                          ID,
+            IDictionary<TransactionFileCategoryInfo, long> dictionary
+        )
         {
             var currencyAmount = GetCurrencyAmountFromFile(currencyID, character, category, ID);
-            var key = new TransactionFileCategoryInfo(category, ID);
+            var key            = new TransactionFileCategoryInfo(category, ID);
             dictionary[key] = currencyAmount ?? 0;
         }
     }
-    
-    public static long? GetCurrencyAmountFromFile(
-        uint currencyID, CharacterInfo character, TransactionFileCategory category = 0, ulong ID = 0)
+
+    public static long? GetCurrencyAmountFromFile
+    (
+        uint                    currencyID,
+        CharacterInfo           character,
+        TransactionFileCategory category = 0,
+        ulong                   ID       = 0
+    )
     {
         var latestTransaction = TransactionsHandler.LoadLatestSingleTransaction(currencyID, character, category, ID);
 
@@ -153,9 +168,10 @@ public static class CurrencyInfo
     private static uint GetSpecialTomestoneID(int row) =>
         LuminaGetter.Get<TomestonesItem>()
                     .FirstOrNull(x => x.Tomestones.RowId == row)?
-                    .Item.RowId ?? 0;
+                    .Item.RowId ??
+        0;
 
-    public static IDalamudTextureWrap GetIcon(uint currencyID) => 
+    public static IDalamudTextureWrap GetIcon(uint currencyID) =>
         DService.Instance().Texture.GetFromGameIcon(new(LuminaGetter.GetRow<Item>(currencyID).GetValueOrDefault().Icon)).GetWrapOrEmpty();
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
@@ -193,7 +209,7 @@ public static class CurrencyInfo
                                      ? Service.Config.PresetCurrencies
                                      : Service.Config.CustomCurrencies;
             targetCurrency[currencyId] = newName;
-            Configuration.IsUpdated = true;
+            Configuration.IsUpdated    = true;
             Service.Config.Save();
 
             return true;
@@ -208,35 +224,45 @@ public static class CurrencyInfo
                 TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
                 TransactionFileCategory.PremiumSaddleBag
             };
-            categories.AddRange(Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
-                                       .Select(_ => TransactionFileCategory.Retainer));
+            categories.AddRange
+            (
+                Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID].Keys
+                       .Select(_ => TransactionFileCategory.Retainer)
+            );
 
             foreach (var category in categories)
+            {
                 if (category == TransactionFileCategory.Retainer)
                 {
                     foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
                         AddFilePath(paths, category, retainer.Key, name);
                 }
                 else AddFilePath(paths, category, 0, name);
+            }
 
             return (paths.Values.All(path => !File.Exists(path)), paths);
 
-            void AddFilePath(
-                IDictionary<string, string> pathsDic, TransactionFileCategory category, ulong key,
-                string nameAdd)
+            void AddFilePath
+            (
+                IDictionary<string, string> pathsDic,
+                TransactionFileCategory     category,
+                ulong                       key,
+                string                      nameAdd
+            )
             {
-                var editedFilePath = Path.Join(P.PlayerDataFolder,
-                                               $"{nameAdd}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt");
+                var editedFilePath = Path.Join
+                (
+                    P.PlayerDataFolder,
+                    $"{nameAdd}{TransactionsHandler.GetTransactionFileSuffix(category, key)}.txt"
+                );
                 var originalFilePath = TransactionsHandler.GetTransactionFilePath(id, category, key);
                 if (!File.Exists(originalFilePath)) return;
-                editedFilePath = Transaction.SanitizeFilePath(editedFilePath);
+                editedFilePath             = Transaction.SanitizeFilePath(editedFilePath);
                 pathsDic[originalFilePath] = editedFilePath;
             }
         }
     }
 
-    public static void Uninit()
-    {
+    public static void Uninit() =>
         TrackerManager.CurrencyChanged -= OnCurrencyChanged;
-    }
 }

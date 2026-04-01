@@ -3,11 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
-using CurrencyTracker.Trackers;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class AutoSave : TrackerComponentBase
 {
@@ -21,10 +20,10 @@ public class AutoSave : TrackerComponentBase
         LastAutoSaveTime = DateTime.Now;
         NextAutoSaveTime = LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
 
-        AutoSaveTimer ??= new Timer(1000);
-        AutoSaveTimer.Elapsed += OnAutoSave;
-        AutoSaveTimer.AutoReset = true;
-        AutoSaveTimer.Enabled = true;
+        AutoSaveTimer           ??= new Timer(1000);
+        AutoSaveTimer.Elapsed   +=  OnAutoSave;
+        AutoSaveTimer.AutoReset =   true;
+        AutoSaveTimer.Enabled   =   true;
     }
 
     private static void OnAutoSave(object? sender, ElapsedEventArgs e)
@@ -42,43 +41,56 @@ public class AutoSave : TrackerComponentBase
         switch (Service.Config.AutoSaveMode)
         {
             case 0:
-                Task.Run(async () =>
-                {
-                    var filePath = await 
-                        TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
-                    if (Service.Config.AutoSaveMessage)
-                        DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
-                });
+                Task.Run
+                (async () =>
+                    {
+                        var filePath = await
+                                           TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+                        if (Service.Config.AutoSaveMessage)
+                            DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
+                    }
+                );
                 break;
             case 1:
-                Task.Run(async () =>
-                {
-                    var failCharactersTasks = Service.Config.CurrentActiveCharacter.Select(async c =>
+                Task.Run
+                (async () =>
                     {
-                        var result = await TransactionsHandler.BackupTransactionsAsync(
-                                         Path.Combine(P.PI.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"),
-                                         Service.Config.MaxBackupFilesCount);
+                        var failCharactersTasks = Service.Config.CurrentActiveCharacter.Select
+                        (async c =>
+                            {
+                                var result = await TransactionsHandler.BackupTransactionsAsync
+                                             (
+                                                 Path.Combine(P.PI.ConfigDirectory.FullName, $"{c.Name}_{c.Server}"),
+                                                 Service.Config.MaxBackupFilesCount
+                                             );
 
-                        return string.IsNullOrEmpty(result) ? $"{c.Name}@{c.Server}" : null;
-                    });
+                                return string.IsNullOrEmpty(result) ? $"{c.Name}@{c.Server}" : null;
+                            }
+                        );
 
-                    var failCharactersResults = await Task.WhenAll(failCharactersTasks);
-                    var failCharacters = failCharactersResults.Where(c => c != null).ToList();
+                        var failCharactersResults = await Task.WhenAll(failCharactersTasks);
+                        var failCharacters        = failCharactersResults.Where(c => c != null).ToList();
 
-                    var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
-                    if (Service.Config.AutoSaveMessage)
-                    {
-                        DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
-                                           (failCharacters.Count != 0
-                                                ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
-                                                : ""));
-                        if (failCharacters.Count != 0)
+                        var successCount = Service.Config.CurrentActiveCharacter.Count - failCharacters.Count;
+
+                        if (Service.Config.AutoSaveMessage)
                         {
-                            DService.Instance().Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
-                            failCharacters.ForEach(x => DService.Instance().Chat.PrintError(x));
+                            DService.Instance().Chat.Print
+                            (
+                                Service.Lang.GetText("BackupHelp1", successCount) +
+                                (failCharacters.Count != 0
+                                     ? Service.Lang.GetText("BackupHelp2", failCharacters.Count)
+                                     : "")
+                            );
+
+                            if (failCharacters.Count != 0)
+                            {
+                                DService.Instance().Chat.PrintError(Service.Lang.GetText("BackupHelp3"));
+                                failCharacters.ForEach(x => DService.Instance().Chat.PrintError(x));
+                            }
                         }
                     }
-                });
+                );
                 break;
         }
     }

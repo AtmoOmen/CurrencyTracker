@@ -1,11 +1,11 @@
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Utility;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 // 过时，需要重写 Outdated, Need Rewrite
 public class FateRewards : TrackerComponentBase
@@ -41,7 +41,7 @@ public class FateRewards : TrackerComponentBase
                 );
                 break;
             case AddonEvent.PreFinalize:
-                if (!OccupiedInEvent)
+                if (!DService.Instance().Condition.IsOccupiedInEvent)
                     HandlerManager.ChatHandler.IsBlocked = false;
                 break;
         }

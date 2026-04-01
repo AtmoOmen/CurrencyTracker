@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
-using Dalamud.Bindings.ImGui;
+using OmenTools.OmenService;
+using OmenTools.Threading;
 
 namespace CurrencyTracker.Windows;
 
@@ -13,16 +14,17 @@ public partial class CurrencySettings
 
     private static void CurrencyAmountInfoUI()
     {
-        if (Throttler.Throttle("CurrencyAmountInfoUI", 1000))
-        {
-            Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == LocalPlayerState.ContentID).SubCurrencyAmount.TryGetValue(Main.SelectedCurrencyID, out currencyAmountInfoDic);
-        }
+        if (Throttler.Shared.Throttle
+                ("CurrencyAmountInfoUI", 1000))
+            Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == LocalPlayerState.ContentID).SubCurrencyAmount.TryGetValue
+                (Main.SelectedCurrencyID, out currencyAmountInfoDic);
 
         if (currencyAmountInfoDic.Count != 0)
         {
             if (ImGui.CollapsingHeader($"{Service.Lang.GetText("Amount")}"))
             {
                 ImGui.BeginGroup();
+
                 foreach (var source in currencyAmountInfoDic)
                 {
                     if (source.Value == 0) continue;
@@ -36,6 +38,7 @@ public partial class CurrencySettings
 
                 ImGui.SameLine();
                 ImGui.BeginGroup();
+
                 foreach (var source in currencyAmountInfoDic)
                 {
                     if (source.Value == 0) continue;

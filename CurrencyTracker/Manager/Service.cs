@@ -2,6 +2,7 @@ using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
 using Dalamud.Plugin;
+using OmenTools.OmenService;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Manager;
@@ -14,7 +15,7 @@ public class Service
 
         Config = pi.GetPluginConfig() as Configuration ?? new Configuration();
         Config.Initialize(pi);
-        
+
         InitLanguage();
         InitCharacter();
 
@@ -28,7 +29,7 @@ public class Service
         CurrencyInfo.Uninit();
 
         Config.Uninit();
-        
+
         DService.Uninit();
     }
 
@@ -53,7 +54,7 @@ public class Service
     {
         if (LocalPlayerState.ContentID == 0)
             return;
-        
+
         P.CurrentCharacter = P.GetCurrentCharacter();
     }
 

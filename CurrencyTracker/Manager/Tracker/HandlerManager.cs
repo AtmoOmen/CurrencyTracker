@@ -2,25 +2,27 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 
 namespace CurrencyTracker.Manager.Tracker;
 
 public class HandlerManager
 {
-    public static HashSet<TrackerHandlerBase> Handlers    { get; private set; } = [];
-    
-    public static ChatHandler?                ChatHandler { get; private set; }
+    public static HashSet<TrackerHandlerBase> Handlers { get; private set; } = [];
+
+    public static ChatHandler? ChatHandler { get; private set; }
 
     private static readonly HashSet<string> BlacklistHandlerNames = ["InventoryHandler"];
 
     static HandlerManager()
     {
         var types = Assembly.GetExecutingAssembly().GetTypes()
-                            .Where(t => typeof(TrackerHandlerBase).IsAssignableFrom(t) &&
-                                        t is { IsInterface: false, IsAbstract: false } &&
-                                        t.GetConstructor(Type.EmptyTypes) != null);
+                            .Where
+                            (t => typeof(TrackerHandlerBase).IsAssignableFrom(t) &&
+                                  t is { IsInterface: false, IsAbstract: false } &&
+                                  t.GetConstructor(Type.EmptyTypes) != null
+                            );
 
         foreach (var type in types)
         {
@@ -28,7 +30,7 @@ public class HandlerManager
 
             var instance = Activator.CreateInstance(type);
             if (instance is not TrackerHandlerBase handler) continue;
-                
+
             Handlers.Add(handler);
         }
 
@@ -36,7 +38,7 @@ public class HandlerManager
                               .OfType<ChatHandler>()
                               .FirstOrDefault();
     }
-    
+
     public static void Init()
     {
         foreach (var handler in Handlers)
@@ -51,6 +53,6 @@ public class HandlerManager
         handler = null;
     }
 
-    public static void Uninit() => 
+    public static void Uninit() =>
         Handlers.ForEach(x => x.Uninit());
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
@@ -19,19 +18,19 @@ public class GraphWindow : Window, IDisposable
         [0] = Service.Lang.GetText("AmountGraph"),
         [1] = Service.Lang.GetText("ChangeGraph"),
         [2] = Service.Lang.GetText("LocationGraph"),
-        [3] = Service.Lang.GetText("LocationAmountGraph"),
+        [3] = Service.Lang.GetText("LocationAmountGraph")
     };
-    
-    private static uint SelectedCurrencyID => 
+
+    private static uint SelectedCurrencyID =>
         Main.SelectedCurrencyID;
 
-    private static List<DisplayTransaction> CurrentTransactions => 
+    private static List<DisplayTransaction> CurrentTransactions =>
         Main.currentTransactions;
-    
-    private static uint            SelectedPlotType;
+
+    private static uint          SelectedPlotType;
     private static GroupInterval groupInterval;
-    
-    public GraphWindow() : base($"Graphs##{Name}") => 
+
+    public GraphWindow() : base($"Graphs##{Name}") =>
         Flags |= ImGuiWindowFlags.NoScrollbar;
 
     public override void Draw()
@@ -47,6 +46,7 @@ public class GraphWindow : Window, IDisposable
 
         ImGui.SetWindowFontScale(1.3f);
         var currentCursorPos = ImGui.GetCursorPos();
+
         using (ImRaii.Group())
         {
             ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
@@ -56,11 +56,13 @@ public class GraphWindow : Window, IDisposable
             ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
             ImGui.TextColored(ImGuiColors.DalamudOrange, currencyName);
         }
+
         ImGui.SetWindowFontScale(1f);
 
         ImGui.SameLine();
         ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
         ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+
         using (var combo = ImRaii.Combo("###GraphsViewSelectCombo", ViewLoc[SelectedPlotType], ImGuiComboFlags.HeightLarge))
         {
             if (combo)
@@ -91,6 +93,7 @@ public class GraphWindow : Window, IDisposable
 
         ImGui.SameLine();
         ImGui.SetCursorPosY(currentCursorPos.Y + 2f);
+
         if (ImGui.Button(FontAwesomeIcon.SyncAlt.ToIconString()))
         {
             AmountGraphPlot.Instance.ClearCachedData();
@@ -98,9 +101,9 @@ public class GraphWindow : Window, IDisposable
             LocationGraphPlot.Instance.ClearCachedData();
             LocationAmountGraphPlot.Instance.ClearCachedData();
         }
-        
+
         if (CurrentTransactions.Count <= 0) return;
-        
+
         switch (SelectedPlotType)
         {
             case 0:
@@ -117,22 +120,25 @@ public class GraphWindow : Window, IDisposable
                 break;
         }
     }
-    
+
     public void Dispose() { }
-    
+
     // 金额图表类
     private class AmountGraphPlot : BaseGraphPlot
     {
         public static readonly AmountGraphPlot Instance = new();
-        
+
         private static DisplayTransactionGroup[]? cachedData;
-        
+
         protected override string GraphTitle => Service.Lang.GetText("AmountGraph");
+
         protected override DisplayTransactionGroup[]? GetCachedData() => cachedData;
+
         protected override void SetCachedData(DisplayTransactionGroup[] data) => cachedData = data;
+
         public override void ClearCachedData() => cachedData = null;
 
-        protected override DisplayTransactionGroup[] CreateData() => 
+        protected override DisplayTransactionGroup[] CreateData() =>
             GroupTransactionsByTime(CurrentTransactions, groupInterval, t => t.Amount);
 
         protected override void DrawPlot(DisplayTransactionGroup[] data)
@@ -146,7 +152,7 @@ public class GraphWindow : Window, IDisposable
             ImPlot.SetupAxis(ImAxis.X1, Service.Lang.GetText("Time"));
             ImPlot.SetupAxis(ImAxis.Y1, $"{Service.Lang.GetText("Amount")} {dividedName}", ImPlotAxisFlags.AutoFit);
 
-            var amountValues = data.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
+            var amountValues   = data.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
             var dateTimeValues = data.Select(x => x.XAxis).ToArray();
 
             ImPlot.SetupAxisTicks(ImAxis.X1, 0, dateTimeValues.Length - 1, dateTimeValues.Length, dateTimeValues);
@@ -158,15 +164,18 @@ public class GraphWindow : Window, IDisposable
     private class ChangeGraphPlot : BaseGraphPlot
     {
         public static readonly ChangeGraphPlot Instance = new();
-        
+
         private static DisplayTransactionGroup[]? cachedData;
-        
+
         protected override string GraphTitle => Service.Lang.GetText("ChangeGraph");
+
         protected override DisplayTransactionGroup[]? GetCachedData() => cachedData;
+
         protected override void SetCachedData(DisplayTransactionGroup[] data) => cachedData = data;
+
         public override void ClearCachedData() => cachedData = null;
 
-        protected override DisplayTransactionGroup[] CreateData() => 
+        protected override DisplayTransactionGroup[] CreateData() =>
             GroupTransactionsByTime(CurrentTransactions, groupInterval, t => t.Change);
 
         protected override void DrawPlot(DisplayTransactionGroup[] data)
@@ -180,9 +189,9 @@ public class GraphWindow : Window, IDisposable
             ImPlot.SetupAxis(ImAxis.Y1, $"{Service.Lang.GetText("Change")} {dividedName}", ImPlotAxisFlags.AutoFit);
             ImPlot.SetupAxesLimits(0, data.Length, data.Min(x => x.YAxis), data.Max(x => x.YAxis));
 
-            var changeValues = data.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
+            var changeValues   = data.Select(x => (float)Math.Round(x.YAxis / dividedFactor, 6)).ToArray();
             var dateTimeValues = data.Select(x => x.XAxis).ToArray();
-            
+
             ImPlot.SetupAxisTicks(ImAxis.X1, 0, dateTimeValues.Length - 1, dateTimeValues.Length, dateTimeValues);
             ImPlot.PlotBars(string.Empty, ref changeValues[0], dateTimeValues.Length);
         }
@@ -192,12 +201,15 @@ public class GraphWindow : Window, IDisposable
     private class LocationGraphPlot : BaseGraphPlot
     {
         public static readonly LocationGraphPlot Instance = new();
-        
+
         private static DisplayTransactionGroup[]? cachedData;
-        
+
         protected override string GraphTitle => Service.Lang.GetText("LocationGraph");
+
         protected override DisplayTransactionGroup[]? GetCachedData() => cachedData;
+
         protected override void SetCachedData(DisplayTransactionGroup[] data) => cachedData = data;
+
         public override void ClearCachedData() => cachedData = null;
 
         protected override DisplayTransactionGroup[] CreateData() =>
@@ -218,8 +230,8 @@ public class GraphWindow : Window, IDisposable
             ImPlot.SetupAxesLimits(0, data.Length, -2, data.Max(x => x.YAxis));
 
             var locationValues = data.Select(x => x.YAxis).ToArray();
-            var countValues = data.Select(x => x.XAxis).ToArray();
-            
+            var countValues    = data.Select(x => x.XAxis).ToArray();
+
             ImPlot.SetupAxisTicks(ImAxis.X1, 0, countValues.Length - 1, countValues.Length, countValues);
             ImPlot.PlotBars(string.Empty, ref locationValues[0], countValues.Length);
         }
@@ -229,26 +241,34 @@ public class GraphWindow : Window, IDisposable
     private class LocationAmountGraphPlot : BaseGraphPlot
     {
         public static readonly LocationAmountGraphPlot Instance = new();
-        
+
         private static DisplayTransactionGroup[]? cachedData;
-        
+
         protected override string GraphTitle => Service.Lang.GetText("LocationAmountGraph");
+
         protected override DisplayTransactionGroup[]? GetCachedData() => cachedData;
+
         protected override void SetCachedData(DisplayTransactionGroup[] data) => cachedData = data;
+
         public override void ClearCachedData() => cachedData = null;
 
         protected override DisplayTransactionGroup[] CreateData()
         {
             var (dividedFactor, _) = CalculateDividedFactor((int)CurrentTransactions.Average(x => Math.Abs(x.Transaction.Change)));
-            
-            return [.. CurrentTransactions
-                       .GroupBy(transaction => transaction.Transaction.LocationName)
-                       .Select(group => new DisplayTransactionGroup
+
+            return
+            [
+                .. CurrentTransactions
+                   .GroupBy(transaction => transaction.Transaction.LocationName)
+                   .Select
+                   (group => new DisplayTransactionGroup
                        {
                            XAxis = group.Key,
                            YAxis = group.Sum(item => item.Transaction.Change / dividedFactor)
-                       })
-                       .OrderByDescending(item => item.YAxis)];
+                       }
+                   )
+                   .OrderByDescending(item => item.YAxis)
+            ];
         }
 
         protected override void DrawPlot(DisplayTransactionGroup[] data)
@@ -263,13 +283,13 @@ public class GraphWindow : Window, IDisposable
             ImPlot.SetupAxesLimits(0, data.Length, data.Min(x => x.YAxis), data.Max(x => x.YAxis));
 
             var locationValues = data.Select(x => x.YAxis).ToArray();
-            var amountValues = data.Select(x => x.XAxis).ToArray();
-            
+            var amountValues   = data.Select(x => x.XAxis).ToArray();
+
             ImPlot.SetupAxisTicks(ImAxis.X1, 0, amountValues.Length - 1, amountValues.Length, amountValues);
             ImPlot.PlotBars(string.Empty, ref locationValues[0], amountValues.Length);
         }
     }
-    
+
     private abstract class BaseGraphPlot
     {
         protected abstract string GraphTitle { get; }
@@ -328,8 +348,12 @@ public class GraphWindow : Window, IDisposable
             return (dividedFactor, dividedName);
         }
 
-        protected static DisplayTransactionGroup[] GroupTransactionsByTime(
-            IEnumerable<DisplayTransaction> transactions, GroupInterval interval, Func<Transaction, float> valueSelector)
+        protected static DisplayTransactionGroup[] GroupTransactionsByTime
+        (
+            IEnumerable<DisplayTransaction> transactions,
+            GroupInterval                   interval,
+            Func<Transaction, float>        valueSelector
+        )
         {
             var result = new List<DisplayTransactionGroup>();
 
@@ -338,11 +362,13 @@ public class GraphWindow : Window, IDisposable
                 case GroupInterval.Day:
                     result = transactions
                              .GroupBy(t => t.Transaction.TimeStamp.Date)
-                             .Select(g => new DisplayTransactionGroup
-                             {
-                                 XAxis = g.Key.ToString("yy/MM/dd"),
-                                 YAxis = g.Average(t => valueSelector(t.Transaction))
-                             })
+                             .Select
+                             (g => new DisplayTransactionGroup
+                                 {
+                                     XAxis = g.Key.ToString("yy/MM/dd"),
+                                     YAxis = g.Average(t => valueSelector(t.Transaction))
+                                 }
+                             )
                              .Reverse()
                              .ToList();
                     break;
@@ -352,18 +378,22 @@ public class GraphWindow : Window, IDisposable
                     var calendar       = CultureInfo.CurrentCulture.Calendar;
 
                     result = transactions
-                             .GroupBy(t => new
-                             {
-                                 WeekNumber = calendar.GetWeekOfYear(t.Transaction.TimeStamp, CalendarWeekRule.FirstFourDayWeek, firstDayOfWeek),
-                                 t.Transaction.TimeStamp.Year
-                             })
-                             .Select(g => new DisplayTransactionGroup
-                             {
-                                 XAxis = g.Key.WeekNumber == 1
-                                             ? new DateTime(g.Key.Year, 1, 1).ToString("yy/MM/dd")
-                                             : calendar.AddDays(new DateTime(g.Key.Year, 1, 1), (g.Key.WeekNumber - 1) * 7).ToString("yy/MM/dd"),
-                                 YAxis = g.Average(t => valueSelector(t.Transaction))
-                             })
+                             .GroupBy
+                             (t => new
+                                 {
+                                     WeekNumber = calendar.GetWeekOfYear(t.Transaction.TimeStamp, CalendarWeekRule.FirstFourDayWeek, firstDayOfWeek),
+                                     t.Transaction.TimeStamp.Year
+                                 }
+                             )
+                             .Select
+                             (g => new DisplayTransactionGroup
+                                 {
+                                     XAxis = g.Key.WeekNumber == 1
+                                                 ? new DateTime(g.Key.Year, 1, 1).ToString("yy/MM/dd")
+                                                 : calendar.AddDays(new DateTime(g.Key.Year, 1, 1), (g.Key.WeekNumber - 1) * 7).ToString("yy/MM/dd"),
+                                     YAxis = g.Average(t => valueSelector(t.Transaction))
+                                 }
+                             )
                              .Reverse()
                              .ToList();
                     break;
@@ -371,11 +401,13 @@ public class GraphWindow : Window, IDisposable
                 case GroupInterval.Month:
                     result = transactions
                              .GroupBy(t => new { t.Transaction.TimeStamp.Year, t.Transaction.TimeStamp.Month })
-                             .Select(g => new DisplayTransactionGroup
-                             {
-                                 XAxis = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("yy/MM/dd"),
-                                 YAxis = g.Average(t => valueSelector(t.Transaction))
-                             })
+                             .Select
+                             (g => new DisplayTransactionGroup
+                                 {
+                                     XAxis = new DateTime(g.Key.Year, g.Key.Month, 1).ToString("yy/MM/dd"),
+                                     YAxis = g.Average(t => valueSelector(t.Transaction))
+                                 }
+                             )
                              .Reverse()
                              .ToList();
                     break;
@@ -383,11 +415,13 @@ public class GraphWindow : Window, IDisposable
                 case GroupInterval.Year:
                     result = transactions
                              .GroupBy(t => t.Transaction.TimeStamp.Year)
-                             .Select(g => new DisplayTransactionGroup
-                             {
-                                 XAxis = new DateTime(g.Key, 1, 1).ToString("yy/MM/dd"),
-                                 YAxis = g.Average(t => valueSelector(t.Transaction))
-                             })
+                             .Select
+                             (g => new DisplayTransactionGroup
+                                 {
+                                     XAxis = new DateTime(g.Key, 1, 1).ToString("yy/MM/dd"),
+                                     YAxis = g.Average(t => valueSelector(t.Transaction))
+                                 }
+                             )
                              .Reverse()
                              .ToList();
                     break;
@@ -402,7 +436,7 @@ public class GraphWindow : Window, IDisposable
         public string XAxis { get; init; } = string.Empty;
         public float  YAxis { get; init; }
     }
-    
+
     private enum GroupInterval
     {
         Day,

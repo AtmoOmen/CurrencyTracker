@@ -2,21 +2,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
+using Dalamud.Game.Addon.Events.EventDataTypes;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
-using FFXIVClientStructs.FFXIV.Component.GUI;
-using Dalamud.Game.Addon.Events.EventDataTypes;
+using OmenTools.Interop.Game.Helpers;
+using OmenTools.Threading;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public unsafe class MoneyAddonExpand : TrackerComponentBase
 {
-
     private static IAddonEventHandle? mouseoverHandle;
     private static IAddonEventHandle? mouseoutHandle;
 
@@ -26,16 +26,16 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
     {
         overlay ??= new();
 
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreDraw, "_Money", OnMoneyUI);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreDraw,     "_Money", OnMoneyUI);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "_Money", OnMoneyUI);
     }
 
     private static void OnMoneyUI(AddonEvent type, AddonArgs args)
     {
-        if (!Throttler.Throttle("MoneyAddonExpand", 1000)) return;
+        if (!Throttler.Shared.Throttle("MoneyAddonExpand", 1000)) return;
 
         if (mouseoutHandle != null || mouseoverHandle != null) return;
-        if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon)) return;
+        if (!AddonHelper.TryGetByName("_Money", out var addon)) return;
 
         var counterNode = addon->GetNodeById(3);
         if (counterNode == null) return;
@@ -50,19 +50,21 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
         overlay.IsOpen = type switch
         {
             AddonEventType.MouseOver => true,
-            AddonEventType.MouseOut => false,
-            _ => overlay.IsOpen
+            AddonEventType.MouseOut  => false,
+            _                        => overlay.IsOpen
         };
     }
 
     protected override void OnUninit()
     {
         DService.Instance().AddonLifecycle.UnregisterListener(OnMoneyUI);
+
         if (mouseoutHandle != null)
         {
             DService.Instance().AddonEvent.RemoveEvent(mouseoverHandle);
             mouseoutHandle = null;
         }
+
         if (mouseoverHandle != null)
         {
             DService.Instance().AddonEvent.RemoveEvent(mouseoutHandle);
@@ -77,7 +79,8 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
     {
         private CharacterCurrencyInfo? characterCurrencyInfo;
 
-        public Overlay() : base("MoneyAddonExpandOverlay###CurrencyTracker", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar)
+        public Overlay() : base
+            ("MoneyAddonExpandOverlay###CurrencyTracker", ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoTitleBar)
         {
             RespectCloseHotkey = false;
 
@@ -88,16 +91,16 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
 
         public override void OnOpen()
         {
-            if (Main.CharacterCurrencyInfos.Count <= 0) 
+            if (Main.CharacterCurrencyInfos.Count <= 0)
                 Main.LoadDataMCS();
 
-            characterCurrencyInfo ??= 
+            characterCurrencyInfo ??=
                 Main.CharacterCurrencyInfos?.FirstOrDefault(x => x.Character.Equals(P.CurrentCharacter));
         }
 
         public override void Draw()
         {
-            if (!TryGetAddonByName<AtkUnitBase>("_Money", out var addon))
+            if (!AddonHelper.TryGetByName("_Money", out var addon))
             {
                 IsOpen = false;
                 return;
@@ -107,10 +110,11 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
             ImGui.SetWindowPos(pos);
 
             if (characterCurrencyInfo == null) return;
-            if (Throttler.Throttle("MoneyAddonExpand_UpdateCharacter", 1000)) 
+            if (Throttler.Shared.Throttle("MoneyAddonExpand_UpdateCharacter", 1000))
                 characterCurrencyInfo?.UpdateAllCurrencies();
 
             ImGui.SetWindowFontScale(1.1f);
+
             if (ImGui.BeginTable($"###{characterCurrencyInfo.Character.ContentID}", 2, ImGuiTableFlags.BordersInnerH))
             {
                 foreach (var currency in Service.Config.OrderedOptions)
@@ -141,8 +145,8 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
 
                 ImGui.EndTable();
             }
+
             ImGui.SetWindowFontScale(1f);
         }
     }
-
 }

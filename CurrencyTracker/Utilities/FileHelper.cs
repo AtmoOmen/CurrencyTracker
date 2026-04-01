@@ -15,29 +15,38 @@ public static class FileHelper
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "cmd",
-                    Arguments = $"/c start \"\" \"{path}\"",
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                });
+                Process.Start
+                (
+                    new ProcessStartInfo
+                    {
+                        FileName        = "cmd",
+                        Arguments       = $"/c start \"\" \"{path}\"",
+                        UseShellExecute = false,
+                        CreateNoWindow  = true
+                    }
+                );
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "xdg-open",
-                    Arguments = path
-                });
+                Process.Start
+                (
+                    new ProcessStartInfo
+                    {
+                        FileName  = "xdg-open",
+                        Arguments = path
+                    }
+                );
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = "open",
-                    Arguments = path
-                });
+                Process.Start
+                (
+                    new ProcessStartInfo
+                    {
+                        FileName  = "open",
+                        Arguments = path
+                    }
+                );
             }
             else
                 DService.Instance().Log.Error("Unsupported OS");
@@ -76,7 +85,8 @@ public static class FileHelper
         catch (IOException)
         {
             return true;
-        } finally
+        }
+        finally
         {
             stream?.Close();
         }

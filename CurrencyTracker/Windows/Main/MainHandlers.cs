@@ -6,7 +6,7 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
-using Dalamud.Bindings.ImGui;
+using OmenTools.OmenService;
 using TinyPinyin;
 
 namespace CurrencyTracker.Windows;
@@ -16,7 +16,7 @@ public partial class Main
     internal static void ReloadOrderedOptions()
     {
         var orderedOptionsSet = new HashSet<uint>(Service.Config.OrderedOptions);
-        var allCurrenciesSet = new HashSet<uint>(Service.Config.AllCurrencyID);
+        var allCurrenciesSet  = new HashSet<uint>(Service.Config.AllCurrencyID);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
@@ -36,8 +36,15 @@ public partial class Main
             filteredTransactions = filteredTransactions.Where(TransactionMatchesChangeFilter);
 
         if (TimeColumn.IsTimeFilterEnabled)
-            filteredTransactions = ApplyDateTimeFilter(filteredTransactions, getTimeStampFunc, 
-                                                       TimeColumn.FilterStartDate, TimeColumn.FilterEndDate.AddDays(1));
+        {
+            filteredTransactions = ApplyDateTimeFilter
+            (
+                filteredTransactions,
+                getTimeStampFunc,
+                TimeColumn.FilterStartDate,
+                TimeColumn.FilterEndDate.AddDays(1)
+            );
+        }
 
         if (LocationColumn.IsLocationFilterEnabled)
             filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.LocationName, LocationColumn.SearchLocationName);
@@ -47,48 +54,52 @@ public partial class Main
 
         return Service.Config.ReverseSort ? filteredTransactions.OrderByDescending(getTimeStampFunc) : filteredTransactions;
 
-        static DateTime getTimeStampFunc(Transaction t) => t.TimeStamp;
+        static DateTime getTimeStampFunc(Transaction t)
+        {
+            return t.TimeStamp;
+        }
     }
 
     private static bool TransactionMatchesChangeFilter(Transaction transaction) =>
-        (ChangeColumn.FilterMode == 0 && transaction.Change > ChangeColumn.FilterValue) || 
-        (ChangeColumn.FilterMode != 0 && transaction.Change < ChangeColumn.FilterValue);
+        ChangeColumn.FilterMode == 0 && transaction.Change > ChangeColumn.FilterValue ||
+        ChangeColumn.FilterMode != 0 && transaction.Change < ChangeColumn.FilterValue;
 
-    private static IEnumerable<Transaction> ApplyDateTimeFilter(IEnumerable<Transaction> transactions, Func<Transaction, DateTime> dateTimeSelector, DateTime startDate, DateTime endDate)
-    {
-        return transactions.Where(transaction => dateTimeSelector(transaction) >= startDate && dateTimeSelector(transaction) <= endDate);
-    }
-    
+    private static IEnumerable<Transaction> ApplyDateTimeFilter
+        (IEnumerable<Transaction> transactions, Func<Transaction, DateTime> dateTimeSelector, DateTime startDate, DateTime endDate) =>
+        transactions.Where(transaction => dateTimeSelector(transaction) >= startDate && dateTimeSelector(transaction) <= endDate);
+
     private static IEnumerable<Transaction> ApplyLocationOrNoteFilter(IEnumerable<Transaction> transactions, Func<Transaction, string> textSelector, string query)
     {
-        if (string.IsNullOrEmpty(query)) 
+        if (string.IsNullOrEmpty(query))
             return transactions;
 
         var isChineseSimplified = Service.Config.SelectedLanguage == "ChineseSimplified";
         var queries = query.Split(',')
-                           .Select(q => new
-                           {
-                               Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
-                               Pinyin = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
-                           })
+                           .Select
+                           (q => new
+                               {
+                                   Normalized = q.Trim().Normalize(NormalizationForm.FormKC),
+                                   Pinyin     = isChineseSimplified ? PinyinHelper.GetPinyin(q.Trim(), "") : null
+                               }
+                           )
                            .Where(q => !string.IsNullOrEmpty(q.Normalized))
                            .ToList();
 
-        return transactions.Where(transaction =>
-        {
-            var normalizedText = textSelector(transaction).Normalize(NormalizationForm.FormKC);
-            if (queries.Any(q => normalizedText.Contains(q.Normalized, StringComparison.OrdinalIgnoreCase)))
+        return transactions.Where
+        (transaction =>
             {
-                return true;
-            }
+                var normalizedText = textSelector(transaction).Normalize(NormalizationForm.FormKC);
+                if (queries.Any(q => normalizedText.Contains(q.Normalized, StringComparison.OrdinalIgnoreCase))) return true;
 
-            if (isChineseSimplified)
-            {
-                var pinyin = PinyinHelper.GetPinyin(normalizedText, "");
-                return queries.Any(q => pinyin.Contains(q.Pinyin, StringComparison.OrdinalIgnoreCase));
+                if (isChineseSimplified)
+                {
+                    var pinyin = PinyinHelper.GetPinyin(normalizedText, "");
+                    return queries.Any(q => pinyin.Contains(q.Pinyin, StringComparison.OrdinalIgnoreCase));
+                }
+
+                return false;
             }
-            return false;
-        });
+        );
     }
 
     private static IEnumerable<Transaction> ClusterTransactionsByTime(IEnumerable<Transaction> transactions, TimeSpan interval)
@@ -104,28 +115,26 @@ public partial class Main
             var firstTransaction = transactionGroup.First();
             var clusterTimestamp = firstTransaction.TimeStamp.AddTicks(-(firstTransaction.TimeStamp.Ticks % interval.Ticks));
 
-            var totalChange = 0L;
-            var maxAmount = 0L;
+            var totalChange         = 0L;
+            var maxAmount           = 0L;
             var knownLocationGroups = new Dictionary<string, int>();
 
             foreach (var transaction in transactionGroup)
             {
                 totalChange += transaction.Change;
-                maxAmount = Math.Max(maxAmount, transaction.Amount);
+                maxAmount   =  Math.Max(maxAmount, transaction.Amount);
 
                 if (!string.IsNullOrEmpty(transaction.LocationName) && !transaction.LocationName.Equals(Service.Lang.GetText("UnknownLocation")))
-                {
                     knownLocationGroups[transaction.LocationName] = knownLocationGroups.GetValueOrDefault(transaction.LocationName) + 1;
-                }
             }
 
             var orderedUniqueKnownLocations = knownLocationGroups.OrderByDescending(pair => pair.Value).Take(3).Select(pair => pair.Key).ToList();
 
             var cluster = new Transaction
             {
-                TimeStamp = clusterTimestamp,
-                Amount = maxAmount,
-                Change = totalChange,
+                TimeStamp    = clusterTimestamp,
+                Amount       = maxAmount,
+                Change       = totalChange,
                 LocationName = string.Join(", ", orderedUniqueKnownLocations) + (orderedUniqueKnownLocations.Count == 3 ? "..." : "")
             };
 
@@ -133,22 +142,21 @@ public partial class Main
         }
     }
 
-    public static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
-    {
+    public static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID) =>
         UpdateTransactions(currencyID, category, ID);
-    }
 
     public static void UpdateTransactions(uint currencyID, TransactionFileCategory category, ulong ID)
     {
-        if (SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || (currentView == category && currentViewID != ID)) return;
+        if (SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || currentView == category && currentViewID != ID) return;
 
         if (!P.Main.IsOpen)
         {
-            _shouldRefreshTransactions = true;
+            ShouldRefreshTransactions = true;
             return;
         }
 
         currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID, currentView, currentViewID)).ToDisplayTransaction();
+
         if (CharacterCurrencyInfos.Count == 0) LoadDataMCS();
         else
         {

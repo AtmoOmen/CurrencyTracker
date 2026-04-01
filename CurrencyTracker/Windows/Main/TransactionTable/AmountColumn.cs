@@ -1,6 +1,4 @@
 using CurrencyTracker.Manager;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 

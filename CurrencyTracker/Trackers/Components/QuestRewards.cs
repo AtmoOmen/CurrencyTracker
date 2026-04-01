@@ -1,27 +1,25 @@
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
-using Dalamud.Memory;
 using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class QuestRewards : TrackerComponentBase
 {
-
-    private InventoryHandler? inventoryHandler;
-    private static TaskHelper? TaskHelper;
+    private        InventoryHandler? inventoryHandler;
+    private static TaskHelper?       TaskHelper;
 
     protected override void OnInit()
     {
         TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "JournalResult", OnQuestRewards);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "JournalResult", OnQuestRewards);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "JournalResult", OnQuestRewards);
     }
 
@@ -33,8 +31,8 @@ public class QuestRewards : TrackerComponentBase
         switch (type)
         {
             case AddonEvent.PostSetup:
-                inventoryHandler ??= new InventoryHandler();
-                HandlerManager.ChatHandler.IsBlocked = true;
+                inventoryHandler                     ??= new InventoryHandler();
+                HandlerManager.ChatHandler.IsBlocked =   true;
                 break;
             case AddonEvent.PreFinalize:
                 var atkValue  = addon->AtkValues[1];
@@ -48,12 +46,18 @@ public class QuestRewards : TrackerComponentBase
 
     private bool? CheckQuestRewards(string questName)
     {
-        if (OccupiedInEvent || BetweenAreas) return false;
+        if (DService.Instance().Condition.IsOccupiedInEvent || DService.Instance().Condition.IsBetweenAreas) return false;
 
         DService.Instance().Log.Debug($"Quest {questName} Finished, Currency Change Check Starts.");
         var items = inventoryHandler?.Items ?? [];
-        TrackerManager.CheckCurrencies(items, string.Empty, $"({Service.Lang.GetText("Quest", questName)})",
-                                        RecordChangeType.All, 9);
+        TrackerManager.CheckCurrencies
+        (
+            items,
+            string.Empty,
+            $"({Service.Lang.GetText("Quest", questName)})",
+            RecordChangeType.All,
+            9
+        );
         DService.Instance().Log.Debug("Currency Change Check Completes.");
 
         HandlerManager.ChatHandler.IsBlocked = false;

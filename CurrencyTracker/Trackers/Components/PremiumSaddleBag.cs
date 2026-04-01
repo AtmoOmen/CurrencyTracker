@@ -1,24 +1,22 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class PremiumSaddleBag : TrackerComponentBase
 {
-
     public static readonly InventoryType[] PSaddleBagInventories =
     [
         InventoryType.PremiumSaddleBag1, InventoryType.PremiumSaddleBag1
     ];
 
     internal static Dictionary<uint, long> InventoryItemCount = [];
-    private string windowTitle = string.Empty;
+    private         string                 windowTitle        = string.Empty;
 
     private static TaskHelper? TaskHelper;
 
@@ -26,7 +24,7 @@ public class PremiumSaddleBag : TrackerComponentBase
     {
         TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "InventoryBuddy", OnPremiumSaddleBag);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "InventoryBuddy", OnPremiumSaddleBag);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "InventoryBuddy", OnPremiumSaddleBag);
     }
 
@@ -42,7 +40,7 @@ public class PremiumSaddleBag : TrackerComponentBase
             case AddonEvent.PreFinalize:
                 TaskHelper.Abort();
 
-                TrackerManager.CheckCurrencies(InventoryItemCount.Keys, string.Empty, string.Empty, 0, 21, TransactionFileCategory.SaddleBag);
+                TrackerManager.CheckCurrencies(InventoryItemCount.Keys, string.Empty, string.Empty,       0, 21, TransactionFileCategory.SaddleBag);
                 TrackerManager.CheckCurrencies(InventoryItemCount.Keys, string.Empty, $"({windowTitle})", 0, 21);
 
                 InventoryItemCount.Clear();

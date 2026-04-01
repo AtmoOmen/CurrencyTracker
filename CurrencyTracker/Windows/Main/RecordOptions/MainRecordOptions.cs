@@ -2,19 +2,15 @@ using System;
 using System.Linq;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
     private string exportFileName = string.Empty;
-    private int mergeThreshold;
+    private int    mergeThreshold;
 
     private void RecordOptionsUI()
     {
@@ -64,7 +60,7 @@ public partial class Main
 
     private void MergeTransactionHandler(bool oneWay)
     {
-        var threshold = (mergeThreshold == 0) ? int.MaxValue : mergeThreshold;
+        var threshold  = mergeThreshold == 0 ? int.MaxValue : mergeThreshold;
         var mergeCount = TransactionsHandler.MergeTransactionsByLocationAndThreshold(SelectedCurrencyID, threshold, oneWay);
 
         if (mergeCount > 0)
@@ -82,6 +78,7 @@ public partial class Main
         ImGui.EndDisabled();
 
         using var popup = ImRaii.Popup("ExportFileRename");
+
         if (popup.Success)
         {
             ImGui.AlignTextToFramePadding();
@@ -89,6 +86,7 @@ public partial class Main
 
             var exportDataFileType = Service.Config.ExportDataFileType;
             ImGui.SameLine();
+
             if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
             {
                 Service.Config.ExportDataFileType = 0;
@@ -96,6 +94,7 @@ public partial class Main
             }
 
             ImGui.SameLine();
+
             if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
             {
                 Service.Config.ExportDataFileType = 1;
@@ -107,13 +106,18 @@ public partial class Main
             ImGui.TextColored(ImGuiColors.DalamudYellow, Service.Lang.GetText("FileRenameLabel") + $"({Service.Lang.GetText("PressEnterToConfirm")})");
 
             ImGui.SetNextItemWidth(200f);
+
             if (ImGui.InputText("###ExportFileNameInput", ref exportFileName, 64, ImGuiInputTextFlags.EnterReturnsTrue))
             {
                 if (currentTransactions.Count == 0) return;
 
                 var selectedTransactions = currentTransactions.Select(x => x.Transaction).ToList();
-                DService.Instance().Chat.Print($"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}");
+                DService.Instance().Chat.Print
+                (
+                    $"{Service.Lang.GetText("ExportFileMessage")} {TransactionsHandler.ExportData(selectedTransactions, exportFileName, SelectedCurrencyID, exportDataFileType)}"
+                );
             }
+
             ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
 
             ImGui.SameLine();

@@ -26,9 +26,15 @@
         "resolved": "1.1.0",
         "contentHash": "pwe99NXsWkSeJdOwzcweorlyoB2frOlTU37QwzmnnxfRT5vRENXm4UOl5g4Nxq5V9lYOBWK1mZIozFfIlDVjYA=="
       },
+      "GuerrillaNtp": {
+        "type": "Transitive",
+        "resolved": "3.1.0",
+        "contentHash": "KebM3/iZtZWgeFuGTQJyWu+VQKAeq1xXY9bkSSDv27hALxDtSdJAfPnT8dWpl7ti2B3ajnMj70/VLXY4D3bupg=="
+      },
       "omentools": {
         "type": "Project",
         "dependencies": {
+          "GuerrillaNtp": "[3.1.0, )",
           "TinyPinyin": "[1.1.0, )"
         }
       }

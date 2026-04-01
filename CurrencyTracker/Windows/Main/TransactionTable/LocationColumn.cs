@@ -1,14 +1,12 @@
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Utility;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public class LocationColumn : TableColumn
 {
-    internal static bool IsLocationFilterEnabled;
+    internal static bool    IsLocationFilterEnabled;
     internal static string? SearchLocationName = string.Empty;
     internal static string? editedLocationName = string.Empty;
 
@@ -22,6 +20,7 @@ public class LocationColumn : TableColumn
         {
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
             ImGui.InputTextWithHint("###LocationSearch", Service.Lang.GetText("PleaseSearch"), ref SearchLocationName, 128);
+
             if (ImGui.IsItemDeactivatedAfterEdit())
             {
                 IsLocationFilterEnabled = !string.IsNullOrEmpty(SearchLocationName);
@@ -49,15 +48,29 @@ public class LocationColumn : TableColumn
             if (!string.IsNullOrEmpty(editedLocationName)) ImGui.TextWrapped(editedLocationName);
 
             ImGui.SetNextItemWidth(200f * ImGuiHelpers.GlobalScale);
-            if (ImGui.InputText($"##EditLocationContent_{i}", ref editedLocationName, 150,
-                                ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll))
+
+            if (ImGui.InputText
+                (
+                    $"##EditLocationContent_{i}",
+                    ref editedLocationName,
+                    150,
+                    ImGuiInputTextFlags.EnterReturnsTrue | ImGuiInputTextFlags.AutoSelectAll
+                ))
             {
-                var failCount = TransactionsHandler.EditSpecificTransactions(
-                    SelectedCurrencyID, [transaction.Transaction], editedLocationName, "None", CurrentView, CurrentViewID);
+                var failCount = TransactionsHandler.EditSpecificTransactions
+                (
+                    SelectedCurrencyID,
+                    [transaction.Transaction],
+                    editedLocationName,
+                    "None",
+                    CurrentView,
+                    CurrentViewID
+                );
 
                 if (failCount == 0) RefreshTable();
                 else DService.Instance().Chat.PrintError($"{Service.Lang.GetText("EditFailed")}");
             }
+
             ImGui.EndPopup();
         }
     }

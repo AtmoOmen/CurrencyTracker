@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
+using OmenTools.OmenService;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class Exchange : TrackerComponentBase
 {

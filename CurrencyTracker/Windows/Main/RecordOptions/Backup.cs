@@ -3,14 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Manager.Trackers.Components;
 using CurrencyTracker.Manager.Transactions;
-using Dalamud.Interface;
+using CurrencyTracker.Trackers.Components;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
@@ -44,23 +40,32 @@ public partial class Main
         }
 
         ImGui.SameLine();
+
         if (ImGui.Button(Service.Lang.GetText("BackupAllCharacter")))
         {
             var failCharacters = new List<string>();
-            var successCount = 0;
+            var successCount   = 0;
 
             foreach (var character in Service.Config.CurrentActiveCharacter)
             {
-                var backupPath = Path.Join(P.PI.ConfigDirectory.FullName,
-                                           $"{character.Name}_{character.Server}");
-                if (string.IsNullOrEmpty(
-                        TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount)))
+                var backupPath = Path.Join
+                (
+                    P.PI.ConfigDirectory.FullName,
+                    $"{character.Name}_{character.Server}"
+                );
+                if (string.IsNullOrEmpty
+                    (
+                        TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount)
+                    ))
                     failCharacters.Add($"{character.Name}@{character.Server}");
                 else successCount++;
             }
 
-            DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp1", successCount) +
-                               (failCharacters.Count != 0 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : ""));
+            DService.Instance().Chat.Print
+            (
+                Service.Lang.GetText("BackupHelp1", successCount) +
+                (failCharacters.Count != 0 ? Service.Lang.GetText("BackupHelp2", failCharacters.Count) : "")
+            );
 
             if (failCharacters.Count != 0)
             {
@@ -75,10 +80,12 @@ public partial class Main
         var autoSaveEnabled = ComponentManager.TryGet<AutoSave>(out var component) && component.Initialized;
 
         var autoBackupText = Service.Lang.GetText("AutoBackup");
+
         if (autoSaveEnabled)
         {
             var countdown = AutoSave.NextAutoSaveTime - DateTime.Now;
-            autoBackupText = $"{Service.Lang.GetText("AutoBackup")} ({(countdown.TotalHours < 1 ? countdown.ToString(@"mm\:ss") : countdown.ToString(@"hh\:mm\:ss"))})";
+            autoBackupText =
+                $"{Service.Lang.GetText("AutoBackup")} ({(countdown.TotalHours < 1 ? countdown.ToString(@"mm\:ss") : countdown.ToString(@"hh\:mm\:ss"))})";
         }
 
         ImGui.TextColored(autoSaveEnabled ? ImGuiColors.DalamudYellow : ImGuiColors.DalamudGrey, autoBackupText);
@@ -113,6 +120,7 @@ public partial class Main
             var autoSaveInterval = Service.Config.AutoSaveInterval;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(140f);
+
             if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
             {
                 Service.Config.AutoSaveInterval = Math.Max(autoSaveInterval, 5);
@@ -123,6 +131,7 @@ public partial class Main
             }
 
             var isNotification = Service.Config.AutoSaveMessage;
+
             if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
             {
                 Service.Config.AutoSaveMessage = isNotification;
@@ -135,6 +144,7 @@ public partial class Main
     {
         var isSelected = Service.Config.AutoSaveMode == mode;
         ImGui.RadioButton(Service.Lang.GetText(textKey), isSelected);
+
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
             Service.Config.AutoSaveMode = mode;
@@ -149,9 +159,10 @@ public partial class Main
 
         var maxBackupFilesCount = Service.Config.MaxBackupFilesCount;
         ImGui.SetNextItemWidth(210f);
+
         if (ImGui.InputInt("", ref maxBackupFilesCount))
         {
-            maxBackupFilesCount = Math.Max(maxBackupFilesCount, 0);
+            maxBackupFilesCount                = Math.Max(maxBackupFilesCount, 0);
             Service.Config.MaxBackupFilesCount = maxBackupFilesCount;
             Service.Config.Save();
         }

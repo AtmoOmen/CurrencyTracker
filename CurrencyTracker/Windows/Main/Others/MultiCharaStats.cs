@@ -4,12 +4,9 @@ using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Utilities;
-using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
+using OmenTools.OmenService;
 using Task = System.Threading.Tasks.Task;
 
 namespace CurrencyTracker.Windows;
@@ -18,10 +15,10 @@ public partial class Main
 {
     internal static List<CharacterCurrencyInfo>  CharacterCurrencyInfos = [];
     private static  List<CharacterCurrencyInfo>? _characterCurrencyDicMCS;
-    
-    
+
+
     private static string searchFilterMCS = string.Empty;
-    private static int _currentPageMCS;
+    private static int    _currentPageMCS;
 
     private static void MultiCharaStatsUI()
     {
@@ -33,10 +30,13 @@ public partial class Main
             ImGui.OpenPopup("Multi-Chara Stats##CurrencyTracker");
         }
 
-        using var popup = ImRaii.Popup("Multi-Chara Stats##CurrencyTracker", 
-                                       ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse);
+        using var popup = ImRaii.Popup
+        (
+            "Multi-Chara Stats##CurrencyTracker",
+            ImGuiWindowFlags.AlwaysAutoResize | ImGuiWindowFlags.NoScrollbar | ImGuiWindowFlags.NoCollapse
+        );
         if (!popup) return;
-        
+
         MCSSubWindowUI();
     }
 
@@ -48,34 +48,50 @@ public partial class Main
             return;
         }
 
-        var itemCount = _characterCurrencyDicMCS.Count;
+        var itemCount  = _characterCurrencyDicMCS.Count;
         var startIndex = _currentPageMCS * 10;
-        var endIndex = Math.Min(startIndex + 10, itemCount);
+        var endIndex   = Math.Min(startIndex + 10, itemCount);
 
         ImGui.BeginGroup();
         ImGui.SetNextItemWidth(240f);
         ImGui.InputTextWithHint("##selectFilterMultiCharaStats", Service.Lang.GetText("PleaseSearch"), ref searchFilterMCS, 100);
+
         if (ImGui.IsItemDeactivatedAfterEdit())
         {
             _currentPageMCS = 0;
             _characterCurrencyDicMCS = string.IsNullOrWhiteSpace(searchFilterMCS)
                                            ? CharacterCurrencyInfos
                                            : CharacterCurrencyInfos
-                                             .Where(x => x.Character.Name.Contains(searchFilterMCS,
-                                                             StringComparison.OrdinalIgnoreCase) ||
-                                                         x.Character.Server.Contains(
-                                                             searchFilterMCS,
-                                                             StringComparison.OrdinalIgnoreCase))
+                                             .Where
+                                             (x => x.Character.Name.Contains
+                                                   (
+                                                       searchFilterMCS,
+                                                       StringComparison.OrdinalIgnoreCase
+                                                   ) ||
+                                                   x.Character.Server.Contains
+                                                   (
+                                                       searchFilterMCS,
+                                                       StringComparison.OrdinalIgnoreCase
+                                                   )
+                                             )
                                              .ToList();
         }
 
         ImGui.SameLine();
         ImGui.PushID("MultiCharaStatsPagingComponent");
-        UIHelper.PagingComponent(
+        UIHelper.PagingComponent
+        (
             () => _currentPageMCS = 0,
-            () => { if (_currentPageMCS > 0) _currentPageMCS--; },
-            () => { if (_currentPageMCS < (itemCount / 10) - 1) _currentPageMCS++; },
-            () => { _currentPageMCS = (itemCount / 10) - 1; });
+            () =>
+            {
+                if (_currentPageMCS > 0) _currentPageMCS--;
+            },
+            () =>
+            {
+                if (_currentPageMCS < itemCount / 10 - 1) _currentPageMCS++;
+            },
+            () => { _currentPageMCS = itemCount / 10 - 1; }
+        );
         ImGui.PopID();
 
         ImGui.SameLine();
@@ -83,12 +99,14 @@ public partial class Main
         ImGui.EndGroup();
 
         var itemWidth = (int)ImGui.GetItemRectSize().X;
-        var items = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
+        var items     = _characterCurrencyDicMCS.Skip(startIndex).Take(endIndex - startIndex);
+
         foreach (var info in items)
         {
             var previewValue = $"{info.Character.Name}@{info.Character.Server}";
 
             ImGui.SetNextItemWidth(itemWidth);
+
             if (ImGui.CollapsingHeader(previewValue))
             {
                 if (ImGui.BeginTable($"###{info.Character.ContentID}", 2, ImGuiTableFlags.Borders))
@@ -126,11 +144,13 @@ public partial class Main
                         Service.Config.Save();
                         ImGui.CloseCurrentPopup();
 
-                        Task.Run(() =>
-                        {
-                            LoadDataMCS();
-                            _characterCurrencyDicMCS = CharacterCurrencyInfos;
-                        });
+                        Task.Run
+                        (() =>
+                            {
+                                LoadDataMCS();
+                                _characterCurrencyDicMCS = CharacterCurrencyInfos;
+                            }
+                        );
                     }
                 }
 

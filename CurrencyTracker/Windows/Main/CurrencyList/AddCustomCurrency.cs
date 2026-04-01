@@ -4,24 +4,20 @@ using System.Linq;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers;
-using CurrencyTracker.Manager.Trackers.Handlers;
 using CurrencyTracker.Manager.Transactions;
+using CurrencyTracker.Trackers.Handlers;
 using CurrencyTracker.Utilities;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public partial class Main
 {
     private static Dictionary<string, uint>? _currencyDicACC;
-    private static string _searchFilterACC = string.Empty;
-    private static uint _currencyIDACC;
-    private static int _currentPageACC;
+    private static string                    _searchFilterACC = string.Empty;
+    private static uint                      _currencyIDACC;
+    private static int                       _currentPageACC;
 
     private static void AddCustomCurrencyUI(float buttonWidth)
     {
@@ -44,14 +40,18 @@ public partial class Main
 
             ImGui.SetNextItemWidth(210f);
             ImGui.SameLine();
-            if (ImGui.BeginCombo("###AddCustomCurrency",
-                                 _currencyIDACC != 0 ? CurrencyInfo.GetLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
-                                 ImGuiComboFlags.HeightLarge))
+
+            if (ImGui.BeginCombo
+                (
+                    "###AddCustomCurrency",
+                    _currencyIDACC != 0 ? CurrencyInfo.GetLocalName(_currencyIDACC) : Service.Lang.GetText("PleaseSelect"),
+                    ImGuiComboFlags.HeightLarge
+                ))
             {
                 var itemCount = _currencyDicACC.Count;
 
                 var startIndex = _currentPageACC * 10;
-                var endIndex = Math.Min(startIndex + 10, itemCount);
+                var endIndex   = Math.Min(startIndex + 10, itemCount);
 
                 ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
                 ImGui.InputTextWithHint("##SearchFilterACC", Service.Lang.GetText("PleaseSearch"), ref _searchFilterACC, 100);
@@ -60,16 +60,25 @@ public partial class Main
 
                 ImGui.SameLine();
                 ImGui.PushID("AddCustomCurrencyPagingComponent");
-                UIHelper.PagingComponent(
-                    () => _currentPageACC = 0, 
-                    () => { if (_currentPageACC > 0) _currentPageACC--; }, 
-                    () => { if (_currentPageACC < (itemCount / 10) - 1) _currentPageACC++; }, 
-                    () => { _currentPageACC = (itemCount / 10) - 1; });
+                UIHelper.PagingComponent
+                (
+                    () => _currentPageACC = 0,
+                    () =>
+                    {
+                        if (_currentPageACC > 0) _currentPageACC--;
+                    },
+                    () =>
+                    {
+                        if (_currentPageACC < itemCount / 10 - 1) _currentPageACC++;
+                    },
+                    () => { _currentPageACC = itemCount / 10 - 1; }
+                );
                 ImGui.PopID();
 
                 ImGui.Separator();
 
                 var items = _currencyDicACC.Skip(startIndex).Take(endIndex - startIndex);
+
                 foreach (var item in items)
                 {
                     ImGui.BeginDisabled(Service.Config.AllCurrencies.ContainsKey(item.Value));
@@ -86,6 +95,7 @@ public partial class Main
             ImGui.EndGroup();
 
             ImGui.SameLine();
+
             if (ImGuiOm.ButtonIcon("AddCustomCurrency", FontAwesomeIcon.Plus, "", true))
             {
                 if (_currencyIDACC == 0)
@@ -109,7 +119,7 @@ public partial class Main
                 currentTransactions = ApplyFilters(TransactionsHandler.LoadAllTransactions(SelectedCurrencyID)).ToDisplayTransaction();
 
                 _searchFilterACC = string.Empty;
-                _currencyIDACC = 0;
+                _currencyIDACC   = 0;
 
                 ImGui.CloseCurrentPopup();
                 ImGui.EndCombo();

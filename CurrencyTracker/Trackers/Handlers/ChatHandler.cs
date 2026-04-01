@@ -1,16 +1,14 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Handlers;
+namespace CurrencyTracker.Trackers.Handlers;
 
 public class ChatHandler : TrackerHandlerBase
 {
-
     private static TaskHelper? TaskHelper;
 
     private static readonly HashSet<ushort> ValidChatTypes = [0, 57, 62, 2110, 2105, 2238, 2622, 3001, 3006];

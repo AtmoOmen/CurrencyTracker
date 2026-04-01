@@ -1,13 +1,10 @@
 using CurrencyTracker.Manager;
-using Dalamud.Interface;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public class OrderColumn : TableColumn
 {
-    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } = 
+    public override ImGuiTableColumnFlags ColumnFlags { get; protected set; } =
         ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoResize;
 
     public override float ColumnWidthOrWeight { get; protected set; }
@@ -19,6 +16,7 @@ public class OrderColumn : TableColumn
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
 
         var icon = Service.Config.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
+
         if (ImGuiOm.SelectableIconCentered("ReverseSort", icon, false, ImGuiSelectableFlags.None, true))
         {
             Service.Config.ReverseSort = !Service.Config.ReverseSort;

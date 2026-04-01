@@ -1,28 +1,26 @@
 using System;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Windowing;
-using Dalamud.Bindings.ImGui;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
 namespace CurrencyTracker.Windows;
 
 public class DisplayTransaction
 {
     public Transaction Transaction { get; set; } = null!;
-    public bool Selected { get; set; }
+    public bool        Selected    { get; set; }
 }
 
 public partial class Main : Window, IDisposable
 {
     public static uint SelectedCurrencyID { get; set; } = 0;
 
-    private static bool _showRecordOptions = true;
-    private static bool _showOthers = true;
-    private static bool _shouldRefreshTransactions;
+    private static bool ShowRecordOptions = true;
+    private static bool ShowOthers        = true;
+    private static bool ShouldRefreshTransactions;
 
     private static TaskHelper? TaskHelper;
 
@@ -39,10 +37,10 @@ public partial class Main : Window, IDisposable
 
     public override void OnOpen()
     {
-        if (SelectedCurrencyID != 0 && _shouldRefreshTransactions)
+        if (SelectedCurrencyID != 0 && ShouldRefreshTransactions)
         {
             UpdateTransactions(SelectedCurrencyID, currentView, currentViewID);
-            _shouldRefreshTransactions = false;
+            ShouldRefreshTransactions = false;
         }
     }
 
@@ -50,9 +48,9 @@ public partial class Main : Window, IDisposable
     {
         if (!DService.Instance().ClientState.IsLoggedIn) return;
 
-        DrawCategory(ref _showRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
-        if (!_showRecordOptions && !_showOthers) ImGui.SameLine();
-        DrawCategory(ref _showOthers, Service.Lang.GetText("Category-Others"), OthersUI);
+        DrawCategory(ref ShowRecordOptions, Service.Lang.GetText("Category-RecordOptions"), RecordOptionsUI);
+        if (!ShowRecordOptions && !ShowOthers) ImGui.SameLine();
+        DrawCategory(ref ShowOthers, Service.Lang.GetText("Category-Others"), OthersUI);
 
         ImGui.Spacing();
         ImGui.Separator();

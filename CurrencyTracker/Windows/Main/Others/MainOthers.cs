@@ -2,12 +2,9 @@ using System.Threading.Tasks;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Utilities;
-using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Utility;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Windows;
@@ -80,12 +77,13 @@ public partial class Main
     // 界面语言切换功能 Language Switch
     private void LanguageSwitchUI()
     {
-        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Globe, "Languages")) 
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Globe, "Languages"))
             ImGui.OpenPopup("LanguagesList");
 
         if (ImGui.BeginPopup("LanguagesList"))
         {
             ImGui.BeginGroup();
+
             for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
             {
                 var languageInfo = LanguageManager.LanguageNames[i];
@@ -95,28 +93,35 @@ public partial class Main
 
                 if (i + 1 != LanguageManager.LanguageNames.Length) ImGui.Separator();
             }
+
             ImGui.EndGroup();
 
             ImGui.Separator();
             ImGui.Separator();
 
-            if (ImGuiOm.ButtonIconSelectable("UpdateTranslations",
-                                             isLangDownloading
-                                                 ? FontAwesomeIcon.Spinner
-                                                 : FontAwesomeIcon.CloudDownloadAlt,
-                                             Service.Lang.GetText("UpdateTranslations"), true))
+            if (ImGuiOm.ButtonIconSelectable
+                (
+                    "UpdateTranslations",
+                    isLangDownloading
+                        ? FontAwesomeIcon.Spinner
+                        : FontAwesomeIcon.CloudDownloadAlt,
+                    Service.Lang.GetText("UpdateTranslations"),
+                    true
+                ))
             {
                 if (!isLangDownloading)
                 {
                     isLangDownloading = true;
-                    isLangDownloaded = false;
-                    Task.Run(async () =>
-                    {
-                        await LanguageUpdater.DownloadLanguageFilesAsync();
-                        isLangDownloading = false;
-                        isLangDownloaded = true;
-                        Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
-                    });
+                    isLangDownloaded  = false;
+                    Task.Run
+                    (async () =>
+                        {
+                            await LanguageUpdater.DownloadLanguageFilesAsync();
+                            isLangDownloading = false;
+                            isLangDownloaded  = true;
+                            Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
+                        }
+                    );
                 }
             }
 

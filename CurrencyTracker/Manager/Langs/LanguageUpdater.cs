@@ -8,7 +8,9 @@ namespace CurrencyTracker.Manager.Langs;
 public class LanguageUpdater
 {
     private const string baseUrl = "https://raw.githubusercontent.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/";
-    private const string fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/"; // Mainly for CN players
+
+    private const string
+        fallbackBaseUrl = "https://raw.githubusercontents.com/AtmoOmen/CurrencyTracker/master/CurrencyTracker/Manager/Langs/"; // Mainly for CN players
 
     public static async Task DownloadLanguageFilesAsync()
     {
@@ -26,12 +28,13 @@ public class LanguageUpdater
 
     private static async Task<bool> TryDownloadLanguageFileAsync(HttpClient httpClient, string baseUrl, string language)
     {
-        var url = $"{baseUrl}{language}.resx";
+        var url           = $"{baseUrl}{language}.resx";
         var localFilePath = Path.Combine(LanguageManager.LangsDirectory, $"{language}.resx");
 
         try
         {
             var response = await httpClient.GetAsync(url);
+
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsByteArrayAsync();

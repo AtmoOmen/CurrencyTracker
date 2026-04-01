@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
@@ -12,22 +12,30 @@ using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
-using OmenTools.Helpers;
+using OmenTools.Interop.Game.Lumina;
+using OmenTools.OmenService;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public unsafe class WarpCosts : TrackerComponentBase
 {
-
     // 有效的 NPC 传送对话内容 Valid Content Shown in Addon
-    private static readonly List<string> ValidWarpText = [];
-    private static readonly uint[] tpCostCurrencies = [1, 7569];
+    private static readonly List<string> ValidWarpText    = [];
+    private static readonly uint[]       tpCostCurrencies = [1, 7569];
 
     // 包含金币传送点的区域 Territories that Have a Gil-Cost Warp
     private HashSet<uint> ValidGilWarpTerritories = [];
 
-    private delegate nint AddonReceiveEventDelegate(
-        AtkEventListener* self, AtkEventType eventType, uint eventParam, AtkEvent* eventData, ulong* inputData);
+    private delegate nint AddonReceiveEventDelegate
+    (
+        AtkEventListener* self,
+        AtkEventType      eventType,
+        uint              eventParam,
+        AtkEvent*         eventData,
+        ulong*            inputData
+    );
+
     private Hook<AddonReceiveEventDelegate>? SelectYesHook;
 
     private static TaskHelper? TaskManager;
@@ -37,10 +45,12 @@ public unsafe class WarpCosts : TrackerComponentBase
         TaskManager ??= new TaskHelper { TimeoutMS = 60000 };
 
         ValidGilWarpTerritories = LuminaGetter.Get<Warp>()
-                                        .Where(x => LuminaGetter.Get<WarpCondition>()
-                                                                .Any(y => y.Gil != 0 && x.WarpCondition.Value.RowId == y.RowId))
-                                        .Select(x => x.TerritoryType.Value.RowId)
-                                        .ToHashSet();
+                                              .Where
+                                              (x => LuminaGetter.Get<WarpCondition>()
+                                                                .Any(y => y.Gil != 0 && x.WarpCondition.Value.RowId == y.RowId)
+                                              )
+                                              .Select(x => x.TerritoryType.Value.RowId)
+                                              .ToHashSet();
 
         ValidWarpText.Clear();
         ValidWarpText.Add(LuminaWrapper.GetItemName(1));
@@ -54,7 +64,7 @@ public unsafe class WarpCosts : TrackerComponentBase
         switch (type)
         {
             case AddonEvent.PostSetup:
-                var addon = (AddonSelectYesno*)SelectYesno;
+                var addon   = (AddonSelectYesno*)SelectYesno;
                 var address = (nint)addon->YesButton->AtkComponentBase.AtkEventListener.VirtualTable[2].ReceiveEvent;
                 SelectYesHook ??= DService.Instance().Hook.HookFromAddress<AddonReceiveEventDelegate>(address, SelectYesDetour);
                 SelectYesHook?.Enable();
@@ -70,11 +80,11 @@ public unsafe class WarpCosts : TrackerComponentBase
     {
         if (eventType == AtkEventType.MouseClick)
         {
-            if (!ValidGilWarpTerritories.Contains(GameState.TerritoryType) || !SelectYesno->IsAddonAndNodesReady()) 
+            if (!ValidGilWarpTerritories.Contains(GameState.TerritoryType) || !SelectYesno->IsAddonAndNodesReady())
                 return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             var addon = (AddonSelectYesno*)SelectYesno;
-            var text = addon->PromptText->NodeText.StringPtr.ExtractText();
+            var text  = addon->PromptText->NodeText.StringPtr.ExtractText();
             if (string.IsNullOrEmpty(text)) return SelectYesHook.Original(self, eventType, eventParam, eventData, inputData);
 
             if (ValidWarpText.Any(x => text.Contains(x, StringComparison.OrdinalIgnoreCase)))
@@ -110,23 +120,33 @@ public unsafe class WarpCosts : TrackerComponentBase
 
         if (isBetweenArea)
         {
-            TrackerManager.CheckCurrencies(tpCostCurrencies, PreviousLocationName,
-                                            $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})",
-                                            RecordChangeType.Negative, 15);
+            TrackerManager.CheckCurrencies
+            (
+                tpCostCurrencies,
+                PreviousLocationName,
+                $"({Service.Lang.GetText("TeleportTo", CurrentLocationName)})",
+                RecordChangeType.Negative,
+                15
+            );
         }
         else
         {
-            TrackerManager.CheckCurrencies(tpCostCurrencies, CurrentLocationName,
-                                            $"({Service.Lang.GetText("TeleportWithinArea")})",
-                                            RecordChangeType.Negative, 16);
+            TrackerManager.CheckCurrencies
+            (
+                tpCostCurrencies,
+                CurrentLocationName,
+                $"({Service.Lang.GetText("TeleportWithinArea")})",
+                RecordChangeType.Negative,
+                16
+            );
         }
 
         HandlerManager.ChatHandler.IsBlocked = false;
         return true;
     }
 
-    private static bool IsStillOnTeleport() => 
-        BetweenAreas || OccupiedInEvent;
+    private static bool IsStillOnTeleport() =>
+        DService.Instance().Condition.IsBetweenAreas || DService.Instance().Condition.IsOccupiedInEvent;
 
     protected override void OnUninit()
     {

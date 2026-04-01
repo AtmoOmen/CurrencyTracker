@@ -1,24 +1,17 @@
 using System.Collections.Generic;
-using CurrencyTracker.Infos;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Inventory.InventoryEventArgTypes;
 
-namespace CurrencyTracker.Manager.Trackers.Handlers;
+namespace CurrencyTracker.Trackers.Handlers;
 
 public class InventoryHandler : TrackerHandlerBase
 {
-
     public HashSet<uint> Items { get; set; } = [];
 
-    public InventoryHandler()
-    {
+    public InventoryHandler() =>
         Init();
-    }
 
-    protected override void OnInit()
-    {
-        DService.Instance().Inventory.InventoryChangedRaw += OnInventoryChangedRaw;
-    }
+    protected override void OnInit() =>
+        DService.Instance().GameInventory.InventoryChangedRaw += OnInventoryChangedRaw;
 
     private void OnInventoryChangedRaw(IReadOnlyCollection<InventoryEventArgs> events)
     {
@@ -31,7 +24,7 @@ public class InventoryHandler : TrackerHandlerBase
 
     protected override void OnUninit()
     {
-        DService.Instance().Inventory.InventoryChangedRaw -= OnInventoryChangedRaw;
+        DService.Instance().GameInventory.InventoryChangedRaw -= OnInventoryChangedRaw;
 
         Items.Clear();
     }

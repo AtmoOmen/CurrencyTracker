@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using CurrencyTracker.Infos;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Manager;
 using Lumina.Excel.Sheets;
+using OmenTools.Interop.Game.Lumina;
 
-namespace CurrencyTracker.Manager.Trackers.Handlers;
+namespace CurrencyTracker.Trackers.Handlers;
 
 public class TerritoryHandler : TrackerHandlerBase
 {
@@ -25,18 +25,20 @@ public class TerritoryHandler : TrackerHandlerBase
     private static void LoadTerritoryNames()
     {
         TerritoryNames ??= LuminaGetter.Get<TerritoryType>()
-                                  .Select(x => new
-                                  {
-                                      ZoneID = x.RowId,
-                                      PlaceName = x.PlaceName.ValueNullable?.Name.ToString() ?? string.Empty,
-                                  })
-                                  .Where(x => !string.IsNullOrWhiteSpace(x.PlaceName))
-                                  .ToDictionary(x => x.ZoneID, x => x.PlaceName);
+                                       .Select
+                                       (x => new
+                                           {
+                                               ZoneID    = x.RowId,
+                                               PlaceName = x.PlaceName.ValueNullable?.Name.ToString() ?? string.Empty
+                                           }
+                                       )
+                                       .Where(x => !string.IsNullOrWhiteSpace(x.PlaceName))
+                                       .ToDictionary(x => x.ZoneID, x => x.PlaceName);
     }
 
     private static void InitLocation()
     {
-        CurrentLocationID = PreviousLocationID = DService.Instance().ClientState.TerritoryType;
+        CurrentLocationID   = PreviousLocationID   = DService.Instance().ClientState.TerritoryType;
         CurrentLocationName = PreviousLocationName = GetLocationName(CurrentLocationID);
     }
 
@@ -44,10 +46,10 @@ public class TerritoryHandler : TrackerHandlerBase
     {
         if (IsBlocked) return;
 
-        PreviousLocationID = CurrentLocationID;
+        PreviousLocationID   = CurrentLocationID;
         PreviousLocationName = CurrentLocationName;
-        CurrentLocationID = zone;
-        CurrentLocationName = GetLocationName(CurrentLocationID);
+        CurrentLocationID    = zone;
+        CurrentLocationName  = GetLocationName(CurrentLocationID);
     }
 
     private static string GetLocationName(uint locationId) =>
@@ -55,7 +57,7 @@ public class TerritoryHandler : TrackerHandlerBase
 
     private static void ResetLocations()
     {
-        PreviousLocationID = CurrentLocationID = 0;
+        PreviousLocationID   = CurrentLocationID   = 0;
         PreviousLocationName = CurrentLocationName = string.Empty;
     }
 

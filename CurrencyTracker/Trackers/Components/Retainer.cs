@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Trackers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using OmenTools.Helpers;
+using OmenTools.Threading.TaskHelper;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class Retainer : TrackerComponentBase
 {
-
     public static readonly InventoryType[] RetainerInventories =
     [
         InventoryType.RetainerPage1, InventoryType.RetainerPage2, InventoryType.RetainerPage3,
@@ -22,9 +21,9 @@ public class Retainer : TrackerComponentBase
         InventoryType.RetainerPage7, InventoryType.RetainerMarket
     ];
 
-    private bool isOnRetainer;
-    private ulong currentRetainerID;
-    private string retainerWindowName = string.Empty;
+    private                 bool   isOnRetainer;
+    private                 ulong  currentRetainerID;
+    private                 string retainerWindowName = string.Empty;
     private static readonly uint[] retainerCurrencies = [1, 21072]; // Gil and Venture
 
     internal static Dictionary<ulong, Dictionary<uint, long>> InventoryItemCount = []; // Retainer ID - Currency ID : Amount
@@ -41,8 +40,8 @@ public class Retainer : TrackerComponentBase
             Service.Config.Save();
         }
 
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerList", OnRetainerList);
-        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup, "RetainerGrid0", OnRetainerInventory);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "RetainerList",  OnRetainerList);
+        DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "RetainerGrid0", OnRetainerInventory);
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, "RetainerGrid0", OnRetainerInventory);
     }
 
@@ -58,9 +57,9 @@ public class Retainer : TrackerComponentBase
             var retainer = retainerManager->GetRetainerBySortedIndex(i);
             if (retainer == null) break;
 
-            var retainerID = retainer->RetainerId;
+            var retainerID   = retainer->RetainerId;
             var retainerName = retainer->NameString;
-            var retainerGil = retainer->Gil;
+            var retainerGil  = retainer->Gil;
 
             var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
 
@@ -68,26 +67,41 @@ public class Retainer : TrackerComponentBase
 
             if (!InventoryItemCount.TryGetValue(retainerID, out var itemCount))
             {
-                itemCount = [];
+                itemCount                      = [];
                 InventoryItemCount[retainerID] = itemCount;
             }
 
             itemCount[1] = retainerGil;
 
             retainerWindowName = args.Addon.ToStruct()->GetWindowTitle();
-            TrackerManager.CheckCurrencies(retainerCurrencies, CurrentLocationName, "", RecordChangeType.All, 22,
-                                            TransactionFileCategory.Retainer, retainerID);
-            TrackerManager.CheckCurrencies(retainerCurrencies, CurrentLocationName,
-                                            $"({retainerWindowName} {retainerName})", RecordChangeType.All, 22,
-                                            TransactionFileCategory.Inventory, retainerID);
+            TrackerManager.CheckCurrencies
+            (
+                retainerCurrencies,
+                CurrentLocationName,
+                "",
+                RecordChangeType.All,
+                22,
+                TransactionFileCategory.Retainer,
+                retainerID
+            );
+            TrackerManager.CheckCurrencies
+            (
+                retainerCurrencies,
+                CurrentLocationName,
+                $"({retainerWindowName} {retainerName})",
+                RecordChangeType.All,
+                22,
+                TransactionFileCategory.Inventory,
+                retainerID
+            );
         }
 
         Service.Config.Save();
 
         if (!isOnRetainer)
         {
-            isOnRetainer = true;
-            HandlerManager.ChatHandler.IsBlocked = true;
+            isOnRetainer                         =  true;
+            HandlerManager.ChatHandler.IsBlocked =  true;
             DService.Instance().Framework.Update += RetainerUIWatcher;
         }
     }
@@ -98,9 +112,10 @@ public class Retainer : TrackerComponentBase
         if (retainerManager == null) return;
 
         currentRetainerID = retainerManager->LastSelectedRetainerId;
+
         if (!InventoryItemCount.TryGetValue(currentRetainerID, out var value))
         {
-            value = [];
+            value                                 = [];
             InventoryItemCount[currentRetainerID] = value;
         }
 
@@ -114,11 +129,26 @@ public class Retainer : TrackerComponentBase
 
                 var retainerName = retainerManager->GetActiveRetainer()->NameString;
 
-                TrackerManager.CheckCurrencies(value.Keys, "", "", RecordChangeType.All,
-                                                24, TransactionFileCategory.Retainer, currentRetainerID);
-                TrackerManager.CheckCurrencies(value.Keys, "",
-                                                $"({retainerWindowName} {retainerName})", RecordChangeType.All, 24,
-                                                TransactionFileCategory.Inventory, currentRetainerID);
+                TrackerManager.CheckCurrencies
+                (
+                    value.Keys,
+                    "",
+                    "",
+                    RecordChangeType.All,
+                    24,
+                    TransactionFileCategory.Retainer,
+                    currentRetainerID
+                );
+                TrackerManager.CheckCurrencies
+                (
+                    value.Keys,
+                    "",
+                    $"({retainerWindowName} {retainerName})",
+                    RecordChangeType.All,
+                    24,
+                    TransactionFileCategory.Inventory,
+                    currentRetainerID
+                );
                 break;
         }
     }
@@ -137,15 +167,15 @@ public class Retainer : TrackerComponentBase
         if (!isOnRetainer)
         {
             DService.Instance().Framework.Update -= RetainerUIWatcher;
-            HandlerManager.ChatHandler.IsBlocked = false;
+            HandlerManager.ChatHandler.IsBlocked =  false;
             return;
         }
 
         if (!DService.Instance().Condition[ConditionFlag.OccupiedSummoningBell])
         {
             DService.Instance().Framework.Update -= RetainerUIWatcher;
-            isOnRetainer = false;
-            currentRetainerID = 0;
+            isOnRetainer                         =  false;
+            currentRetainerID                    =  0;
             InventoryItemCount.Clear();
             HandlerManager.ChatHandler.IsBlocked = false;
         }
@@ -156,9 +186,9 @@ public class Retainer : TrackerComponentBase
         DService.Instance().AddonLifecycle.UnregisterListener(OnRetainerList);
         DService.Instance().AddonLifecycle.UnregisterListener(OnRetainerInventory);
 
-        isOnRetainer = false;
+        isOnRetainer       = false;
         retainerWindowName = string.Empty;
-        currentRetainerID = 0;
+        currentRetainerID  = 0;
         InventoryItemCount.Clear();
 
         DService.Instance().Framework.Update -= RetainerUIWatcher;

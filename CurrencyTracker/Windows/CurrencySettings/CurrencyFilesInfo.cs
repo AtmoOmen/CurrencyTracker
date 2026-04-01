@@ -4,8 +4,6 @@ using CurrencyTracker.Infos;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
@@ -16,9 +14,10 @@ public partial class CurrencySettings
         if (ImGui.CollapsingHeader($"{Service.Lang.GetText("DataFiles")}"))
         {
             var filesInfo = GetCurrencyFilesInfoCFI();
+
             foreach (var file in filesInfo)
             {
-                if (ImGui.Selectable($"{file.Key}")) 
+                if (ImGui.Selectable($"{file.Key}"))
                     FileHelper.OpenAndSelectFile(file.Value);
 
                 ImGuiOm.TooltipHover(Path.GetFileName(file.Value));
@@ -34,8 +33,8 @@ public partial class CurrencySettings
         foreach (var retainer in retainers.Keys)
             AddFilePath(TransactionFileCategory.Retainer, retainer);
 
-        AddFilePath(TransactionFileCategory.Inventory, 0);
-        AddFilePath(TransactionFileCategory.SaddleBag, 0);
+        AddFilePath(TransactionFileCategory.Inventory,        0);
+        AddFilePath(TransactionFileCategory.SaddleBag,        0);
         AddFilePath(TransactionFileCategory.PremiumSaddleBag, 0);
 
         return filePaths;
@@ -53,5 +52,4 @@ public partial class CurrencySettings
             }
         }
     }
-
 }

@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
-using CurrencyTracker.Manager.Trackers.Handlers;
-using CurrencyTracker.Trackers;
+using CurrencyTracker.Trackers.Handlers;
 using Dalamud.Game.Addon.Lifecycle;
 using Dalamud.Game.Addon.Lifecycle.AddonArgTypes;
 using Dalamud.Plugin.Services;
+using OmenTools.OmenService;
+using OmenTools.Threading;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class IslandSanctuary : TrackerComponentBase
 {
@@ -52,7 +54,7 @@ public class IslandSanctuary : TrackerComponentBase
 
     private void OnUpdate(IFramework framework)
     {
-        if (!Throttler.Throttle("IslandSanctuary-CheckWorkshop")) return;
+        if (!Throttler.Shared.Throttle("IslandSanctuary-CheckWorkshop")) return;
         var currentTarget = TargetManager.Target;
         var prevTarget    = TargetManager.PreviousTarget;
 
@@ -95,7 +97,7 @@ public class IslandSanctuary : TrackerComponentBase
 
     private void EndMJI(AddonEvent type, AddonArgs args)
     {
-        if (OccupiedInEvent) return;
+        if (DService.Instance().Condition.IsOccupiedInEvent) return;
 
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(items, "", $"({MJIModules[args.AddonName]})", RecordChangeType.All, 5);
@@ -113,7 +115,7 @@ public class IslandSanctuary : TrackerComponentBase
 
     private void EndMJIWindow(AddonEvent type, AddonArgs args)
     {
-        if (OccupiedInEvent) return;
+        if (DService.Instance().Condition.IsOccupiedInEvent) return;
 
         var items = inventoryHandler?.Items ?? [];
         TrackerManager.CheckCurrencies(items, "", $"({windowTitle})", RecordChangeType.All, 6);

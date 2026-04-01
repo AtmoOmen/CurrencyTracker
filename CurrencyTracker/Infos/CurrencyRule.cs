@@ -6,12 +6,12 @@ namespace CurrencyTracker.Infos;
 public class CurrencyRule
 {
     /// <summary>
-    /// false - Blacklist; true - Whitelist
+    ///     false - Blacklist; true - Whitelist
     /// </summary>
     public bool RegionRulesMode { get; set; }
 
     /// <summary>
-    /// Territory Type
+    ///     Territory Type
     /// </summary>
     public HashSet<uint> RestrictedAreas { get; set; } = [];
 

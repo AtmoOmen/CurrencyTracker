@@ -4,8 +4,6 @@ using System.Numerics;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
 
 namespace CurrencyTracker.Windows;
 
@@ -31,6 +29,7 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-AreaRestriction")}:");
 
         ImGui.BeginGroup();
+
         if (ImGui.RadioButton($"{Service.Lang.GetText("Blacklist")}", isBlacklist))
         {
             rules.RegionRulesMode = false;
@@ -38,6 +37,7 @@ public partial class CurrencySettings
         }
 
         ImGui.SameLine();
+
         if (ImGui.RadioButton($"{Service.Lang.GetText("Whitelist")}", !isBlacklist))
         {
             rules.RegionRulesMode = true;
@@ -53,6 +53,7 @@ public partial class CurrencySettings
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Main-CS-SelectArea")}:");
 
         var childSize = ImGuiHelpers.ScaledVector2(280f, 250f);
+
         using (ImRaii.Child("TerritoryRestrictedChildOut", childSize, true))
         {
             ImGui.SetNextItemWidth(-1f);
@@ -64,6 +65,7 @@ public partial class CurrencySettings
             using (ImRaii.Child("TerritoryRestrictedChildInner", ImGui.GetContentRegionAvail(), false, ImGuiWindowFlags.NoScrollbar))
             {
                 var tableSize = new Vector2(ImGui.GetContentRegionAvail().X, 0);
+
                 if (ImGui.BeginTable("###ZoneSelectTable", 2, ImGuiTableFlags.Borders, tableSize))
                 {
                     ImGui.TableSetupColumn("Checkbox", ImGuiTableColumnFlags.WidthFixed, CheckboxSize.X);
@@ -76,7 +78,8 @@ public partial class CurrencySettings
                     ImGui.Text("Location");
 
                     var selectedCopy = rules.RestrictedAreas;
-                    var data = TerritoryNames.OrderByDescending(x => selectedCopy.Contains(x.Key));
+                    var data         = TerritoryNames.OrderByDescending(x => selectedCopy.Contains(x.Key));
+
                     foreach (var (placeID, placeName) in data)
                     {
                         if (!string.IsNullOrWhiteSpace(searchFilterTR) &&
@@ -94,8 +97,13 @@ public partial class CurrencySettings
                             ImGui.EndDisabled();
 
                             ImGui.TableNextColumn();
-                            if (ImGui.Selectable($"{placeName} ({placeID})", state,
-                                                 ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.DontClosePopups))
+
+                            if (ImGui.Selectable
+                                (
+                                    $"{placeName} ({placeID})",
+                                    state,
+                                    ImGuiSelectableFlags.SpanAllColumns | ImGuiSelectableFlags.DontClosePopups
+                                ))
                             {
                                 if (!rules.RestrictedAreas.Remove(placeID))
                                     rules.RestrictedAreas.Add(placeID);

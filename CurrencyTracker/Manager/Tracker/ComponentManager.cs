@@ -14,8 +14,10 @@ public class ComponentManager
     static ComponentManager()
     {
         var componentTypes = Assembly.GetExecutingAssembly().GetTypes()
-                                     .Where(t => typeof(TrackerComponentBase).IsAssignableFrom(t) &&
-                                                 t is { IsInterface: false, IsAbstract: false });
+                                     .Where
+                                     (t => typeof(TrackerComponentBase).IsAssignableFrom(t) &&
+                                           t is { IsInterface: false, IsAbstract: false }
+                                     );
 
         foreach (var type in componentTypes)
         {
@@ -23,7 +25,7 @@ public class ComponentManager
             Components[type] = component;
         }
     }
-    
+
     public static void Init()
     {
         foreach (var (type, component) in Components)
@@ -36,6 +38,7 @@ public class ComponentManager
     public static void Load(TrackerComponentBase component)
     {
         var type = component.GetType();
+
         if (!Components.ContainsKey(type))
         {
             DService.Instance().Log.Error($"Failed to fetch component {type.Name}");
@@ -61,7 +64,7 @@ public class ComponentManager
             component.Uninit();
     }
 
-    public static T? Get<T>() where T : TrackerComponentBase 
+    public static T? Get<T>() where T : TrackerComponentBase
         => Components.TryGetValue(typeof(T), out var component) ? (T)component : null;
 
     public static bool TryGet<T>([NotNullWhen(true)] out T? component) where T : TrackerComponentBase
@@ -71,7 +74,7 @@ public class ComponentManager
             component = typedComponent;
             return true;
         }
-        
+
         component = null;
         return false;
     }

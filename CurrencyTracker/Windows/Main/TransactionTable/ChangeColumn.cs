@@ -2,17 +2,14 @@ using System;
 using System.Numerics;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.Bindings.ImGui;
-using OmenTools.ImGuiOm;
 
 namespace CurrencyTracker.Windows;
 
 public class ChangeColumn : TableColumn
 {
     internal static bool IsChangeFilterEnabled;
-    internal static int FilterMode;
-    internal static int FilterValue;
+    internal static int  FilterMode;
+    internal static int  FilterValue;
 
     public override void Header()
     {
@@ -35,7 +32,7 @@ public class ChangeColumn : TableColumn
         var textColor = Service.Config.ChangeTextColoring
                             ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
                               transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :
-                              new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
+                                                                   new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
                             : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
         using (ImRaii.PushColor(ImGuiCol.Text, textColor))
@@ -64,14 +61,17 @@ public class ChangeColumn : TableColumn
             if (ImGui.InputInt("##FilterValue", ref FilterValue, 100, 100000, flags: ImGuiInputTextFlags.EnterReturnsTrue))
                 RefreshTable();
 
-            ImGuiOm.HelpMarker(
-                $"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(FilterMode == 0 ? "Greater" : "Less"), FilterValue)}");
+            ImGuiOm.HelpMarker
+            (
+                $"{Service.Lang.GetText("CurrentSettings")}:\n{Service.Lang.GetText("ChangeFilterLabel", Service.Lang.GetText(FilterMode == 0 ? "Greater" : "Less"), FilterValue)}"
+            );
         }
     }
 
     private static void ColoringByChangeUI()
     {
         var isChangeColoring = Service.Config.ChangeTextColoring;
+
         if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
         {
             Service.Config.ChangeTextColoring = isChangeColoring;
@@ -83,17 +83,32 @@ public class ChangeColumn : TableColumn
             var positiveChangeColor = Service.Config.PositiveChangeColor;
             var negativeChangeColor = Service.Config.NegativeChangeColor;
 
-            ColoringByChangeHandler("PositiveColor", Service.Lang.GetText("PositiveChange"), ref positiveChangeColor,
-                                    color => Service.Config.PositiveChangeColor = color);
+            ColoringByChangeHandler
+            (
+                "PositiveColor",
+                Service.Lang.GetText("PositiveChange"),
+                ref positiveChangeColor,
+                color => Service.Config.PositiveChangeColor = color
+            );
 
             ImGui.SameLine();
-            ColoringByChangeHandler("NegativeColor", Service.Lang.GetText("NegativeChange"), ref negativeChangeColor,
-                                    color => Service.Config.NegativeChangeColor = color);
+            ColoringByChangeHandler
+            (
+                "NegativeColor",
+                Service.Lang.GetText("NegativeChange"),
+                ref negativeChangeColor,
+                color => Service.Config.NegativeChangeColor = color
+            );
         }
     }
 
-    private static void ColoringByChangeHandler(
-        string popupId, string text, ref Vector4 color, Action<Vector4> saveColorAction)
+    private static void ColoringByChangeHandler
+    (
+        string          popupId,
+        string          text,
+        ref Vector4     color,
+        Action<Vector4> saveColorAction
+    )
     {
         if (ImGui.ColorButton($"##{popupId}", color)) ImGui.OpenPopup(popupId);
 
@@ -104,6 +119,7 @@ public class ChangeColumn : TableColumn
         if (!popup.Success) return;
 
         ImGui.ColorPicker4($"###{popupId}{text}", ref color);
+
         if (ImGui.IsItemDeactivatedAfterEdit())
         {
             Service.Config.ChangeTextColoring = true;

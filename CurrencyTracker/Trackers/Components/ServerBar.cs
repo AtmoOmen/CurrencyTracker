@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Transactions;
-using CurrencyTracker.Trackers;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text.SeStringHandling;
+using OmenTools.OmenService;
 
-namespace CurrencyTracker.Manager.Trackers.Components;
+namespace CurrencyTracker.Trackers.Components;
 
 public class ServerBar : TrackerComponentBase
 {
-
-    internal static IDtrBarEntry             DtrEntry { get; } = DService.Instance().DtrBar.Get("CurrencyTracker");
+    internal static IDtrBarEntry             DtrEntry { get; } = DService.Instance().DTRBar.Get("CurrencyTracker");
     internal static long                     LastPeriodChanges;
     private static  CancellationTokenSource? _cancelTokenSource;
 
@@ -27,8 +27,8 @@ public class ServerBar : TrackerComponentBase
         DtrEntry.Shown   =  true;
         DtrEntry.OnClick += ToggleMainWindow;
 
-        TrackerManager.CurrencyChanged     += OnCurrencyChanged;
-        Service.Lang.LanguageChange += OnLangChanged;
+        TrackerManager.CurrencyChanged += OnCurrencyChanged;
+        Service.Lang.LanguageChange    += OnLangChanged;
         OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
     }
 
@@ -69,8 +69,10 @@ public class ServerBar : TrackerComponentBase
     private static SeString BuildDtrText(long thisPeriodChanges)
     {
         return new SeStringBuilder()
-               .AddText(
-                   $"$ {CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}")
+               .AddText
+               (
+                   $"$ {CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}"
+               )
                .Build();
     }
 
@@ -85,9 +87,11 @@ public class ServerBar : TrackerComponentBase
             TransactionFileCategory.Inventory, TransactionFileCategory.SaddleBag,
             TransactionFileCategory.PremiumSaddleBag
         };
-        
-        var periodChanges = categories.Sum(cate =>
-                                               CalculateChangesForCategory(cate, applyDateTimeFilter));
+
+        var periodChanges = categories.Sum
+        (cate =>
+             CalculateChangesForCategory(cate, applyDateTimeFilter)
+        );
 
         if (Service.Config.CharacterRetainers.TryGetValue(LocalPlayerState.ContentID, out var retainers))
             periodChanges += retainers.Sum(r => CalculateChangesForRetainer(r.Key, applyDateTimeFilter));
@@ -95,17 +99,35 @@ public class ServerBar : TrackerComponentBase
         return periodChanges;
     }
 
-    private static long CalculateChangesForCategory(
-        TransactionFileCategory category, Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter) =>
-        applyDateTimeFilter(TransactionsHandler.LoadAllTransactions(
-                                Service.Config.ServerBarDisplayCurrency, category))
+    private static long CalculateChangesForCategory
+    (
+        TransactionFileCategory                                  category,
+        Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter
+    ) =>
+        applyDateTimeFilter
+            (
+                TransactionsHandler.LoadAllTransactions
+                (
+                    Service.Config.ServerBarDisplayCurrency,
+                    category
+                )
+            )
             .Sum(x => x.Change);
 
-    private static long CalculateChangesForRetainer(
-        ulong retainerKey, Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter) =>
-        applyDateTimeFilter(TransactionsHandler.LoadAllTransactions(
-                                Service.Config.ServerBarDisplayCurrency,
-                                TransactionFileCategory.Retainer, retainerKey))
+    private static long CalculateChangesForRetainer
+    (
+        ulong                                                    retainerKey,
+        Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter
+    ) =>
+        applyDateTimeFilter
+            (
+                TransactionsHandler.LoadAllTransactions
+                (
+                    Service.Config.ServerBarDisplayCurrency,
+                    TransactionFileCategory.Retainer,
+                    retainerKey
+                )
+            )
             .Sum(x => x.Change);
 
     private static IEnumerable<Transaction> ApplyDateTimeFilter(IEnumerable<Transaction> transactions)
@@ -137,8 +159,10 @@ public class ServerBar : TrackerComponentBase
         return (startTime, endTime);
     }
 
-    private static (DateTime startTime, DateTime endTime) GetPreviousPeriod(
-        (DateTime startTime, DateTime endTime) period)
+    private static (DateTime startTime, DateTime endTime) GetPreviousPeriod
+    (
+        (DateTime startTime, DateTime endTime) period
+    )
     {
         var duration = period.endTime - period.startTime;
         return (period.startTime      - duration, period.startTime);
@@ -159,7 +183,7 @@ public class ServerBar : TrackerComponentBase
     private static void DisposeCancelSource()
     {
         if (_cancelTokenSource == null) return;
-        
+
         _cancelTokenSource.Cancel();
         _cancelTokenSource.Dispose();
         _cancelTokenSource = null;
@@ -167,8 +191,8 @@ public class ServerBar : TrackerComponentBase
 
     protected override void OnUninit()
     {
-        TrackerManager.CurrencyChanged     -= OnCurrencyChanged;
-        Service.Lang.LanguageChange -= OnLangChanged;
+        TrackerManager.CurrencyChanged -= OnCurrencyChanged;
+        Service.Lang.LanguageChange    -= OnLangChanged;
 
         DisposeCancelSource();
     }
