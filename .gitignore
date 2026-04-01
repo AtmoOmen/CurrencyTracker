@@ -2,9 +2,8 @@
 obj/
 bin/
 *.user
-CurrencyTracker/CurrencyTracker.csproj
-CurrencyTracker/CurrencyTracker.csproj
-Changelog.txt
-.cr/
-debug.log
-/.idea
+.idea/
+.dotnet/
+.qoder/
+
+.fake

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
+using Timer = System.Timers.Timer;
 
 namespace CurrencyTracker.Trackers.Components;
 
@@ -20,7 +21,7 @@ public class AutoSave : TrackerComponentBase
         LastAutoSaveTime = DateTime.Now;
         NextAutoSaveTime = LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
 
-        AutoSaveTimer           ??= new Timer(1000);
+        AutoSaveTimer           ??= new(1000);
         AutoSaveTimer.Elapsed   +=  OnAutoSave;
         AutoSaveTimer.AutoReset =   true;
         AutoSaveTimer.Enabled   =   true;

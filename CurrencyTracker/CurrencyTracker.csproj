@@ -1,86 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<Project Sdk="Dalamud.CN.NET.Sdk/14.0.1">
+<Project Sdk="Dalamud.CN.NET.Sdk/14.0.2">
     <PropertyGroup>
+        <Title>Currency Tracker</Title>
+        <Description>To tracks your all currencies</Description>
         <Authors>AtmoOmen</Authors>
         <Version>1.6.5.0</Version>
-        <Description>A plugin that tracks all your currencies</Description>
+        <PackageLicenseExpression>AGPL-3.0-or-later</PackageLicenseExpression>
     </PropertyGroup>
 
     <PropertyGroup>
-        <Nullable>enable</Nullable>
-        <LangVersion>latest</LangVersion>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>true</ImplicitUsings>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
-        <PlatformTarget>AnyCPU</PlatformTarget>
-        <GenerateErrorForMissingTargetingPacks>false</GenerateErrorForMissingTargetingPacks>
-        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
         <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
-        <NoWarn>1701;1702;CS0414;CS8601;CS8602;CS8604;CS8603;IDE1006;IDE0300;MSB3270;MSB324;CS0649;CS8714</NoWarn>
+        <SatelliteResourceLanguages>xxx</SatelliteResourceLanguages>
+        <NoWarn>1701;1702;CS0414;CS8601;CS8602;CS8604;CS8603;IDE1006;IDE0300;MSB3270;MSB324;CS0649;CA2211;CS8509;CS8625;MSB3305;CS8618;CS8600;CS8605;CS8620</NoWarn>
+        <DebugType>none</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <Optimize>True</Optimize>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="bin\**"/>
-        <EmbeddedResource Remove="bin\**"/>
-        <None Remove="bin\**"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <EmbeddedResource Remove="Manager\Langs\ChineseSimplified.resx"/>
-        <EmbeddedResource Remove="Manager\Langs\ChineseTraditional.resx"/>
-        <EmbeddedResource Remove="Manager\Langs\English.resx"/>
-        <EmbeddedResource Remove="Manager\Langs\French.resx"/>
-        <EmbeddedResource Remove="Manager\Langs\German.resx"/>
-        <EmbeddedResource Remove="Manager\Langs\Spanish.resx"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Remove="CurrencyTracker.csproj.DotSettings"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="..\Assets\icon.png" Link="images\icon.png">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="Manager\Langs\ChineseSimplified.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="Manager\Langs\ChineseTraditional.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="Manager\Langs\English.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="Manager\Langs\French.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="Manager\Langs\German.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-        <None Include="Manager\Langs\Spanish.resx">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+        <None Include="..\Assets\icon.png" CopyToOutputDirectory="Always" Link="images\icon.png" />
+        <None Include="Manager\Langs\*.resx" CopyToOutputDirectory="Always"/>
+        <None Include="CurrencyTracker.json" CopyToOutputDirectory="Always"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="IntervalUtility" Version="1.0.0"/>
         <PackageReference Include="TinyPinyin" Version="1.1.0"/>
-    </ItemGroup>
 
-    <ItemGroup>
         <ProjectReference Include="..\OmenTools\OmenTools.csproj"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Update="CurrencyTracker.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 
 </Project>
