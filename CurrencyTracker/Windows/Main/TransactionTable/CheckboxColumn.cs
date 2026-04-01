@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Linq;
 using System.Text;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Utility;
@@ -91,7 +92,7 @@ public class CheckboxColumn : TableColumn
                 return;
             }
 
-            var isCSV = Service.Config.ExportDataFileType == 0;
+            var isCSV = PluginConfig.Instance().ExportDataFileType == 0;
             var header = isCSV
                              ? Service.Lang.GetText("ExportFileCSVHeader")
                              : Service.Lang.GetText("ExportFileMDHeader1");
@@ -148,7 +149,7 @@ public class CheckboxColumn : TableColumn
                 selectedTransactions,
                 "",
                 SelectedCurrencyID,
-                Service.Config.ExportDataFileType,
+                PluginConfig.Instance().ExportDataFileType,
                 CurrentView,
                 CurrentViewID
             );

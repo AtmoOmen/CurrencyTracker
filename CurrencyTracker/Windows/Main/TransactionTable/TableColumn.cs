@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 
 namespace CurrencyTracker.Windows;
 
 public abstract class TableColumn
 {
-    public         bool                  IsVisible           => Service.Config.ColumnsVisibility[GetType().Name.Replace("Column", "")];
+    public         bool                  IsVisible           => PluginConfig.Instance().ColumnsVisibility[GetType().Name.Replace("Column", "")];
     public virtual ImGuiTableColumnFlags ColumnFlags         { get; protected set; } = ImGuiTableColumnFlags.None;
     public virtual float                 ColumnWidthOrWeight { get; protected set; } = 150;
 

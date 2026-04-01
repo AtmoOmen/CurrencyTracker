@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using CurrencyTracker.Internal;
 
 namespace CurrencyTracker.Manager.Transactions;
 
@@ -68,7 +69,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
@@ -94,7 +95,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Error parsing entire data file: {ex.Message}");
         }
 
@@ -117,7 +118,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
@@ -137,7 +138,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Fail to add individual transaction to the data file retroactively: {ex.Message}");
         }
     }
@@ -156,7 +157,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            TransactionsHandler.BackupTransactions(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }
@@ -173,7 +174,7 @@ public class Transaction : IEquatable<Transaction>
         }
         catch (IOException ex)
         {
-            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+            await TransactionsHandler.BackupTransactionsAsync(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Log.Error($"Failed to overwrite the entire transactions to the data file: {ex.Message}");
         }
     }

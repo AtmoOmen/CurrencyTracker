@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
@@ -37,7 +38,7 @@ public partial class Main
         if (SelectedCurrencyID == 0) return;
 
         var windowWidth = ImGui.GetContentRegionAvail().X -
-                          Service.Config.ChildWidthOffset -
+                          PluginConfig.Instance().ChildWidthOffset -
                           185 * ImGuiHelpers.GlobalScale;
 
         ImGui.SameLine();
@@ -130,7 +131,7 @@ public partial class Main
     private static void TransactionTablePagingUI(float windowWidth)
     {
         var pageCount = currentTransactions.Count != 0
-                            ? (int)Math.Ceiling((double)currentTransactions.Count / Service.Config.RecordsPerPage)
+                            ? (int)Math.Ceiling((double)currentTransactions.Count / PluginConfig.Instance().RecordsPerPage)
                             : 0;
         currentPage = pageCount > 0 ? Math.Clamp(currentPage, 0, pageCount - 1) : 0;
 
@@ -168,8 +169,8 @@ public partial class Main
         ImGui.EndGroup();
         tablePagingComponentsWidth = (int)ImGui.GetItemRectSize().X;
 
-        visibleStartIndex = currentPage * Service.Config.RecordsPerPage;
-        visibleEndIndex   = Math.Min(visibleStartIndex + Service.Config.RecordsPerPage, currentTransactions.Count);
+        visibleStartIndex = currentPage * PluginConfig.Instance().RecordsPerPage;
+        visibleEndIndex   = Math.Min(visibleStartIndex + PluginConfig.Instance().RecordsPerPage, currentTransactions.Count);
 
         // 鼠标滚轮控制 Logic controlling Mouse Wheel Flipping
         if (!ImGui.IsPopupOpen("", ImGuiPopupFlags.AnyPopup))
@@ -201,7 +202,7 @@ public partial class Main
                 .ToDisplayTransaction();
         }
 
-        foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
+        foreach (var retainer in PluginConfig.Instance().CharacterRetainers[P.CurrentCharacter.ContentID])
         {
             if (ImGui.Selectable
                 (
@@ -276,7 +277,7 @@ public partial class Main
             {
                 if (table)
                 {
-                    foreach (var column in Service.Config.ColumnsVisibility.Keys)
+                    foreach (var column in PluginConfig.Instance().ColumnsVisibility.Keys)
                     {
                         ImGui.TableNextColumn();
                         ColumnDisplayCheckbox(column);
@@ -297,41 +298,41 @@ public partial class Main
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, textWidthOffset);
 
-            var childWidthOffset = Service.Config.ChildWidthOffset;
+            var childWidthOffset = PluginConfig.Instance().ChildWidthOffset;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(widthWidthOffset);
 
             if (ImGui.InputInt("##ChildFrameWidthOffset", ref childWidthOffset, 10))
             {
                 childWidthOffset                = Math.Max(-240, Math.Min(childWidthOffset, (int)windowWidth - 700));
-                Service.Config.ChildWidthOffset = childWidthOffset;
-                Service.Config.Save();
+                PluginConfig.Instance().ChildWidthOffset = childWidthOffset;
+                PluginConfig.Instance().Save();
             }
 
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, textPerPage);
 
-            var transactionsPerPage = Service.Config.RecordsPerPage;
+            var transactionsPerPage = PluginConfig.Instance().RecordsPerPage;
             ImGui.SetNextItemWidth(widthPerPage);
             ImGui.SameLine();
 
             if (ImGui.InputInt("##TransactionsPerPage", ref transactionsPerPage))
             {
                 transactionsPerPage           = Math.Max(transactionsPerPage, 1);
-                Service.Config.RecordsPerPage = transactionsPerPage;
-                Service.Config.Save();
+                PluginConfig.Instance().RecordsPerPage = transactionsPerPage;
+                PluginConfig.Instance().Save();
             }
         }
     }
 
     private static void ColumnDisplayCheckbox(string boolName)
     {
-        var isShowColumn = Service.Config.ColumnsVisibility[boolName];
+        var isShowColumn = PluginConfig.Instance().ColumnsVisibility[boolName];
 
         if (ImGui.Checkbox($"{Service.Lang.GetText(boolName)}##Display{boolName}Column", ref isShowColumn))
         {
-            Service.Config.ColumnsVisibility[boolName] = isShowColumn;
-            Service.Config.Save();
+            PluginConfig.Instance().ColumnsVisibility[boolName] = isShowColumn;
+            PluginConfig.Instance().Save();
         }
     }
 

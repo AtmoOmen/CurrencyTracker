@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Manager.Tracker;
@@ -14,6 +15,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
 using Dalamud.Utility;
+using OmenTools.OmenService;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Windows;
@@ -42,7 +44,7 @@ public class Settings : Window, IDisposable
                         // 邮件附件 Letter Attachments
                         ModuleCheckbox<LetterAttachments>(Service.Lang.GetText("LetterAttachments-RecordMailAttachments"));
 
-                        if (Service.Config.ComponentEnabled["LetterAttachments"])
+                        if (PluginConfig.Instance().ComponentEnabled["LetterAttachments"])
                         {
                             NoteContentInputText
                             (
@@ -55,7 +57,7 @@ public class Settings : Window, IDisposable
                         ImGui.Separator();
                         ModuleCheckbox<TeleportCosts>(Service.Lang.GetText("TeleportCosts-RecordTPCosts"));
 
-                        if (Service.Config.ComponentEnabled["TeleportCosts"])
+                        if (PluginConfig.Instance().ComponentEnabled["TeleportCosts"])
                         {
                             SecondaryRadioButtons
                             (
@@ -68,7 +70,7 @@ public class Settings : Window, IDisposable
 
                         ModuleCheckbox<WarpCosts>(Service.Lang.GetText("WarpCosts-RecordTPCosts"));
 
-                        if (Service.Config.ComponentEnabled["TeleportCosts"] || Service.Config.ComponentEnabled["WarpCosts"])
+                        if (PluginConfig.Instance().ComponentEnabled["TeleportCosts"] || PluginConfig.Instance().ComponentEnabled["WarpCosts"])
                         {
                             NoteContentInputText
                             (
@@ -77,19 +79,19 @@ public class Settings : Window, IDisposable
                             );
                         }
 
-                        if (Service.Config.ComponentEnabled["WarpCosts"]) NoteContentInputText("TeleportWithinArea", null);
+                        if (PluginConfig.Instance().ComponentEnabled["WarpCosts"]) NoteContentInputText("TeleportWithinArea", null);
 
                         // 任务 Quest
                         ImGui.Separator();
                         ModuleCheckbox<QuestRewards>(Service.Lang.GetText("QuestRewards-RecordQuestRewards"));
-                        if (Service.Config.ComponentEnabled["QuestRewards"])
+                        if (PluginConfig.Instance().ComponentEnabled["QuestRewards"])
                             NoteContentInputText("Quest", [Service.Lang.GetText("ParamEP-QuestName")]);
 
                         // 无人岛 Island Sanctuary
                         ImGui.Separator();
                         ModuleCheckbox<IslandSanctuary>(Service.Lang.GetText("IslandSanctuary-RecordISResult"));
 
-                        if (Service.Config.ComponentEnabled["IslandSanctuary"])
+                        if (PluginConfig.Instance().ComponentEnabled["IslandSanctuary"])
                         {
                             NoteContentInputText("IslandFarm",     null);
                             NoteContentInputText("IslandPasture",  null);
@@ -104,7 +106,7 @@ public class Settings : Window, IDisposable
                     {
                         ModuleCheckbox<DutyRewards>(Service.Lang.GetText("DutyRewards-RecordDutyRewards"));
 
-                        if (Service.Config.ComponentEnabled["DutyRewards"])
+                        if (PluginConfig.Instance().ComponentEnabled["DutyRewards"])
                         {
                             SecondaryCheckbox
                             (
@@ -115,13 +117,13 @@ public class Settings : Window, IDisposable
 
                         ImGui.Separator();
                         ModuleCheckbox<FateRewards>(Service.Lang.GetText("FateRewards-RecordFateRewards"));
-                        if (Service.Config.ComponentEnabled["FateRewards"])
+                        if (PluginConfig.Instance().ComponentEnabled["FateRewards"])
                             NoteContentInputText("Fate", [Service.Lang.GetText("ParamEP-FateName")]);
 
                         ImGui.Separator();
                         ModuleCheckbox<MobDrops>(Service.Lang.GetText("MobDrops-RecordMobDrops"));
 
-                        if (Service.Config.ComponentEnabled["MobDrops"])
+                        if (PluginConfig.Instance().ComponentEnabled["MobDrops"])
                         {
                             NoteContentInputText
                             (
@@ -139,13 +141,13 @@ public class Settings : Window, IDisposable
                         // 交换 Exchange
                         ModuleCheckbox<Exchange>(Service.Lang.GetText("Exchange-RecordExchangeResult"));
                         ModuleCheckbox<SpecialExchange>(Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
-                        if (Service.Config.ComponentEnabled["Exchange"] || Service.Config.ComponentEnabled["SpecialExchange"])
+                        if (PluginConfig.Instance().ComponentEnabled["Exchange"] || PluginConfig.Instance().ComponentEnabled["SpecialExchange"])
                             NoteContentInputText("ExchangeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
 
                         // 交易 Trade
                         ImGui.Separator();
                         ModuleCheckbox<Trade>(Service.Lang.GetText("Trade-RecordTradeTarget"));
-                        if (Service.Config.ComponentEnabled["Trade"])
+                        if (PluginConfig.Instance().ComponentEnabled["Trade"])
                             NoteContentInputText("TradeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
                         ImGui.EndTabItem();
                     }
@@ -158,7 +160,7 @@ public class Settings : Window, IDisposable
                         ImGui.Separator();
                         ModuleCheckbox<TripleTriad>(Service.Lang.GetText("TripleTriad-RecordTTResult"));
 
-                        if (Service.Config.ComponentEnabled["TripleTriad"])
+                        if (PluginConfig.Instance().ComponentEnabled["TripleTriad"])
                         {
                             NoteContentInputText
                             (
@@ -184,7 +186,7 @@ public class Settings : Window, IDisposable
                 ModuleCheckbox<CurrencyAddonExpand>(Service.Lang.GetText("CurrencyUIEdit-ShowTotalGilAmount"));
                 ModuleCheckbox<ServerBar>(Service.Lang.GetText("DisplayChangesInServerBar"));
 
-                if (Service.Config.ComponentEnabled["ServerBar"])
+                if (PluginConfig.Instance().ComponentEnabled["ServerBar"])
                 {
                     ImGui.Indent();
 
@@ -194,20 +196,20 @@ public class Settings : Window, IDisposable
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
 
-                    if (ImGui.BeginCombo("###ServerBarDisplayCurrency", CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency), ImGuiComboFlags.HeightLarge))
+                    if (ImGui.BeginCombo("###ServerBarDisplayCurrency", CurrencyInfo.GetName(PluginConfig.Instance().ServerBarDisplayCurrency), ImGuiComboFlags.HeightLarge))
                     {
-                        foreach (var currency in Service.Config.AllCurrencies)
+                        foreach (var currency in PluginConfig.Instance().AllCurrencies)
                         {
                             if (ImGui.Selectable
                                 (
                                     currency.Value,
-                                    currency.Key == Service.Config.ServerBarDisplayCurrency
+                                    currency.Key == PluginConfig.Instance().ServerBarDisplayCurrency
                                 ))
                             {
-                                Service.Config.ServerBarDisplayCurrency = currency.Key;
+                                PluginConfig.Instance().ServerBarDisplayCurrency = currency.Key;
                                 ServerBar.OnCurrencyChanged(currency.Key, TransactionFileCategory.Inventory, 0);
 
-                                Service.Config.Save();
+                                PluginConfig.Instance().Save();
                             }
                         }
 
@@ -220,20 +222,20 @@ public class Settings : Window, IDisposable
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(150f * ImGuiHelpers.GlobalScale);
 
-                    if (ImGui.BeginCombo("###ServerBarCycleMode", ServerBar.GetCycleModeLoc(Service.Config.ServerBarCycleMode)))
+                    if (ImGui.BeginCombo("###ServerBarCycleMode", ServerBar.GetCycleModeLoc(PluginConfig.Instance().ServerBarCycleMode)))
                     {
                         foreach (var serverBarCycleMode in Enum.GetValues<ServerBarCycleMode>())
                         {
                             if (ImGui.Selectable
                                 (
                                     ServerBar.GetCycleModeLoc(serverBarCycleMode),
-                                    serverBarCycleMode == Service.Config.ServerBarCycleMode
+                                    serverBarCycleMode == PluginConfig.Instance().ServerBarCycleMode
                                 ))
                             {
-                                Service.Config.ServerBarCycleMode = serverBarCycleMode;
-                                ServerBar.OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
+                                PluginConfig.Instance().ServerBarCycleMode = serverBarCycleMode;
+                                ServerBar.OnCurrencyChanged(PluginConfig.Instance().ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
 
-                                Service.Config.Save();
+                                PluginConfig.Instance().Save();
                             }
                         }
 
@@ -259,27 +261,27 @@ public class Settings : Window, IDisposable
                 ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
                 ImGui.SameLine();
 
-                var exportDataFileType = Service.Config.ExportDataFileType;
+                var exportDataFileType = PluginConfig.Instance().ExportDataFileType;
 
                 if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
                 {
-                    Service.Config.ExportDataFileType = 0;
-                    Service.Config.Save();
+                    PluginConfig.Instance().ExportDataFileType = 0;
+                    PluginConfig.Instance().Save();
                 }
 
                 ImGui.SameLine();
 
                 if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
                 {
-                    Service.Config.ExportDataFileType = 1;
-                    Service.Config.Save();
+                    PluginConfig.Instance().ExportDataFileType = 1;
+                    PluginConfig.Instance().Save();
                 }
 
                 // 备份 Backup
                 ImGui.Separator();
                 ModuleCheckbox<AutoSave>(Service.Lang.GetText("AutoBackup"));
 
-                if (Service.Config.ComponentEnabled["AutoSave"])
+                if (PluginConfig.Instance().ComponentEnabled["AutoSave"])
                 {
                     SecondaryRadioButtons
                     (
@@ -294,21 +296,21 @@ public class Settings : Window, IDisposable
 
                     ImGui.SameLine();
                     ImGui.SetNextItemWidth(140f);
-                    var autoSaveInterval = Service.Config.AutoSaveInterval;
+                    var autoSaveInterval = PluginConfig.Instance().AutoSaveInterval;
 
                     if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
                     {
                         if (autoSaveInterval < 5) autoSaveInterval = 5;
-                        Service.Config.AutoSaveInterval = autoSaveInterval;
-                        Service.Config.Save();
+                        PluginConfig.Instance().AutoSaveInterval = autoSaveInterval;
+                        PluginConfig.Instance().Save();
                     }
 
-                    var isNotification = Service.Config.AutoSaveMessage;
+                    var isNotification = PluginConfig.Instance().AutoSaveMessage;
 
                     if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
                     {
-                        Service.Config.AutoSaveMessage = !Service.Config.AutoSaveMessage;
-                        Service.Config.Save();
+                        PluginConfig.Instance().AutoSaveMessage = !PluginConfig.Instance().AutoSaveMessage;
+                        PluginConfig.Instance().Save();
                     }
 
                     ImGui.Unindent();
@@ -319,13 +321,13 @@ public class Settings : Window, IDisposable
 
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-                var maxBackupFilesCount = Service.Config.MaxBackupFilesCount;
+                var maxBackupFilesCount = PluginConfig.Instance().MaxBackupFilesCount;
 
                 if (ImGui.InputInt("##MaxBackupFilesCount", ref maxBackupFilesCount))
                 {
                     if (maxBackupFilesCount < 0) maxBackupFilesCount = 0;
-                    Service.Config.MaxBackupFilesCount = maxBackupFilesCount;
-                    Service.Config.Save();
+                    PluginConfig.Instance().MaxBackupFilesCount = maxBackupFilesCount;
+                    PluginConfig.Instance().Save();
                 }
 
                 ImGui.EndTabItem();
@@ -345,28 +347,12 @@ public class Settings : Window, IDisposable
                 if (ImGui.Button("GitHub")) Util.OpenLink("https://github.com/AtmoOmen/CurrencyTracker/");
                 ImGui.PopStyleColor();
 
-                ImGui.SameLine();
-                ImGui.PushStyleColor(ImGuiCol.Button, ImGuiColors.ParsedPurple);
-
-                if (ImGui.Button("Discord Thread"))
-                {
-                    Util.OpenLink
-                    (
-                        "https://discord.com/channels/581875019861328007/1019646133305344090/threads/1163039624957010021"
-                    );
-                }
-
-                ImGui.PopStyleColor();
-
-                ImGui.SameLine();
-                if (ImGui.Button("QQ 频道")) Util.OpenLink("https://pd.qq.com/s/fttirpnql");
-
                 ImGui.Separator();
                 ImGui.TextColored(ImGuiColors.DalamudYellow, "Languages & Translators:");
 
                 foreach (var languageInfo in LanguageManager.LanguageNames)
                 {
-                    if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != Service.Config.SelectedLanguage)
+                    if (ImGui.Button(languageInfo.DisplayName) && languageInfo.Language != PluginConfig.Instance().SelectedLanguage)
                         Service.Lang.SwitchLanguage(languageInfo.Language);
 
                     ImGui.SameLine();
@@ -375,26 +361,27 @@ public class Settings : Window, IDisposable
 
                 ImGui.Separator();
 
+                var main = WindowManager.Instance().Get<Main>();
                 if (ImGuiOm.ButtonIconSelectable
                     (
                         "UpdateTranslations",
-                        P.Main.isLangDownloading
+                        main.isLangDownloading
                             ? FontAwesomeIcon.Spinner
                             : FontAwesomeIcon.CloudDownloadAlt,
                         Service.Lang.GetText("UpdateTranslations")
                     ))
                 {
-                    if (!P.Main.isLangDownloading)
+                    if (!main.isLangDownloading)
                     {
-                        P.Main.isLangDownloading = true;
-                        P.Main.isLangDownloaded  = false;
+                        main.isLangDownloading = true;
+                        main.isLangDownloaded  = false;
                         Task.Run
                         (async () =>
                             {
                                 await LanguageUpdater.DownloadLanguageFilesAsync();
-                                P.Main.isLangDownloading = false;
-                                P.Main.isLangDownloaded  = true;
-                                Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
+                                main.isLangDownloading = false;
+                                main.isLangDownloaded  = true;
+                                Service.Lang.SwitchLanguage(PluginConfig.Instance().SelectedLanguage);
                             }
                         );
                     }
@@ -437,19 +424,19 @@ public class Settings : Window, IDisposable
         if (!ComponentManager.TryGet<T>(out var component)) return;
 
         var boolName = component.GetType().Name;
-        if (!Service.Config.ComponentEnabled.TryGetValue(boolName, out var tempBool)) return;
+        if (!PluginConfig.Instance().ComponentEnabled.TryGetValue(boolName, out var tempBool)) return;
 
         using (ImRaii.PushId($"{boolName}_{component.ToString()}"))
         {
             if (ImGuiOm.CheckboxColored($"{checkboxLabel}", ref tempBool))
             {
-                Service.Config.ComponentEnabled[boolName] ^= true;
-                if (Service.Config.ComponentEnabled[boolName])
+                PluginConfig.Instance().ComponentEnabled[boolName] ^= true;
+                if (PluginConfig.Instance().ComponentEnabled[boolName])
                     ComponentManager.Load(component);
                 else
                     ComponentManager.Unload(component);
 
-                Service.Config.Save();
+                PluginConfig.Instance().Save();
             }
 
             if (!string.IsNullOrEmpty(help))
@@ -462,15 +449,15 @@ public class Settings : Window, IDisposable
 
     private static void SecondaryCheckbox(string boolName, string checkboxLabel, string help = "")
     {
-        var tempBool = Service.Config.ComponentProp[boolName];
+        var tempBool = PluginConfig.Instance().ComponentProp[boolName];
 
         ImGui.PushID($"{checkboxLabel}-{boolName}");
         ImGui.Indent();
 
         if (ImGui.Checkbox(checkboxLabel, ref tempBool))
         {
-            Service.Config.ComponentProp[boolName] = !Service.Config.ComponentProp[boolName];
-            Service.Config.Save();
+            PluginConfig.Instance().ComponentProp[boolName] = !PluginConfig.Instance().ComponentProp[boolName];
+            PluginConfig.Instance().Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -492,26 +479,26 @@ public class Settings : Window, IDisposable
         string help = ""
     )
     {
-        var tempBool1 = Service.Config.ComponentProp[boolName1];
-        var tempBool2 = Service.Config.ComponentProp[boolName2];
+        var tempBool1 = PluginConfig.Instance().ComponentProp[boolName1];
+        var tempBool2 = PluginConfig.Instance().ComponentProp[boolName2];
 
         ImGui.PushID($"{buttonLabel1}-{buttonLabel2}-{buttonLabel1}-{buttonLabel2}");
         ImGui.Indent();
 
         if (ImGui.RadioButton(buttonLabel1, tempBool1))
         {
-            Service.Config.ComponentProp[boolName1] = true;
-            Service.Config.ComponentProp[boolName2] = false;
-            Service.Config.Save();
+            PluginConfig.Instance().ComponentProp[boolName1] = true;
+            PluginConfig.Instance().ComponentProp[boolName2] = false;
+            PluginConfig.Instance().Save();
         }
 
         ImGui.SameLine();
 
         if (ImGui.RadioButton(buttonLabel2, tempBool2))
         {
-            Service.Config.ComponentProp[boolName1] = false;
-            Service.Config.ComponentProp[boolName2] = true;
-            Service.Config.Save();
+            PluginConfig.Instance().ComponentProp[boolName1] = false;
+            PluginConfig.Instance().ComponentProp[boolName2] = true;
+            PluginConfig.Instance().Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -532,7 +519,7 @@ public class Settings : Window, IDisposable
         string help = ""
     )
     {
-        var propertyValue = typeof(Configuration).GetProperty(propertyName)?.GetValue(Service.Config);
+        var propertyValue = typeof(PluginConfig).GetProperty(propertyName)?.GetValue(PluginConfig.Instance());
 
         if (propertyValue is null) return;
 
@@ -544,16 +531,16 @@ public class Settings : Window, IDisposable
 
         if (ImGui.RadioButton(buttonLabel1, tempBool1))
         {
-            typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 0);
-            Service.Config.Save();
+            typeof(PluginConfig).GetProperty(propertyName)?.SetValue(PluginConfig.Instance(), 0);
+            PluginConfig.Instance().Save();
         }
 
         ImGui.SameLine();
 
         if (ImGui.RadioButton(buttonLabel2, tempBool2))
         {
-            typeof(Configuration).GetProperty(propertyName)?.SetValue(Service.Config, 1);
-            Service.Config.Save();
+            typeof(PluginConfig).GetProperty(propertyName)?.SetValue(PluginConfig.Instance(), 1);
+            PluginConfig.Instance().Save();
         }
 
         if (!string.IsNullOrEmpty(help))
@@ -568,7 +555,7 @@ public class Settings : Window, IDisposable
 
     private static void NoteContentInputText(string key, IReadOnlyList<string>? paramsEP)
     {
-        var textToShow = Service.Config.CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
+        var textToShow = PluginConfig.Instance().CustomNoteContents.TryGetValue(key, out var value) ? value : Service.Lang.GetOrigText(key);
         ImGui.PushID(key);
         ImGui.Indent();
 
@@ -580,8 +567,8 @@ public class Settings : Window, IDisposable
 
         if (ImGui.InputText("", ref textToShow, 50))
         {
-            Service.Config.CustomNoteContents[key] = textToShow;
-            Service.Config.Save();
+            PluginConfig.Instance().CustomNoteContents[key] = textToShow;
+            PluginConfig.Instance().Save();
         }
 
         if (ImGui.IsItemHovered())
@@ -607,8 +594,8 @@ public class Settings : Window, IDisposable
 
         if (ImGuiOm.ButtonIcon("", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
         {
-            Service.Config.CustomNoteContents.Remove(key);
-            Service.Config.Save();
+            PluginConfig.Instance().CustomNoteContents.Remove(key);
+            PluginConfig.Instance().Save();
         }
 
         ImGui.Unindent();

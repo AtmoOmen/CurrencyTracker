@@ -1,5 +1,6 @@
 using System;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
@@ -17,7 +18,7 @@ public partial class CurrencySettings : Window, IDisposable
 
     public override void Draw()
     {
-        if (P.Main == null || Main.SelectedCurrencyID == 0)
+        if (Main.SelectedCurrencyID == 0)
         {
             IsOpen = false;
             return;
@@ -67,7 +68,7 @@ public partial class CurrencySettings : Window, IDisposable
         using (ImRaii.Group())
         {
             ImGui.SetWindowFontScale(1.6f);
-            var currencyName = Service.Config.AllCurrencies[Main.SelectedCurrencyID];
+            var currencyName = PluginConfig.Instance().AllCurrencies[Main.SelectedCurrencyID];
 
             if (!isEditingCurrencyName)
             {
@@ -83,14 +84,14 @@ public partial class CurrencySettings : Window, IDisposable
             {
                 ImGui.SetNextItemWidth
                 (
-                    ImGui.CalcTextSize(Service.Config.AllCurrencies[Main.SelectedCurrencyID]).X +
+                    ImGui.CalcTextSize(PluginConfig.Instance().AllCurrencies[Main.SelectedCurrencyID]).X +
                     ImGui.GetStyle().FramePadding.X * 2
                 );
 
                 if (ImGui.InputText("##currencyName", ref editedCurrencyName, 100, ImGuiInputTextFlags.EnterReturnsTrue))
                 {
                     if (!editedCurrencyName.IsNullOrWhitespace() &&
-                        editedCurrencyName != Service.Config.AllCurrencies[Main.SelectedCurrencyID])
+                        editedCurrencyName != PluginConfig.Instance().AllCurrencies[Main.SelectedCurrencyID])
                     {
                         CurrencyInfo.RenameCurrency(Main.SelectedCurrencyID, editedCurrencyName);
                         isEditingCurrencyName = false;

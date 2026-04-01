@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Trackers;
 
 namespace CurrencyTracker.Manager.Tracker;
@@ -30,7 +31,7 @@ public class ComponentManager
     {
         foreach (var (type, component) in Components)
         {
-            if (!Service.Config.ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled) continue;
+            if (!PluginConfig.Instance().ComponentEnabled.TryGetValue(type.Name, out var enabled) || !enabled) continue;
             component.Init();
         }
     }
@@ -46,7 +47,7 @@ public class ComponentManager
         }
 
         component.Init();
-        Service.Config.ComponentEnabled[type.Name] = true;
+        PluginConfig.Instance().ComponentEnabled[type.Name] = true;
     }
 
     public static void Unload(TrackerComponentBase component)
@@ -55,7 +56,7 @@ public class ComponentManager
         if (!Components.ContainsKey(type)) return;
 
         component.Uninit();
-        Service.Config.ComponentEnabled[type.Name] = false;
+        PluginConfig.Instance().ComponentEnabled[type.Name] = false;
     }
 
     public static void Uninit()

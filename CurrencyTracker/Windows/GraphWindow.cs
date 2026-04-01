@@ -8,6 +8,7 @@ using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Windowing;
+using OmenTools.OmenService;
 
 namespace CurrencyTracker.Windows;
 
@@ -37,7 +38,7 @@ public class GraphWindow : Window, IDisposable
     {
         if (SelectedCurrencyID == 0)
         {
-            P.Graph.IsOpen = false;
+            WindowManager.Instance().Get<GraphWindow>().IsOpen = false;
             return;
         }
 

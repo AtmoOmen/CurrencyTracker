@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Langs;
 using CurrencyTracker.Utilities;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
 using Dalamud.Utility;
+using OmenTools.OmenService;
 using LanguageManager = CurrencyTracker.Manager.Langs.LanguageManager;
 
 namespace CurrencyTracker.Windows;
@@ -29,7 +31,7 @@ public partial class Main
 
         ImGui.SameLine();
         LanguageSwitchUI();
-        if (P.PI.IsDev) TestingFeaturesUI();
+        if (DService.Instance().PI.IsDev) TestingFeaturesUI();
     }
 
     // 打开数据文件夹 Open Data Folder
@@ -44,7 +46,7 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || currentTransactions.Count <= 1);
         if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.ChartBar, Service.Lang.GetText("Graphs")))
-            P.Graph.IsOpen = !P.Graph.IsOpen;
+            WindowManager.Instance().Get<GraphWindow>().IsOpen ^= true;
         ImGui.EndDisabled();
     }
 
@@ -87,7 +89,7 @@ public partial class Main
             for (var i = 0; i < LanguageManager.LanguageNames.Length; i++)
             {
                 var languageInfo = LanguageManager.LanguageNames[i];
-                if (ImGui.Selectable(languageInfo.DisplayName, Service.Config.SelectedLanguage == languageInfo.Language))
+                if (ImGui.Selectable(languageInfo.DisplayName, PluginConfig.Instance().SelectedLanguage == languageInfo.Language))
                     Service.Lang.SwitchLanguage(languageInfo.Language);
                 ImGuiOm.TooltipHover($"By: {string.Join(", ", languageInfo.Translators)}");
 
@@ -119,7 +121,7 @@ public partial class Main
                             await LanguageUpdater.DownloadLanguageFilesAsync();
                             isLangDownloading = false;
                             isLangDownloaded  = true;
-                            Service.Lang.SwitchLanguage(Service.Config.SelectedLanguage);
+                            Service.Lang.SwitchLanguage(PluginConfig.Instance().SelectedLanguage);
                         }
                     );
                 }

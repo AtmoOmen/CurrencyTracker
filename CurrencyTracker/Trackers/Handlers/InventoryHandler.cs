@@ -18,7 +18,7 @@ public class InventoryHandler : TrackerHandlerBase
         foreach (var eventArgs in events)
         {
             Items.Add(eventArgs.Item.ItemId);
-            if (P.PI.IsDev) DService.Instance().Log.Debug(eventArgs.ToString());
+            if (DService.Instance().PI.IsDev) DService.Instance().Log.Debug(eventArgs.ToString());
         }
     }
 

@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Components;
+using OmenTools.OmenService;
 
 namespace CurrencyTracker.Windows;
 
@@ -25,7 +27,8 @@ public partial class Main
 
     private void RecordSettingsUI()
     {
-        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, Service.Lang.GetText("Settings"))) P.Settings.IsOpen = !P.Settings.IsOpen;
+        if (ImGuiComponents.IconButtonWithText(FontAwesomeIcon.Cog, Service.Lang.GetText("Settings")))
+            WindowManager.Instance().Get<Settings>().IsOpen ^= true;
     }
 
     private void MergeTransactionUI()
@@ -84,21 +87,21 @@ public partial class Main
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("ExportFileType")}:");
 
-            var exportDataFileType = Service.Config.ExportDataFileType;
+            var exportDataFileType = PluginConfig.Instance().ExportDataFileType;
             ImGui.SameLine();
 
             if (ImGui.RadioButton(".csv", ref exportDataFileType, 0))
             {
-                Service.Config.ExportDataFileType = 0;
-                Service.Config.Save();
+                PluginConfig.Instance().ExportDataFileType = 0;
+                PluginConfig.Instance().Save();
             }
 
             ImGui.SameLine();
 
             if (ImGui.RadioButton(".md", ref exportDataFileType, 1))
             {
-                Service.Config.ExportDataFileType = 1;
-                Service.Config.Save();
+                PluginConfig.Instance().ExportDataFileType = 1;
+                PluginConfig.Instance().Save();
             }
 
             var nowTime = DateTime.Now.ToString("yyyy-MM-dd--HH-mm-ss");
@@ -118,10 +121,10 @@ public partial class Main
                 );
             }
 
-            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
+            ImGuiOm.TooltipHover($"{Service.Lang.GetText("FileRenameHelp1")} {PluginConfig.Instance().AllCurrencies[SelectedCurrencyID]}_{nowTime}.csv");
 
             ImGui.SameLine();
-            ImGui.Text($"_{Service.Config.AllCurrencies[SelectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
+            ImGui.Text($"_{PluginConfig.Instance().AllCurrencies[SelectedCurrencyID]}_{nowTime}{(exportDataFileType == 0 ? ".csv" : ".md")}");
         }
     }
 }

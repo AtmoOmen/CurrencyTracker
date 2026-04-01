@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using Dalamud.Game.Addon.Lifecycle;
@@ -34,10 +35,10 @@ public class Retainer : TrackerComponentBase
     {
         TaskHelper ??= new TaskHelper { TimeoutMS = int.MaxValue };
 
-        if (P.CurrentCharacter is { ContentID: var contentID } && !Service.Config.CharacterRetainers.ContainsKey(contentID))
+        if (P.CurrentCharacter is { ContentID: var contentID } && !PluginConfig.Instance().CharacterRetainers.ContainsKey(contentID))
         {
-            Service.Config.CharacterRetainers.Add(P.CurrentCharacter.ContentID, []);
-            Service.Config.Save();
+            PluginConfig.Instance().CharacterRetainers.Add(P.CurrentCharacter.ContentID, []);
+            PluginConfig.Instance().Save();
         }
 
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PostSetup,   "RetainerList",  OnRetainerList);
@@ -61,7 +62,7 @@ public class Retainer : TrackerComponentBase
             var retainerName = retainer->NameString;
             var retainerGil  = retainer->Gil;
 
-            var characterRetainers = Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID];
+            var characterRetainers = PluginConfig.Instance().CharacterRetainers[P.CurrentCharacter.ContentID];
 
             characterRetainers[retainerID] = retainerName;
 
@@ -96,7 +97,7 @@ public class Retainer : TrackerComponentBase
             );
         }
 
-        Service.Config.Save();
+        PluginConfig.Instance().Save();
 
         if (!isOnRetainer)
         {

@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using CurrencyTracker.Internal;
 using Dalamud.Game.Command;
 using Dalamud.Game.Text.SeStringHandling;
 
@@ -69,7 +70,7 @@ public partial class LanguageManager
     {
         if (languageName == Language) return;
 
-        LangsDirectory = Path.Join(Path.GetDirectoryName(P.PI.AssemblyLocation.FullName), "Manager", "Langs");
+        LangsDirectory = Path.Join(Path.GetDirectoryName(DService.Instance().PI.AssemblyLocation.FullName), "Manager", "Langs");
 
         if (isDev)
             resourceData = LoadResourceFile(devLangPath);
@@ -94,23 +95,13 @@ public partial class LanguageManager
         Language = languageName;
         LanguageChange?.Invoke(languageName);
 
-        DService.Instance().Command.RemoveHandler(CommandName);
-        DService.Instance().Command.AddHandler
-        (
-            CommandName,
-            new CommandInfo(P.OnCommand)
-            {
-                HelpMessage = GetText("CommandHelp") + "\n" + GetText("CommandHelp1")
-            }
-        );
-
-        Service.Config.SelectedLanguage = languageName;
-        Service.Config.Save();
+        PluginConfig.Instance().SelectedLanguage = languageName;
+        PluginConfig.Instance().Save();
     }
 
     public string GetText(string key, params object[] args)
     {
-        if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
+        if (!PluginConfig.Instance().CustomNoteContents.TryGetValue(key, out var format))
             format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key);
 
         if (string.IsNullOrEmpty(format))
@@ -127,7 +118,7 @@ public partial class LanguageManager
 
     public SeString GetSeString(string key, params object[] args)
     {
-        if (!Service.Config.CustomNoteContents.TryGetValue(key, out var format))
+        if (!PluginConfig.Instance().CustomNoteContents.TryGetValue(key, out var format))
             format = resourceData.TryGetValue(key, out var resValue) ? resValue : fbResourceData.GetValueOrDefault(key);
 
         var ssb   = new SeStringBuilder();

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Windows;
 using Dalamud.Game.Addon.Events;
@@ -117,14 +118,14 @@ public unsafe class MoneyAddonExpand : TrackerComponentBase
 
             if (ImGui.BeginTable($"###{characterCurrencyInfo.Character.ContentID}", 2, ImGuiTableFlags.BordersInnerH))
             {
-                foreach (var currency in Service.Config.OrderedOptions)
+                foreach (var currency in PluginConfig.Instance().OrderedOptions)
                 {
                     if (currency == 0) continue;
 
                     var amount = characterCurrencyInfo.CurrencyAmount.GetValueOrDefault(currency, 0);
                     if (amount == 0) continue;
 
-                    if (!Service.Config.AllCurrencies.TryGetValue(currency, out var name)) continue;
+                    if (!PluginConfig.Instance().AllCurrencies.TryGetValue(currency, out var name)) continue;
 
                     var texture = CurrencyInfo.GetIcon(currency);
 

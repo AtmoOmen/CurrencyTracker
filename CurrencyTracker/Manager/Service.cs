@@ -1,5 +1,6 @@
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager.Tracker;
 using Dalamud.Plugin;
 using OmenTools.OmenService;
@@ -13,29 +14,30 @@ public class Service
     {
         DService.Init(pi);
 
-        Config = pi.GetPluginConfig() as Configuration ?? new Configuration();
-        Config.Initialize(pi);
-
         InitLanguage();
         InitCharacter();
 
         TrackerManager.Init();
         CurrencyInfo.Init();
+        
+        PluginWindow.Init();
+        PluginCommand.Init();
     }
 
     public static void Uninit()
     {
+        PluginCommand.Uninit();
+        PluginWindow.Uninit();
+        
         TrackerManager.Dispose();
         CurrencyInfo.Uninit();
-
-        Config.Uninit();
-
+        
         DService.Uninit();
     }
 
     private static void InitLanguage()
     {
-        var playerLang = Config.SelectedLanguage;
+        var playerLang = PluginConfig.Instance().SelectedLanguage;
 
         if (string.IsNullOrEmpty(playerLang))
         {
@@ -43,8 +45,8 @@ public class Service
             if (LanguageManager.LanguageNames.All(x => x.Language != playerLang))
                 playerLang = "English";
 
-            Config.SelectedLanguage = playerLang;
-            Config.Save();
+            PluginConfig.Instance().SelectedLanguage = playerLang;
+            PluginConfig.Instance().Save();
         }
 
         Lang = new(playerLang);
@@ -58,6 +60,5 @@ public class Service
         P.CurrentCharacter = P.GetCurrentCharacter();
     }
 
-    public static Configuration   Config { get; set; } = null!;
     public static LanguageManager Lang   { get; set; } = null!;
 }

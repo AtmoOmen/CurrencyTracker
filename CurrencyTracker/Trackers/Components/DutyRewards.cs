@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Trackers.Handlers;
@@ -43,7 +44,7 @@ public class DutyRewards : TrackerComponentBase
             (
                 items,
                 PreviousLocationName,
-                Service.Config.ComponentProp["RecordContentName"]
+                PluginConfig.Instance().ComponentProp["RecordContentName"]
                     ? $"({DutyName})"
                     : string.Empty,
                 RecordChangeType.All,

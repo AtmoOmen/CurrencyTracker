@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Transactions;
@@ -39,7 +40,7 @@ public static class CurrencyInfo
 
     public static string GetName(uint currencyID)
     {
-        return Service.Config.AllCurrencies.TryGetValue(currencyID, out var currencyName)
+        return PluginConfig.Instance().AllCurrencies.TryGetValue(currencyID, out var currencyName)
                    ? currencyName
                    : GetLocalName(currencyID);
     }
@@ -91,7 +92,7 @@ public static class CurrencyInfo
             amount += currencyAmount ?? 0;
         }
 
-        if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var value))
+        if (PluginConfig.Instance().CharacterRetainers.TryGetValue(character.ContentID, out var value))
         {
             foreach (var retainer in value)
             {
@@ -119,7 +120,7 @@ public static class CurrencyInfo
                      TransactionFileCategory.PremiumSaddleBag
                  }) AddCurrencyAmountToDictionary(currencyID, character, category, 0, amountDic);
 
-        if (Service.Config.CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
+        if (PluginConfig.Instance().CharacterRetainers.TryGetValue(character.ContentID, out var retainers))
         {
             foreach (var retainer in retainers)
             {
@@ -175,36 +176,17 @@ public static class CurrencyInfo
 
     public static void RenameCurrency(uint currencyID, string editedCurrencyName)
     {
-        if (Service.Config.AllCurrencies.ContainsValue(editedCurrencyName))
+        if (PluginConfig.Instance().AllCurrencies.ContainsValue(editedCurrencyName))
         {
             DService.Instance().Chat.PrintError(Service.Lang.GetText("CurrencyRenameHelp1"));
             return;
         }
 
-        if (UpdateCurrencyName(currencyID, editedCurrencyName))
-        {
-            Main.UpdateTransactions(currencyID, Main.currentView, Main.currentViewID);
-            Main.ReloadOrderedOptions();
+        if (!PluginConfig.Instance().TryRenameCurrency(currencyID, editedCurrencyName)) return;
 
-            Service.Config.Save();
-        }
-
-        return;
-
-        bool UpdateCurrencyName(uint currencyId, string newName)
-        {
-            if (!Service.Config.PresetCurrencies.ContainsKey(currencyId) &&
-                !Service.Config.CustomCurrencies.ContainsKey(currencyId)) return false;
-
-            var targetCurrency = Service.Config.PresetCurrencies.ContainsKey(currencyId)
-                                     ? Service.Config.PresetCurrencies
-                                     : Service.Config.CustomCurrencies;
-            targetCurrency[currencyId] = newName;
-            Configuration.IsUpdated    = true;
-            Service.Config.Save();
-
-            return true;
-        }
+        Main.UpdateTransactions(currencyID, Main.currentView, Main.currentViewID);
+        Main.ReloadOrderedOptions();
+        PluginConfig.Instance().Save();
     }
 
     public static void Uninit() =>

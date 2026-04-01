@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
@@ -15,13 +16,13 @@ public partial class Main
 {
     internal static void ReloadOrderedOptions()
     {
-        var orderedOptionsSet = new HashSet<uint>(Service.Config.OrderedOptions);
-        var allCurrenciesSet  = new HashSet<uint>(Service.Config.AllCurrencyID);
+        var orderedOptionsSet = new HashSet<uint>(PluginConfig.Instance().OrderedOptions);
+        var allCurrenciesSet  = new HashSet<uint>(PluginConfig.Instance().AllCurrencies.Keys);
 
         if (!orderedOptionsSet.SetEquals(allCurrenciesSet))
         {
-            Service.Config.OrderedOptions = [.. allCurrenciesSet];
-            Service.Config.Save();
+            PluginConfig.Instance().OrderedOptions = [.. allCurrenciesSet];
+            PluginConfig.Instance().Save();
         }
     }
 
@@ -52,7 +53,7 @@ public partial class Main
         if (NoteColumn.IsNoteFilterEnabled)
             filteredTransactions = ApplyLocationOrNoteFilter(filteredTransactions, t => t.Note, NoteColumn.SearchNoteContent);
 
-        return Service.Config.ReverseSort ? filteredTransactions.OrderByDescending(getTimeStampFunc) : filteredTransactions;
+        return PluginConfig.Instance().ReverseSort ? filteredTransactions.OrderByDescending(getTimeStampFunc) : filteredTransactions;
 
         static DateTime getTimeStampFunc(Transaction t)
         {
@@ -73,7 +74,7 @@ public partial class Main
         if (string.IsNullOrEmpty(query))
             return transactions;
 
-        var isChineseSimplified = Service.Config.SelectedLanguage == "ChineseSimplified";
+        var isChineseSimplified = PluginConfig.Instance().SelectedLanguage == "ChineseSimplified";
         var queries = query.Split(',')
                            .Select
                            (q => new
@@ -149,7 +150,7 @@ public partial class Main
     {
         if (SelectedCurrencyID == 0 || currencyID != SelectedCurrencyID || currentView != category || currentView == category && currentViewID != ID) return;
 
-        if (!P.Main.IsOpen)
+        if (!WindowManager.Instance().Get<Main>().IsOpen)
         {
             ShouldRefreshTransactions = true;
             return;

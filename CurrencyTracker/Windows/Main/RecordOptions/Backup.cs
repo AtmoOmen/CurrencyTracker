@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Transactions;
@@ -35,7 +36,7 @@ public partial class Main
         if (ImGui.Button(Service.Lang.GetText("BackupCurrentCharacter")))
         {
             var filePath =
-                TransactionsHandler.BackupTransactions(P.PlayerDataFolder, Service.Config.MaxBackupFilesCount);
+                TransactionsHandler.BackupTransactions(P.PlayerDataFolder, PluginConfig.Instance().MaxBackupFilesCount);
             DService.Instance().Chat.Print(Service.Lang.GetText("BackupHelp4", filePath));
         }
 
@@ -46,16 +47,16 @@ public partial class Main
             var failCharacters = new List<string>();
             var successCount   = 0;
 
-            foreach (var character in Service.Config.CurrentActiveCharacter)
+            foreach (var character in PluginConfig.Instance().CurrentActiveCharacter)
             {
                 var backupPath = Path.Join
                 (
-                    P.PI.ConfigDirectory.FullName,
+                    DService.Instance().PI.ConfigDirectory.FullName,
                     $"{character.Name}_{character.Server}"
                 );
                 if (string.IsNullOrEmpty
                     (
-                        TransactionsHandler.BackupTransactions(backupPath, Service.Config.MaxBackupFilesCount)
+                        TransactionsHandler.BackupTransactions(backupPath, PluginConfig.Instance().MaxBackupFilesCount)
                     ))
                     failCharacters.Add($"{character.Name}@{character.Server}");
                 else successCount++;
@@ -98,7 +99,7 @@ public partial class Main
             else
                 ComponentManager.Load(component);
 
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
         }
 
         if (autoSaveEnabled)
@@ -117,38 +118,38 @@ public partial class Main
             ImGui.AlignTextToFramePadding();
             ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("Interval")}:");
 
-            var autoSaveInterval = Service.Config.AutoSaveInterval;
+            var autoSaveInterval = PluginConfig.Instance().AutoSaveInterval;
             ImGui.SameLine();
             ImGui.SetNextItemWidth(140f);
 
             if (ImGui.InputInt(Service.Lang.GetText("Minutes"), ref autoSaveInterval, 5, 10))
             {
-                Service.Config.AutoSaveInterval = Math.Max(autoSaveInterval, 5);
-                Service.Config.Save();
+                PluginConfig.Instance().AutoSaveInterval = Math.Max(autoSaveInterval, 5);
+                PluginConfig.Instance().Save();
 
                 AutoSave.LastAutoSaveTime = DateTime.Now;
-                AutoSave.NextAutoSaveTime = AutoSave.LastAutoSaveTime + TimeSpan.FromMinutes(Service.Config.AutoSaveInterval);
+                AutoSave.NextAutoSaveTime = AutoSave.LastAutoSaveTime + TimeSpan.FromMinutes(PluginConfig.Instance().AutoSaveInterval);
             }
 
-            var isNotification = Service.Config.AutoSaveMessage;
+            var isNotification = PluginConfig.Instance().AutoSaveMessage;
 
             if (ImGui.Checkbox(Service.Lang.GetText("BackupHelp5"), ref isNotification))
             {
-                Service.Config.AutoSaveMessage = isNotification;
-                Service.Config.Save();
+                PluginConfig.Instance().AutoSaveMessage = isNotification;
+                PluginConfig.Instance().Save();
             }
         }
     }
 
     private static void AutoSaveRadioButton(string textKey, int mode)
     {
-        var isSelected = Service.Config.AutoSaveMode == mode;
+        var isSelected = PluginConfig.Instance().AutoSaveMode == mode;
         ImGui.RadioButton(Service.Lang.GetText(textKey), isSelected);
 
         if (ImGui.IsItemClicked(ImGuiMouseButton.Left))
         {
-            Service.Config.AutoSaveMode = mode;
-            Service.Config.Save();
+            PluginConfig.Instance().AutoSaveMode = mode;
+            PluginConfig.Instance().Save();
         }
     }
 
@@ -157,14 +158,14 @@ public partial class Main
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("MaxBackupFiles")}:");
         ImGui.Separator();
 
-        var maxBackupFilesCount = Service.Config.MaxBackupFilesCount;
+        var maxBackupFilesCount = PluginConfig.Instance().MaxBackupFilesCount;
         ImGui.SetNextItemWidth(210f);
 
         if (ImGui.InputInt("", ref maxBackupFilesCount))
         {
             maxBackupFilesCount                = Math.Max(maxBackupFilesCount, 0);
-            Service.Config.MaxBackupFilesCount = maxBackupFilesCount;
-            Service.Config.Save();
+            PluginConfig.Instance().MaxBackupFilesCount = maxBackupFilesCount;
+            PluginConfig.Instance().Save();
         }
 
         ImGuiOm.HelpMarker(Service.Lang.GetText("BackupHelp6"));

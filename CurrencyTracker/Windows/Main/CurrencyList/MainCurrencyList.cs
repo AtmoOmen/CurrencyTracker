@@ -1,11 +1,13 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Utilities;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
+using OmenTools.OmenService;
 
 namespace CurrencyTracker.Windows;
 
@@ -17,7 +19,7 @@ public partial class Main
     {
         var childScale = new Vector2
         (
-            180 * ImGuiHelpers.GlobalScale + Service.Config.ChildWidthOffset,
+            180 * ImGuiHelpers.GlobalScale + PluginConfig.Instance().ChildWidthOffset,
             ImGui.GetContentRegionAvail().Y
         );
         ImGui.PushStyleColor(ImGuiCol.ChildBg, ImGui.GetStyle().Colors[(int)ImGuiCol.FrameBg]);
@@ -28,10 +30,10 @@ public partial class Main
 
             ImGui.Separator();
 
-            for (var i = 0; i < Service.Config.OrderedOptions.Count; i++)
+            for (var i = 0; i < PluginConfig.Instance().OrderedOptions.Count; i++)
             {
-                var id           = Service.Config.OrderedOptions[i];
-                var currencyName = Service.Config.AllCurrencies[id];
+                var id           = PluginConfig.Instance().OrderedOptions[i];
+                var currencyName = PluginConfig.Instance().AllCurrencies[id];
                 var currencyIcon = CurrencyInfo.GetIcon(id).Handle;
 
                 ImGui.PushID(id.ToString());
@@ -128,23 +130,23 @@ public partial class Main
     private static void SwapOptions(int index1, int index2)
     {
         if (index1 < 0                                    ||
-            index1 >= Service.Config.OrderedOptions.Count ||
+            index1 >= PluginConfig.Instance().OrderedOptions.Count ||
             index2 < 0                                    ||
-            index2 >= Service.Config.OrderedOptions.Count) return;
+            index2 >= PluginConfig.Instance().OrderedOptions.Count) return;
 
-        (Service.Config.OrderedOptions[index2], Service.Config.OrderedOptions[index1]) =
-            (Service.Config.OrderedOptions[index1], Service.Config.OrderedOptions[index2]);
+        (PluginConfig.Instance().OrderedOptions[index2], PluginConfig.Instance().OrderedOptions[index1]) =
+            (PluginConfig.Instance().OrderedOptions[index1], PluginConfig.Instance().OrderedOptions[index2]);
 
         TaskHelper.Abort();
         TaskHelper.DelayNext(500);
-        TaskHelper.Enqueue(Service.Config.Save);
+        TaskHelper.Enqueue(PluginConfig.Instance().Save);
     }
 
     private static void DeleteCustomCurrencyUI(float buttonWidth)
     {
         ImGui.BeginDisabled
         (
-            SelectedCurrencyID == 0 || Service.Config.PresetCurrencies.ContainsKey(SelectedCurrencyID)
+            SelectedCurrencyID == 0 || PluginConfig.Instance().PresetCurrencies.ContainsKey(SelectedCurrencyID)
         );
 
         ButtonIconSelectable
@@ -158,11 +160,11 @@ public partial class Main
         if (ImGui.IsMouseDoubleClicked(ImGuiMouseButton.Right) && ImGui.IsItemHovered())
         {
             var localName = CurrencyInfo.GetLocalName(SelectedCurrencyID);
-            if (Service.Config.CustomCurrencies[SelectedCurrencyID] != localName)
+            if (PluginConfig.Instance().CustomCurrencies[SelectedCurrencyID] != localName)
                 CurrencyInfo.RenameCurrency(SelectedCurrencyID, localName);
 
-            Service.Config.CustomCurrencies.Remove(SelectedCurrencyID);
-            Service.Config.Save();
+            PluginConfig.Instance().RemoveCustomCurrency(SelectedCurrencyID);
+            PluginConfig.Instance().Save();
 
             SelectedCurrencyID = 0;
             ReloadOrderedOptions();
@@ -175,7 +177,7 @@ public partial class Main
     {
         ImGui.BeginDisabled(SelectedCurrencyID == 0);
         if (ButtonIconSelectable("CurrencySettings", buttonWidth, FontAwesomeIcon.Cog))
-            P.CurrencySettings.IsOpen ^= true;
+            WindowManager.Instance().Get<CurrencySettings>().IsOpen ^= true;
         ImGui.EndDisabled();
     }
 

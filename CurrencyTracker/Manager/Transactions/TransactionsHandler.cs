@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Utilities;
 
 namespace CurrencyTracker.Manager.Transactions;
@@ -326,7 +327,7 @@ public static class TransactionsHandler
         if (!TryGetContext(null, out var dataFolder, out _))
             return "Fail";
 
-        var currencyName  = Service.Config.AllCurrencies[currencyID];
+        var currencyName  = PluginConfig.Instance().AllCurrencies[currencyID];
         var fileExtension = exportType == 0 ? "csv" : "md";
         var headers = exportType == 0
                           ? Service.Lang.GetText("ExportFileCSVHeader")
@@ -487,7 +488,7 @@ public static class TransactionsHandler
                 characterInfo.ContentID == 0)
                 return false;
 
-            dataFolder = Path.Join(P.PI.ConfigDirectory.FullName, $"{characterInfo.Name}_{characterInfo.Server}");
+            dataFolder = Path.Join(DService.Instance().PI.ConfigDirectory.FullName, $"{characterInfo.Name}_{characterInfo.Server}");
             Directory.CreateDirectory(dataFolder);
             characterContentId = characterInfo.ContentID;
             return true;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Transactions;
@@ -17,7 +18,7 @@ public class ServerBar : TrackerComponentBase
 {
     internal static IDtrBarEntry             DtrEntry { get; } = DService.Instance().DTRBar.Get("CurrencyTracker");
     internal static long                     LastPeriodChanges;
-    private static  CancellationTokenSource? _cancelTokenSource;
+    private static  CancellationTokenSource? CancelTokenSource;
 
     protected override void OnInit()
     {
@@ -29,31 +30,34 @@ public class ServerBar : TrackerComponentBase
 
         TrackerManager.CurrencyChanged += OnCurrencyChanged;
         Service.Lang.LanguageChange    += OnLangChanged;
-        OnCurrencyChanged(Service.Config.ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
+        OnCurrencyChanged(PluginConfig.Instance().ServerBarDisplayCurrency, TransactionFileCategory.Inventory, 0);
     }
 
     private static void ToggleMainWindow(DtrInteractionEvent data)
     {
-        P.Main.IsOpen ^= true;
+        if (WindowManager.Instance().Get<Main>() is not { } main)
+            return;
+        
+        main.IsOpen ^= true;
 
-        if (P.Main.IsOpen)
-            Main.LoadCurrencyTransactions(Service.Config.ServerBarDisplayCurrency);
+        if (main.IsOpen)
+            Main.LoadCurrencyTransactions(PluginConfig.Instance().ServerBarDisplayCurrency);
     }
 
     private static void OnLangChanged(string language) => UpdateDtrEntryDelayed();
 
-    internal static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong ID)
+    internal static void OnCurrencyChanged(uint currencyID, TransactionFileCategory category, ulong id)
     {
-        if (currencyID != Service.Config.ServerBarDisplayCurrency) return;
+        if (currencyID != PluginConfig.Instance().ServerBarDisplayCurrency) return;
         UpdateDtrEntryDelayed();
     }
 
     private static void UpdateDtrEntryDelayed()
     {
         DisposeCancelSource();
-        _cancelTokenSource = new CancellationTokenSource();
+        CancelTokenSource = new CancellationTokenSource();
 
-        DService.Instance().Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, _cancelTokenSource.Token);
+        DService.Instance().Framework.RunOnTick(UpdateDtrEntry, TimeSpan.FromSeconds(0.5f), 0, CancelTokenSource.Token);
     }
 
     private static void UpdateDtrEntry()
@@ -71,13 +75,13 @@ public class ServerBar : TrackerComponentBase
         return new SeStringBuilder()
                .AddText
                (
-                   $"$ {CurrencyInfo.GetName(Service.Config.ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}"
+                   $"$ {CurrencyInfo.GetName(PluginConfig.Instance().ServerBarDisplayCurrency)}: {thisPeriodChanges:+ #,##0;- #,##0;0}"
                )
                .Build();
     }
 
     private static string BuildDtrTooltip() =>
-        $"{Service.Lang.GetText("CycleMode")}: {GetCycleModeLoc(Service.Config.ServerBarCycleMode)}\n\n" +
+        $"{Service.Lang.GetText("CycleMode")}: {GetCycleModeLoc(PluginConfig.Instance().ServerBarCycleMode)}\n\n" +
         $"{Service.Lang.GetText("PreviousCycle")}: {LastPeriodChanges:+ #,##0;- #,##0;0}";
 
     private static long GetChanges(Func<IEnumerable<Transaction>, IEnumerable<Transaction>> applyDateTimeFilter)
@@ -93,7 +97,7 @@ public class ServerBar : TrackerComponentBase
              CalculateChangesForCategory(cate, applyDateTimeFilter)
         );
 
-        if (Service.Config.CharacterRetainers.TryGetValue(LocalPlayerState.ContentID, out var retainers))
+        if (PluginConfig.Instance().CharacterRetainers.TryGetValue(LocalPlayerState.ContentID, out var retainers))
             periodChanges += retainers.Sum(r => CalculateChangesForRetainer(r.Key, applyDateTimeFilter));
 
         return periodChanges;
@@ -108,7 +112,7 @@ public class ServerBar : TrackerComponentBase
             (
                 TransactionsHandler.LoadAllTransactions
                 (
-                    Service.Config.ServerBarDisplayCurrency,
+                    PluginConfig.Instance().ServerBarDisplayCurrency,
                     category
                 )
             )
@@ -123,7 +127,7 @@ public class ServerBar : TrackerComponentBase
             (
                 TransactionsHandler.LoadAllTransactions
                 (
-                    Service.Config.ServerBarDisplayCurrency,
+                    PluginConfig.Instance().ServerBarDisplayCurrency,
                     TransactionFileCategory.Retainer,
                     retainerKey
                 )
@@ -145,7 +149,7 @@ public class ServerBar : TrackerComponentBase
     private static (DateTime startTime, DateTime endTime) GetPeriod()
     {
         var endTime = DateTime.Now;
-        var startTime = Service.Config.ServerBarCycleMode switch
+        var startTime = PluginConfig.Instance().ServerBarCycleMode switch
         {
             ServerBarCycleMode.Today       => DateTime.Today,
             ServerBarCycleMode.Past24Hours => endTime.AddDays(-1),
@@ -182,11 +186,11 @@ public class ServerBar : TrackerComponentBase
 
     private static void DisposeCancelSource()
     {
-        if (_cancelTokenSource == null) return;
+        if (CancelTokenSource == null) return;
 
-        _cancelTokenSource.Cancel();
-        _cancelTokenSource.Dispose();
-        _cancelTokenSource = null;
+        CancelTokenSource.Cancel();
+        CancelTokenSource.Dispose();
+        CancelTokenSource = null;
     }
 
     protected override void OnUninit()

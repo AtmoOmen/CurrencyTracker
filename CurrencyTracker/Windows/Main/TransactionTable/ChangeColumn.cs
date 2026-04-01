@@ -1,5 +1,6 @@
 using System;
 using System.Numerics;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Utility;
 
@@ -29,9 +30,9 @@ public class ChangeColumn : TableColumn
     public override void Cell(int i, DisplayTransaction transaction)
     {
         if (i < 0) return;
-        var textColor = Service.Config.ChangeTextColoring
-                            ? transaction.Transaction.Change > 0 ? Service.Config.PositiveChangeColor :
-                              transaction.Transaction.Change < 0 ? Service.Config.NegativeChangeColor :
+        var textColor = PluginConfig.Instance().ChangeTextColoring
+                            ? transaction.Transaction.Change > 0 ? PluginConfig.Instance().PositiveChangeColor :
+                              transaction.Transaction.Change < 0 ? PluginConfig.Instance().NegativeChangeColor :
                                                                    new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
                             : new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -70,25 +71,25 @@ public class ChangeColumn : TableColumn
 
     private static void ColoringByChangeUI()
     {
-        var isChangeColoring = Service.Config.ChangeTextColoring;
+        var isChangeColoring = PluginConfig.Instance().ChangeTextColoring;
 
         if (ImGui.Checkbox($"{Service.Lang.GetText("ChangeTextColoring")}##ChangeColoring", ref isChangeColoring))
         {
-            Service.Config.ChangeTextColoring = isChangeColoring;
-            Service.Config.Save();
+            PluginConfig.Instance().ChangeTextColoring = isChangeColoring;
+            PluginConfig.Instance().Save();
         }
 
-        if (Service.Config.ChangeTextColoring)
+        if (PluginConfig.Instance().ChangeTextColoring)
         {
-            var positiveChangeColor = Service.Config.PositiveChangeColor;
-            var negativeChangeColor = Service.Config.NegativeChangeColor;
+            var positiveChangeColor = PluginConfig.Instance().PositiveChangeColor;
+            var negativeChangeColor = PluginConfig.Instance().NegativeChangeColor;
 
             ColoringByChangeHandler
             (
                 "PositiveColor",
                 Service.Lang.GetText("PositiveChange"),
                 ref positiveChangeColor,
-                color => Service.Config.PositiveChangeColor = color
+                color => PluginConfig.Instance().PositiveChangeColor = color
             );
 
             ImGui.SameLine();
@@ -97,7 +98,7 @@ public class ChangeColumn : TableColumn
                 "NegativeColor",
                 Service.Lang.GetText("NegativeChange"),
                 ref negativeChangeColor,
-                color => Service.Config.NegativeChangeColor = color
+                color => PluginConfig.Instance().NegativeChangeColor = color
             );
         }
     }
@@ -122,9 +123,9 @@ public class ChangeColumn : TableColumn
 
         if (ImGui.IsItemDeactivatedAfterEdit())
         {
-            Service.Config.ChangeTextColoring = true;
+            PluginConfig.Instance().ChangeTextColoring = true;
             saveColorAction.Invoke(color);
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
         }
     }
 }

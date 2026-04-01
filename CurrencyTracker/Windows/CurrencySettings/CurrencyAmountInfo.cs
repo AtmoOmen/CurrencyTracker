@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
@@ -9,23 +10,22 @@ namespace CurrencyTracker.Windows;
 
 public partial class CurrencySettings
 {
-    private static IReadOnlyDictionary<TransactionFileCategoryInfo, long> currencyAmountInfoDic =
-        new Dictionary<TransactionFileCategoryInfo, long>();
+    private static ConcurrentDictionary<TransactionFileCategoryInfo, long> CurrencyAmountInfoDic = new();
 
     private static void CurrencyAmountInfoUI()
     {
         if (Throttler.Shared.Throttle
                 ("CurrencyAmountInfoUI", 1000))
             Main.CharacterCurrencyInfos.FirstOrDefault(x => x.Character.ContentID == LocalPlayerState.ContentID).SubCurrencyAmount.TryGetValue
-                (Main.SelectedCurrencyID, out currencyAmountInfoDic);
+                (Main.SelectedCurrencyID, out CurrencyAmountInfoDic);
 
-        if (currencyAmountInfoDic.Count != 0)
+        if (!CurrencyAmountInfoDic.IsEmpty)
         {
             if (ImGui.CollapsingHeader($"{Service.Lang.GetText("Amount")}"))
             {
                 ImGui.BeginGroup();
 
-                foreach (var source in currencyAmountInfoDic)
+                foreach (var source in CurrencyAmountInfoDic)
                 {
                     if (source.Value == 0) continue;
                     ImGui.Text(source.Key.Category.GetSelectedViewName(source.Key.ID));
@@ -39,7 +39,7 @@ public partial class CurrencySettings
                 ImGui.SameLine();
                 ImGui.BeginGroup();
 
-                foreach (var source in currencyAmountInfoDic)
+                foreach (var source in CurrencyAmountInfoDic)
                 {
                     if (source.Value == 0) continue;
                     ImGui.Text(source.Value.ToString("N0"));

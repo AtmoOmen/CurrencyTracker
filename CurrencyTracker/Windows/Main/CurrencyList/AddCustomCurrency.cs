@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using CurrencyTracker.Manager.Transactions;
@@ -81,7 +82,7 @@ public partial class Main
 
                 foreach (var item in items)
                 {
-                    ImGui.BeginDisabled(Service.Config.AllCurrencies.ContainsKey(item.Value));
+                    ImGui.BeginDisabled(PluginConfig.Instance().AllCurrencies.ContainsKey(item.Value));
                     if (ImGui.Selectable($"{item.Key} ({item.Value})", item.Value == _currencyIDACC))
                         _currencyIDACC = item.Value;
                     ImGui.EndDisabled();
@@ -104,14 +105,14 @@ public partial class Main
                     return;
                 }
 
-                if (Service.Config.AllCurrencyID.Contains(_currencyIDACC))
+                if (PluginConfig.Instance().AllCurrencies.Keys.Contains(_currencyIDACC))
                 {
                     DService.Instance().Chat.PrintError(Service.Lang.GetText("CustomCurrencyHelp1"));
                     return;
                 }
 
-                Service.Config.CustomCurrencies.Add(_currencyIDACC, CurrencyInfo.GetLocalName(_currencyIDACC));
-                Service.Config.Save();
+                PluginConfig.Instance().TryAddCustomCurrency(_currencyIDACC, CurrencyInfo.GetLocalName(_currencyIDACC));
+                PluginConfig.Instance().Save();
 
                 ReloadOrderedOptions();
 

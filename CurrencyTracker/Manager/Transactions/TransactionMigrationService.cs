@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using Microsoft.Data.Sqlite;
 
 namespace CurrencyTracker.Manager.Transactions;
@@ -135,11 +136,11 @@ internal static class TransactionMigrationService
 
     private static IEnumerable<LegacyTransactionFile> EnumerateLegacyFiles(string dataFolder, ulong characterContentId)
     {
-        var retainers = Service.Config.CharacterRetainers.TryGetValue(characterContentId, out var retainerMap)
+        var retainers = PluginConfig.Instance().CharacterRetainers.TryGetValue(characterContentId, out var retainerMap)
                             ? retainerMap.Keys.ToArray()
                             : Array.Empty<ulong>();
 
-        foreach (var currencyId in Service.Config.AllCurrencies.Keys)
+        foreach (var currencyId in PluginConfig.Instance().AllCurrencies.Keys)
         {
             foreach (var category in new[]
                      {

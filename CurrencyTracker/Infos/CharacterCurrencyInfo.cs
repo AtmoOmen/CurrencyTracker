@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 
 namespace CurrencyTracker.Infos;
@@ -9,11 +10,9 @@ public class CharacterCurrencyInfo
 {
     public CharacterInfo Character { get; }
 
-    private ConcurrentDictionary<uint, long> _currencyAmount = [];
-    public  IReadOnlyDictionary<uint, long>  CurrencyAmount => _currencyAmount;
+    public  ConcurrentDictionary<uint, long> CurrencyAmount { get; set; } = [];
 
-    private ConcurrentDictionary<uint, IReadOnlyDictionary<TransactionFileCategoryInfo, long>> _subCurrencyAmount = [];
-    public  IReadOnlyDictionary<uint, IReadOnlyDictionary<TransactionFileCategoryInfo, long>>  SubCurrencyAmount => _subCurrencyAmount;
+    public ConcurrentDictionary<uint, ConcurrentDictionary<TransactionFileCategoryInfo, long>> SubCurrencyAmount { get; set; } = [];
 
     public CharacterCurrencyInfo(CharacterInfo character)
     {
@@ -21,19 +20,18 @@ public class CharacterCurrencyInfo
         UpdateAllCurrencies();
     }
 
-    public void UpdateAllCurrencies() => (_currencyAmount, _subCurrencyAmount) = InitCurrencies();
+    public void UpdateAllCurrencies() => (CurrencyAmount, SubCurrencyAmount) = InitCurrencies();
 
-    private (ConcurrentDictionary<uint, long>,
-        ConcurrentDictionary<uint, IReadOnlyDictionary<TransactionFileCategoryInfo, long>>) InitCurrencies()
+    private (ConcurrentDictionary<uint, long>, ConcurrentDictionary<uint, ConcurrentDictionary<TransactionFileCategoryInfo, long>>) InitCurrencies()
     {
         var currencyAmount = new ConcurrentDictionary<uint, long>();
         var subCurrencyAmount =
-            new ConcurrentDictionary<uint, IReadOnlyDictionary<TransactionFileCategoryInfo, long>>();
+            new ConcurrentDictionary<uint, ConcurrentDictionary<TransactionFileCategoryInfo, long>>();
 
-        foreach (var currencyKey in Service.Config.AllCurrencyID)
+        foreach (var currencyKey in PluginConfig.Instance().AllCurrencies.Keys)
         {
             currencyAmount[currencyKey]    = CurrencyInfo.GetCharacterCurrencyAmount(currencyKey, Character);
-            subCurrencyAmount[currencyKey] = CurrencyInfo.GetCharacterCurrencyAmountDictionary(currencyKey, Character);
+            subCurrencyAmount[currencyKey] = new ConcurrentDictionary<TransactionFileCategoryInfo, long>(CurrencyInfo.GetCharacterCurrencyAmountDictionary(currencyKey, Character));
         }
 
         return (currencyAmount, subCurrencyAmount);

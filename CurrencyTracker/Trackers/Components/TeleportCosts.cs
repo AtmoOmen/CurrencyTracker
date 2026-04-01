@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Manager.Tracker;
 using Dalamud.Game.ClientState.Conditions;
@@ -57,7 +58,7 @@ public class TeleportCosts : TrackerComponentBase
                                      (row => new
                                          {
                                              row.RowId,
-                                             Name = P.PI.Sanitizer.Sanitize
+                                             Name = DService.Instance().PI.Sanitizer.Sanitize
                                              (
                                                  row.PlaceName.ValueNullable?.Name.ToString()
                                              )
@@ -125,7 +126,7 @@ public class TeleportCosts : TrackerComponentBase
             (
                 TpCostCurrencies,
                 PreviousLocationName,
-                $"({Service.Lang.GetText("TeleportTo", Service.Config.ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})"
+                $"({Service.Lang.GetText("TeleportTo", PluginConfig.Instance().ComponentProp["RecordDesAetheryteName"] ? tpDestination : CurrentLocationName)})"
             );
 
         }
@@ -135,7 +136,7 @@ public class TeleportCosts : TrackerComponentBase
             (
                 TpCostCurrencies,
                 PreviousLocationName,
-                Service.Config.ComponentProp["RecordDesAetheryteName"]
+                PluginConfig.Instance().ComponentProp["RecordDesAetheryteName"]
                     ? $"({Service.Lang.GetText("TeleportTo", tpDestination)})"
                     : $"{Service.Lang.GetText("TeleportWithinArea")}"
             );

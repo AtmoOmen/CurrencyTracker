@@ -1,3 +1,4 @@
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 
 namespace CurrencyTracker.Windows;
@@ -15,12 +16,12 @@ public class OrderColumn : TableColumn
 
         ImGui.BeginDisabled(SelectedCurrencyID == 0 || CurrentTransactions.Count <= 0);
 
-        var icon = Service.Config.ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
+        var icon = PluginConfig.Instance().ReverseSort ? FontAwesomeIcon.AngleUp : FontAwesomeIcon.AngleDown;
 
         if (ImGuiOm.SelectableIconCentered("ReverseSort", icon, false, ImGuiSelectableFlags.None, true))
         {
-            Service.Config.ReverseSort = !Service.Config.ReverseSort;
-            Service.Config.Save();
+            PluginConfig.Instance().ReverseSort = !PluginConfig.Instance().ReverseSort;
+            PluginConfig.Instance().Save();
 
             RefreshTable();
         }
@@ -31,6 +32,6 @@ public class OrderColumn : TableColumn
     public override void Cell(int i, DisplayTransaction transaction)
     {
         if (i < 0) return;
-        ImGuiOm.TextCentered(Service.Config.ReverseSort ? $"{CurrentTransactions.Count - i}" : $"{i + 1}");
+        ImGuiOm.TextCentered(PluginConfig.Instance().ReverseSort ? $"{CurrentTransactions.Count - i}" : $"{i + 1}");
     }
 }

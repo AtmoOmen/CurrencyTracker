@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using FFXIVClientStructs.FFXIV.Client.Game;
 
@@ -12,7 +13,7 @@ public static class Helpers
         TransactionFileCategory.Inventory        => Service.Lang.GetText("Inventory"),
         TransactionFileCategory.SaddleBag        => Service.Lang.GetText("SaddleBag"),
         TransactionFileCategory.PremiumSaddleBag => Service.Lang.GetText("PSaddleBag"),
-        TransactionFileCategory.Retainer         => Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID][ID],
+        TransactionFileCategory.Retainer         => PluginConfig.Instance().CharacterRetainers[P.CurrentCharacter.ContentID][ID],
         _                                        => string.Empty
     };
 

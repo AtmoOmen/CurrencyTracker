@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Utilities;
 using Dalamud.Interface.Colors;
@@ -51,7 +52,7 @@ public partial class CurrencySettings
         if (combo)
         {
             DrawViewSelectableIA(TransactionFileCategory.Inventory, 0);
-            foreach (var retainer in Service.Config.CharacterRetainers[P.CurrentCharacter.ContentID])
+            foreach (var retainer in PluginConfig.Instance().CharacterRetainers[P.CurrentCharacter.ContentID])
                 DrawViewSelectableIA(TransactionFileCategory.Retainer, retainer.Key);
             DrawViewSelectableIA(TransactionFileCategory.SaddleBag,        0);
             DrawViewSelectableIA(TransactionFileCategory.PremiumSaddleBag, 0);
@@ -124,16 +125,16 @@ public partial class CurrencySettings
 
         ImGui.TextColored(ImGuiColors.DalamudYellow, $"{Service.Lang.GetText("NotificationType")}:");
 
-        var isAlertInChat = Service.Config.AlertNotificationChat;
+        var isAlertInChat = PluginConfig.Instance().AlertNotificationChat;
 
         if (ImGui.Checkbox
             (
-                Service.Config.AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}",
+                PluginConfig.Instance().AlertNotificationChat ? "##AlertNotificationChat" : $"{Service.Lang.GetText("BackupHelp5")}",
                 ref isAlertInChat
             ))
         {
-            Service.Config.AlertNotificationChat = isAlertInChat;
-            Service.Config.Save();
+            PluginConfig.Instance().AlertNotificationChat = isAlertInChat;
+            PluginConfig.Instance().Save();
         }
 
         if (isAlertInChat)
@@ -144,7 +145,7 @@ public partial class CurrencySettings
                 Service.Lang.GetText("ParamEP-CurrencyName"), Service.Lang.GetText("ContainerType"),
                 Service.Lang.GetText("Interval")
             };
-            var textToShow = Service.Config.CustomNoteContents.TryGetValue("AlertIntervalMessage", out var value)
+            var textToShow = PluginConfig.Instance().CustomNoteContents.TryGetValue("AlertIntervalMessage", out var value)
                                  ? value
                                  : Service.Lang.GetOrigText("AlertIntervalMessage");
 
@@ -153,8 +154,8 @@ public partial class CurrencySettings
 
             if (ImGui.InputText("##AlertNotificationChatNote", ref textToShow, 50))
             {
-                Service.Config.CustomNoteContents["AlertIntervalMessage"] = textToShow;
-                Service.Config.Save();
+                PluginConfig.Instance().CustomNoteContents["AlertIntervalMessage"] = textToShow;
+                PluginConfig.Instance().Save();
             }
 
             if (ImGui.IsItemHovered())
@@ -175,8 +176,8 @@ public partial class CurrencySettings
 
             if (ImGuiOm.ButtonIcon("ResetContent_AlertIntervalMessage", FontAwesomeIcon.Sync, Service.Lang.GetText("Reset"), true))
             {
-                Service.Config.CustomNoteContents.Remove("AlertIntervalMessage");
-                Service.Config.Save();
+                PluginConfig.Instance().CustomNoteContents.Remove("AlertIntervalMessage");
+                PluginConfig.Instance().Save();
             }
         }
     }

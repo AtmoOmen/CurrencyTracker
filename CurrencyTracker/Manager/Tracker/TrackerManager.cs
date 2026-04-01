@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager.Transactions;
 using CurrencyTracker.Trackers.Handlers;
 using CurrencyTracker.Utilities;
@@ -22,19 +23,21 @@ public class TrackerManager
 
         foreach (var currency in CurrencyInfo.PresetCurrencies)
         {
-            if (!Service.Config.PresetCurrencies.ContainsKey(currency))
+            if (!PluginConfig.Instance().PresetCurrencies.ContainsKey(currency))
             {
                 var currencyName = CurrencyInfo.GetLocalName(currency);
                 if (!string.IsNullOrEmpty(currencyName))
-                    Service.Config.PresetCurrencies.Add(currency, currencyName);
+                    PluginConfig.Instance().TryAddPresetCurrency(currency, currencyName);
             }
         }
 
-        Service.Config.PresetCurrencies = Service.Config.PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
-                                                 .ToUpdateDictionary(kv => kv.Key, kv => kv.Value);
-        Service.Config.Save();
+        PluginConfig.Instance().ReplacePresetCurrencies
+        (
+            PluginConfig.Instance().PresetCurrencies.Where(kv => CurrencyInfo.PresetCurrencies.Contains(kv.Key))
+        );
+        PluginConfig.Instance().Save();
 
-        if (Service.Config.FirstOpen)
+        if (PluginConfig.Instance().FirstOpen)
         {
             foreach (var currencyID in CurrencyInfo.DefaultCustomCurrencies)
             {
@@ -42,11 +45,11 @@ public class TrackerManager
 
                 if (string.IsNullOrEmpty(currencyName)) continue;
 
-                Service.Config.CustomCurrencies.TryAdd(currencyID, currencyName);
+                PluginConfig.Instance().TryAddCustomCurrency(currencyID, currencyName);
             }
 
-            Service.Config.FirstOpen = false;
-            Service.Config.Save();
+            PluginConfig.Instance().FirstOpen = false;
+            PluginConfig.Instance().Save();
         }
     }
 
@@ -137,7 +140,7 @@ public class TrackerManager
     )
     {
         DService.Instance().Log.Debug($"{currencyName}({currencyID}) Changed ({currencyChange:+#,##0;-#,##0;0}) in {category}");
-        if (P.PI.IsDev) DService.Instance().Log.Debug($"Source: {source}");
+        if (DService.Instance().PI.IsDev) DService.Instance().Log.Debug($"Source: {source}");
         CheckRuleAmountCap(currencyID, (int)currencyAmount, (int)currencyChange, category, ID);
     }
 
@@ -145,7 +148,7 @@ public class TrackerManager
     {
         if (!ItemHandler.ItemIDs.Contains(currencyID)) return false;
 
-        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
+        if (!PluginConfig.Instance().CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
 
         // 地点限制 Location Restrictions
@@ -164,7 +167,7 @@ public class TrackerManager
         ulong                   ID
     )
     {
-        if (!Service.Config.CurrencyRules.TryGetValue(currencyID, out var rule))
+        if (!PluginConfig.Instance().CurrencyRules.TryGetValue(currencyID, out var rule))
             return true;
 
         if (rule.AlertedAmountIntervals is not { Count: > 0 } || rule.AlertedChangeIntervals is not { Count: > 0 })
@@ -196,7 +199,7 @@ public class TrackerManager
         {
             foreach (var interval in intervals)
             {
-                if (util.InRange(interval, value, true) && Service.Config.AlertNotificationChat)
+                if (util.InRange(interval, value, true) && PluginConfig.Instance().AlertNotificationChat)
                 {
                     var message = Service.Lang.GetSeString
                     (
@@ -221,14 +224,14 @@ public class TrackerManager
         RecordChangeType        recordChangeType = RecordChangeType.All,
         uint                    source           = 0,
         TransactionFileCategory category         = 0,
-        ulong                   ID               = 0
+        ulong                   id               = 0
     )
     {
         var isChanged = false;
 
-        foreach (var currency in Service.Config.AllCurrencyID)
+        foreach (var currency in PluginConfig.Instance().AllCurrencies.Keys)
         {
-            if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
+            if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, id))
                 isChanged = true;
         }
 
@@ -237,7 +240,7 @@ public class TrackerManager
 
         foreach (var currency in enumerable)
         {
-            if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
+            if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, id))
                 isChanged = true;
         }
 
@@ -257,7 +260,7 @@ public class TrackerManager
     {
         var isChanged = false;
 
-        foreach (var currency in Service.Config.AllCurrencyID)
+        foreach (var currency in PluginConfig.Instance().AllCurrencies.Keys)
         {
             if (CheckCurrency(currency, locationName, noteContent, recordChangeType, source, category, ID))
                 isChanged = true;

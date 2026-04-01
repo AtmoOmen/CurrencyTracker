@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CurrencyTracker.Infos;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using CurrencyTracker.Utilities;
 using Dalamud.Interface.Components;
@@ -111,7 +112,7 @@ public partial class Main
             {
                 if (ImGui.BeginTable($"###{info.Character.ContentID}", 2, ImGuiTableFlags.Borders))
                 {
-                    foreach (var currency in Service.Config.AllCurrencies)
+                    foreach (var currency in PluginConfig.Instance().AllCurrencies)
                     {
                         var amount = info.CurrencyAmount.GetValueOrDefault(currency.Key, 0);
                         if (amount == 0) continue;
@@ -139,9 +140,9 @@ public partial class Main
             {
                 if (ImGui.MenuItem(Service.Lang.GetText("Delete")))
                 {
-                    if (Service.Config.CurrentActiveCharacter.Remove(info.Character))
+                    if (PluginConfig.Instance().CurrentActiveCharacter.Remove(info.Character))
                     {
-                        Service.Config.Save();
+                        PluginConfig.Instance().Save();
                         ImGui.CloseCurrentPopup();
 
                         Task.Run
@@ -162,7 +163,7 @@ public partial class Main
     internal static void LoadDataMCS()
     {
         CharacterCurrencyInfos.Clear();
-        CharacterCurrencyInfos = Service.Config.CurrentActiveCharacter
+        CharacterCurrencyInfos = PluginConfig.Instance().CurrentActiveCharacter
                                         .OrderByDescending(c => c.ContentID == LocalPlayerState.ContentID)
                                         .Select(x => new CharacterCurrencyInfo(x))
                                         .ToList();

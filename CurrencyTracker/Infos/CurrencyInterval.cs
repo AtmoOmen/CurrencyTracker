@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using IntervalUtility;
 
@@ -8,10 +9,10 @@ public static class CurrencyInterval
 {
     public static List<Interval<int>> LoadIntervals(uint currencyID, int alertMode, TransactionFileCategoryInfo categoryInfo)
     {
-        if (Service.Config.CurrencyRules.TryAdd(currencyID, new CurrencyRule()))
-            Service.Config.Save();
+        if (PluginConfig.Instance().CurrencyRules.TryAdd(currencyID, new CurrencyRule()))
+            PluginConfig.Instance().Save();
 
-        var rules = Service.Config.CurrencyRules[currencyID];
+        var rules = PluginConfig.Instance().CurrencyRules[currencyID];
 
         rules.AlertedAmountIntervals ??= new();
         rules.AlertedChangeIntervals ??= new();
@@ -26,7 +27,7 @@ public static class CurrencyInterval
         {
             intervalList            = [];
             intervalDic[viewString] = intervalList;
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
         }
 
         return intervalList;
@@ -37,7 +38,7 @@ public static class CurrencyInterval
         // 防止出现空引用 To Prevent Null Reference Exception
         LoadIntervals(currencyID, alertMode, categoryInfo);
 
-        var rules = Service.Config.CurrencyRules[currencyID];
+        var rules = PluginConfig.Instance().CurrencyRules[currencyID];
         var intervalDic = alertMode == 0
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
@@ -47,7 +48,7 @@ public static class CurrencyInterval
         {
             intervalList.Add(interval);
 
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
             return true;
         }
 
@@ -59,13 +60,13 @@ public static class CurrencyInterval
         // 防止出现空引用 To Prevent Null Reference Exception
         LoadIntervals(currencyID, alertMode, categoryInfo);
 
-        var rules = Service.Config.CurrencyRules[currencyID];
+        var rules = PluginConfig.Instance().CurrencyRules[currencyID];
         var intervalDic = alertMode == 0
                               ? rules.AlertedAmountIntervals
                               : rules.AlertedChangeIntervals;
         var intervalList = intervalDic[categoryInfo.Category.GetTransactionViewKeyString(categoryInfo.ID)];
         var state        = intervalList.Remove(interval);
-        Service.Config.Save();
+        PluginConfig.Instance().Save();
 
         return state;
     }

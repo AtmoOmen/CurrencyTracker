@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Utility;
@@ -17,11 +18,11 @@ public partial class CurrencySettings
 
     private void TerritoryRestrictedUI()
     {
-        if (!Service.Config.CurrencyRules.TryGetValue(Main.SelectedCurrencyID, out var rules))
+        if (!PluginConfig.Instance().CurrencyRules.TryGetValue(Main.SelectedCurrencyID, out var rules))
         {
             rules = new();
-            Service.Config.CurrencyRules.Add(Main.SelectedCurrencyID, rules);
-            Service.Config.Save();
+            PluginConfig.Instance().CurrencyRules.Add(Main.SelectedCurrencyID, rules);
+            PluginConfig.Instance().Save();
         }
 
         var isBlacklist = !rules.RegionRulesMode;
@@ -33,7 +34,7 @@ public partial class CurrencySettings
         if (ImGui.RadioButton($"{Service.Lang.GetText("Blacklist")}", isBlacklist))
         {
             rules.RegionRulesMode = false;
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
         }
 
         ImGui.SameLine();
@@ -41,7 +42,7 @@ public partial class CurrencySettings
         if (ImGui.RadioButton($"{Service.Lang.GetText("Whitelist")}", !isBlacklist))
         {
             rules.RegionRulesMode = true;
-            Service.Config.Save();
+            PluginConfig.Instance().Save();
         }
 
         ImGui.SameLine();
