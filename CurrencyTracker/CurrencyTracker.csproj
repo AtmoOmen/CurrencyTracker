@@ -12,6 +12,8 @@
     <PropertyGroup>
         <UseWindowsForms>true</UseWindowsForms>
         <ImplicitUsings>true</ImplicitUsings>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <SelfContained>false</SelfContained>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <BaseOutputPath>$(SolutionDir)bin</BaseOutputPath>
         <SatelliteResourceLanguages>xxx</SatelliteResourceLanguages>
