@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Manager.Tracker;
+using Dalamud.Game.Chat;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using OmenTools.Threading.TaskHelper;
@@ -20,10 +21,10 @@ public class ChatHandler : TrackerHandlerBase
         DService.Instance().Chat.ChatMessage += OnChatMessage;
     }
 
-    private void OnChatMessage(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+    private void OnChatMessage(IHandleableChatMessage message)
     {
         if (IsBlocked) return;
-        if (!ValidChatTypes.Contains((ushort)type)) return;
+        if (!ValidChatTypes.Contains((ushort)message.LogKind)) return;
 
         TaskHelper.Abort();
         TaskHelper.DelayNext(100);

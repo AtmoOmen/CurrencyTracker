@@ -42,7 +42,7 @@ public class TerritoryHandler : TrackerHandlerBase
         CurrentLocationName = PreviousLocationName = GetLocationName(CurrentLocationID);
     }
 
-    private void OnZoneChange(ushort zone)
+    private void OnZoneChange(uint zone)
     {
         if (IsBlocked) return;
 

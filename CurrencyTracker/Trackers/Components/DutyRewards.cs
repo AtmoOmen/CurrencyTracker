@@ -30,7 +30,7 @@ public class DutyRewards : TrackerComponentBase
         OnZoneChange(0);
     }
 
-    private void OnZoneChange(ushort zone)
+    private void OnZoneChange(uint zone)
     {
         if (IsDutyStarted)
         {

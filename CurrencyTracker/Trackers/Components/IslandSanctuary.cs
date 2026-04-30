@@ -44,7 +44,7 @@ public class IslandSanctuary : TrackerComponentBase
         DService.Instance().AddonLifecycle.RegisterListener(AddonEvent.PreFinalize, MJIModules.Keys,       EndMJI);
     }
 
-    private void OnZoneChanged(ushort zone)
+    private void OnZoneChanged(uint zone)
     {
         if (zone == 1055)
             DService.Instance().Framework.Update += OnUpdate;
