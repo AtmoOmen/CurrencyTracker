@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using CurrencyTracker.Infos;
 using CurrencyTracker.Internal;
 using CurrencyTracker.Manager;
@@ -24,7 +20,7 @@ public class Settings : Window, IDisposable
 {
     private string devLangFilePath = string.Empty;
 
-    public Settings(Plugin plugin) : base($"Settings##{Name}")
+    public Settings() : base($"Settings##{Name}")
     {
         Flags |= ImGuiWindowFlags.NoScrollbar;
         Flags |= ImGuiWindowFlags.AlwaysAutoResize;
@@ -142,13 +138,13 @@ public class Settings : Window, IDisposable
                         ModuleCheckbox<Exchange>(Service.Lang.GetText("Exchange-RecordExchangeResult"));
                         ModuleCheckbox<SpecialExchange>(Service.Lang.GetText("SpecialExchange-RecordSpecialExchangeResult"));
                         if (PluginConfig.Instance().ComponentEnabled["Exchange"] || PluginConfig.Instance().ComponentEnabled["SpecialExchange"])
-                            NoteContentInputText("ExchangeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
+                            NoteContentInputText("ExchangeWith", [Service.Lang.GetText("ParamEP-TargetName")]);
 
                         // 交易 Trade
                         ImGui.Separator();
                         ModuleCheckbox<Trade>(Service.Lang.GetText("Trade-RecordTradeTarget"));
                         if (PluginConfig.Instance().ComponentEnabled["Trade"])
-                            NoteContentInputText("TradeWith", new[] { Service.Lang.GetText("ParamEP-TargetName") });
+                            NoteContentInputText("TradeWith", [Service.Lang.GetText("ParamEP-TargetName")]);
                         ImGui.EndTabItem();
                     }
 
